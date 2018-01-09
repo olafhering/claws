@@ -13,11 +13,11 @@ EXTRA_RELEASE=
 EXTRA_GTK2_VERSION=
 
 if test \( -d .git \); then
-    AC_CHECK_PROG([GIT], [git], [yes], [no], [$PATH])
+    AC_CHECK_PROG([GIT], [git], [git], [no], [$PATH])
     if test \( "$GIT" = "no" \); then
 	AC_MSG_ERROR([*** git not found. See http://git-scm.com/])
     else
-	GIT_VERSION=`git describe --abbrev=6 --dirty --always`
+	GIT_VERSION=`${GIT} describe --abbrev=6 --dirty --always`
 	echo "echo ${GIT_VERSION}" > ./version
     fi
 else
