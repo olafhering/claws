@@ -60,9 +60,6 @@ typedef enum {
 	EMAIL_COL_PTR
 } PersonEditEMailColumnPos;
 
-#define EDITPERSON_WIDTH      520
-#define EDITPERSON_HEIGHT     320
-
 #ifndef GENERIC_UMPC
 # define EMAIL_N_COLS          4
 # define EMAIL_COL_WIDTH_EMAIL 180
@@ -772,18 +769,6 @@ static void edit_person_attrib_add(gpointer data) {
 	edit_person_attrib_clear(NULL);
 }
 
-/*!
- *\brief	Save Gtk object size to prefs dataset
- */
-static void edit_person_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
-{
-	cm_return_if_fail(allocation != NULL);
-
-	prefs_common.addressbookeditpersonwin_width = allocation->width;
-	prefs_common.addressbookeditpersonwin_height = allocation->height;
-}
-
 /* build edit person widgets, return a pointer to the main container of the widgetset (a vbox) */
 static GtkWidget* addressbook_edit_person_widgets_create( GtkWidget* container, gboolean *cancelled )
 {
@@ -844,7 +829,6 @@ static void addressbook_edit_person_dialog_create( gboolean *cancelled ) {
 	GtkWidget *hsbox;
 	GtkWidget *vbox;
 	GtkWidget *statusbar;
-	static GdkGeometry geometry;
 
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "editaddress");
 	/* gtk_container_set_border_width(GTK_CONTAINER(window), 0); */
@@ -855,9 +839,6 @@ static void addressbook_edit_person_dialog_create( gboolean *cancelled ) {
 	g_signal_connect(G_OBJECT(window), "delete_event",
 			 G_CALLBACK(edit_person_delete_event),
 			 cancelled);
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(edit_person_size_allocate_cb),
-			cancelled);
 	g_signal_connect(G_OBJECT(window), "key_press_event",
 			 G_CALLBACK(edit_person_key_pressed),
 			 cancelled);
@@ -869,16 +850,6 @@ static void addressbook_edit_person_dialog_create( gboolean *cancelled ) {
 	gtk_box_pack_end(GTK_BOX(vbox), hsbox, FALSE, FALSE, BORDER_WIDTH);
 	statusbar = gtk_statusbar_new();
 	gtk_box_pack_start(GTK_BOX(hsbox), statusbar, TRUE, TRUE, BORDER_WIDTH);
-
-	if (!geometry.min_height) {
-		geometry.min_width = EDITPERSON_WIDTH;
-		geometry.min_height = EDITPERSON_HEIGHT;
-	}
-
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(window, prefs_common.addressbookeditpersonwin_width,
-				    prefs_common.addressbookeditpersonwin_height);
 
 	personeditdlg.container  = window;
 	personeditdlg.statusbar  = statusbar;
@@ -903,8 +874,6 @@ static void addressbook_edit_person_widgetset_create( GtkWidget *parent, gboolea
 	gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
 	addressbook_edit_person_widgets_create(vbox, cancelled);
-
-	gtk_widget_set_size_request(vbox, EDITPERSON_WIDTH, EDITPERSON_HEIGHT);
 
 	personeditdlg.container = vbox;
 	personeditdlg.title = label;
