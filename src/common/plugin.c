@@ -49,6 +49,7 @@
 #define PLUGINS_BLOCK_PREFIX "Plugins_"
 #endif
 
+static Plugin *_plugin_load(const gchar *filename, gchar **error);
 struct _Plugin
 {
 	gchar	*filename;
@@ -260,7 +261,7 @@ static gint plugin_load_deps(const gchar *filename, gchar **error)
 				".", G_MODULE_SUFFIX, NULL);
 		if ((dep_plugin = plugin_get_by_filename(path)) == NULL) {
 			debug_print("trying to load %s\n", path);
-			dep_plugin = plugin_load(path, error);
+			dep_plugin = _plugin_load(path, error);
 			if (dep_plugin == NULL) {
 				g_free(path);
 				claws_fclose(fp);
@@ -391,7 +392,7 @@ static Plugin *plugin_load_in_default_dir(const gchar *filename, gchar **error)
 
 	g_free(plugin_name);
 
-	plugin = plugin_load(filename_default_dir, &default_error);
+	plugin = _plugin_load(filename_default_dir, &default_error);
 	
 	g_free(filename_default_dir);
 	
@@ -414,7 +415,7 @@ static Plugin *plugin_load_in_default_dir(const gchar *filename, gchar **error)
  * \param error The location where an error string can be stored
  * \return the plugin on success, NULL otherwise
  */
-Plugin *plugin_load(const gchar *filename, gchar **error)
+static Plugin *_plugin_load(const gchar *filename, gchar **error)
 {
 	Plugin *plugin;
 	gint (*plugin_init) (gchar **error);
@@ -529,6 +530,15 @@ init_plugin:
 	return plugin;
 }
 
+Plugin *plugin_load(const gchar *filename, gchar **error)
+{
+	gchar *basename = filename;
+	if (plugin_filename_is_standard_dir(filename) == TRUE)
+		basename = g_path_get_basename(filename);
+
+	return _plugin_load(basename, error);
+}
+
 void plugin_unload(Plugin *plugin)
 {
 	gboolean (*plugin_done) (void);
@@ -613,7 +623,7 @@ void plugin_load_all(const gchar *type)
 		g_strstrip(buf);
 		replace_old_plugin_name(buf);
 
-		if ((buf[0] != '\0') && (plugin_load(buf, &error) == NULL)) {
+		if ((buf[0] != '\0') && (_plugin_load(buf, &error) == NULL)) {
 			g_warning("plugin loading error: %s", error);
 			g_free(error);
 		}							
@@ -684,7 +694,7 @@ void plugin_load_standard_plugins (void)
 						names[i], ".", G_MODULE_SUFFIX, NULL);
 #endif
 			error = NULL;
-			plugin_load(filename, &error);
+			_plugin_load(filename, &error);
 			g_free (error);
 			g_free(filename);
 		}
