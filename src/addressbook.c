@@ -129,12 +129,7 @@ static gchar *list_titles[] = { N_("Name"),
                                 N_("Email Address"),
                                 N_("Remarks") };
 
-#define COL_NAME_WIDTH		164
-#define COL_ADDRESS_WIDTH	156
 
-#define COL_FOLDER_WIDTH	170
-#define ADDRESSBOOK_WIDTH	640
-#define ADDRESSBOOK_HEIGHT	360
 
 #define ADDRESSBOOK_MSGBUF_SIZE 2048
 
@@ -703,17 +698,6 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data
 	return FALSE;
 }
 
-/*!
- *\brief	Save Gtk object size to prefs dataset
- */
-static void addressbook_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
-{
-	cm_return_if_fail(allocation != NULL);
-
-	prefs_common.addressbookwin_width = allocation->width;
-	prefs_common.addressbookwin_height = allocation->height;
-}
 
 static gint sort_column_number = 0;
 static GtkSortType sort_column_type = GTK_SORT_ASCENDING;
@@ -904,7 +888,6 @@ static void addressbook_create(void)
 	gchar *text;
 	gint i;
 
-	static GdkGeometry geometry;
 
 	debug_print("Creating addressbook window...\n");
 
@@ -919,8 +902,6 @@ static void addressbook_create(void)
 
 	g_signal_connect(G_OBJECT(window), "delete_event",
 			 G_CALLBACK(addressbook_close), NULL);
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(addressbook_size_allocate_cb), NULL);
 	g_signal_connect(G_OBJECT(window), "key_press_event",
 			 G_CALLBACK(key_pressed), NULL);
 	MANAGE_WINDOW_SIGNALS_CONNECT(window);
@@ -1002,7 +983,6 @@ static void addressbook_create(void)
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(ctree_swin),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
-	gtk_widget_set_size_request(ctree_swin, COL_FOLDER_WIDTH + 20, -1);
 
 	/* Address index */
 	ctree = gtk_sctree_new_with_titles(N_INDEX_COLS, 0, index_titles);
@@ -1010,7 +990,6 @@ static void addressbook_create(void)
 
 	gtk_container_add(GTK_CONTAINER(ctree_swin), ctree);
 	gtk_cmclist_set_selection_mode(GTK_CMCLIST(ctree), GTK_SELECTION_BROWSE);
-	gtk_cmclist_set_column_width(GTK_CMCLIST(ctree), 0, COL_FOLDER_WIDTH);
 	gtk_cmctree_set_expander_style(GTK_CMCTREE(ctree),
 			     GTK_CMCTREE_EXPANDER_TRIANGLE);
 	gtk_sctree_set_stripes(GTK_SCTREE(ctree), prefs_common.use_stripes_in_summaries);
@@ -1063,11 +1042,6 @@ static void addressbook_create(void)
 			     GTK_CMCTREE_EXPANDER_TRIANGLE);
 	gtk_sctree_set_stripes(GTK_SCTREE(ctree), prefs_common.use_stripes_in_summaries);
 	gtk_cmctree_set_indent(GTK_CMCTREE(clist), CTREE_INDENT);
-	gtk_cmclist_set_column_width(GTK_CMCLIST(clist), COL_NAME,
-				   COL_NAME_WIDTH);
-	gtk_cmclist_set_column_width(GTK_CMCLIST(clist), COL_ADDRESS,
-				   COL_ADDRESS_WIDTH);
-	gtk_widget_set_size_request(clist, -1, 80);
 
 	addressbook_sort_list(GTK_CMCLIST(clist), COL_NAME, GTK_SORT_ASCENDING);
 	g_signal_connect(G_OBJECT(GTK_CMCLIST(clist)->column[COL_NAME].button),
@@ -1310,15 +1284,6 @@ static void addressbook_create(void)
 
 	addrbook.listSelected = NULL;
 
-	if (!geometry.min_height) {
-		geometry.min_width = ADDRESSBOOK_WIDTH;
-		geometry.min_height = ADDRESSBOOK_HEIGHT;
-	}
-
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(window, prefs_common.addressbookwin_width,
-				    prefs_common.addressbookwin_height);
 #ifdef G_OS_WIN32
 	gtk_window_move(GTK_WINDOW(window), 48, 48);
 #endif
