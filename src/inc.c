@@ -435,6 +435,7 @@ void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck,
 		 * or a check at startup or a manual 'Get all' check. */
 		if (autocheck)
 			condition = prefs_common_get_prefs()->autochk_newmail
+				&& account->recv_at_getall
 				&& account->autochk_use_default;
 		else if (check_at_startup || (!check_at_startup && !autocheck))
 			condition = account->recv_at_getall;
@@ -1586,6 +1587,7 @@ void inc_account_autocheck_timer_set_interval(PrefsAccount *account)
 	inc_account_autocheck_timer_remove(account);
 
 	if (account->autochk_use_default
+			|| !account->recv_at_getall
 			|| !account->autochk_use_custom
 			|| account->autochk_itv == 0)
 		return;
