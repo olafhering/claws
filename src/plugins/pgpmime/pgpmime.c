@@ -494,6 +494,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if (fp == NULL) {
 		perror("my_tmpfile");
 		privacy_set_error(_("Couldn't create temporary file: %s"), g_strerror(errno));
+		g_free(boundary);
 		return FALSE;
 	}
 	procmime_write_mimeinfo(sigmultipart, fp);
@@ -510,6 +511,9 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print(("Couldn't initialize GPG context, %s\n"), gpgme_strerror(err));
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
 		return FALSE;
 	}
 	gpgme_set_textmode(ctx, 1);
@@ -518,6 +522,9 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 
 	if (!sgpgme_setup_signers(ctx, account, from_addr)) {
 		gpgme_release(ctx);
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
 		return FALSE;
 	}
 
@@ -540,6 +547,9 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 			debug_print("gpgme_op_sign error : %x\n", err);
 		}
 		gpgme_release(ctx);
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
 		return FALSE;
 	}
 	result = gpgme_op_sign_result(ctx);
@@ -568,12 +578,18 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 			invalid = invalid->next;
 		}
 		gpgme_release(ctx);
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
 		return FALSE;
 	} else {
 		/* can't get result (maybe no signing key?) */
 		debug_print("gpgme_op_sign_result error\n");
 		privacy_set_error(_("Data signing failed, no results."));
 		gpgme_release(ctx);
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
 		return FALSE;
 	}
 
@@ -586,6 +602,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 		privacy_set_error(_("Data signing failed, no contents."));
 		g_free(micalg);
 		g_free(sigcontent);
+		gpgme_release(ctx);
 		return FALSE;
 	}
 
