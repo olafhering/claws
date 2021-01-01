@@ -246,7 +246,7 @@ gboolean privacy_mimeinfo_system_can_locate_keys(MimeInfo *mimeinfo)
 {
 	PrivacySystem *system;
 
-	cm_return_val_if_fail(mimeinfo != NULL, -1);
+	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
 	if (mimeinfo->privacy == NULL) {
 		privacy_mimeinfo_is_signed(mimeinfo);
