@@ -578,6 +578,24 @@ static void mimeview_free_mimeinfo(MimeView *mimeview)
 	}
 }
 
+static void mimeview_sig_check_clear(MimeView *mimeview)
+{
+	if (mimeview->sig_check_timeout_tag) {
+		g_source_remove(mimeview->sig_check_timeout_tag);
+		mimeview->sig_check_timeout_tag = 0;
+	}
+	if (mimeview->sig_check_cancellable != NULL) {
+		g_object_unref(mimeview->sig_check_cancellable);
+		mimeview->sig_check_cancellable = NULL;
+	}
+}
+
+static void mimeview_sig_check_cancel_and_clear(MimeView *mimeview)
+{
+	g_cancellable_cancel(mimeview->sig_check_cancellable);
+	mimeview_sig_check_clear(mimeview);
+}
+
 void mimeview_destroy(MimeView *mimeview)
 {
 	GSList *cur;
@@ -588,15 +606,7 @@ void mimeview_destroy(MimeView *mimeview)
 	}
 	g_slist_free(mimeview->viewers);
 	gtk_target_list_unref(mimeview->target_list);
-
-	if (mimeview->sig_check_timeout_tag != 0)
-		g_source_remove(mimeview->sig_check_timeout_tag);
-	if (mimeview->sig_check_cancellable != NULL) {
-		/* Set last_sig_check_task to NULL to discard results in async_cb */
-		mimeview->siginfo->last_sig_check_task = NULL;
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-	}
+	mimeview_sig_check_cancel_and_clear(mimeview);
 	mimeview_free_mimeinfo(mimeview);
 	gtk_tree_path_free(mimeview->opened);
 	g_free(mimeview->file);
@@ -995,18 +1005,7 @@ void mimeview_clear(MimeView *mimeview)
 	if (g_slist_find(mimeviews, mimeview) == NULL)
 		return;
 	
-	if (mimeview->sig_check_timeout_tag != 0) {
-		g_source_remove(mimeview->sig_check_timeout_tag);
-		mimeview->sig_check_timeout_tag = 0;
-	}
-
-	if (mimeview->sig_check_cancellable != NULL) {
-		/* Set last_sig_check_task to NULL to discard results in async_cb */
-		mimeview->siginfo->last_sig_check_task = NULL;
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
-	}
+	mimeview_sig_check_cancel_and_clear(mimeview);
 
 	noticeview_hide(mimeview->siginfoview);
 
@@ -1046,6 +1045,10 @@ static void propose_online_key_search_cb(GtkWidget *widget, gpointer user_data);
 static void check_signature_cb(GtkWidget *widget, gpointer user_data);
 static void display_full_info_cb(GtkWidget *widget, gpointer user_data);
 
+void mimeview_bad_call()
+{
+	g_error("bad call to update noticeview");
+}
 static void update_signature_noticeview(MimeView *mimeview, gboolean special, SignatureStatus code)
 {
 	gchar *text = NULL, *button_text = NULL;
@@ -1053,8 +1056,8 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 	StockPixmap icon = STOCK_PIXMAP_PRIVACY_SIGNED;
 	SignatureStatus mycode = SIGNATURE_UNCHECKED;
 	
-	if (mimeview == NULL || mimeview->siginfo == NULL)
-		g_error("bad call to update noticeview");
+	if (mimeview == NULL || (!special && mimeview->siginfo == NULL))
+		mimeview_bad_call();
 
 	if (special)
 		mycode = code;
@@ -1172,19 +1175,9 @@ static void check_signature_async_cb(GObject *source_object,
 	SigCheckTaskResult *result;
 	GError *error = NULL;
 
-	if (mimeview->siginfo == NULL) {
-		debug_print("discarding stale sig check task result task:%p\n", task);
-		return;
-	} else if (task != mimeview->siginfo->last_sig_check_task) {
-		debug_print("discarding stale sig check task result last_task:%p task:%p\n",
-			mimeview->siginfo->last_sig_check_task, task);
-		return;
-	} else {
-		debug_print("using sig check task result task:%p\n", task);
-		mimeview->siginfo->last_sig_check_task = NULL;
-	}
-
 	cancellable = g_task_get_cancellable(task);
+	if (mimeview->sig_check_cancellable != cancellable)
+		return;
 	cancelled = g_cancellable_set_error_if_cancelled(cancellable, &error);
 	if (cancelled) {
 		debug_print("sig check task was cancelled: task:%p GError: domain:%s code:%d message:\"%s\"\n",
@@ -1192,17 +1185,8 @@ static void check_signature_async_cb(GObject *source_object,
 		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_TIMEOUT);
 		return;
-	} else {
-		if (mimeview->sig_check_cancellable == NULL)
-			g_error("bad cancellable");
-		if (mimeview->sig_check_timeout_tag == 0)
-			g_error("bad cancel source tag");
-
-		g_source_remove(mimeview->sig_check_timeout_tag);
-		mimeview->sig_check_timeout_tag = 0;
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
 	}
+	mimeview_sig_check_clear(mimeview);
 
 	result = g_task_propagate_pointer(task, &error);
 
@@ -1212,8 +1196,6 @@ static void check_signature_async_cb(GObject *source_object,
 	}
 
 	if (result == NULL) {
-		debug_print("sig check task propagated NULL task:%p GError: domain:%s code:%d message:\"%s\"\n",
-			task, g_quark_to_string(error->domain), error->code, error->message);
 		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
 		return;
@@ -1233,40 +1215,22 @@ static void check_signature_async_cb(GObject *source_object,
 gboolean mimeview_check_sig_timeout(gpointer user_data)
 {
 	MimeView *mimeview = (MimeView *)user_data;
-	GCancellable *cancellable = mimeview->sig_check_cancellable;
-
-	mimeview->sig_check_timeout_tag = 0;
-
-	if (cancellable == NULL) {
-		return G_SOURCE_REMOVE;
-	}
-
-	mimeview->sig_check_cancellable = NULL;
-	g_cancellable_cancel(cancellable);
-	g_object_unref(cancellable);
-
+	mimeview_sig_check_cancel_and_clear(mimeview);
 	return G_SOURCE_REMOVE;
 }
 
 static void check_signature_cb(GtkWidget *widget, gpointer user_data)
 {
 	MimeView *mimeview = (MimeView *) user_data;
-	MimeInfo *mimeinfo = mimeview->siginfo;
 	gint ret;
 	
-	if (mimeinfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
-		return;
-
 	noticeview_set_text(mimeview->siginfoview, _("Checking signature..."));
 	GTK_EVENTS_FLUSH();
 
-	if (mimeview->sig_check_cancellable != NULL) {
-		if (mimeview->sig_check_timeout_tag == 0)
-			g_error("bad cancel source tag");
-		g_source_remove(mimeview->sig_check_timeout_tag);
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-	}
+	if (mimeview->siginfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
+		return;
+
+	mimeview_sig_check_cancel_and_clear(mimeview);
 
 	mimeview->sig_check_cancellable = g_cancellable_new();
 
@@ -1278,12 +1242,10 @@ static void check_signature_cb(GtkWidget *widget, gpointer user_data)
 		mimeview->sig_check_timeout_tag = g_timeout_add_seconds(prefs_common.io_timeout_secs,
 			mimeview_check_sig_timeout, mimeview);
 	} else if (ret < 0) {
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
+		mimeview_sig_check_cancel_and_clear(mimeview);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
 	} else {
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
+		mimeview_sig_check_cancel_and_clear(mimeview);
 		update_signature_noticeview(mimeview, FALSE, 0);
 	}
 }
@@ -1336,6 +1298,7 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		}	
 	}
 
+	mimeview_sig_check_cancel_and_clear(mimeview);
 	siginfo = selected;
 	while (siginfo != NULL) {
 		if (privacy_mimeinfo_is_signed(siginfo))

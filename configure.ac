@@ -173,6 +173,12 @@ esac
 AC_MSG_RESULT([$env_cygwin])
 AM_CONDITIONAL(CYGWIN, test x"$env_cygwin" = x"yes")
 
+AC_ARG_WITH([fsanitize],
+	[AS_HELP_STRING([--with-fsanitize@<:@=args@:>@], [Enable AddressSanitizer (default: disabled)])],
+	[AS_IF([test "$with_fsanitize" = "yes"], [with_fsanitize=address,undefined],
+		[test "$with_fsanitize" = "no"], [with_fsanitize=])],
+	[])
+
 AC_MSG_CHECKING([for time_t format specifier])
 _gcc_cflags_save=$CFLAGS
 CFLAGS="-Wformat -Werror"
@@ -195,9 +201,12 @@ AC_DEFINE_UNQUOTED([CM_TIME_FORMAT], ["$time_t_fmt"],
 	[Define printf format specifier for time_t])
 
 AM_CFLAGS="-Wall -std=gnu99"
-if test $USE_MAINTAINER_MODE = yes; then
-	AM_CFLAGS="$AM_CFLAGS -g"
-fi
+AS_IF([test "$with_fsanitize" != ""],
+	[AM_CFLAGS="$AM_CFLAGS -fsanitize=$with_fsanitize -Wno-deprecated-declarations";
+	AM_CXXFLAGS="$AM_CXXFLAGS -fsanitize=$with_fsanitize -Wno-deprecated-declarations";
+	AM_LDFLAGS="$AM_LDFLAGS -fsanitize=$with_fsanitize"])
+AS_IF([test $USE_MAINTAINER_MODE = yes || test "$with_fsanitize" != ""],
+	[AM_CFLAGS="$AM_CFLAGS -g"])
 
 AC_MSG_CHECKING([if gcc supports -Wno-pointer-sign])
 _gcc_cflags_save=$CFLAGS
@@ -228,6 +237,8 @@ case "$target" in
 esac
 
 AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_CXXFLAGS)
+AC_SUBST(AM_LDFLAGS)
 
 dnl Checks for iconv
 AM_ICONV
@@ -236,7 +247,7 @@ dnl floor and ceil are  in -lm
 LIBS="$LIBS -lm"
 
 dnl for gettext
-GETTEXT_PACKAGE=claws-mail
+GETTEXT_PACKAGE=$PACKAGE
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define text domain.])
 
