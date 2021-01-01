@@ -13,11 +13,11 @@ EXTRA_RELEASE=
 EXTRA_GTK3_VERSION=
 
 if test \( -d .git \); then
-    AC_CHECK_PROG([GIT], [git], [yes], [no], [$PATH])
+    AC_CHECK_PROG([GIT], [git], [git], [no], [$PATH])
     if test \( "$GIT" = "no" \); then
 	AC_MSG_ERROR([*** git not found. See http://git-scm.com/])
     else
-	GIT_VERSION=`git describe --abbrev=6 --dirty --always`
+	GIT_VERSION=`${GIT} describe --abbrev=6 --dirty --always`
 	echo "echo ${GIT_VERSION}" > ./version
     fi
 else
@@ -231,7 +231,7 @@ LIBS=$syl_save_LIBS
 
 dnl for gettext
 ALL_LINGUAS="ca cs da de el_GR en_GB es fi fr hu id_ID it ja nb nl pl pt_BR ro ru sk sv tr zh_TW"
-GETTEXT_PACKAGE=claws-mail
+GETTEXT_PACKAGE=$PACKAGE
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define text domain.])
 
