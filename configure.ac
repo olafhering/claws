@@ -237,7 +237,7 @@ dnl floor and ceil are  in -lm
 LIBS="$LIBS -lm"
 
 dnl for gettext
-GETTEXT_PACKAGE=claws-mail
+GETTEXT_PACKAGE=$PACKAGE
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define text domain.])
 
