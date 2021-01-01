@@ -298,7 +298,6 @@ static gint pgpinline_check_sig_async(MimeInfo *mimeinfo,
 	task_data->charset = g_strdup(charset);
 
 	task = g_task_new(NULL, cancellable, callback, user_data);
-	mimeinfo->last_sig_check_task = task;
 
 	g_task_set_task_data(task, task_data, pgpinline_free_task_data);
 	debug_print("creating check sig async task:%p task_data:%p\n", task, task_data);
