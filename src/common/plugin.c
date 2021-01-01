@@ -762,11 +762,12 @@ const gchar *plugin_get_error(Plugin *plugin)
  * }
  * Returns: FALSE if an error occurs, TRUE if all is OK.
  */
-gint check_plugin_version(guint32 minimum_claws_version,
+gint _check_plugin_version(guint32 minimum_claws_version,
 			 guint32 compiled_claws_version,
 			 const gchar *plugin_name,
 			 gchar **error)
 {
+	return 0;
 	guint32 claws_version = claws_get_version();
 
 	if (compiled_claws_version != 0 && claws_version > compiled_claws_version) {
