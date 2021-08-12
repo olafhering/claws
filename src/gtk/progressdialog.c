@@ -84,8 +84,8 @@ ProgressDialog *progress_dialog_create(void)
 	hide_btn = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Hide"), GTK_RESPONSE_NONE);
 	showlog_btn = gtk_dialog_add_button(GTK_DIALOG(dialog), _("_View log"), GTK_RESPONSE_NONE);
 	cancel_btn = gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_NONE);
-	gtk_widget_grab_default(cancel_btn);
-	gtk_widget_grab_focus(cancel_btn);
+	gtk_widget_grab_default(showlog_btn);
+	gtk_widget_grab_focus(showlog_btn);
 
 	progressbar = gtk_progress_bar_new();
 	gtk_box_pack_start(GTK_BOX(vbox), progressbar, FALSE, FALSE, 0);
