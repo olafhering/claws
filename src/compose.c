@@ -116,6 +116,10 @@
 #include "ldapserver.h"
 #endif
 
+#ifndef G_PID_FORMAT
+#define G_PID_FORMAT "i"
+#endif
+
 enum {
 	COL_MIMETYPE = 0,
 	COL_SIZE = 1,
