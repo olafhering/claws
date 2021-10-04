@@ -510,12 +510,11 @@ static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *respons
 {
 	gint len;
 	gint ret;
-	gchar *token;
-	gint toread = OAUTH2BUFSIZE;
+	gint toread = OAUTH2BUFSIZE - 1;
 	time_t startplus = time(NULL);
-	gchar *tmp;
 	len = strlen(request);
 
+	*response = '\0';
 	startplus += 10;
 
 	if (sock_write(sock, request, len + 1) < 0) {
@@ -523,10 +522,8 @@ static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *respons
 		return (1);
 	}
 
-	token = g_strconcat("", NULL);
 	do {
-
-		ret = sock_read(sock, response, OAUTH2BUFSIZE);
+		ret = sock_read(sock, response, toread);
 		if (ret < 0 && errno == EAGAIN)
 			continue;
 		if (ret < 0)
@@ -535,15 +532,12 @@ static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *respons
 			break;
 
 		toread -= ret;
-		tmp = g_strconcat(token, response, NULL);
-		g_free(token);
-		token = tmp;
+		response += ret;
+		*response = '\0';
 	} while ((toread > 0) && (time(NULL) < startplus));
 
 	if (time(NULL) >= startplus)
 		log_message(LOG_PROTOCOL, _("OAuth2 socket timeout error\n"));
-
-	g_free(token);
 
 	return (0);
 }
