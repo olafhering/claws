@@ -1,9 +1,4 @@
 /*
- * $Id$
- */
-/* vim:et:ts=4:sw=4:et:sts=4:ai:set list listchars=tab\:��,trail\:�: */
-
-/*
  * Claws-contacts is a proposed new design for the address book feature
  * in Claws Mail. The goal for this new design was to create a
  * solution more suitable for the term lightweight and to be more

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -42,7 +42,8 @@ gboolean setup_write_mailbox_path(MainWindow *mainwin, const gchar *path)
 	Folder *folder;
 	gchar *base;
 
-	if (!path) return FALSE;
+	if (!path)
+		return FALSE;
 	if (folder_find_from_path(path)) {
 		g_warning("the mailbox already exists");
 		return FALSE;
@@ -52,8 +53,7 @@ gboolean setup_write_mailbox_path(MainWindow *mainwin, const gchar *path)
 	folder = folder_new(mh_get_class(), !strcmp(path, "Mail") ? _("Mailbox") : base, path);
 
 	if (folder->klass->create_tree(folder) < 0) {
-		alertpanel_error(_("Creation of the mailbox failed.\n"
-				   "Maybe some files already exist, or you don't have the permission to write there."));
+		alertpanel_error(_("Creation of the mailbox failed.\n" "Maybe some files already exist, or you don't have the permission to write there."));
 		folder_destroy(folder);
 		g_free(base);
 		return FALSE;
@@ -70,14 +70,8 @@ gboolean setup_write_mailbox_path(MainWindow *mainwin, const gchar *path)
 void setup(MainWindow *mainwin)
 {
 	gchar *path;
-	
-	path = input_dialog
-		(_("Mailbox setting"),
-		 _("First, you have to set the location of mailbox.\n"
-		   "You can use existing mailbox in MH format\n"
-		   "if you have the one.\n"
-		   "If you're not sure, just select OK."),
-		 "Mail");
+
+	path = input_dialog(_("Mailbox setting"), _("First, you have to set the location of mailbox.\n" "You can use existing mailbox in MH format\n" "if you have the one.\n" "If you're not sure, just select OK."), "Mail");
 	setup_write_mailbox_path(mainwin, path);
 	g_free(path);
 }
@@ -88,22 +82,19 @@ static void scan_tree_func(Folder *folder, FolderItem *item, gpointer data)
 	gchar *str;
 
 	if (item->path)
-		str = g_strdup_printf(_("Scanning folder %s%c%s..."),
-				      LOCAL_FOLDER(folder)->rootpath,
-				      G_DIR_SEPARATOR,
-				      item->path);
+		str = g_strdup_printf(_("Scanning folder %s%c%s..."), LOCAL_FOLDER(folder)->rootpath, G_DIR_SEPARATOR, item->path);
 	else
-		str = g_strdup_printf(_("Scanning folder %s..."),
-				      LOCAL_FOLDER(folder)->rootpath);
+		str = g_strdup_printf(_("Scanning folder %s..."), LOCAL_FOLDER(folder)->rootpath);
 
 	if (mainwin->statusbar)
-		gtk_statusbar_push(GTK_STATUSBAR(mainwin->statusbar),
-			   mainwin->mainwin_cid, str);
+		gtk_statusbar_push(GTK_STATUSBAR(mainwin->statusbar), mainwin->mainwin_cid, str);
 	if (mainwin->hbox_stat)
 		gtkut_widget_draw_now(mainwin->hbox_stat);
-	
+
 	if (mainwin->statusbar)
-		gtk_statusbar_pop(GTK_STATUSBAR(mainwin->statusbar),
-			  mainwin->mainwin_cid);
+		gtk_statusbar_pop(GTK_STATUSBAR(mainwin->statusbar), mainwin->mainwin_cid);
 	g_free(str);
 }
+/*
+ * vim: noet ts=4 shiftwidth=4
+ */

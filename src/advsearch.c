@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-# include "config.h"
-# include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #include "advsearch.h"
@@ -35,13 +35,13 @@
 
 struct _AdvancedSearch {
 	struct {
-		AdvancedSearchType	 type;
-		gchar			*matchstring;
+		AdvancedSearchType type;
+		gchar *matchstring;
 	} request;
 
-	MatcherList			*predicate;
-	gboolean			 is_fast;
-	gboolean			 search_aborted;
+	MatcherList *predicate;
+	gboolean is_fast;
+	gboolean search_aborted;
 
 	struct {
 		gboolean (*cb)(gpointer data, guint at, guint matched, guint total);
@@ -59,19 +59,18 @@ void advsearch_set_on_progress_cb(AdvancedSearch *search, gboolean (*cb)(gpointe
 	search->on_progress_cb.data = data;
 }
 
-void advsearch_set_on_error_cb(AdvancedSearch* search, void (*cb)(gpointer data), gpointer data)
+void advsearch_set_on_error_cb(AdvancedSearch *search, void (*cb)(gpointer data), gpointer data)
 {
 	search->on_error_cb.cb = cb;
 	search->on_error_cb.data = data;
 }
 
 static void prepare_matcher(AdvancedSearch *search);
-static gboolean search_impl(MsgInfoList **messages, AdvancedSearch* search,
-			    FolderItem* folderItem, gboolean recursive);
+static gboolean search_impl(MsgInfoList **messages, AdvancedSearch *search, FolderItem *folderItem, gboolean recursive);
 
 // --------------------------
 
-AdvancedSearch* advsearch_new()
+AdvancedSearch *advsearch_new()
 {
 	AdvancedSearch *result;
 
@@ -115,8 +114,7 @@ gboolean advsearch_has_proper_predicate(AdvancedSearch *search)
 	return search->predicate != NULL;
 }
 
-gboolean advsearch_search_msgs_in_folders(AdvancedSearch* search, MsgInfoList **messages,
-				          FolderItem* folderItem, gboolean recursive)
+gboolean advsearch_search_msgs_in_folders(AdvancedSearch *search, MsgInfoList **messages, FolderItem *folderItem, gboolean recursive)
 {
 	if (search == NULL || search->predicate == NULL)
 		return FALSE;
@@ -141,59 +139,58 @@ gchar *advsearch_expand_search_string(const gchar *search_string)
 	gboolean casesens, dontmatch, regex;
 	/* list of allowed pattern abbreviations */
 	struct {
-		gchar		*abbreviated;	/* abbreviation */
-		gchar		*command;	/* actual matcher command */
-		gint		numparams;	/* number of params for cmd */
-		gboolean	qualifier;	/* do we append stringmatch operations */
-		gboolean	quotes;		/* do we need quotes */
-	}
-	cmds[] = {
-		{ "a",	"all",				0,	FALSE,	FALSE },
-		{ "ag",	"age_greater",			1,	FALSE,	FALSE },
-		{ "al",	"age_lower",			1,	FALSE,	FALSE },
-		{ "agh","age_greater_hours",		1,	FALSE,	FALSE },
-		{ "alh","age_lower_hours",		1,	FALSE,	FALSE },
-		{ "b",	"body_part",			1,	TRUE,	TRUE  },
-		{ "B",	"message",			1,	TRUE,	TRUE  },
-		{ "c",	"cc",				1,	TRUE,	TRUE  },
-		{ "C",	"to_or_cc",			1,	TRUE,	TRUE  },
-		{ "D",	"deleted",			0,	FALSE,	FALSE },
-		{ "da", "date_after",			1,	FALSE,	TRUE  },
-		{ "db", "date_before",			1,	FALSE,	TRUE  },
-		{ "e",	"header \"Sender\"",		1,	TRUE,	TRUE  },
-		{ "E",	"execute",			1,	FALSE,	TRUE  },
-		{ "f",	"from",				1,	TRUE,	TRUE  },
-		{ "F",	"forwarded",			0,	FALSE,	FALSE },
-		{ "h",	"headers_part",			1,	TRUE,	TRUE  },
-		{ "H",	"headers_cont",			1,	TRUE,	TRUE  },
-		{ "ha",	"has_attachments",		0,	FALSE,	FALSE },
-		{ "i",	"messageid",			1,	TRUE,	TRUE  },
-		{ "I",	"inreplyto",			1,	TRUE,	TRUE  },
-		{ "k",	"colorlabel",			1,	FALSE,	FALSE },
-		{ "L",	"locked",			0,	FALSE,	FALSE },
-		{ "n",	"newsgroups",			1,	TRUE,	TRUE  },
-		{ "N",	"new",				0,	FALSE,	FALSE },
-		{ "O",	"~new",				0,	FALSE,	FALSE },
-		{ "r",	"replied",			0,	FALSE,	FALSE },
-		{ "R",	"~unread",			0,	FALSE,	FALSE },
-		{ "s",	"subject",			1,	TRUE,	TRUE  },
-		{ "se",	"score_equal",			1,	FALSE,	FALSE },
-		{ "sg",	"score_greater",		1,	FALSE,	FALSE },
-		{ "sl",	"score_lower",			1,	FALSE,	FALSE },
-		{ "Se",	"size_equal",			1,	FALSE,	FALSE },
-		{ "Sg",	"size_greater",			1,	FALSE,	FALSE },
-		{ "Ss",	"size_smaller",			1,	FALSE,	FALSE },
-		{ "t",	"to",				1,	TRUE,	TRUE  },
-		{ "tg", "tag",				1,	TRUE,	TRUE  },
-		{ "T",	"marked",			0,	FALSE,	FALSE },
-		{ "U",	"unread",			0,	FALSE,	FALSE },
-		{ "x",	"references",			1,	TRUE,	TRUE  },
-		{ "X",  "test",				1,	FALSE,  FALSE },
-		{ "y",	"header \"X-Label\"",		1,	TRUE,	TRUE  },
-		{ "&",	"&",				0,	FALSE,	FALSE },
-		{ "|",	"|",				0,	FALSE,	FALSE },
-		{ "p",	"partial",			0,	FALSE, 	FALSE },
-		{ NULL,	NULL,				0,	FALSE,	FALSE }
+		gchar *abbreviated; /* abbreviation */
+		gchar *command;	/* actual matcher command */
+		gint numparams;	/* number of params for cmd */
+		gboolean qualifier; /* do we append stringmatch operations */
+		gboolean quotes; /* do we need quotes */
+	} cmds[] = {
+		{"a", "all", 0, FALSE, FALSE},
+		{"ag", "age_greater", 1, FALSE, FALSE},
+		{"al", "age_lower", 1, FALSE, FALSE},
+		{"agh", "age_greater_hours", 1, FALSE, FALSE},
+		{"alh", "age_lower_hours", 1, FALSE, FALSE},
+		{"b", "body_part", 1, TRUE, TRUE},
+		{"B", "message", 1, TRUE, TRUE},
+		{"c", "cc", 1, TRUE, TRUE},
+		{"C", "to_or_cc", 1, TRUE, TRUE},
+		{"D", "deleted", 0, FALSE, FALSE},
+		{"da", "date_after", 1, FALSE, TRUE},
+		{"db", "date_before", 1, FALSE, TRUE},
+		{"e", "header \"Sender\"", 1, TRUE, TRUE},
+		{"E", "execute", 1, FALSE, TRUE},
+		{"f", "from", 1, TRUE, TRUE},
+		{"F", "forwarded", 0, FALSE, FALSE},
+		{"h", "headers_part", 1, TRUE, TRUE},
+		{"H", "headers_cont", 1, TRUE, TRUE},
+		{"ha", "has_attachments", 0, FALSE, FALSE},
+		{"i", "messageid", 1, TRUE, TRUE},
+		{"I", "inreplyto", 1, TRUE, TRUE},
+		{"k", "colorlabel", 1, FALSE, FALSE},
+		{"L", "locked", 0, FALSE, FALSE},
+		{"n", "newsgroups", 1, TRUE, TRUE},
+		{"N", "new", 0, FALSE, FALSE},
+		{"O", "~new", 0, FALSE, FALSE},
+		{"r", "replied", 0, FALSE, FALSE},
+		{"R", "~unread", 0, FALSE, FALSE},
+		{"s", "subject", 1, TRUE, TRUE},
+		{"se", "score_equal", 1, FALSE, FALSE},
+		{"sg", "score_greater", 1, FALSE, FALSE},
+		{"sl", "score_lower", 1, FALSE, FALSE},
+		{"Se", "size_equal", 1, FALSE, FALSE},
+		{"Sg", "size_greater", 1, FALSE, FALSE},
+		{"Ss", "size_smaller", 1, FALSE, FALSE},
+		{"t", "to", 1, TRUE, TRUE},
+		{"tg", "tag", 1, TRUE, TRUE},
+		{"T", "marked", 0, FALSE, FALSE},
+		{"U", "unread", 0, FALSE, FALSE},
+		{"x", "references", 1, TRUE, TRUE},
+		{"X", "test", 1, FALSE, FALSE},
+		{"y", "header \"X-Label\"", 1, TRUE, TRUE},
+		{"&", "&", 0, FALSE, FALSE},
+		{"|", "|", 0, FALSE, FALSE},
+		{"p", "partial", 0, FALSE, FALSE},
+		{NULL, NULL, 0, FALSE, FALSE}
 	};
 
 	if (search_string == NULL)
@@ -222,14 +219,12 @@ gchar *advsearch_expand_search_string(const gchar *search_string)
 		regex = FALSE;
 
 		/* ~ and ! mean logical NOT */
-		if (*cmd_start == '~' || *cmd_start == '!')
-		{
+		if (*cmd_start == '~' || *cmd_start == '!') {
 			dontmatch = TRUE;
 			cmd_start++;
 		}
 		/* % means case sensitive match */
-		if (*cmd_start == '%')
-		{
+		if (*cmd_start == '%') {
 			casesens = TRUE;
 			cmd_start++;
 		}
@@ -266,8 +261,7 @@ gchar *advsearch_expand_search_string(const gchar *search_string)
 				if (*cmd_start == '"') {
 					term_char = '"';
 					cmd_end++;
-				}
-				else
+				} else
 					term_char = ' ';
 
 				/* extract actual parameter */
@@ -344,9 +338,8 @@ do {										\
 
 static void prepare_matcher_tag(AdvancedSearch *search)
 {
-	gchar **words = search->request.matchstring 
-			? g_strsplit(search->request.matchstring, " ", -1)
-			: NULL;
+	gchar **words = search->request.matchstring ? g_strsplit(search->request.matchstring, " ", -1)
+	    : NULL;
 	gint i = 0;
 
 	if (search->predicate == NULL) {
@@ -360,8 +353,7 @@ static void prepare_matcher_tag(AdvancedSearch *search)
 
 		g_strstrip(words[i]);
 
-		matcher = matcherprop_new(MATCHCRITERIA_TAG, NULL,
-					  MATCHTYPE_MATCHCASE, words[i], 0);
+		matcher = matcherprop_new(MATCHCRITERIA_TAG, NULL, MATCHTYPE_MATCHCASE, words[i], 0);
 
 		search->predicate->matchers = g_slist_prepend(search->predicate->matchers, matcher);
 
@@ -380,8 +372,7 @@ static void prepare_matcher_header(AdvancedSearch *search, gint match_header)
 		search->is_fast = TRUE;
 	}
 
-	matcher = matcherprop_new(match_header, NULL, MATCHTYPE_MATCHCASE,
-			search->request.matchstring, 0);
+	matcher = matcherprop_new(match_header, NULL, MATCHTYPE_MATCHCASE, search->request.matchstring, 0);
 
 	search->predicate->matchers = g_slist_prepend(search->predicate->matchers, matcher);
 }
@@ -422,46 +413,45 @@ static void prepare_matcher(AdvancedSearch *search)
 		return;
 
 	switch (search->request.type) {
-		case ADVANCED_SEARCH_SUBJECT:
-			prepare_matcher_header(search, MATCHCRITERIA_SUBJECT);
-			debug_matcher_list("subject search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_SUBJECT:
+		prepare_matcher_header(search, MATCHCRITERIA_SUBJECT);
+		debug_matcher_list("subject search", search->predicate);
+		break;
 
-		case ADVANCED_SEARCH_FROM:
-			prepare_matcher_header(search, MATCHCRITERIA_FROM);
-			debug_matcher_list("from search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_FROM:
+		prepare_matcher_header(search, MATCHCRITERIA_FROM);
+		debug_matcher_list("from search", search->predicate);
+		break;
 
-		case ADVANCED_SEARCH_TO:
-			prepare_matcher_header(search, MATCHCRITERIA_TO);
-			debug_matcher_list("to search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_TO:
+		prepare_matcher_header(search, MATCHCRITERIA_TO);
+		debug_matcher_list("to search", search->predicate);
+		break;
 
-		case ADVANCED_SEARCH_TAG:
-			prepare_matcher_tag(search);
-			debug_matcher_list("tag search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_TAG:
+		prepare_matcher_tag(search);
+		debug_matcher_list("tag search", search->predicate);
+		break;
 
-		case ADVANCED_SEARCH_MIXED:
-			prepare_matcher_mixed(search);
-			debug_matcher_list("mixed search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_MIXED:
+		prepare_matcher_mixed(search);
+		debug_matcher_list("mixed search", search->predicate);
+		break;
 
-		case ADVANCED_SEARCH_EXTENDED:
-			prepare_matcher_extended(search);
-			debug_matcher_list("extended search", search->predicate);
-			break;
+	case ADVANCED_SEARCH_EXTENDED:
+		prepare_matcher_extended(search);
+		debug_matcher_list("extended search", search->predicate);
+		break;
 
-		default:
-			debug_print("unknown search type (%d)\n", search->request.type);
-			break;
+	default:
+		debug_print("unknown search type (%d)\n", search->request.type);
+		break;
 	}
 }
 
-static gboolean search_progress_notify_cb(gpointer data, gboolean on_server, guint at,
-		guint matched, guint total)
+static gboolean search_progress_notify_cb(gpointer data, gboolean on_server, guint at, guint matched, guint total)
 {
-	AdvancedSearch *search = (AdvancedSearch*) data;
+	AdvancedSearch *search = (AdvancedSearch *)data;
 
 	if (search->search_aborted)
 		return FALSE;
@@ -472,19 +462,12 @@ static gboolean search_progress_notify_cb(gpointer data, gboolean on_server, gui
 	return search->on_progress_cb.cb(search->on_progress_cb.data, at, matched, total);
 }
 
-static gboolean search_filter_folder(MsgNumberList **msgnums, AdvancedSearch *search,
-					  FolderItem *folderItem, gboolean onServer)
+static gboolean search_filter_folder(MsgNumberList **msgnums, AdvancedSearch *search, FolderItem *folderItem, gboolean onServer)
 {
 	gint matched;
 	gboolean tried_server = onServer;
 
-	matched = folder_item_search_msgs(folderItem->folder,
-		folderItem,
-		msgnums,
-		&onServer,
-		search->predicate,
-		search_progress_notify_cb,
-		search);
+	matched = folder_item_search_msgs(folderItem->folder, folderItem, msgnums, &onServer, search->predicate, search_progress_notify_cb, search);
 
 	if (matched < 0) {
 		if (search->on_error_cb.cb != NULL)
@@ -499,8 +482,7 @@ static gboolean search_filter_folder(MsgNumberList **msgnums, AdvancedSearch *se
 	}
 }
 
-static gboolean search_impl(MsgInfoList **messages, AdvancedSearch* search,
-			    FolderItem* folderItem, gboolean recursive)
+static gboolean search_impl(MsgInfoList **messages, AdvancedSearch *search, FolderItem *folderItem, gboolean recursive)
 {
 	if (recursive) {
 		START_TIMING("recursive");
@@ -526,8 +508,7 @@ static gboolean search_impl(MsgInfoList **messages, AdvancedSearch* search,
 		MsgInfoList *msgs = NULL;
 		gboolean can_search_on_server = folderItem->folder->klass->supports_server_search;
 		START_TIMING("folder");
-		if (!search_filter_folder(&msgnums, search, folderItem,
-					  can_search_on_server)) {
+		if (!search_filter_folder(&msgnums, search, folderItem, can_search_on_server)) {
 			g_slist_free(msgnums);
 			END_TIMING();
 			return FALSE;
@@ -554,3 +535,6 @@ static gboolean search_impl(MsgInfoList **messages, AdvancedSearch* search,
 
 	return TRUE;
 }
+/*
+ * vim: noet ts=4 shiftwidth=4
+ */

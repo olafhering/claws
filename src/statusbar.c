@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -48,8 +48,7 @@ GtkWidget *statusbar_create(void)
 
 	statusbar = gtk_statusbar_new();
 	statusbar_list = g_list_append(statusbar_list, statusbar);
-	gtk_statusbar_set_has_resize_grip(GTK_STATUSBAR(statusbar), 
-					  FALSE);
+	gtk_statusbar_set_has_resize_grip(GTK_STATUSBAR(statusbar), FALSE);
 	gtk_container_set_border_width(GTK_CONTAINER(statusbar), 1);
 	child = gtk_statusbar_get_message_area(GTK_STATUSBAR(statusbar));
 	parent = gtk_widget_get_parent(child);
@@ -58,7 +57,7 @@ GtkWidget *statusbar_create(void)
 	gtk_container_add(GTK_CONTAINER(parent), hbox);
 	gtk_widget_show(hbox);
 	gtk_box_pack_start(GTK_BOX(hbox), child, TRUE, TRUE, 0);
-	g_object_unref(child);	
+	g_object_unref(child);
 
 	return statusbar;
 }
@@ -122,13 +121,12 @@ void statusbar_pop_all(void)
 	gint cid;
 
 	for (cur = statusbar_list; cur != NULL; cur = cur->next) {
-		cid = gtk_statusbar_get_context_id(GTK_STATUSBAR(cur->data),
-						   "Standard Output");
+		cid = gtk_statusbar_get_context_id(GTK_STATUSBAR(cur->data), "Standard Output");
 		gtk_statusbar_pop(GTK_STATUSBAR(cur->data), cid);
 	}
 }
 
-static gboolean statusbar_puts_all_hook (gpointer source, gpointer data)
+static gboolean statusbar_puts_all_hook(gpointer source, gpointer data)
 {
 	LogText *logtext = (LogText *) source;
 
@@ -148,8 +146,7 @@ static gboolean statusbar_puts_all_hook (gpointer source, gpointer data)
 void statusbar_verbosity_set(gboolean verbose)
 {
 	if (verbose && (statusbar_puts_all_hook_id == HOOK_NONE)) {
-		statusbar_puts_all_hook_id =
-			hooks_register_hook(LOG_APPEND_TEXT_HOOKLIST, statusbar_puts_all_hook, NULL);
+		statusbar_puts_all_hook_id = hooks_register_hook(LOG_APPEND_TEXT_HOOKLIST, statusbar_puts_all_hook, NULL);
 	} else if (!verbose && (statusbar_puts_all_hook_id != HOOK_NONE)) {
 		hooks_unregister_hook(LOG_APPEND_TEXT_HOOKLIST, statusbar_puts_all_hook_id);
 		statusbar_puts_all_hook_id = HOOK_NONE;
@@ -157,12 +154,11 @@ void statusbar_verbosity_set(gboolean verbose)
 	}
 }
 
-void statusbar_progress_all (gint done, gint total, gint step) 
+void statusbar_progress_all(gint done, gint total, gint step)
 {
-	GtkProgressBar *progressbar = GTK_PROGRESS_BAR(
-					mainwindow_get_mainwindow()->progressbar);
+	GtkProgressBar *progressbar = GTK_PROGRESS_BAR(mainwindow_get_mainwindow()->progressbar);
 	gchar buf[32];
-	
+
 	if (total && done % step == 0) {
 #ifdef GENERIC_UMPC
 		/* use a more compact format */
@@ -172,8 +168,7 @@ void statusbar_progress_all (gint done, gint total, gint step)
 #endif
 		g_snprintf(buf, sizeof(buf), format, done, total);
 		gtk_progress_bar_set_text(progressbar, buf);
-		gtk_progress_bar_set_fraction(progressbar,
-			 (gfloat)done / (gfloat)total);
+		gtk_progress_bar_set_fraction(progressbar, (gfloat) done / (gfloat) total);
 		if (!gtk_widget_get_visible(GTK_WIDGET(progressbar)))
 			gtk_widget_show(GTK_WIDGET(progressbar));
 	} else if (total == 0) {
@@ -182,3 +177,6 @@ void statusbar_progress_all (gint done, gint total, gint step)
 		gtk_widget_hide(GTK_WIDGET(progressbar));
 	}
 }
+/*
+ * vim: noet ts=4 shiftwidth=4
+ */

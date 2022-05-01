@@ -8,8 +8,7 @@ struct td {
 	gchar *expected_output;
 };
 
-static void
-test_pgp_locate_armor_header_null()
+static void test_pgp_locate_armor_header_null()
 {
 	if (!g_test_undefined())
 		return;
@@ -25,8 +24,7 @@ test_pgp_locate_armor_header_null()
 	g_test_trap_assert_failed();
 }
 
-static void
-test_pgp_locate_armor_header(gconstpointer user_data)
+static void test_pgp_locate_armor_header(gconstpointer user_data)
 {
 	struct td *data = (struct td *)user_data;
 	gchar *out = pgp_locate_armor_header(data->input, HEADER);
@@ -68,13 +66,11 @@ struct td td_leadinglines = {
 	g_test_add_data_func("/plugins/pgpcore/pgp_locate_armor_header_"name, \
 			&data, \
 			test_pgp_locate_armor_header)
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
-	g_test_add_func("/plugins/pgpcore/pgp_locate_armor_header_null",
-			test_pgp_locate_armor_header_null);
+	g_test_add_func("/plugins/pgpcore/pgp_locate_armor_header_null", test_pgp_locate_armor_header_null);
 
 	TEST("justheader", td_justheader);
 	TEST("leading", td_leading);
@@ -85,3 +81,6 @@ main (int argc, char *argv[])
 
 	return g_test_run();
 }
+/*
+ * vim: noet ts=4 shiftwidth=4
+ */
