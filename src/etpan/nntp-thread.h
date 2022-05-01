@@ -29,24 +29,24 @@ void nntp_main_set_timeout(int sec);
 void nntp_main_init(gboolean skip_ssl_cert_check);
 void nntp_main_done(gboolean have_connectivity);
 
-void nntp_init(Folder * folder);
-void nntp_done(Folder * folder);
+void nntp_init(Folder *folder);
+void nntp_done(Folder *folder);
 
-int nntp_threaded_connect(Folder * folder, const char * server, int port, ProxyInfo *proxy_info);
-int nntp_threaded_connect_ssl(Folder * folder, const char * server, int port, ProxyInfo *proxy_info);
+int nntp_threaded_connect(Folder *folder, const char *server, int port, ProxyInfo *proxy_info);
+int nntp_threaded_connect_ssl(Folder *folder, const char *server, int port, ProxyInfo *proxy_info);
 
-void nntp_threaded_disconnect(Folder * folder);
+void nntp_threaded_disconnect(Folder *folder);
 
-void nntp_threaded_cancel(Folder * folder);
+void nntp_threaded_cancel(Folder *folder);
 
-int nntp_threaded_login(Folder * folder, const char * login, const char * password);
-int nntp_threaded_date(Folder * folder, struct tm *lt);
-int nntp_threaded_list(Folder * folder, clist **grouplist);
-int nntp_threaded_post(Folder * folder, char *contents, size_t len);
-int nntp_threaded_article(Folder * folder, guint32 num, char **contents, size_t *len);
-int nntp_threaded_group(Folder * folder, const char *group, struct newsnntp_group_info **info);
-int nntp_threaded_mode_reader(Folder * folder);
-int nntp_threaded_xover(Folder * folder, guint32 beg, guint32 end, struct newsnntp_xover_resp_item **single_result, clist **multiple_result);
-int nntp_threaded_xhdr(Folder * folder, const char *header, guint32 beg, guint32 end, clist **hdrlist);
+int nntp_threaded_login(Folder *folder, const char *login, const char *password);
+int nntp_threaded_date(Folder *folder, struct tm *lt);
+int nntp_threaded_list(Folder *folder, clist **grouplist);
+int nntp_threaded_post(Folder *folder, char *contents, size_t len);
+int nntp_threaded_article(Folder *folder, guint32 num, char **contents, size_t *len);
+int nntp_threaded_group(Folder *folder, const char *group, struct newsnntp_group_info **info);
+int nntp_threaded_mode_reader(Folder *folder);
+int nntp_threaded_xover(Folder *folder, guint32 beg, guint32 end, struct newsnntp_xover_resp_item **single_result, clist **multiple_result);
+int nntp_threaded_xhdr(Folder *folder, const char *header, guint32 beg, guint32 end, clist **hdrlist);
 
 #endif

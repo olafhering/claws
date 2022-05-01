@@ -37,17 +37,17 @@ struct _KeywordWarnerMention {
 
 typedef struct _KeywordWarnerMention KeywordWarnerMention;
 
-MatcherProp *			new_matcherprop (void);
-gboolean			matcherprop_string_match  (MatcherProp *mp, gchar *str);
-KeywordWarnerMention *	is_keyword_mentioned (Compose *compose);
+MatcherProp *new_matcherprop(void);
+gboolean matcherprop_string_match(MatcherProp *mp, gchar *str);
+KeywordWarnerMention *is_keyword_mentioned(Compose *compose);
 
-gint				plugin_init (gchar **error);
-gboolean			plugin_done (void);
-const gchar *			plugin_name (void);
-const gchar *			plugin_desc (void);
-const gchar *			plugin_type (void);
-const gchar *			plugin_licence (void);
-const gchar *			plugin_version (void);
-struct PluginFeature *	plugin_provides (void);
+gint plugin_init(gchar **error);
+gboolean plugin_done(void);
+const gchar *plugin_name(void);
+const gchar *plugin_desc(void);
+const gchar *plugin_type(void);
+const gchar *plugin_licence(void);
+const gchar *plugin_version(void);
+struct PluginFeature *plugin_provides(void);
 
 #endif

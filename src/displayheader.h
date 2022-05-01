@@ -24,14 +24,13 @@
 
 typedef struct _DisplayHeaderProp DisplayHeaderProp;
 
-struct _DisplayHeaderProp
-{
+struct _DisplayHeaderProp {
 	gchar *name;
 	gboolean hidden;
 };
 
-gchar *display_header_prop_get_str		(DisplayHeaderProp *dp);
-DisplayHeaderProp *display_header_prop_read_str	(gchar		   *buf);
-void display_header_prop_free			(DisplayHeaderProp *dp);
+gchar *display_header_prop_get_str(DisplayHeaderProp *dp);
+DisplayHeaderProp *display_header_prop_read_str(gchar *buf);
+void display_header_prop_free(DisplayHeaderProp *dp);
 
 #endif /* __DISPLAYHEADER_H__ */

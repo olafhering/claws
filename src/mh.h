@@ -25,15 +25,14 @@
 #include "folder.h"
 #include "localfolder.h"
 
-typedef struct _MHFolder	MHFolder;
+typedef struct _MHFolder MHFolder;
 
 #define MH_FOLDER(obj)		((MHFolder *)obj)
 
-struct _MHFolder
-{
+struct _MHFolder {
 	LocalFolder lfolder;
 };
 
-FolderClass *mh_get_class	(void);
+FolderClass *mh_get_class(void);
 
 #endif /* __MH_H__ */

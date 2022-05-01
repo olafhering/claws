@@ -24,6 +24,6 @@
 
 #include "summaryview.h"
 
-void summary_search	(SummaryView	*summaryview);
+void summary_search(SummaryView *summaryview);
 
 #endif /* __SUMMARY_SEARCH_H__ */

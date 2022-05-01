@@ -22,17 +22,15 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-GtkWidget *statusbar_create	(void);
-void statusbar_puts		(GtkStatusbar	*statusbar,
-				 const gchar	*str);
-void statusbar_puts_all		(const gchar	*str);
-void statusbar_print_all	(const gchar	*format, ...)
-				 G_GNUC_PRINTF(1, 2);
-void statusbar_pop_all		(void);
+GtkWidget *statusbar_create(void);
+void statusbar_puts(GtkStatusbar *statusbar, const gchar *str);
+void statusbar_puts_all(const gchar *str);
+void statusbar_print_all(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
+void statusbar_pop_all(void);
 
-void statusbar_verbosity_set	(gboolean	 verbose);
+void statusbar_verbosity_set(gboolean verbose);
 
-void statusbar_progress_all	(gint done, gint total, gint step);
+void statusbar_progress_all(gint done, gint total, gint step);
 #define STATUSBAR_PUSH(mainwin, str) \
 { \
 	if (mainwin->statusbar) \

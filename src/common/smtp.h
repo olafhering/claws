@@ -28,39 +28,35 @@
 
 #include "session.h"
 
-typedef struct _SMTPSession	SMTPSession;
+typedef struct _SMTPSession SMTPSession;
 
 #define SMTP_SESSION(obj)	((SMTPSession *)obj)
 
 #define MESSAGEBUFSIZE		8192
 
-typedef enum
-{
-	SM_OK			= 0,
-	SM_ERROR		= 128,
-	SM_UNRECOVERABLE	= 129,
-	SM_AUTHFAIL		= 130
+typedef enum {
+	SM_OK = 0,
+	SM_ERROR = 128,
+	SM_UNRECOVERABLE = 129,
+	SM_AUTHFAIL = 130
 } SMTPErrorValue;
 
-typedef enum
-{
-	ESMTP_8BITMIME	= 1 << 0,
-	ESMTP_SIZE	= 1 << 1,
-	ESMTP_ETRN	= 1 << 2
+typedef enum {
+	ESMTP_8BITMIME = 1 << 0,
+	ESMTP_SIZE = 1 << 1,
+	ESMTP_ETRN = 1 << 2
 } ESMTPFlag;
 
-typedef enum
-{
-	SMTPAUTH_LOGIN      = 1 << 0,
-	SMTPAUTH_CRAM_MD5   = 1 << 1,
+typedef enum {
+	SMTPAUTH_LOGIN = 1 << 0,
+	SMTPAUTH_CRAM_MD5 = 1 << 1,
 	SMTPAUTH_DIGEST_MD5 = 1 << 2,
 	SMTPAUTH_TLS_AVAILABLE = 1 << 3,
-	SMTPAUTH_PLAIN      = 1 << 4,
-	SMTPAUTH_OAUTH2     = 1 << 5
+	SMTPAUTH_PLAIN = 1 << 4,
+	SMTPAUTH_OAUTH2 = 1 << 5
 } SMTPAuthType;
 
-typedef enum
-{
+typedef enum {
 	SMTP_READY,
 	SMTP_HELO,
 	SMTP_EHLO,
@@ -85,8 +81,7 @@ typedef enum
 	N_SMTP_PHASE
 } SMTPState;
 
-struct _SMTPSession
-{
+struct _SMTPSession {
 	Session session;
 
 	SMTPState state;
@@ -113,7 +108,7 @@ struct _SMTPSession
 	gchar *error_msg;
 	gboolean is_esmtp;
 	ESMTPFlag esmtp_flags;
-	
+
 	void *dialog;
 
 #ifdef USE_GNUTLS
@@ -121,7 +116,7 @@ struct _SMTPSession
 #endif
 };
 
-Session *smtp_session_new	(void *prefs_account);
+Session *smtp_session_new(void *prefs_account);
 gint smtp_from(SMTPSession *session);
 gint smtp_quit(SMTPSession *session);
 

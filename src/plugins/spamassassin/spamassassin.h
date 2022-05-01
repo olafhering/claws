@@ -25,38 +25,37 @@
 
 typedef struct _SpamAssassinConfig SpamAssassinConfig;
 
-typedef void (*MessageCallback) (gchar *);
+typedef void (*MessageCallback)(gchar *);
 
 typedef enum {
-	SPAMASSASSIN_DISABLED            = 0, /* unused, just for compatibility */
+	SPAMASSASSIN_DISABLED = 0, /* unused, just for compatibility */
 	SPAMASSASSIN_TRANSPORT_LOCALHOST = 1,
-	SPAMASSASSIN_TRANSPORT_TCP       = 2,
-	SPAMASSASSIN_TRANSPORT_UNIX      = 3,
+	SPAMASSASSIN_TRANSPORT_TCP = 2,
+	SPAMASSASSIN_TRANSPORT_UNIX = 3,
 } SpamAssassinTransport;
 
-struct _SpamAssassinConfig
-{
-	gboolean		 enable;
-	SpamAssassinTransport	 transport;
-	gchar			*hostname;
-	guint 			 port;
-	gchar			*socket;
-	gboolean		 process_emails;
-	gboolean 		 receive_spam;
-	gchar 			*save_folder;
-	guint 			 max_size;
-	guint 			 timeout;
-	gchar			*username;
-	gboolean		 mark_as_read;
-	gboolean		 whitelist_ab;
-	gchar			*whitelist_ab_folder;
-	gboolean		 compress;
+struct _SpamAssassinConfig {
+	gboolean enable;
+	SpamAssassinTransport transport;
+	gchar *hostname;
+	guint port;
+	gchar *socket;
+	gboolean process_emails;
+	gboolean receive_spam;
+	gchar *save_folder;
+	guint max_size;
+	guint timeout;
+	gchar *username;
+	gboolean mark_as_read;
+	gboolean whitelist_ab;
+	gchar *whitelist_ab_folder;
+	gboolean compress;
 };
 
-SpamAssassinConfig *spamassassin_get_config	      (void);
-void		    spamassassin_save_config	      (void);
-gint			spamassassin_check_username	      (void);  
-void 	            spamassassin_set_message_callback (MessageCallback callback);
+SpamAssassinConfig *spamassassin_get_config(void);
+void spamassassin_save_config(void);
+gint spamassassin_check_username(void);
+void spamassassin_set_message_callback(MessageCallback callback);
 gint spamassassin_gtk_init(void);
 void spamassassin_gtk_done(void);
 int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam);

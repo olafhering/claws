@@ -24,21 +24,19 @@
 extern "C" {
 #endif
 
-typedef struct _LHPrefs LHPrefs;
+	typedef struct _LHPrefs LHPrefs;
 
-struct _LHPrefs
-{
-	gboolean enable_remote_content;
-	gint image_cache_size;
-	gchar *default_font;
-};
+	struct _LHPrefs {
+		gboolean enable_remote_content;
+		gint image_cache_size;
+		gchar *default_font;
+	};
 
-LHPrefs *lh_prefs_get(void);
-void lh_prefs_init(void);
-void lh_prefs_done(void);
+	LHPrefs *lh_prefs_get(void);
+	void lh_prefs_init(void);
+	void lh_prefs_done(void);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
 #endif /* LH_PREFS_H */

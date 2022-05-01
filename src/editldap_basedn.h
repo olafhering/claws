@@ -22,8 +22,7 @@
 
 #ifdef USE_LDAP
 
-gchar *edit_ldap_basedn_selection( const gchar *hostName, const gint port, gchar *baseDN, const gint tov,
-	       const gchar* bindDN, const gchar *bindPW, int ssl, int tls );
+gchar *edit_ldap_basedn_selection(const gchar *hostName, const gint port, gchar *baseDN, const gint tov, const gchar *bindDN, const gchar *bindPW, int ssl, int tls);
 
 #endif /* USE_LDAP */
 

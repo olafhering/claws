@@ -15,7 +15,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef CLAWSMAILMODULE_H
 #define CLAWSMAILMODULE_H
 
@@ -25,12 +24,12 @@
 #include "compose.h"
 
 #ifndef PyMODINIT_FUNC
-# define PyMODINIT_FUNC void
+#define PyMODINIT_FUNC void
 #endif
 
 PyMODINIT_FUNC initclawsmail(void);
 
-PyObject* get_gobj_from_address(gpointer addr);
+PyObject *get_gobj_from_address(gpointer addr);
 void put_composewindow_into_module(Compose *compose);
 
 #endif /* CLAWSMAILMODULE_H */

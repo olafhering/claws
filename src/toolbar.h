@@ -28,23 +28,21 @@ typedef struct _ToolbarItem ToolbarItem;
 typedef struct _ToolbarClawsActions ToolbarClawsActions;
 
 typedef enum {
-	TOOLBAR_MAIN = 0,	
+	TOOLBAR_MAIN = 0,
 	TOOLBAR_COMPOSE,
 	TOOLBAR_MSGVIEW
 } ToolbarType;
 
 #define NUM_TOOLBARS	3
 
-typedef enum 
-{
+typedef enum {
 	COMPOSEBUTTON_MAIL,
- 	COMPOSEBUTTON_NEWS
+	COMPOSEBUTTON_NEWS
 } ComposeButtonType;
 
-typedef enum 
-{
+typedef enum {
 	LEARN_SPAM,
- 	LEARN_HAM
+	LEARN_HAM
 } LearnButtonType;
 
 struct _Toolbar {
@@ -65,7 +63,7 @@ struct _Toolbar {
 	GtkWidget *replylist_btn;
 
 	GtkWidget *fwd_btn;
-	
+
 	GtkWidget *trash_btn;
 	GtkWidget *delete_btn;
 	GtkWidget *delete_dup_btn;
@@ -77,11 +75,11 @@ struct _Toolbar {
 	GtkWidget *learn_spam_btn;
 	GtkWidget *learn_spam_icon;
 	GtkWidget *learn_ham_icon;
-	
+
 	GtkWidget *cancel_inc_btn;
 	GtkWidget *cancel_send_btn;
 	GtkWidget *cancel_all_btn;
-	
+
 	ComposeButtonType compose_btn_type;
 	LearnButtonType learn_btn_type;
 
@@ -102,8 +100,8 @@ struct _Toolbar {
 
 	GtkWidget *preferences_btn;
 
-	GSList    *action_list;
-	GSList    *item_list;
+	GSList *action_list;
+	GSList *item_list;
 
 #ifdef USE_ENCHANT
 	GtkWidget *spellcheck_btn;
@@ -114,11 +112,11 @@ struct _Toolbar {
 };
 
 struct _ToolbarItem {
-	gint      	 index;
-	gchar    	*file;
-	gchar    	*text;
-	ToolbarType	 type;
-	gpointer	 parent;
+	gint index;
+	gchar *file;
+	gchar *text;
+	ToolbarType type;
+	gpointer parent;
 };
 
 #define TOOLBAR_DESTROY_ITEMS(item_list) \
@@ -145,9 +143,6 @@ struct _ToolbarItem {
 	} \
 	g_slist_free(action_list); \
 }
-
-
-
 
 /* enum holds available actions for both
    Compose Toolbar and Main Toolbar
@@ -223,66 +218,44 @@ enum {
 
 struct _ToolbarClawsActions {
 	GtkWidget *widget;
-	gchar     *name;
+	gchar *name;
 };
 
+GList *toolbar_get_action_items(ToolbarType source);
 
-GList	*toolbar_get_action_items	(ToolbarType	 source);
+void toolbar_save_config_file(ToolbarType source);
+void toolbar_read_config_file(ToolbarType source);
 
-void	toolbar_save_config_file	(ToolbarType	 source);
-void	toolbar_read_config_file	(ToolbarType	 source);
+void toolbar_set_default(ToolbarType source);
+void toolbar_clear_list(ToolbarType source);
 
-void	toolbar_set_default		(ToolbarType	 source);
-void	toolbar_clear_list		(ToolbarType	 source);
+GSList *toolbar_get_list(ToolbarType source);
+void toolbar_set_list_item(ToolbarItem *t_item, ToolbarType source);
 
-GSList	*toolbar_get_list		(ToolbarType	 source);
-void	toolbar_set_list_item		(ToolbarItem	*t_item, 
-					 ToolbarType	 source);
+gint toolbar_ret_val_from_descr(const gchar *descr);
+gchar *toolbar_ret_descr_from_val(gint val);
 
-gint	toolbar_ret_val_from_descr	(const gchar	*descr);
-gchar	*toolbar_ret_descr_from_val	(gint		 val);
-
-void	toolbar_main_set_sensitive	(gpointer	 data);
-void 	toolbar_comp_set_sensitive	(gpointer	 data, 
-					 gboolean	 sensitive);
+void toolbar_main_set_sensitive(gpointer data);
+void toolbar_comp_set_sensitive(gpointer data, gboolean sensitive);
 
 /* invoked by mainwindow entries and toolbar actions */
-void 	delete_msgview_cb		(gpointer	 data, 
-					 guint		 action, 
-					 GtkWidget 	*widget);
-void	inc_mail_cb			(gpointer	 data,
-					 guint		 action,
-					 GtkWidget	*widget);
-void 	inc_all_account_mail_cb		(gpointer	 data,
-					 guint		 action,
-					 GtkWidget	*widget);
-void 	send_queue_cb			(gpointer	 data,
-					 guint		 action,
-					 GtkWidget	*widget);
-void 	compose_mail_cb			(gpointer	data, 
-					 guint		 action,
-					 GtkWidget	*widget);
-void 	compose_news_cb			(gpointer	 data, 
-					 guint 		 action,
-					 GtkWidget      *widget);
+void delete_msgview_cb(gpointer data, guint action, GtkWidget *widget);
+void inc_mail_cb(gpointer data, guint action, GtkWidget *widget);
+void inc_all_account_mail_cb(gpointer data, guint action, GtkWidget *widget);
+void send_queue_cb(gpointer data, guint action, GtkWidget *widget);
+void compose_mail_cb(gpointer data, guint action, GtkWidget *widget);
+void compose_news_cb(gpointer data, guint action, GtkWidget *widget);
 /* END */
 
-void 	toolbar_toggle			(guint		 action,
-					 gpointer 	 data);
-void 	toolbar_update			(ToolbarType 	 type, 
-					gpointer 	 data);        
-Toolbar *toolbar_create			(ToolbarType	 type, 
-					 GtkWidget	*container,
-					 gpointer 	 data);
-void	toolbar_set_style		(GtkWidget	*toolbar_wid,
-					 GtkWidget	*handlebox_wid,
-					 guint		 action);
-void 	toolbar_destroy			(Toolbar	*toolbar);
-void 	toolbar_item_destroy		(ToolbarItem	*toolbar_item);
+void toolbar_toggle(guint action, gpointer data);
+void toolbar_update(ToolbarType type, gpointer data);
+Toolbar *toolbar_create(ToolbarType type, GtkWidget *container, gpointer data);
+void toolbar_set_style(GtkWidget *toolbar_wid, GtkWidget *handlebox_wid, guint action);
+void toolbar_destroy(Toolbar *toolbar);
+void toolbar_item_destroy(ToolbarItem *toolbar_item);
 
-void toolbar_set_learn_button		(Toolbar	*toolbar, 
-					 LearnButtonType  learn_btn_type);
-const gchar *toolbar_get_short_text	(int action);
-int	     toolbar_get_icon		(int action);
-gboolean toolbar_check_action_btns	(ToolbarType	type);
+void toolbar_set_learn_button(Toolbar *toolbar, LearnButtonType learn_btn_type);
+const gchar *toolbar_get_short_text(int action);
+int toolbar_get_icon(int action);
+gboolean toolbar_check_action_btns(ToolbarType type);
 #endif /* __CUSTOM_TOOLBAR_H__ */

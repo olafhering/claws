@@ -21,6 +21,6 @@
 
 #include <glib.h>
 
-gchar *federated_url_for_address	(const gchar *address);
+gchar *federated_url_for_address(const gchar *address);
 
 #endif

@@ -30,15 +30,10 @@
 #include "ldapserver.h"
 
 /* Function prototypes */
-gint ldaplocate_search_setup	( LdapServer *server,
-				  const gchar *searchTerm,
-				  void *callBackEntry,
-				  void *callBackEnd );
-gboolean ldaplocate_search_start( const gint queryID );
-void ldaplocate_search_stop	( const gint queryID );
+gint ldaplocate_search_setup(LdapServer *server, const gchar *searchTerm, void *callBackEntry, void *callBackEnd);
+gboolean ldaplocate_search_start(const gint queryID);
+void ldaplocate_search_stop(const gint queryID);
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __LDAPLOCATE_H__ */
-
-

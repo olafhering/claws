@@ -25,11 +25,10 @@
 #define __EXPORT_HTML_H__
 
 /* Function prototypes */
-void addressbook_exp_html( AddressCache *cache );
+void addressbook_exp_html(AddressCache *cache);
 
 #endif /* __EXPORT_HTML_H__ */
 
 /*
 * End of Source.
 */
-

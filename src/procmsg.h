@@ -38,7 +38,7 @@
 #define MSG_REPLIED		(1U << 4)
 #define MSG_FORWARDED		(1U << 5)
 
-#define MSG_CLABEL_SBIT	(6)		/* start bit of color label */
+#define MSG_CLABEL_SBIT	(6) /* start bit of color label */
 /* color labels use 4 bits: 6, 7, 8, 9; bit weight is 7<8<9<6,
   IOW the color label value itself must be computed from MsgPermFlags
   bits like this:
@@ -71,22 +71,22 @@
 #define MSG_CLABEL_15		MAKE_MSG_CLABEL(1U, 1U, 1U, 1U)
 #define MSG_CLABEL_FLAG_MASK	(MSG_CLABEL_15)
 
-#define MSG_IGNORE_THREAD	(1U << 10)   /* ignore threads */
-#define MSG_LOCKED		(1U << 11)   /* msg is locked  */
-#define MSG_RETRCPT_SENT	(1U << 12)   /* new one */ 
-#define MSG_SPAM		(1U << 13)   /* new one */ 
+#define MSG_IGNORE_THREAD	(1U << 10) /* ignore threads */
+#define MSG_LOCKED		(1U << 11) /* msg is locked  */
+#define MSG_RETRCPT_SENT	(1U << 12) /* new one */
+#define MSG_SPAM		(1U << 13) /* new one */
 #define MSG_POSTFILTERED	(1U << 14)
-#define MSG_WATCH_THREAD	(1U << 15)   /* watch threads */
-#define MSG_FULLY_CACHED	(1U << 16)   /* IMAP: fully cached */
-#define MSG_RETRCPT_GOT		(1U << 17)   /* got return receipt */
- 	
+#define MSG_WATCH_THREAD	(1U << 15) /* watch threads */
+#define MSG_FULLY_CACHED	(1U << 16) /* IMAP: fully cached */
+#define MSG_RETRCPT_GOT		(1U << 17) /* got return receipt */
+
 /* RESERVED */
-#define	MSG_RESERVED_CLAWS	(1U << 30)   /* for Claws Mail */
+#define	MSG_RESERVED_CLAWS	(1U << 30) /* for Claws Mail */
 #define	MSG_RESERVED		(1U << 31)
 
 #define MSG_MOVE		(1U << 0)
 #define MSG_COPY		(1U << 1)
-#define MSG_MOVE_DONE		(1U << 15)		
+#define MSG_MOVE_DONE		(1U << 15)
 #define MSG_QUEUED		(1U << 16)
 #define MSG_DRAFT		(1U << 17)
 #define MSG_ENCRYPTED		(1U << 18)
@@ -164,10 +164,9 @@ typedef enum {
 #include "prefs_filtering.h"
 #include "folder.h"
 
-struct _MsgFlags
-{
+struct _MsgFlags {
 	MsgPermFlags perm_flags;
-	MsgTmpFlags  tmp_flags;
+	MsgTmpFlags tmp_flags;
 };
 
 typedef enum {
@@ -184,12 +183,11 @@ typedef enum {
  * this would cause an overflow and metadata loss when writing *
  * the cache to disk.                                          *
  * *********************************************************** */
-struct _MsgInfo
-{
+struct _MsgInfo {
 	guint refcnt;
 
-	guint  msgnum;
-	goffset  size;
+	guint msgnum;
+	goffset size;
 	time_t mtime;
 	time_t date_t;
 	time_t thread_date;
@@ -211,7 +209,7 @@ struct _MsgInfo
 	FolderItem *folder;
 	FolderItem *to_folder;
 
-	FolderItem *to_filter_folder;	
+	FolderItem *to_filter_folder;
 	FiltOp filter_op;
 
 	GSList *references;
@@ -221,8 +219,8 @@ struct _MsgInfo
 
 	/* used only for encrypted messages */
 	gchar *plaintext_file;
-        
-        gint hidden;
+
+	gint hidden;
 
 	/* used only for partially received messages */
 	gint total_size;
@@ -234,8 +232,7 @@ struct _MsgInfo
 	MsgInfoExtraData *extradata;
 };
 
-struct _MsgInfoExtraData
-{
+struct _MsgInfoExtraData {
 	GSList *avatars;
 
 	gchar *dispositionnotificationto;
@@ -248,153 +245,106 @@ struct _MsgInfoExtraData
 	gchar *account_server;
 	gchar *account_login;
 
- 	/* Mailing list support */
- 	gchar *list_post;
- 	gchar *list_subscribe;
- 	gchar *list_unsubscribe;
- 	gchar *list_help;
- 	gchar *list_archive;
- 	gchar *list_owner;
+	/* Mailing list support */
+	gchar *list_post;
+	gchar *list_subscribe;
+	gchar *list_unsubscribe;
+	gchar *list_help;
+	gchar *list_archive;
+	gchar *list_owner;
 };
 
-struct _MsgInfoAvatar
-{
+struct _MsgInfoAvatar {
 	gint avatar_id;
 	gchar *avatar_src;
 };
 
-struct _MsgFileInfo
-{
+struct _MsgFileInfo {
 	MsgInfo *msginfo;
-        gchar *file;
-        MsgFlags *flags;
+	gchar *file;
+	MsgFlags *flags;
 };
 
 struct _MsgInfoUpdate {
-	MsgInfo	*msginfo;
+	MsgInfo *msginfo;
 	MsgInfoUpdateFlags flags;
 };
 
-struct _MailFilteringData
-{
-	MsgInfo	*msginfo;
-	GSList  *msglist;
-	GSList  *filtered;
-	GSList  *unfiltered;
+struct _MailFilteringData {
+	MsgInfo *msginfo;
+	GSList *msglist;
+	GSList *filtered;
+	GSList *unfiltered;
 	PrefsAccount *account;
 };
 
-struct	_AvatarCaptureData
-{
+struct _AvatarCaptureData {
 	MsgInfo *msginfo;
 	const gchar *header;
 	const gchar *content;
 };
 
-GSList *procmsg_read_cache		(FolderItem	*item,
-					 gboolean	 scan_file);
-void	procmsg_msg_list_free		(MsgInfoList	*mlist);
+GSList *procmsg_read_cache(FolderItem *item, gboolean scan_file);
+void procmsg_msg_list_free(MsgInfoList *mlist);
 MsgNumberList *procmsg_get_number_list_for_msgs(MsgInfoList *msglist);
-void	procmsg_get_mark_sum		(const gchar	*folder,
-					 gint		*new_msgs,
-					 gint		*unread_msgs,
-					 gint		*total_msgs,
-					 gint		*min,
-					 gint		*max,
-					 gint		 first);
+void procmsg_get_mark_sum(const gchar *folder, gint *new_msgs, gint *unread_msgs, gint *total_msgs, gint *min, gint *max, gint first);
 
-GNode  *procmsg_get_thread_tree		(GSList		*mlist);
+GNode *procmsg_get_thread_tree(GSList *mlist);
 
-gint	procmsg_move_messages		(GSList		*mlist);
-void	procmsg_copy_messages		(GSList		*mlist);
+gint procmsg_move_messages(GSList *mlist);
+void procmsg_copy_messages(GSList *mlist);
 
 /* return path is locale charset */
-gchar  *procmsg_get_message_file_path	(MsgInfo	*msginfo);
-gchar  *procmsg_get_message_file	(MsgInfo	*msginfo);
-gchar  *procmsg_get_message_file_full	(MsgInfo	*msginfo, 
-					 gboolean 	 get_headers,
-					 gboolean	 get_body);
-GSList *procmsg_get_message_file_list	(MsgInfoList	*mlist);
-void	procmsg_message_file_list_free	(MsgInfoList	*file_list);
-FILE   *procmsg_open_message		(MsgInfo	*msginfo,
-					 gboolean	skip_special_headers);
-gboolean procmsg_msg_exist		(MsgInfo	*msginfo);
+gchar *procmsg_get_message_file_path(MsgInfo *msginfo);
+gchar *procmsg_get_message_file(MsgInfo *msginfo);
+gchar *procmsg_get_message_file_full(MsgInfo *msginfo, gboolean get_headers, gboolean get_body);
+GSList *procmsg_get_message_file_list(MsgInfoList *mlist);
+void procmsg_message_file_list_free(MsgInfoList *file_list);
+FILE *procmsg_open_message(MsgInfo *msginfo, gboolean skip_special_headers);
+gboolean procmsg_msg_exist(MsgInfo *msginfo);
 
-void	procmsg_get_filter_keyword	(MsgInfo	  *msginfo,
-					 gchar	         **header,
-					 gchar	         **key,
-					 PrefsFilterType   type);
+void procmsg_get_filter_keyword(MsgInfo *msginfo, gchar **header, gchar **key, PrefsFilterType type);
 
-void	procmsg_empty_all_trash		(void);
+void procmsg_empty_all_trash(void);
 
-gint	procmsg_send_queue		(FolderItem	*queue,
-					 gboolean	 save_msgs,
-					 gchar		**errstr);
-gboolean procmsg_queue_lock		(gchar		**errstr);
-void     procmsg_queue_unlock		(void);
-gboolean procmsg_queue_is_empty	(FolderItem *queue);
+gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr);
+gboolean procmsg_queue_lock(gchar **errstr);
+void procmsg_queue_unlock(void);
+gboolean procmsg_queue_is_empty(FolderItem *queue);
 
-MsgInfo *procmsg_msginfo_new		();
-MsgInfo *procmsg_msginfo_new_ref	(MsgInfo 	*msginfo);
-MsgInfo *procmsg_msginfo_copy		(MsgInfo	*msginfo);
-MsgInfo *procmsg_msginfo_get_full_info	(MsgInfo	*msginfo);
-MsgInfo *procmsg_msginfo_get_full_info_from_file
-					(MsgInfo *msginfo, 
-					const gchar *file);
-void	 procmsg_msginfo_free		(MsgInfo	**msginfo);
-guint	 procmsg_msginfo_memusage	(MsgInfo	*msginfo);
+MsgInfo *procmsg_msginfo_new();
+MsgInfo *procmsg_msginfo_new_ref(MsgInfo *msginfo);
+MsgInfo *procmsg_msginfo_copy(MsgInfo *msginfo);
+MsgInfo *procmsg_msginfo_get_full_info(MsgInfo *msginfo);
+MsgInfo *procmsg_msginfo_get_full_info_from_file(MsgInfo *msginfo, const gchar *file);
+void procmsg_msginfo_free(MsgInfo **msginfo);
+guint procmsg_msginfo_memusage(MsgInfo *msginfo);
 
-gint procmsg_send_message_queue_with_lock(const gchar *file,
-					  gchar **errstr,
-					  FolderItem *queue,
-					  gint msgnum,
-					  gboolean *queued_removed);
+gint procmsg_send_message_queue_with_lock(const gchar *file, gchar **errstr, FolderItem *queue, gint msgnum, gboolean *queued_removed);
 
-gint procmsg_send_message_queue		(const gchar *file,
-					 gchar **errstr,
-					 FolderItem *queue, 
-					 gint msgnum,
-					 gboolean *queued_removed);
+gint procmsg_send_message_queue(const gchar *file, gchar **errstr, FolderItem *queue, gint msgnum, gboolean *queued_removed);
 
-void procmsg_msginfo_set_flags		(MsgInfo *msginfo,
-					 MsgPermFlags perm_flags,
-					 MsgTmpFlags tmp_flags);
-void procmsg_msginfo_unset_flags	(MsgInfo *msginfo,
-					 MsgPermFlags perm_flags,
-					 MsgTmpFlags tmp_flags);
-void procmsg_msginfo_change_flags	(MsgInfo *msginfo, 
-					 MsgPermFlags add_perm_flags, 
-					 MsgTmpFlags add_tmp_flags,
-					 MsgPermFlags rem_perm_flags, 
-					 MsgTmpFlags rem_tmp_flags);
-gint procmsg_remove_special_headers	(const gchar 	*in, 
-					 const gchar 	*out);
+void procmsg_msginfo_set_flags(MsgInfo *msginfo, MsgPermFlags perm_flags, MsgTmpFlags tmp_flags);
+void procmsg_msginfo_unset_flags(MsgInfo *msginfo, MsgPermFlags perm_flags, MsgTmpFlags tmp_flags);
+void procmsg_msginfo_change_flags(MsgInfo *msginfo, MsgPermFlags add_perm_flags, MsgTmpFlags add_tmp_flags, MsgPermFlags rem_perm_flags, MsgTmpFlags rem_tmp_flags);
+gint procmsg_remove_special_headers(const gchar *in, const gchar *out);
 
-gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file,
-			    gboolean is_queued);
-gboolean procmsg_msg_has_flagged_parent	(MsgInfo 	*info,
-					 MsgPermFlags    perm_flags);
-gboolean procmsg_msg_has_marked_parent	(MsgInfo	*info);
-void procmsg_msginfo_set_to_folder	(MsgInfo 	*msginfo,
-					 FolderItem 	*to_folder);
-void procmsg_msglist_filter		(GSList 	*list, 
-					 PrefsAccount 	*ac, 
-					 GSList 	**filtered,
-					 GSList 	**unfiltered,
-					 gboolean 	 do_filter);
+gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file, gboolean is_queued);
+gboolean procmsg_msg_has_flagged_parent(MsgInfo *info, MsgPermFlags perm_flags);
+gboolean procmsg_msg_has_marked_parent(MsgInfo *info);
+void procmsg_msginfo_set_to_folder(MsgInfo *msginfo, FolderItem *to_folder);
+void procmsg_msglist_filter(GSList *list, PrefsAccount *ac, GSList **filtered, GSList **unfiltered, gboolean do_filter);
 
-MsgInfo *procmsg_msginfo_new_from_mimeinfo
-					(MsgInfo 	*src_msginfo, 
-					 MimeInfo	*mimeinfo);
+MsgInfo *procmsg_msginfo_new_from_mimeinfo(MsgInfo *src_msginfo, MimeInfo *mimeinfo);
 
-void procmsg_register_spam_learner (int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam));
-void procmsg_unregister_spam_learner (int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam));
-gboolean procmsg_spam_can_learn		(void);
-void procmsg_spam_set_folder		(const char *item_identifier, FolderItem *(*spam_get_folder_func)(MsgInfo *info));
-FolderItem *procmsg_spam_get_folder	(MsgInfo *msginfo);
-int procmsg_spam_learner_learn 	(MsgInfo *msginfo, GSList *msglist, gboolean spam);
-gboolean procmsg_have_queued_mails_fast (void);
-gboolean procmsg_have_trashed_mails_fast (void);
+void procmsg_register_spam_learner(int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam));
+void procmsg_unregister_spam_learner(int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam));
+gboolean procmsg_spam_can_learn(void);
+void procmsg_spam_set_folder(const char *item_identifier, FolderItem *(*spam_get_folder_func)(MsgInfo *info));
+FolderItem *procmsg_spam_get_folder(MsgInfo *msginfo);
+int procmsg_spam_learner_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam);
+gboolean procmsg_have_queued_mails_fast(void);
+gboolean procmsg_have_trashed_mails_fast(void);
 gboolean procmsg_is_sending(void);
 gchar *procmsg_msginfo_get_tags_str(MsgInfo *msginfo);
 void procmsg_msginfo_update_tags(MsgInfo *msginfo, gboolean set, gint id);

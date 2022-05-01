@@ -28,7 +28,7 @@
 
 #include "addrindex.h"
 
-gboolean browseldap_entry( AddressDataSource *ds, const gchar *dn );
+gboolean browseldap_entry(AddressDataSource *ds, const gchar *dn);
 
 #endif /* USE_LDAP */
 

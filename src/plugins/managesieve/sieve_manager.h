@@ -25,21 +25,19 @@
 
 typedef struct SieveManagerPage SieveManagerPage;
 
-struct SieveManagerPage
-{
-	GtkWidget*	window;
-	GtkWidget*	accounts_menu;
-	GtkWidget*	status_text;
-	GtkWidget*	filters_list;
-	GtkWidget*	vbox_buttons;
-	SieveSession	*active_session;
-	gboolean	got_list;
+struct SieveManagerPage {
+	GtkWidget *window;
+	GtkWidget *accounts_menu;
+	GtkWidget *status_text;
+	GtkWidget *filters_list;
+	GtkWidget *vbox_buttons;
+	SieveSession *active_session;
+	gboolean got_list;
 };
 
 void sieve_managers_done(void);
 void sieve_manager_show(void);
 void sieve_manager_done(SieveManagerPage *page);
-void sieve_manager_script_created(SieveSession *session,
-		const gchar *filter_name);
+void sieve_manager_script_created(SieveSession *session, const gchar *filter_name);
 
 #endif /* SIEVE_MANAGER_H */

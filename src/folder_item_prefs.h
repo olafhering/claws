@@ -27,24 +27,24 @@ typedef struct _FolderItemPrefs FolderItemPrefs;
 
 #include "folder.h"
 typedef enum {
-	HTML_PROMOTE_DEFAULT=0,
+	HTML_PROMOTE_DEFAULT = 0,
 	HTML_PROMOTE_NEVER,
 	HTML_PROMOTE_ALWAYS
 } HTMLPromoteType;
 typedef enum {
-	SIGN_OR_ENCRYPT_DEFAULT=0,
+	SIGN_OR_ENCRYPT_DEFAULT = 0,
 	SIGN_OR_ENCRYPT_NEVER,
 	SIGN_OR_ENCRYPT_ALWAYS
 } SignOrEncryptType;
 
 struct _FolderItemPrefs {
-	gchar * directory;
+	gchar *directory;
 
 	gint config_version;
 
 	int enable_processing; /* at start-up */
 	int enable_processing_when_opening;
-	GSList * processing;
+	GSList *processing;
 
 	int newmailcheck;
 	int offlinesync;
@@ -96,12 +96,12 @@ struct _FolderItemPrefs {
 	gchar *forward_body_format;
 };
 
-void folder_item_prefs_read_config(FolderItem * item);
-void folder_item_prefs_save_config(FolderItem * item);
-void folder_item_prefs_save_config_recursive(FolderItem * item);
+void folder_item_prefs_read_config(FolderItem *item);
+void folder_item_prefs_save_config(FolderItem *item);
+void folder_item_prefs_save_config_recursive(FolderItem *item);
 void folder_prefs_save_config_recursive(Folder *folder);
 FolderItemPrefs *folder_item_prefs_new(void);
-void folder_item_prefs_free(FolderItemPrefs * prefs);
-void folder_item_prefs_copy_prefs(FolderItem * src, FolderItem * dest);
+void folder_item_prefs_free(FolderItemPrefs *prefs);
+void folder_item_prefs_copy_prefs(FolderItem *src, FolderItem *dest);
 
 #endif /* FOLDER_ITEM_PREFS_H */

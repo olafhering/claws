@@ -29,29 +29,25 @@
 #include "gtk-hotkey-info.h"
 
 G_BEGIN_DECLS
-
-
 #define GTK_HOTKEY_TYPE_X11_LISTENER (gtk_hotkey_x11_listener_get_type ())
 #define GTK_HOTKEY_X11_LISTENER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_HOTKEY_TYPE_X11_LISTENER, GtkHotkeyX11Listener))
 #define GTK_HOTKEY_X11_LISTENER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_HOTKEY_TYPE_X11_LISTENER, GtkHotkeyX11ListenerClass))
 #define GTK_HOTKEY_IS_X11_LISTENER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_HOTKEY_TYPE_X11_LISTENER))
 #define GTK_HOTKEY_IS_X11_LISTENER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_HOTKEY_TYPE_X11_LISTENER))
 #define GTK_HOTKEY_X11_LISTENER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_HOTKEY_TYPE_X11_LISTENER, GtkHotkeyX11ListenerClass))
-
-typedef struct _GtkHotkeyX11Listener GtkHotkeyX11Listener;
+    typedef struct _GtkHotkeyX11Listener GtkHotkeyX11Listener;
 typedef struct _GtkHotkeyX11ListenerClass GtkHotkeyX11ListenerClass;
 typedef struct _GtkHotkeyX11ListenerPrivate GtkHotkeyX11ListenerPrivate;
 
 struct _GtkHotkeyX11Listener {
 	GtkHotkeyListener parent;
-	GtkHotkeyX11ListenerPrivate * priv;
+	GtkHotkeyX11ListenerPrivate *priv;
 };
 struct _GtkHotkeyX11ListenerClass {
 	GtkHotkeyListenerClass parent;
 };
 
-GType gtk_hotkey_x11_listener_get_type (void);
+GType gtk_hotkey_x11_listener_get_type(void);
 
 G_END_DECLS
-
 #endif

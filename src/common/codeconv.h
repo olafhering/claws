@@ -27,10 +27,9 @@
 #include <glib.h>
 #include <iconv.h>
 
-typedef struct _CodeConverter	CodeConverter;
+typedef struct _CodeConverter CodeConverter;
 
-typedef enum
-{
+typedef enum {
 	C_UNINITIALIZED,
 	C_AUTO,
 	C_US_ASCII,
@@ -95,10 +94,9 @@ typedef enum
 	C_TCVN5712_1
 } CharSet;
 
-typedef gint (*CodeConvFunc) (gchar *outbuf, gint outlen, const gchar *inbuf);
+typedef gint (*CodeConvFunc)(gchar *outbuf, gint outlen, const gchar *inbuf);
 
-struct _CodeConverter
-{
+struct _CodeConverter {
 	CodeConvFunc code_conv_func;
 	gchar *charset_str;
 	CharSet charset;
@@ -178,48 +176,32 @@ struct _CodeConverter
 #define C_INTERNAL		C_UTF_8
 #define CS_INTERNAL		CS_UTF_8
 
-void conv_utf8todisp	(gchar *outbuf, gint outlen, const gchar *inbuf);
-void conv_localetodisp	(gchar *outbuf, gint outlen, const gchar *inbuf);
+void conv_utf8todisp(gchar *outbuf, gint outlen, const gchar *inbuf);
+void conv_localetodisp(gchar *outbuf, gint outlen, const gchar *inbuf);
 
-CodeConverter *conv_code_converter_new	(const gchar	*src_charset);
-void conv_code_converter_destroy	(CodeConverter	*conv);
-gint conv_convert			(CodeConverter	*conv,
-					 gchar		*outbuf,
-					 gint		 outlen,
-					 const gchar	*inbuf);
+CodeConverter *conv_code_converter_new(const gchar *src_charset);
+void conv_code_converter_destroy(CodeConverter *conv);
+gint conv_convert(CodeConverter *conv, gchar *outbuf, gint outlen, const gchar *inbuf);
 
-gchar *conv_codeset_strdup		(const gchar	*inbuf,
-					 const gchar	*src_code,
-					 const gchar	*dest_code);
+gchar *conv_codeset_strdup(const gchar *inbuf, const gchar *src_code, const gchar *dest_code);
 
-const gchar *conv_get_charset_str		(CharSet	 charset);
-CharSet conv_get_charset_from_str		(const gchar	*charset);
-const gchar *conv_get_locale_charset_str	(void);
+const gchar *conv_get_charset_str(CharSet charset);
+CharSet conv_get_charset_from_str(const gchar *charset);
+const gchar *conv_get_locale_charset_str(void);
 const gchar *conv_get_locale_charset_str_no_utf8(void);
-const gchar *conv_get_outgoing_charset_str	(void);
+const gchar *conv_get_outgoing_charset_str(void);
 
-const gchar *conv_get_current_locale		(void);
+const gchar *conv_get_current_locale(void);
 
-gchar *conv_unmime_header		(const gchar	*str,
-					  const gchar	*default_encoding,
-					  gboolean	 addr_field);
-void conv_encode_header			(gchar		*dest,
-					 gint		 len,
-					 const gchar	*src,
-					 gint		 header_len,
-					 gboolean	 addr_field);
-void conv_encode_header_full		(gchar		*dest,
-					 gint		 len,
-					 const gchar	*src,
-					 gint		 header_len,
-					 gboolean	 addr_field,
-					 const gchar	*out_encoding_);
+gchar *conv_unmime_header(const gchar *str, const gchar *default_encoding, gboolean addr_field);
+void conv_encode_header(gchar *dest, gint len, const gchar *src, gint header_len, gboolean addr_field);
+void conv_encode_header_full(gchar *dest, gint len, const gchar *src, gint header_len, gboolean addr_field, const gchar *out_encoding_);
 
-gchar *conv_filename_from_utf8		(const gchar	*utf8_file);
-gchar *conv_filename_to_utf8		(const gchar	*fs_file);
+gchar *conv_filename_from_utf8(const gchar *utf8_file);
+gchar *conv_filename_to_utf8(const gchar *fs_file);
 
-void codeconv_set_strict		(gboolean	 mode);
-void codeconv_set_allow_jisx0201_kana	(gboolean	 allow);
-void codeconv_set_broken_are_utf8	(gboolean	 are);
+void codeconv_set_strict(gboolean mode);
+void codeconv_set_allow_jisx0201_kana(gboolean allow);
+void codeconv_set_broken_are_utf8(gboolean are);
 
 #endif /* __CODECONV_H__ */

@@ -25,16 +25,14 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-typedef enum 
-{
+typedef enum {
 	UNDO_ACTION_INSERT,
 	UNDO_ACTION_DELETE,
 	UNDO_ACTION_REPLACE_INSERT,
 	UNDO_ACTION_REPLACE_DELETE
 } UndoAction;
 
-typedef enum 
-{
+typedef enum {
 	UNDO_STATE_TRUE,
 	UNDO_STATE_FALSE,
 	UNDO_STATE_UNCHANGED,
@@ -44,13 +42,9 @@ typedef enum
 typedef struct _UndoMain UndoMain;
 typedef struct _UndoWrap UndoWrap;
 
-typedef void (*UndoChangeStateFunc)	(UndoMain	*undostruct,
-					 gint		 undo_state,
-					 gint		 redo_state,
-					 gpointer	 data);
+typedef void (*UndoChangeStateFunc) (UndoMain *undostruct, gint undo_state, gint redo_state, gpointer data);
 
-struct _UndoMain 
-{
+struct _UndoMain {
 	GtkTextView *textview;
 
 	GList *undo;
@@ -59,27 +53,23 @@ struct _UndoMain
 	UndoChangeStateFunc change_state_func;
 	gpointer change_state_data;
 
-	gboolean undo_state : 1;
-	gboolean redo_state : 1;
+	gboolean undo_state:1;
+	gboolean redo_state:1;
 
 	gint paste;
 
 	UndoWrap *wrap_info;
 };
 
-UndoMain *undo_init		(GtkWidget		*text);
-void undo_destroy		(UndoMain		*undostruct);
+UndoMain *undo_init(GtkWidget *text);
+void undo_destroy(UndoMain *undostruct);
 
-void undo_set_change_state_func	(UndoMain		*undostruct,
-				 UndoChangeStateFunc	 func,
-				 gpointer		 data);
+void undo_set_change_state_func(UndoMain *undostruct, UndoChangeStateFunc func, gpointer data);
 
-void undo_undo			(UndoMain		*undostruct); 
-void undo_redo			(UndoMain		*undostruct); 
-void undo_block			(UndoMain 		*undostruct);
-void undo_unblock		(UndoMain 		*undostruct);
-void undo_wrapping		(UndoMain		*undostruct, 
-				 gboolean 		 wrap);
-void undo_paste_clipboard	(GtkTextView 		*textview, 
-				 UndoMain 		*undostruct);
+void undo_undo(UndoMain *undostruct);
+void undo_redo(UndoMain *undostruct);
+void undo_block(UndoMain *undostruct);
+void undo_unblock(UndoMain *undostruct);
+void undo_wrapping(UndoMain *undostruct, gboolean wrap);
+void undo_paste_clipboard(GtkTextView *textview, UndoMain *undostruct);
 #endif /* __UNDO_H__ */

@@ -29,29 +29,28 @@
  * address_entry - structure which refers to the original address entry in the
  * address book .
  */
-typedef struct
-{
-    gchar *name;
-    gchar *address;
-    GList *grp_emails;
+typedef struct {
+	gchar *name;
+	gchar *address;
+	GList *grp_emails;
 } address_entry;
 
-guint start_address_completion		(gchar *folderpath);
-guint complete_address			(const gchar *str);
-guint complete_matches_found				(const gchar *str);
-gchar *get_complete_address		(gint index);
-gint invalidate_address_completion	(void);
-gint end_address_completion		(void);
+guint start_address_completion(gchar *folderpath);
+guint complete_address(const gchar *str);
+guint complete_matches_found(const gchar *str);
+gchar *get_complete_address(gint index);
+gint invalidate_address_completion(void);
+gint end_address_completion(void);
 gboolean found_in_addressbook(const gchar *address);
 
 /* ui functions */
-void address_completion_start		(GtkWidget *mainwindow);
-void address_completion_register_entry	(GtkEntry  *entry, gboolean allow_commas);
-void address_completion_unregister_entry(GtkEntry  *entry);
-void address_completion_end		(GtkWidget *mainwindow);
+void address_completion_start(GtkWidget *mainwindow);
+void address_completion_register_entry(GtkEntry *entry, gboolean allow_commas);
+void address_completion_unregister_entry(GtkEntry *entry);
+void address_completion_end(GtkWidget *mainwindow);
 
-void addrcompl_initialize	( void );
-void addrcompl_teardown		( void );
+void addrcompl_initialize(void);
+void addrcompl_teardown(void);
 
 void addr_compl_add_address1(const char *str, address_entry *ae);
 

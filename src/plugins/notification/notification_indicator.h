@@ -19,7 +19,7 @@
 #define NOTIFICATION_INDICATOR_H NOTIFICATION_INDICATOR_H
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_INDICATOR

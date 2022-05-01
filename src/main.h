@@ -29,8 +29,7 @@ extern gboolean debug_mode;
 
 typedef struct _SessionStats SessionStats;
 
-struct _SessionStats
-{
+struct _SessionStats {
 	gint received;
 	gint spam;
 	gint sent;
@@ -39,8 +38,8 @@ struct _SessionStats
 	time_t time_started;
 };
 
-void app_will_exit	(GtkWidget *widget, gpointer data);
-gboolean clean_quit	(gpointer data);
+void app_will_exit(GtkWidget *widget, gpointer data);
+gboolean clean_quit(gpointer data);
 gboolean claws_is_exiting(void);
 gboolean claws_is_starting(void);
 gchar *claws_get_socket_name(void);

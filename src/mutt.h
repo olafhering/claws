@@ -51,19 +51,18 @@
 /* MUTT file object */
 typedef struct _MuttFile MuttFile;
 struct _MuttFile {
-	FILE  *file;
+	FILE *file;
 	gchar *path;
-	gint  retVal;
+	gint retVal;
 	GHashTable *uniqTable;
-	void  (*cbProgress)( void *, void *, void * );
+	void (*cbProgress)(void *, void *, void *);
 };
 
 /* Function prototypes */
-MuttFile *mutt_create	( void );
-void mutt_set_file	( MuttFile* muttFile, const gchar *value );
-void mutt_free		( MuttFile *muttFile );
-gint mutt_import_data	( MuttFile *muttFile, AddressCache *cache );
-gchar *mutt_find_file	( void );
+MuttFile *mutt_create(void);
+void mutt_set_file(MuttFile *muttFile, const gchar *value);
+void mutt_free(MuttFile *muttFile);
+gint mutt_import_data(MuttFile *muttFile, AddressCache *cache);
+gchar *mutt_find_file(void);
 
 #endif /* __MUTT_H__ */
-

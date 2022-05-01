@@ -26,26 +26,23 @@
 #include "addrselect.h"
 
 struct AddrMergePage {
-   GtkCMCTree*     clist;
-   AddressObject*	   pobj;
-   AddressBookFile*    abf;
-   AddressDataSource*  ds;
-   AddrSelectList*     addressSelect;
-   ItemPerson*     target;
-   ItemPerson*     nameTarget;
-   gchar*		   picture;
-   GList*		   emails;
-   GList*		   persons;
-   gboolean 	   pickPicture;
-   gboolean 	   pickName;
-   GtkWidget*	   dialog;
-   GtkWidget*	   iconView;
-   GtkWidget*	   namesList;
+	GtkCMCTree *clist;
+	AddressObject *pobj;
+	AddressBookFile *abf;
+	AddressDataSource *ds;
+	AddrSelectList *addressSelect;
+	ItemPerson *target;
+	ItemPerson *nameTarget;
+	gchar *picture;
+	GList *emails;
+	GList *persons;
+	gboolean pickPicture;
+	gboolean pickName;
+	GtkWidget *dialog;
+	GtkWidget *iconView;
+	GtkWidget *namesList;
 };
 
-void addrmerge_merge   ( GtkCMCTree *clist,
-			 AddressObject *pobj,
-			 AddressDataSource *ds,
-			 AddrSelectList *list );
+void addrmerge_merge(GtkCMCTree *clist, AddressObject *pobj, AddressDataSource *ds, AddrSelectList *list);
 
 #endif /*__ADDRMERGE_H__*/

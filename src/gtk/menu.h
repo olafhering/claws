@@ -80,13 +80,10 @@
 #define menu_set_insensitive_all(menu_shell) \
 	menu_set_sensitive_all(menu_shell, FALSE);
 
-gchar *menu_translate		(const gchar *path, gpointer data);
+gchar *menu_translate(const gchar *path, gpointer data);
 
-GtkActionGroup *cm_menu_create_action_group(const gchar *name, GtkActionEntry *entries,
-					    gint num_entries, gpointer data);
-GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *ui_manager,
-					    const gchar *name, GtkActionEntry *entries,
-					    gint num_entries, gpointer data);
+GtkActionGroup *cm_menu_create_action_group(const gchar *name, GtkActionEntry *entries, gint num_entries, gpointer data);
+GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *ui_manager, const gchar *name, GtkActionEntry *entries, gint num_entries, gpointer data);
 void cm_menu_set_sensitive(gchar *menu, gboolean sensitive);
 void cm_toggle_menu_set_active(gchar *menu, gboolean active);
 void cm_menu_set_sensitive_full(GtkUIManager *gui_manager, const gchar *menu, gboolean sensitive);
@@ -94,14 +91,9 @@ void cm_toggle_menu_set_active_full(GtkUIManager *gui_manager, gchar *menu, gboo
 gchar *cm_menu_item_get_shortcut(GtkUIManager *gui_manager, gchar *menu);
 GtkWidget *cm_menu_item_new_label_from_url(gchar *label);
 
-gint menu_find_option_menu_index(GtkCMOptionMenu *optmenu, gpointer data,
-				 GCompareFunc func);
+gint menu_find_option_menu_index(GtkCMOptionMenu * optmenu, gpointer data, GCompareFunc func);
 
-void menu_button_position	(GtkMenu		*menu,
-				 gint			*x,
-				 gint			*y,
-				 gboolean		*push_in,
-				 gpointer		 user_data);
+void menu_button_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
 
 void menu_set_sensitive_all(GtkMenuShell *menu_shell, gboolean sensitive);
 

@@ -22,7 +22,7 @@
 
 #ifdef USE_LDAP
 
-AdapterDSource *addressbook_edit_ldap( AddressIndex *addrIndex, AdapterDSource *ads );
+AdapterDSource *addressbook_edit_ldap(AddressIndex *addrIndex, AdapterDSource *ads);
 
 #endif /* USE_LDAP */
 

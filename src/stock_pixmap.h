@@ -22,17 +22,15 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-typedef enum
-{
+typedef enum {
 	PRIV_PIXMAP_CLAWS_MAIL_ICON,
 	PRIV_PIXMAP_CLAWS_MAIL_ICON_64,
 	PRIV_PIXMAP_CLAWS_MAIL_LOGO,
-	PRIV_PIXMAP_EMPTY,              /* last entry */
+	PRIV_PIXMAP_EMPTY, /* last entry */
 	N_PRIV_PIXMAPS
 } PrivPixmap;
 
-typedef enum
-{
+typedef enum {
 	STOCK_PIXMAP_ADDR_ONE,
 	STOCK_PIXMAP_ADDR_TWO,
 	STOCK_PIXMAP_ADDRESS,
@@ -136,10 +134,10 @@ typedef enum
 	STOCK_PIXMAP_VCARD,
 	STOCK_PIXMAP_ONLINE,
 	STOCK_PIXMAP_OFFLINE,
-	STOCK_PIXMAP_NOTICE_WARN,		/* small warning */
-	STOCK_PIXMAP_NOTICE_ERROR,		/* small error   */
-	STOCK_PIXMAP_NOTICE_NOTE,		/* small message */
-	STOCK_PIXMAP_QUICKSEARCH,		/* quicksearch pixmap */
+	STOCK_PIXMAP_NOTICE_WARN, /* small warning */
+	STOCK_PIXMAP_NOTICE_ERROR, /* small error   */
+	STOCK_PIXMAP_NOTICE_NOTE, /* small message */
+	STOCK_PIXMAP_QUICKSEARCH, /* quicksearch pixmap */
 	STOCK_PIXMAP_GPG_SIGNED,
 	STOCK_PIXMAP_GO_FOLDERS,
 	STOCK_PIXMAP_DRAFTS_CLOSE,
@@ -178,12 +176,12 @@ typedef enum
 	STOCK_PIXMAP_CANCEL,
 	STOCK_PIXMAP_TRASH,
 	STOCK_PIXMAP_MAIL_COMPOSE_LOGO,
-	STOCK_PIXMAP_DIR_NOSELECT_CLOSE, 
-	STOCK_PIXMAP_DIR_NOSELECT_CLOSE_MARK, 
-	STOCK_PIXMAP_DIR_NOSELECT_OPEN, 
-	STOCK_PIXMAP_DIR_SUBS_CLOSE_MARK, 
-	STOCK_PIXMAP_DIR_SUBS_CLOSE, 
-	STOCK_PIXMAP_DIR_SUBS_OPEN, 
+	STOCK_PIXMAP_DIR_NOSELECT_CLOSE,
+	STOCK_PIXMAP_DIR_NOSELECT_CLOSE_MARK,
+	STOCK_PIXMAP_DIR_NOSELECT_OPEN,
+	STOCK_PIXMAP_DIR_SUBS_CLOSE_MARK,
+	STOCK_PIXMAP_DIR_SUBS_CLOSE,
+	STOCK_PIXMAP_DIR_SUBS_OPEN,
 	STOCK_PIXMAP_SPAM,
 	STOCK_PIXMAP_SPAM_BTN,
 	STOCK_PIXMAP_HAM_BTN,
@@ -224,7 +222,7 @@ typedef enum
 	STOCK_PIXMAP_MARK_ALLUNREAD,
 	STOCK_PIXMAP_MARK_READ,
 	STOCK_PIXMAP_MARK_UNREAD,
-	STOCK_PIXMAP_EMPTY,              /* last entry */
+	STOCK_PIXMAP_EMPTY, /* last entry */
 	N_STOCK_PIXMAPS
 } StockPixmap;
 
@@ -241,22 +239,18 @@ typedef enum {
 	OVERLAY_BOTTOM_RIGHT
 } OverlayPosition;
 
-GtkWidget *priv_pixmap_widget	(PrivPixmap	  icon);
-PrivPixmap priv_pixmap_get_icon    (gchar *file);
-gint priv_pixbuf_gdk		(PrivPixmap icon, GdkPixbuf **pixbuf);
+GtkWidget *priv_pixmap_widget(PrivPixmap icon);
+PrivPixmap priv_pixmap_get_icon(gchar *file);
+gint priv_pixbuf_gdk(PrivPixmap icon, GdkPixbuf **pixbuf);
 
-GtkWidget *stock_pixmap_widget	(StockPixmap	  icon);
-gint stock_pixbuf_gdk		(StockPixmap icon, GdkPixbuf **pixbuf);
+GtkWidget *stock_pixmap_widget(StockPixmap icon);
+gint stock_pixbuf_gdk(StockPixmap icon, GdkPixbuf **pixbuf);
 
-GList *stock_pixmap_themes_list_new	(void);
-void stock_pixmap_themes_list_free	(GList *list);
-gchar *stock_pixmap_get_name         (StockPixmap icon);
-StockPixmap stock_pixmap_get_icon    (gchar *file);
-GtkWidget *stock_pixmap_widget_with_overlay (StockPixmap	 icon,
-					     StockPixmap	 overlay,
-					     OverlayPosition	 pos,
-					     gint		 border_x,
-					     gint		 border_y);
+GList *stock_pixmap_themes_list_new(void);
+void stock_pixmap_themes_list_free(GList *list);
+gchar *stock_pixmap_get_name(StockPixmap icon);
+StockPixmap stock_pixmap_get_icon(gchar *file);
+GtkWidget *stock_pixmap_widget_with_overlay(StockPixmap icon, StockPixmap overlay, OverlayPosition pos, gint border_x, gint border_y);
 gchar *stock_pixmap_get_system_theme_dir_for_theme(const gchar *theme);
 const char **stock_pixmap_theme_extensions(void);
 

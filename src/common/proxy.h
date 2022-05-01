@@ -30,8 +30,7 @@ typedef enum {
 	PROXY_SOCKS5
 } ProxyType;
 
-struct _ProxyInfo
-{
+struct _ProxyInfo {
 	ProxyType proxy_type;
 	gchar *proxy_host;
 	gushort proxy_port;
@@ -44,7 +43,6 @@ struct _ProxyInfo
 /* As a side effect, this function will zero out and free
  * string pointed to by proxy_info->proxy_pass after the password
  * is no longer needed. */
-gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port,
-		   ProxyInfo *proxy_info);
+gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port, ProxyInfo *proxy_info);
 
 #endif /* __PROXY_H__ */

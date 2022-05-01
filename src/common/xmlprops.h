@@ -31,28 +31,24 @@
 typedef struct _XmlProperty XmlProperty;
 
 struct _XmlProperty {
-	gchar      *path;
-	gchar      *encoding;
+	gchar *path;
+	gchar *encoding;
 	GHashTable *propertyTable;
-	gint       retVal;
+	gint retVal;
 };
 
 /* Function prototypes */
 
-XmlProperty *xmlprops_create	( void );
-void xmlprops_free		( XmlProperty *props );
-void xmlprops_set_path		( XmlProperty *props, const gchar *value );
-gint xmlprops_load_file		( XmlProperty *props );
-gint xmlprops_save_file		( XmlProperty *props );
-void xmlprops_set_property	( XmlProperty *props, const gchar *name,
-				  const gchar *value );
-void xmlprops_set_property_i	( XmlProperty *props, const gchar *name,
-				  const gint value );
-void xmlprops_set_property_b	( XmlProperty *props, const gchar *name,
-				  const gboolean value );
-void xmlprops_get_property_s	( XmlProperty *props, const gchar *name,
-				  gchar *buffer );
-gint xmlprops_get_property_i	( XmlProperty *props, const gchar *name );
-gboolean xmlprops_get_property_b( XmlProperty *props, const gchar *name );
+XmlProperty *xmlprops_create(void);
+void xmlprops_free(XmlProperty *props);
+void xmlprops_set_path(XmlProperty *props, const gchar *value);
+gint xmlprops_load_file(XmlProperty *props);
+gint xmlprops_save_file(XmlProperty *props);
+void xmlprops_set_property(XmlProperty *props, const gchar *name, const gchar *value);
+void xmlprops_set_property_i(XmlProperty *props, const gchar *name, const gint value);
+void xmlprops_set_property_b(XmlProperty *props, const gchar *name, const gboolean value);
+void xmlprops_get_property_s(XmlProperty *props, const gchar *name, gchar *buffer);
+gint xmlprops_get_property_i(XmlProperty *props, const gchar *name);
+gboolean xmlprops_get_property_b(XmlProperty *props, const gchar *name);
 
 #endif /* __XMLSAVER_H__ */

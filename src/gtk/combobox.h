@@ -29,7 +29,6 @@ enum {
 	COMBOBOX_SENS
 };
 
-
 #define COMBOBOX_ADD(menu, label, data) 		 \
 { 								 \
 	gtk_list_store_append(menu, &iter); \
@@ -54,22 +53,16 @@ enum {
 
 GtkWidget *combobox_text_new(const gboolean with_entry, const gchar *text, ...);
 
-void combobox_select_by_data	(GtkComboBox 		*combobox,
-				 gint			 data);
-void combobox_select_by_text	(GtkComboBox 		*combobox,
-				 const gchar		*data);
+void combobox_select_by_data(GtkComboBox *combobox, gint data);
+void combobox_select_by_text(GtkComboBox *combobox, const gchar *data);
 
-gint combobox_get_active_data	(GtkComboBox 		*combobox);
+gint combobox_get_active_data(GtkComboBox *combobox);
 
 /* these two functions require a GtkComboBoxText, so let the compiler warn */
-void combobox_unset_popdown_strings(GtkComboBoxText	*combobox);
-void combobox_set_popdown_strings(GtkComboBoxText	*combobox,
-				 GList       *list);
+void combobox_unset_popdown_strings(GtkComboBoxText *combobox);
+void combobox_set_popdown_strings(GtkComboBoxText *combobox, GList *list);
 
-gboolean combobox_set_value_from_arrow_key(GtkComboBox *combobox,
-				 guint keyval);
-void combobox_set_sensitive	(GtkComboBox *combobox,
-				 const guint index,
-				 const gboolean sensitive);
+gboolean combobox_set_value_from_arrow_key(GtkComboBox *combobox, guint keyval);
+void combobox_set_sensitive(GtkComboBox *combobox, const guint index, const gboolean sensitive);
 
 #endif /* __COMBOBOX_H__ */

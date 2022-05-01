@@ -20,8 +20,8 @@
 #ifndef MIMEVIEW_H
 #define MIMEVIEW_H
 
-typedef struct _MimeViewerFactory 	MimeViewerFactory;
-typedef struct _MimeViewer 		MimeViewer;
+typedef struct _MimeViewerFactory MimeViewerFactory;
+typedef struct _MimeViewer MimeViewer;
 
 #include <glib.h>
 #include <gdk/gdk.h>
@@ -32,14 +32,12 @@ typedef struct _MimeViewer 		MimeViewer;
 #include "procmime.h"
 #include "noticeview.h"
 
-typedef enum
-{
+typedef enum {
 	MIMEVIEW_TEXT,
 	MIMEVIEW_VIEWER
 } MimeViewType;
 
-struct _MimeView
-{
+struct _MimeView {
 	GtkWidget *hbox;
 	GtkWidget *paned;
 	GtkWidget *scrolledwin;
@@ -85,92 +83,70 @@ struct _MimeView
 	guint sig_check_timeout_tag;
 };
 
-struct _MimeViewerFactory
-{
+struct _MimeViewerFactory {
 	/**
          * Array of supported content types.
 	 * Must be NULL terminated and lower case
 	 */
 	gchar **content_types;
 	gint priority;
-	
-	MimeViewer *(*create_viewer) (void);
+
+	MimeViewer *(*create_viewer)(void);
 };
 
-struct _MimeViewer
-{
+struct _MimeViewer {
 	MimeViewerFactory *factory;
-	
-	GtkWidget 	*(*get_widget)		(MimeViewer *);
-	void 	 	(*show_mimepart)	(MimeViewer *, const gchar *infile, MimeInfo *);
-	void		(*clear_viewer)		(MimeViewer *);
-	void		(*destroy_viewer)	(MimeViewer *);
-	gchar 		*(*get_selection)	(MimeViewer *);
-	gboolean	(*scroll_page)		(MimeViewer *, gboolean up);
-	void		(*scroll_one_line)	(MimeViewer *, gboolean up);
-	gboolean	(*text_search)		(MimeViewer *, gboolean backward,
-						 const gchar *str, 
-						 gboolean case_sensitive);
-	void		(*print)		(MimeViewer *);
-	MimeView	*mimeview;
+
+	GtkWidget *(*get_widget) (MimeViewer *);
+	void (*show_mimepart) (MimeViewer *, const gchar *infile, MimeInfo *);
+	void (*clear_viewer) (MimeViewer *);
+	void (*destroy_viewer) (MimeViewer *);
+	gchar *(*get_selection) (MimeViewer *);
+	gboolean (*scroll_page) (MimeViewer *, gboolean up);
+	void (*scroll_one_line) (MimeViewer *, gboolean up);
+	gboolean (*text_search) (MimeViewer *, gboolean backward, const gchar *str, gboolean case_sensitive);
+	void (*print) (MimeViewer *);
+	MimeView *mimeview;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
+	MimeView *mimeview_create(MainWindow *mainwin);
+	void mimeview_init(MimeView *mimeview);
+	void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, const gchar *file);
+	gboolean mimeview_show_part(MimeView *mimeview, MimeInfo *partinfo);
+	void mimeview_show_part_as_text(MimeView *mimeview, MimeInfo *partinfo);
+	void mimeview_destroy(MimeView *mimeview);
+	void mimeview_update(MimeView *mimeview);
+	void mimeview_clear(MimeView *mimeview);
 
-MimeView *mimeview_create	(MainWindow	*mainwin);
-void mimeview_init		(MimeView	*mimeview);
-void mimeview_show_message	(MimeView	*mimeview,
-				 MimeInfo	*mimeinfo,
-				 const gchar	*file);
-gboolean mimeview_show_part	(MimeView 	*mimeview, 
-				 MimeInfo 	*partinfo);
-void mimeview_show_part_as_text (MimeView *mimeview,
-				 MimeInfo *partinfo);
-void mimeview_destroy		(MimeView	*mimeview);
-void mimeview_update		(MimeView 	*mimeview);
-void mimeview_clear		(MimeView	*mimeview);
+	MimeInfo *mimeview_get_selected_part(MimeView *mimeview);
 
-MimeInfo *mimeview_get_selected_part	(MimeView	*mimeview);
+	gboolean mimeview_pass_key_press_event(MimeView *mimeview, GdkEventKey *event);
 
-gboolean mimeview_pass_key_press_event	(MimeView	*mimeview,
-					 GdkEventKey	*event);
-
-void mimeview_register_viewer_factory	(MimeViewerFactory *factory);
-void mimeview_unregister_viewer_factory	(MimeViewerFactory *factory);
-void mimeview_handle_cmd		(MimeView 	*mimeview, 
-					 const gchar 	*cmd,
-					 GdkEventButton *event,
-					 gpointer	 data);
-void mimeview_select_mimepart_icon	(MimeView 	*mimeview, 
-					 MimeInfo 	*partinfo);
-gboolean mimeview_scroll_page		(MimeView 	*mimeview, 
-					 gboolean 	 up);
-void mimeview_scroll_one_line		(MimeView 	*mimeview, 
-					 gboolean 	 up);
-gint mimeview_get_selected_part_num	(MimeView 	*mimeview);
-void mimeview_select_part_num		(MimeView 	*mimeview, 
-					 gint 		 i);
-gboolean mimeview_has_viewer_for_content_type
-					(MimeView	*mimeview,
-					 const gchar	*content_type);
-gboolean mimeview_tree_is_empty		(MimeView 	*mimeview);
-void mimeview_save_as		(MimeView	*mimeview);
-void mimeview_display_as_text	(MimeView	*mimeview);
-void mimeview_launch		(MimeView	*mimeview,
-				 MimeInfo	*partinfo);
+	void mimeview_register_viewer_factory(MimeViewerFactory *factory);
+	void mimeview_unregister_viewer_factory(MimeViewerFactory *factory);
+	void mimeview_handle_cmd(MimeView *mimeview, const gchar *cmd, GdkEventButton *event, gpointer data);
+	void mimeview_select_mimepart_icon(MimeView *mimeview, MimeInfo *partinfo);
+	gboolean mimeview_scroll_page(MimeView *mimeview, gboolean up);
+	void mimeview_scroll_one_line(MimeView *mimeview, gboolean up);
+	gint mimeview_get_selected_part_num(MimeView *mimeview);
+	void mimeview_select_part_num(MimeView *mimeview, gint i);
+	gboolean mimeview_has_viewer_for_content_type(MimeView *mimeview, const gchar *content_type);
+	gboolean mimeview_tree_is_empty(MimeView *mimeview);
+	void mimeview_save_as(MimeView *mimeview);
+	void mimeview_display_as_text(MimeView *mimeview);
+	void mimeview_launch(MimeView *mimeview, MimeInfo *partinfo);
 #ifndef G_OS_WIN32
-void mimeview_open_with		(MimeView	*mimeview);
+	void mimeview_open_with(MimeView *mimeview);
 #endif
-void mimeview_check_signature(MimeView *mimeview);
-void mimeview_select_next_part(MimeView *mimeview);
-void mimeview_select_prev_part(MimeView *mimeview);
-
+	void mimeview_check_signature(MimeView *mimeview);
+	void mimeview_select_next_part(MimeView *mimeview);
+	void mimeview_select_prev_part(MimeView *mimeview);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __MIMEVIEW_H__ */

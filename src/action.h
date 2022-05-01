@@ -27,39 +27,29 @@
 #include "messageview.h"
 #include "compose.h"
 
-typedef enum
-{
-	ACTION_NONE		= 1 << 0,
-	ACTION_PIPE_IN		= 1 << 1,
-	ACTION_PIPE_OUT		= 1 << 2,
-	ACTION_SINGLE		= 1 << 3,
-	ACTION_MULTIPLE		= 1 << 4,
-	ACTION_ASYNC		= 1 << 5,
-	ACTION_USER_IN		= 1 << 6,
-	ACTION_USER_HIDDEN_IN	= 1 << 7,
-	ACTION_INSERT		= 1 << 8,
-	ACTION_USER_STR		= 1 << 9,
-	ACTION_USER_HIDDEN_STR	= 1 << 10,
-	ACTION_SELECTION_STR	= 1 << 11,
+typedef enum {
+	ACTION_NONE = 1 << 0,
+	ACTION_PIPE_IN = 1 << 1,
+	ACTION_PIPE_OUT = 1 << 2,
+	ACTION_SINGLE = 1 << 3,
+	ACTION_MULTIPLE = 1 << 4,
+	ACTION_ASYNC = 1 << 5,
+	ACTION_USER_IN = 1 << 6,
+	ACTION_USER_HIDDEN_IN = 1 << 7,
+	ACTION_INSERT = 1 << 8,
+	ACTION_USER_STR = 1 << 9,
+	ACTION_USER_HIDDEN_STR = 1 << 10,
+	ACTION_SELECTION_STR = 1 << 11,
 	ACTION_FILTERING_ACTION = 1 << 12,
-	ACTION_ERROR		= 1 << 30
+	ACTION_ERROR = 1 << 30
 } ActionType;
 
-ActionType action_get_type	(const gchar	*action_str);
+ActionType action_get_type(const gchar *action_str);
 
-void actions_execute		(gpointer	data, 
-				 guint		action_nb,
-				 GtkWidget	*widget,
-				 gint		source);
+void actions_execute(gpointer data, guint action_nb, GtkWidget *widget, gint source);
 
-void action_update_mainwin_menu	(GtkUIManager 	*ui_manager,
-				 gchar		*branch_path,
-				 MainWindow	*mainwin);
-void action_update_msgview_menu	(GtkUIManager 	*ui_manager,
-				 gchar		*branch_path,
-				 MessageView	*msgview);
-void action_update_compose_menu	(GtkUIManager 	*ui_manager,
-				 gchar		*branch_path,
-				 Compose	*compose);
+void action_update_mainwin_menu(GtkUIManager *ui_manager, gchar *branch_path, MainWindow *mainwin);
+void action_update_msgview_menu(GtkUIManager *ui_manager, gchar *branch_path, MessageView *msgview);
+void action_update_compose_menu(GtkUIManager *ui_manager, gchar *branch_path, Compose *compose);
 
 #endif /* __ACTION_H__ */

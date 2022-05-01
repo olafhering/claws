@@ -46,49 +46,49 @@ extern "C" {
 
 #include <inttypes.h>
 
-struct carray_s {
-  void ** array;
-  unsigned int len;
-  unsigned int max;
-};
+	struct carray_s {
+		void **array;
+		unsigned int len;
+		unsigned int max;
+	};
 
-typedef struct carray_s carray;
+	typedef struct carray_s carray;
 
 /* Creates a new array of pointers, with initsize preallocated cells */
-carray *   carray_new(unsigned int initsize);
+	carray *carray_new(unsigned int initsize);
 
 /* Adds the pointer to data in the array.
    Returns the index of the pointer in the array or -1 on error */
-int       carray_add(carray * array, void * data, unsigned int * index);
+	int carray_add(carray *array, void *data, unsigned int *index);
 
-int carray_set_size(carray * array, unsigned int new_size);
+	int carray_set_size(carray *array, unsigned int new_size);
 
 /* Removes the cell at this index position. Returns TRUE on success.
    Order of elements in the array IS changed. */
-int       carray_delete(carray * array, unsigned int indx);
+	int carray_delete(carray *array, unsigned int indx);
 
 /* Removes the cell at this index position. Returns TRUE on success.
    Order of elements in the array IS not changed. */
-int       carray_delete_slow(carray * array, unsigned int indx);
+	int carray_delete_slow(carray *array, unsigned int indx);
 
 /* remove without decreasing the size of the array */
-int carray_delete_fast(carray * array, unsigned int indx);
+	int carray_delete_fast(carray *array, unsigned int indx);
 
 /* Some of the following routines can be implemented as macros to
    be faster. If you don't want it, define NO_MACROS */
 #ifdef NO_MACROS
 
 /* Returns the array itself */
-void **   carray_data(carray);
+	void **carray_data(carray);
 
 /* Returns the number of elements in the array */
-int       carray_count(carray);
+	int carray_count(carray);
 
 /* Returns the contents of one cell */
-void *    carray_get(carray array, unsigned int indx);
+	void *carray_get(carray array, unsigned int indx);
 
 /* Sets the contents of one cell */
-void      carray_set(carray array, unsigned int indx, void * value);
+	void carray_set(carray array, unsigned int indx, void *value);
 
 #else
 
@@ -99,25 +99,22 @@ void      carray_set(carray array, unsigned int indx, void * value);
 #define   carray_set(a, indx, v) do { a->array[indx]=v; } while(0)
 #endif
 
-static inline void ** carray_data(carray * array) {
-  return array->array;
-}
+	static inline void **carray_data(carray *array) {
+		return array->array;
+	} static inline unsigned int carray_count(carray *array) {
+		return array->len;
+	}
 
-static inline unsigned int carray_count(carray * array) {
-  return array->len;
-}
+	static inline void *carray_get(carray *array, unsigned int indx) {
+		return array->array[indx];
+	}
 
-static inline void * carray_get(carray * array, unsigned int indx) {
-  return array->array[indx];
-}
-
-static inline void carray_set(carray * array,
-    unsigned int indx, void * value) {
-  array->array[indx] = value;
-}
+	static inline void carray_set(carray *array, unsigned int indx, void *value) {
+		array->array[indx] = value;
+	}
 #endif
 
-void carray_free(carray * array);
+	void carray_free(carray *array);
 
 #ifdef __cplusplus
 }

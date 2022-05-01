@@ -30,7 +30,7 @@
  4996 deprecated "unsafe" functions (bug 4855)
  */
 #pragma warning( disable : 4115 4127 4514 )
-#if (_MSC_VER >= 1400)  /* VC8+ */
+#if (_MSC_VER >= 1400) /* VC8+ */
 #pragma warning( disable : 4996 )
 #endif
 
@@ -70,14 +70,14 @@
 #define STDOUT_FILENO 1
 
 /* FIXME: This doesn't belong here either */
-#define LOG_EMERG       0       /* system is unusable */
-#define LOG_ALERT       1       /* action must be taken immediately */
-#define LOG_CRIT        2       /* critical conditions */
-#define LOG_ERR         3       /* error conditions */
-#define LOG_WARNING     4       /* warning conditions */
-#define LOG_NOTICE      5       /* normal but significant condition */
-#define LOG_INFO        6       /* informational */
-#define LOG_DEBUG       7       /* debug-level messages */
+#define LOG_EMERG       0 /* system is unusable */
+#define LOG_ALERT       1 /* action must be taken immediately */
+#define LOG_CRIT        2 /* critical conditions */
+#define LOG_ERR         3 /* error conditions */
+#define LOG_WARNING     4 /* warning conditions */
+#define LOG_NOTICE      5 /* normal but significant condition */
+#define LOG_INFO        6 /* informational */
+#define LOG_DEBUG       7 /* debug-level messages */
 
 #endif
 
@@ -148,52 +148,50 @@
 #define SPAMC_REMOVE_LOCAL       4
 #define SPAMC_REMOVE_REMOTE      8
 
-#define SPAMC_MAX_MESSAGE_LEN     (256 * 1024 * 1024)     /* see bug 4928 */
+#define SPAMC_MAX_MESSAGE_LEN     (256 * 1024 * 1024) /* see bug 4928 */
 
 /* Aug 14, 2002 bj: A struct for storing a message-in-progress */
-typedef enum
-{
-    MESSAGE_NONE,
-    MESSAGE_ERROR,
-    MESSAGE_RAW,
-    MESSAGE_BSMTP,
-    MAX_MESSAGE_TYPE
+typedef enum {
+	MESSAGE_NONE,
+	MESSAGE_ERROR,
+	MESSAGE_RAW,
+	MESSAGE_BSMTP,
+	MAX_MESSAGE_TYPE
 } message_type_t;
 
 struct libspamc_private_message;
 
-struct message
-{
-    /* Set before passing the struct on! */
-    unsigned int max_len; /* messages larger than this will return EX_TOOBIG */
-    int timeout;		/* timeout for read() system calls */
-    int connect_timeout;	/* Sep 8, 2008 mrgus: timeout for opening sockets */
+struct message {
+	/* Set before passing the struct on! */
+	unsigned int max_len; /* messages larger than this will return EX_TOOBIG */
+	int timeout; /* timeout for read() system calls */
+	int connect_timeout; /* Sep 8, 2008 mrgus: timeout for opening sockets */
 
-    /* Filled in by message_read */
-    message_type_t type;
-    char *raw;
-    int raw_len;		/* Raw message buffer */
-    /* note: do not make "raw_len" in particular unsigned! see bug 4593 */
-    char *pre;
-    int pre_len;		/* Pre-message data (e.g. SMTP commands) */
-    char *msg;
-    int msg_len;		/* The message */
-    char *post;
-    int post_len;		/* Post-message data (e.g. SMTP commands) */
-    int content_length;
+	/* Filled in by message_read */
+	message_type_t type;
+	char *raw;
+	int raw_len; /* Raw message buffer */
+	/* note: do not make "raw_len" in particular unsigned! see bug 4593 */
+	char *pre;
+	int pre_len; /* Pre-message data (e.g. SMTP commands) */
+	char *msg;
+	int msg_len; /* The message */
+	char *post;
+	int post_len; /* Post-message data (e.g. SMTP commands) */
+	int content_length;
 
-    /* Filled in by filter_message */
-    int is_spam;		/* EX_ISSPAM if the message is spam, EX_NOTSPAM
-				   if not */
-    float score, threshold;	/* score and threshold */
-    char *outbuf;		/* Buffer for output from spamd */
-    char *out;
-    int out_len;		/* Output from spamd. Either the filtered
-				   message, or the check-only response. Or else,
-				   a pointer to msg above. */
+	/* Filled in by filter_message */
+	int is_spam; /* EX_ISSPAM if the message is spam, EX_NOTSPAM
+		        if not */
+	float score, threshold;	/* score and threshold */
+	char *outbuf; /* Buffer for output from spamd */
+	char *out;
+	int out_len; /* Output from spamd. Either the filtered
+		        message, or the check-only response. Or else,
+		        a pointer to msg above. */
 
-    /* these members added in SpamAssassin version 2.60: */
-    struct libspamc_private_message *priv;
+	/* these members added in SpamAssassin version 2.60: */
+	struct libspamc_private_message *priv;
 };
 
 /*------------------------------------------------------------------------
@@ -219,36 +217,35 @@ struct message
  * disables fallback, we set the IP address count to one. Now the connect
  * code just loops over that same address.
  */
-#define TRANSPORT_LOCALHOST 0x01	/* TCP to localhost only */
-#define	TRANSPORT_TCP	    0x02	/* standard TCP socket   */
-#define TRANSPORT_UNIX	    0x03	/* UNIX domain socket    */
+#define TRANSPORT_LOCALHOST 0x01 /* TCP to localhost only */
+#define	TRANSPORT_TCP	    0x02 /* standard TCP socket   */
+#define TRANSPORT_UNIX	    0x03 /* UNIX domain socket    */
 
 #define TRANSPORT_MAX_HOSTS 256	/* max hosts we can failover between */
 
-struct transport
-{
-    int type;
+struct transport {
+	int type;
 
-    const char *socketpath;	/* for UNIX dommain socket      */
-    const char *hostname;	/* for TCP sockets              */
+	const char *socketpath;	/* for UNIX dommain socket      */
+	const char *hostname; /* for TCP sockets              */
 
-    unsigned short port;	/* for TCP sockets              */
+	unsigned short port; /* for TCP sockets              */
 
 #ifdef SPAMC_HAS_ADDRINFO
-    struct addrinfo *hosts[TRANSPORT_MAX_HOSTS];
+	struct addrinfo *hosts[TRANSPORT_MAX_HOSTS];
 #else
-    struct in_addr hosts[TRANSPORT_MAX_HOSTS];
+	struct in_addr hosts[TRANSPORT_MAX_HOSTS];
 #endif
-    int nhosts;
-    int flags;
+	int nhosts;
+	int flags;
 
-    /* added in SpamAssassin 3.2.0 */
-    int connect_retries;
-    int retry_sleep;
+	/* added in SpamAssassin 3.2.0 */
+	int connect_retries;
+	int retry_sleep;
 
-    /* Added for filterloop */
-    int filter_retries;
-    int filter_retry_sleep;
+	/* Added for filterloop */
+	int filter_retries;
+	int filter_retry_sleep;
 };
 
 /* Initialise and setup transport-specific context for the connection
@@ -276,17 +273,14 @@ long message_write(int out_fd, struct message *m);
  * failover, more than one host is defined, but if there is only one there,
  * no failover is done.
  */
-int message_filter(struct transport *tp, const char *username,
-		   int flags, struct message *m);
+int message_filter(struct transport *tp, const char *username, int flags, struct message *m);
 
 /* Process the message through the spamd tell command, making as many
  * connection attempts as are implied by the transport structure. To make
  * this do failover, more than one host is defined, but if there is only
  * one there, no failover is done.
  */
-int message_tell(struct transport *tp, const char *username, int flags,
-		 struct message *m, int msg_class,
-		 unsigned int tellflags, unsigned int *didtellflags);
+int message_tell(struct transport *tp, const char *username, int flags, struct message *m, int msg_class, unsigned int tellflags, unsigned int *didtellflags);
 
 /* Dump the message. If there is any data in the message (typically, m->type
  * will be MESSAGE_ERROR) it will be message_writed. Then, fd_in will be piped
@@ -297,20 +291,17 @@ void message_dump(int in_fd, int out_fd, struct message *m, int flags);
 /* Do a message_read->message_filter->message_write sequence, handling errors
  * appropriately with dump_message or appropriate CHECK_ONLY output. Returns
  * EX_OK or EX_ISSPAM/EX_NOTSPAM on success, some error EX on error. */
-int message_process(struct transport *trans, char *username, int max_size,
-		    int in_fd, int out_fd, const int flags);
+int message_process(struct transport *trans, char *username, int max_size, int in_fd, int out_fd, const int flags);
 
 /* Cleanup the resources we allocated for storing the message. Call after
  * you're done processing. */
 void message_cleanup(struct message *m);
 
 /* Aug 14, 2002 bj: This is now legacy, don't use it. */
-int process_message(struct transport *tp, char *username,
-		    int max_size, int in_fd, int out_fd,
-		    const int check_only, const int safe_fallback);
+int process_message(struct transport *tp, char *username, int max_size, int in_fd, int out_fd, const int check_only, const int safe_fallback);
 
-void register_spamc_header_callback(const struct message *m, void (*func)(struct message *m, int flags, char *buf, int len));
-void register_spamd_header_callback(const struct message *m, void (*func)(struct message *m, int flags, const char *buf, int len));
+void register_spamc_header_callback(const struct message *m, void (*func)(struct message * m, int flags, char *buf, int len));
+void register_spamd_header_callback(const struct message *m, void (*func)(struct message * m, int flags, const char *buf, int len));
 
 void register_libspamc_log_callback(void (*function)(int flags, int level, char *msg, va_list args));
 

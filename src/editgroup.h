@@ -20,7 +20,7 @@
 #ifndef __EDITGROUP_H__
 #define __EDITGROUP_H__
 
-ItemGroup *addressbook_edit_group( AddressBookFile *abf, ItemFolder *folder, ItemGroup *group );
-ItemFolder *addressbook_edit_folder( AddressBookFile *abf, ItemFolder *parent, ItemFolder *folder );
+ItemGroup *addressbook_edit_group(AddressBookFile *abf, ItemFolder *folder, ItemGroup *group);
+ItemFolder *addressbook_edit_folder(AddressBookFile *abf, ItemFolder *parent, ItemFolder *folder);
 
 #endif /* __EDITGROUP_H__ */

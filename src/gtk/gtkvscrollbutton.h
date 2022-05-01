@@ -21,19 +21,16 @@
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
- 
+
  /*
   * Modified by the Sylpheed Team and others 2003
   */
- 
 
 #ifndef __GTK_VSCROLLBUTTON_H__
 #define __GTK_VSCROLLBUTTON_H__
 
-
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-
 
 #define GTK_TYPE_VSCROLLBUTTON            (gtk_vscrollbutton_get_type ())
 #define GTK_VSCROLLBUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCROLLBUTTON, GtkVScrollbutton))
@@ -41,15 +38,14 @@
 #define GTK_IS_VSCROLLBUTTON(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VSCROLLBUTTON))
 #define GTK_IS_VSCROLLBUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VSCROLLBUTTON))
 
-typedef struct _GtkVScrollbutton       GtkVScrollbutton;
-typedef struct _GtkVScrollbuttonClass  GtkVScrollbuttonClass;
+typedef struct _GtkVScrollbutton GtkVScrollbutton;
+typedef struct _GtkVScrollbuttonClass GtkVScrollbuttonClass;
 
-struct _GtkVScrollbutton
-{
+struct _GtkVScrollbutton {
 	GtkVBox vbox;
 	GtkWidget *upbutton;
 	GtkWidget *downbutton;
-	guint need_timer : 1;
+	guint need_timer:1;
 	guint32 timer;
 	GtkAdjustment *adjustment;
 	gint button;
@@ -57,25 +53,19 @@ struct _GtkVScrollbutton
 
 };
 
-struct _GtkVScrollbuttonClass
-{
+struct _GtkVScrollbuttonClass {
 	GtkVBoxClass parent_class;
 };
-
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-
-GType    gtk_vscrollbutton_get_type	(void);
-GtkWidget* gtk_vscrollbutton_new	(GtkAdjustment *adjustment);
-gboolean gtk_vscrollbutton_scroll	(GtkVScrollbutton *scrollbutton);
+	GType gtk_vscrollbutton_get_type(void);
+	GtkWidget *gtk_vscrollbutton_new(GtkAdjustment *adjustment);
+	gboolean gtk_vscrollbutton_scroll(GtkVScrollbutton *scrollbutton);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-
 #endif /* __GTK_VSCROLLBUTTON_H__ */

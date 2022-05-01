@@ -74,32 +74,31 @@ typedef struct _VCardFile VCardFile;
 struct _VCardFile {
 	AddressBookType type;
 	AddressCache *addressCache;
-	gint     retVal;
-	FILE     *file;
-	gchar    *path;
-	gchar    buffer[ VCARDBUFSIZE ];
-	gchar    *bufptr;
+	gint retVal;
+	FILE *file;
+	gchar *path;
+	gchar buffer[VCARDBUFSIZE];
+	gchar *bufptr;
 };
 
 /* Function prototypes */
-VCardFile *vcard_create			( void );
-void vcard_set_name			( VCardFile* cardFile, const gchar *value );
-void vcard_set_file			( VCardFile* cardFile, const gchar *value );
-void vcard_set_modified			( VCardFile *cardFile, const gboolean value );
-void vcard_set_accessed			( VCardFile *cardFile, const gboolean value );
-gboolean vcard_get_modified		( VCardFile *cardFile );
-gboolean vcard_get_accessed		( VCardFile *cardFile );
-gboolean vcard_get_read_flag		( VCardFile *cardFile );
-gint vcard_get_status			( VCardFile *cardFile );
-ItemFolder *vcard_get_root_folder	( VCardFile *cardFile );
-gchar *vcard_get_name			( VCardFile *cardFile );
-void vcard_free				( VCardFile *cardFile );
-gint vcard_read_data			( VCardFile *cardFile );
-GList *vcard_get_list_person		( VCardFile *cardFile );
-GList *vcard_get_list_folder		( VCardFile *cardFile );
-GList *vcard_get_all_persons		( VCardFile *cardFile );
-gchar *vcard_find_gnomecard		( void );
-gint vcard_test_read_file		( const gchar *fileSpec );
+VCardFile *vcard_create(void);
+void vcard_set_name(VCardFile *cardFile, const gchar *value);
+void vcard_set_file(VCardFile *cardFile, const gchar *value);
+void vcard_set_modified(VCardFile *cardFile, const gboolean value);
+void vcard_set_accessed(VCardFile *cardFile, const gboolean value);
+gboolean vcard_get_modified(VCardFile *cardFile);
+gboolean vcard_get_accessed(VCardFile *cardFile);
+gboolean vcard_get_read_flag(VCardFile *cardFile);
+gint vcard_get_status(VCardFile *cardFile);
+ItemFolder *vcard_get_root_folder(VCardFile *cardFile);
+gchar *vcard_get_name(VCardFile *cardFile);
+void vcard_free(VCardFile *cardFile);
+gint vcard_read_data(VCardFile *cardFile);
+GList *vcard_get_list_person(VCardFile *cardFile);
+GList *vcard_get_list_folder(VCardFile *cardFile);
+GList *vcard_get_all_persons(VCardFile *cardFile);
+gchar *vcard_find_gnomecard(void);
+gint vcard_test_read_file(const gchar *fileSpec);
 
 #endif /* __VCARD_H__ */
-

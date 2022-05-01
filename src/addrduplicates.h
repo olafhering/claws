@@ -25,6 +25,6 @@
 #include "addrindex.h"
 
 void addrduplicates_find(GtkWindow *parent);
-gboolean addrduplicates_delete_item_person(ItemPerson*, AddressDataSource*);
+gboolean addrduplicates_delete_item_person(ItemPerson *, AddressDataSource *);
 
 #endif /*__ADDRDUPLICATES_H__*/

@@ -20,7 +20,7 @@
 #ifndef LOCALFOLDER_H
 #define LOCALFOLDER_H 1
 
-typedef struct _LocalFolder	LocalFolder;
+typedef struct _LocalFolder LocalFolder;
 
 #define LOCAL_FOLDER(obj)	((LocalFolder *)obj)
 
@@ -28,19 +28,15 @@ typedef struct _LocalFolder	LocalFolder;
 
 #include "folder.h"
 
-struct _LocalFolder
-{
+struct _LocalFolder {
 	Folder folder;
 
 	gchar *rootpath;
 };
 
-void	folder_local_folder_init	(Folder 	*folder,
-					 const gchar 	*name,
-			    		 const gchar 	*path);
-void 	folder_local_folder_destroy	(LocalFolder	*lfolder);
-void 	folder_local_set_xml		(Folder 	*folder,
-					 XMLTag 	*tag);
-XMLTag *folder_local_get_xml		(Folder 	*folder);
+void folder_local_folder_init(Folder *folder, const gchar *name, const gchar *path);
+void folder_local_folder_destroy(LocalFolder *lfolder);
+void folder_local_set_xml(Folder *folder, XMLTag *tag);
+XMLTag *folder_local_get_xml(Folder *folder);
 
 #endif /* LOCALFOLDER_H */

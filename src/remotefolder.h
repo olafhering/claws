@@ -20,7 +20,7 @@
 #ifndef REMOTEFOLDER_H
 #define REMOTEFOLDER_H 1
 
-typedef struct _RemoteFolder	RemoteFolder;
+typedef struct _RemoteFolder RemoteFolder;
 
 #define REMOTE_FOLDER(obj)	((RemoteFolder *)obj)
 
@@ -29,8 +29,7 @@ typedef struct _RemoteFolder	RemoteFolder;
 #include "folder.h"
 #include "session.h"
 
-struct _RemoteFolder
-{
+struct _RemoteFolder {
 	Folder folder;
 
 	Session *session;
@@ -38,9 +37,7 @@ struct _RemoteFolder
 	gboolean connecting;
 };
 
-void        folder_remote_folder_init	(Folder		*folder,
-					 const gchar	*name,
-					 const gchar	*path);
-void        folder_remote_folder_destroy(RemoteFolder	*rfolder);
+void folder_remote_folder_init(Folder *folder, const gchar *name, const gchar *path);
+void folder_remote_folder_destroy(RemoteFolder *rfolder);
 
 #endif /* REMOTEFOLDER_H */

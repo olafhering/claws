@@ -24,7 +24,7 @@
 #include "claws-features.h"
 #endif
 #include "ssl.h"
-typedef struct _PrefsAccount	PrefsAccount;
+typedef struct _PrefsAccount PrefsAccount;
 
 typedef enum {
 	A_POP3,
@@ -41,10 +41,9 @@ typedef enum {
 	SIG_DIRECT
 } SigType;
 
-typedef enum
-{
-	POPAUTH_APOP      = 1 << 0,
-	POPAUTH_OAUTH2    = 1 << 1
+typedef enum {
+	POPAUTH_APOP = 1 << 0,
+	POPAUTH_OAUTH2 = 1 << 1
 } POPAuthType;
 
 #include <glib.h>
@@ -57,8 +56,7 @@ struct _Folder;
 
 /* Changes to this data structure might need to be reflected
  * in account_clone() */
-struct _PrefsAccount
-{
+struct _PrefsAccount {
 	gchar *account_name;
 
 	/* Personal info */
@@ -77,15 +75,15 @@ struct _PrefsAccount
 	gchar *passwd;
 	gchar *session_passwd;
 
-	gchar * local_mbox;
+	gchar *local_mbox;
 	gboolean use_mail_command;
-	gchar * mail_command;
+	gchar *mail_command;
 
 	SSLType ssl_pop;
 	SSLType ssl_imap;
 	SSLType ssl_nntp;
 	SSLType ssl_smtp;
-	
+
 	gchar *out_ssl_client_cert_file;
 	gchar *out_ssl_client_cert_pass;
 	gchar *in_ssl_client_cert_file;
@@ -97,8 +95,8 @@ struct _PrefsAccount
 
 	/* Receive */
 	gboolean use_pop_auth;
-        POPAuthType pop_auth_type;
-	gboolean use_apop_auth; /* deprecated */
+	POPAuthType pop_auth_type;
+	gboolean use_apop_auth;	/* deprecated */
 	gboolean rmmail;
 	gint msg_leave_time;
 	gint msg_leave_hour;
@@ -137,7 +135,7 @@ struct _PrefsAccount
 
 	GSList *customhdr_list;
 
-        /* OAuth2 */
+	/* OAuth2 */
 	gint oauth2_provider;
 	gint oauth2_date;
 	gchar *oauth2_authcode;
@@ -146,54 +144,54 @@ struct _PrefsAccount
 
 	/* Compose */
 	SigType sig_type;
-	gchar    *sig_path;
-	gboolean  auto_sig;
-	gchar 	 *sig_sep;
-	gboolean  set_autocc;
-	gchar    *auto_cc;
-	gboolean  set_autobcc;
-	gchar    *auto_bcc;
-	gboolean  set_autoreplyto;
-	gchar    *auto_replyto;
-	gboolean  enable_default_dictionary;
-	gchar	 *default_dictionary;
-	gboolean  enable_default_alt_dictionary;
-	gchar	 *default_alt_dictionary;
-	gboolean  compose_with_format;
-	gchar	 *compose_subject_format;
-	gchar	 *compose_body_format;
-	gboolean  reply_with_format;
-	gchar	 *reply_quotemark;
-	gchar	 *reply_body_format;
-	gboolean  forward_with_format;
-	gchar	 *forward_quotemark;
-	gchar	 *forward_body_format;
+	gchar *sig_path;
+	gboolean auto_sig;
+	gchar *sig_sep;
+	gboolean set_autocc;
+	gchar *auto_cc;
+	gboolean set_autobcc;
+	gchar *auto_bcc;
+	gboolean set_autoreplyto;
+	gchar *auto_replyto;
+	gboolean enable_default_dictionary;
+	gchar *default_dictionary;
+	gboolean enable_default_alt_dictionary;
+	gchar *default_alt_dictionary;
+	gboolean compose_with_format;
+	gchar *compose_subject_format;
+	gchar *compose_body_format;
+	gboolean reply_with_format;
+	gchar *reply_quotemark;
+	gchar *reply_body_format;
+	gboolean forward_with_format;
+	gchar *forward_quotemark;
+	gchar *forward_body_format;
 
 	/* Privacy */
-	gchar	 *default_privacy_system;
-	gboolean  default_encrypt;
-	gboolean  default_encrypt_reply;
-	gboolean  default_sign;
-	gboolean  default_sign_reply;
-	gboolean  save_encrypted_as_clear_text;
-	gboolean  encrypt_to_self;
+	gchar *default_privacy_system;
+	gboolean default_encrypt;
+	gboolean default_encrypt_reply;
+	gboolean default_sign;
+	gboolean default_sign_reply;
+	gboolean save_encrypted_as_clear_text;
+	gboolean encrypt_to_self;
 
 	/* Advanced */
-	gboolean  set_smtpport;
-	gushort   smtpport;
-	gboolean  set_popport;
-	gushort   popport;
-	gboolean  set_imapport;
-	gushort   imapport;
-	gboolean  set_nntpport;
-	gushort   nntpport;
-	gboolean  set_domain;
-	gchar    *domain;
-	gboolean  set_gnutls_priority;
-	gchar    *gnutls_priority;
-	gboolean  msgid_with_addr;
-	gboolean  mark_crosspost_read;
-	gint	  crosspost_col;
+	gboolean set_smtpport;
+	gushort smtpport;
+	gboolean set_popport;
+	gushort popport;
+	gboolean set_imapport;
+	gushort imapport;
+	gboolean set_nntpport;
+	gushort nntpport;
+	gboolean set_domain;
+	gchar *domain;
+	gboolean set_gnutls_priority;
+	gchar *gnutls_priority;
+	gboolean msgid_with_addr;
+	gboolean mark_crosspost_read;
+	gint crosspost_col;
 
 #ifndef G_OS_WIN32
 	/* Use this command to open a socket, rather than doing so
@@ -204,8 +202,8 @@ struct _PrefsAccount
 	 * authenticate the account only if necessary, since some
 	 * tunnels will implicitly authenticate by running e.g. imapd
 	 * as a particular user. */
-	gboolean  set_tunnelcmd;
-	gchar     *tunnelcmd;
+	gboolean set_tunnelcmd;
+	gchar *tunnelcmd;
 #endif
 
 	gchar *imap_dir;
@@ -239,24 +237,24 @@ struct _PrefsAccount
 	gint config_version;
 };
 
-void prefs_account_init			(void);
+void prefs_account_init(void);
 
-PrefsAccount *prefs_account_new			(void);
-PrefsAccount *prefs_account_new_from_config	(const gchar	*label);
+PrefsAccount *prefs_account_new(void);
+PrefsAccount *prefs_account_new_from_config(const gchar *label);
 
-void prefs_account_write_config_all	(GList		*account_list);
+void prefs_account_write_config_all(GList *account_list);
 
-void prefs_account_free			(PrefsAccount	*ac_prefs);
+void prefs_account_free(PrefsAccount *ac_prefs);
 
-PrefsAccount *prefs_account_open	(PrefsAccount	*ac_prefs, gboolean *dirty);
+PrefsAccount *prefs_account_open(PrefsAccount *ac_prefs, gboolean *dirty);
 
 const gchar *prefs_account_get_privacy_prefs(PrefsAccount *account, gchar *id);
 void prefs_account_set_privacy_prefs(PrefsAccount *account, gchar *id, gchar *new_value);
 gchar *prefs_account_generate_msgid(PrefsAccount *account);
 
-void prefs_account_register_page	(PrefsPage 	*page);
-void prefs_account_unregister_page	(PrefsPage 	*page);
+void prefs_account_register_page(PrefsPage *page);
+void prefs_account_unregister_page(PrefsPage *page);
 
-gchar *prefs_account_cache_dir		(PrefsAccount	*ac_prefs, gboolean for_server);
+gchar *prefs_account_cache_dir(PrefsAccount *ac_prefs, gboolean for_server);
 
 #endif /* PREFS_ACCOUNT_H */

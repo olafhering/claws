@@ -3,7 +3,6 @@
 
 #include <rssyl_feed.h>
 
-FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
-		RSSylVerboseFlags verbose);
+FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url, RSSylVerboseFlags verbose);
 
 #endif /* __RSSYL_SUBSCRIBE_H */

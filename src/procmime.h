@@ -30,8 +30,7 @@
 #include "utils.h"
 #include "proctypes.h"
 #include "privacy.h"
-typedef enum
-{
+typedef enum {
 	ENC_7BIT,
 	ENC_8BIT,
 	ENC_BINARY,
@@ -41,8 +40,7 @@ typedef enum
 	ENC_UNKNOWN
 } EncodingType;
 
-typedef enum
-{
+typedef enum {
 	MIMETYPE_TEXT,
 	MIMETYPE_IMAGE,
 	MIMETYPE_AUDIO,
@@ -56,17 +54,15 @@ typedef enum
 	MIMETYPE_UNKNOWN
 } MimeMediaType;
 
-typedef enum
-{
+typedef enum {
 	DISPOSITIONTYPE_INLINE,
 	DISPOSITIONTYPE_ATTACHMENT,
 	DISPOSITIONTYPE_UNKNOWN
 } DispositionType;
 
-typedef enum
-{
+typedef enum {
 	MIMECONTENT_EMPTY,
-	MIMECONTENT_FILE,		/* the file contains all content including sub parts */
+	MIMECONTENT_FILE, /* the file contains all content including sub parts */
 	MIMECONTENT_MEM
 } MimeContent;
 
@@ -75,16 +71,14 @@ typedef enum
 
 struct _PrivacyData;
 
-struct _MimeType
-{
+struct _MimeType {
 	gchar *type;
 	gchar *sub_type;
 
 	gchar *extension;
 };
 
-struct _MimeParser
-{
+struct _MimeParser {
 	MimeMediaType type;
 	const gchar *sub_type;
 
@@ -111,12 +105,10 @@ struct _MimeParser
  * 8:       +- image/jpeg		(next of 6)
  */
 
-struct _MimeInfo
-{
+struct _MimeInfo {
 	/* Internal data */
 	MimeContent content;
-	union
-	{
+	union {
 		gchar *filename;
 		gchar *mem;
 	} data;
@@ -126,36 +118,36 @@ struct _MimeInfo
 
 	/* --- NEW MIME STUFF --- */
 	/* Content-Type */
-	MimeMediaType 	 type;
-	gchar		*subtype;
+	MimeMediaType type;
+	gchar *subtype;
 
-	GHashTable	*typeparameters;
+	GHashTable *typeparameters;
 
 	/* Content-Transfer-Encoding */
-	EncodingType	 encoding_type;
+	EncodingType encoding_type;
 
 	/* Content-Description */
-	gchar		*description;
+	gchar *description;
 
 	/* Content-ID */
-	gchar		*id;
+	gchar *id;
 
 	/* Content-Location */
-	gchar 		*location;
+	gchar *location;
 
-	guint		 offset;
-	guint		 length;
+	guint offset;
+	guint length;
 
 	/* Content-Disposition */
-	DispositionType	 disposition;
-	GHashTable	*dispositionparameters;
+	DispositionType disposition;
+	GHashTable *dispositionparameters;
 
 	/* Privacy */
-	struct _PrivacyData	*privacy;
+	struct _PrivacyData *privacy;
 	GTask *last_sig_check_task;
 	SignatureData *sig_data;
 
-	gboolean	 broken;
+	gboolean broken;
 };
 
 #define IS_BOUNDARY(s, bnd, len) \
@@ -167,93 +159,74 @@ extern "C" {
 
 /* MimeInfo handling */
 
-MimeInfo *procmime_mimeinfo_new		(void);
-void procmime_mimeinfo_free_all		(MimeInfo	**mimeinfo_ptr);
+	MimeInfo *procmime_mimeinfo_new(void);
+	void procmime_mimeinfo_free_all(MimeInfo **mimeinfo_ptr);
 
-MimeInfo *procmime_mimeinfo_insert	(MimeInfo	*parent,
-					 MimeInfo	*mimeinfo);
-void procmime_mimeinfo_replace		(MimeInfo	*old_mimeinfo,
-					 MimeInfo	*new_mimeinfo);
+	MimeInfo *procmime_mimeinfo_insert(MimeInfo *parent, MimeInfo *mimeinfo);
+	void procmime_mimeinfo_replace(MimeInfo *old_mimeinfo, MimeInfo *new_mimeinfo);
 
-MimeInfo *procmime_mimeinfo_parent	(MimeInfo	*mimeinfo);
-MimeInfo *procmime_mimeinfo_next	(MimeInfo	*mimeinfo);
+	MimeInfo *procmime_mimeinfo_parent(MimeInfo *mimeinfo);
+	MimeInfo *procmime_mimeinfo_next(MimeInfo *mimeinfo);
 
-MimeInfo *procmime_scan_message		(MsgInfo	*msginfo);
-MimeInfo *procmime_scan_message_short	(MsgInfo	*msginfo);
-void procmime_scan_multipart_message	(MimeInfo	*mimeinfo,
-					 FILE		*fp);
-const gchar *procmime_mimeinfo_get_parameter
-					(MimeInfo	*mimeinfo,
-					 const gchar	*name);
+	MimeInfo *procmime_scan_message(MsgInfo *msginfo);
+	MimeInfo *procmime_scan_message_short(MsgInfo *msginfo);
+	void procmime_scan_multipart_message(MimeInfo *mimeinfo, FILE *fp);
+	const gchar *procmime_mimeinfo_get_parameter(MimeInfo *mimeinfo, const gchar *name);
 
 /* scan headers */
 
-void procmime_scan_encoding		(MimeInfo	*mimeinfo,
-					 const gchar	*encoding);
-void procmime_scan_content_type		(MimeInfo	*mimeinfo,
-					 const gchar	*content_type);
-void procmime_scan_content_disposition	(MimeInfo	*mimeinfo,
-					 const gchar	*content_disposition);
-void procmime_scan_content_description	(MimeInfo	*mimeinfo,
-					 const gchar	*content_description);
-void procmime_scan_subject              (MimeInfo       *mimeinfo,
-			                 const gchar    *subject);
-MimeInfo *procmime_scan_mime_header	(FILE		*fp);
+	void procmime_scan_encoding(MimeInfo *mimeinfo, const gchar *encoding);
+	void procmime_scan_content_type(MimeInfo *mimeinfo, const gchar *content_type);
+	void procmime_scan_content_disposition(MimeInfo *mimeinfo, const gchar *content_disposition);
+	void procmime_scan_content_description(MimeInfo *mimeinfo, const gchar *content_description);
+	void procmime_scan_subject(MimeInfo *mimeinfo, const gchar *subject);
+	MimeInfo *procmime_scan_mime_header(FILE *fp);
 
-gboolean procmime_decode_content	(MimeInfo	*mimeinfo);
-gboolean procmime_encode_content	(MimeInfo	*mimeinfo, EncodingType encoding);
-gint procmime_get_part			(const gchar	*outfile,
-					 MimeInfo	*mimeinfo);
-FILE *procmime_get_first_text_content	(MsgInfo	*msginfo);
-FILE *procmime_get_first_encrypted_text_content
-					(MsgInfo 	*msginfo);
+	gboolean procmime_decode_content(MimeInfo *mimeinfo);
+	gboolean procmime_encode_content(MimeInfo *mimeinfo, EncodingType encoding);
+	gint procmime_get_part(const gchar *outfile, MimeInfo *mimeinfo);
+	FILE *procmime_get_first_text_content(MsgInfo *msginfo);
+	FILE *procmime_get_first_encrypted_text_content(MsgInfo *msginfo);
 
-gchar *procmime_get_tmp_file_name	(MimeInfo	*mimeinfo);
-gchar *procmime_get_part_file_name	(MimeInfo 	*mimeinfo);
+	gchar *procmime_get_tmp_file_name(MimeInfo *mimeinfo);
+	gchar *procmime_get_part_file_name(MimeInfo *mimeinfo);
 
-gchar *procmime_get_mime_type		(const gchar	*filename);
+	gchar *procmime_get_mime_type(const gchar *filename);
 
-GList *procmime_get_mime_type_list	(void);
+	GList *procmime_get_mime_type_list(void);
 
-EncodingType procmime_get_encoding_for_charset	(const gchar	*charset);
-EncodingType procmime_get_encoding_for_text_file(const gchar	*file,
-						 gboolean	*has_binary);
-const gchar *procmime_get_encoding_str		(EncodingType	 encoding);
-MimeInfo *procmime_scan_file			(const gchar	*filename);
-MimeInfo *procmime_scan_queue_file		(const gchar 	*filename);
-const gchar *procmime_get_media_type_str	(MimeMediaType 	 type);
-MimeMediaType procmime_get_media_type		(const gchar 	*str);
-gchar *procmime_get_content_type_str		(MimeMediaType   type,
-						 const gchar	*subtype);
-void procmime_force_charset			(const gchar 	*str);
-void procmime_force_encoding			(EncodingType	 encoding);
-gboolean procmime_msginfo_is_encrypted		(MsgInfo 	*msginfo);
-int procmime_write_mime_header			(MimeInfo 	*mimeinfo, 
-						 FILE 		*fp);
-void renderer_read_config(void);
+	EncodingType procmime_get_encoding_for_charset(const gchar *charset);
+	EncodingType procmime_get_encoding_for_text_file(const gchar *file, gboolean *has_binary);
+	const gchar *procmime_get_encoding_str(EncodingType encoding);
+	MimeInfo *procmime_scan_file(const gchar *filename);
+	MimeInfo *procmime_scan_queue_file(const gchar *filename);
+	const gchar *procmime_get_media_type_str(MimeMediaType type);
+	MimeMediaType procmime_get_media_type(const gchar *str);
+	gchar *procmime_get_content_type_str(MimeMediaType type, const gchar *subtype);
+	void procmime_force_charset(const gchar *str);
+	void procmime_force_encoding(EncodingType encoding);
+	gboolean procmime_msginfo_is_encrypted(MsgInfo *msginfo);
+	int procmime_write_mime_header(MimeInfo *mimeinfo, FILE *fp);
+	void renderer_read_config(void);
 
-gint procmime_write_mimeinfo(MimeInfo *mimeinfo, FILE *fp);
+	gint procmime_write_mimeinfo(MimeInfo *mimeinfo, FILE *fp);
 
-void procmime_mimeparser_register(MimeParser *mimeparser);
-void procmime_mimeparser_unregister(MimeParser *mimeparser);
-FILE *procmime_get_text_content(MimeInfo *mimeinfo);
-FILE *procmime_get_binary_content(MimeInfo *mimeinfo);
+	void procmime_mimeparser_register(MimeParser *mimeparser);
+	void procmime_mimeparser_unregister(MimeParser *mimeparser);
+	FILE *procmime_get_text_content(MimeInfo *mimeinfo);
+	FILE *procmime_get_binary_content(MimeInfo *mimeinfo);
 
 /* scans mimeinfo contents, calling scan_callback() once per line.
  * return TRUE and scan is aborted if scan_callback returns TRUE.
  * return TRUE on error.
  * return FALSE if scan completed and scan_callback never returned TRUE.
  */
-gboolean procmime_scan_text_content(MimeInfo *mimeinfo,
-		gboolean (*scan_callback)(const gchar *str, gpointer cb_data),
-		gpointer cb_data);
-void *procmime_get_part_as_string(MimeInfo *mimeinfo,
-		gboolean null_terminate);
-GInputStream *procmime_get_part_as_inputstream(MimeInfo *mimeinfo);
-GdkPixbuf *procmime_get_part_as_pixbuf(MimeInfo *mimeinfo, GError **error);
+	gboolean procmime_scan_text_content(MimeInfo *mimeinfo, gboolean (*scan_callback)(const gchar *str, gpointer cb_data), gpointer cb_data);
+	void *procmime_get_part_as_string(MimeInfo *mimeinfo, gboolean null_terminate);
+	GInputStream *procmime_get_part_as_inputstream(MimeInfo *mimeinfo);
+	GdkPixbuf *procmime_get_part_as_pixbuf(MimeInfo *mimeinfo, GError **error);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __PROCMIME_H__ */

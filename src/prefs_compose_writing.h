@@ -20,7 +20,7 @@
 #ifndef PREFS_COMPOSE_WRITING_H
 #define PREFS_COMPOSE_WRITING_H
 
-void prefs_compose_writing_init	(void);
-void prefs_compose_writing_done	(void);
+void prefs_compose_writing_init(void);
+void prefs_compose_writing_done(void);
 
-#endif /* PREFS_COMPOSE_WRITING_H */ 
+#endif /* PREFS_COMPOSE_WRITING_H */

@@ -20,7 +20,7 @@
 #ifndef PREFS_EXT_PROG_H
 #define PREFS_EXT_PROG_H
 
-void prefs_ext_prog_init	(void);
-void prefs_ext_prog_done	(void);
+void prefs_ext_prog_init(void);
+void prefs_ext_prog_done(void);
 
-#endif /* PREFS_EXT_PROG_H */ 
+#endif /* PREFS_EXT_PROG_H */

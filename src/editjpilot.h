@@ -26,7 +26,7 @@
 
 #ifdef USE_JPILOT
 
-AdapterDSource *addressbook_edit_jpilot( AddressIndex *addrIndex, AdapterDSource *ads );
+AdapterDSource *addressbook_edit_jpilot(AddressIndex *addrIndex, AdapterDSource *ads);
 
 #endif /* USE_JPILOT */
 

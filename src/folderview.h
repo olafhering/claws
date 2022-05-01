@@ -20,8 +20,8 @@
 #ifndef __FOLDERVIEW_H__
 #define __FOLDERVIEW_H__
 
-typedef struct _FolderViewPopup	FolderViewPopup;
-typedef struct _FolderColumnState	FolderColumnState;
+typedef struct _FolderViewPopup FolderViewPopup;
+typedef struct _FolderColumnState FolderColumnState;
 
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -31,8 +31,7 @@ typedef struct _FolderColumnState	FolderColumnState;
 #include "viewtypes.h"
 #include "folder.h"
 
-typedef enum
-{
+typedef enum {
 	F_COL_FOLDER,
 	F_COL_NEW,
 	F_COL_UNREAD,
@@ -41,14 +40,12 @@ typedef enum
 
 #define N_FOLDER_COLS	4
 
-struct _FolderColumnState
-{
+struct _FolderColumnState {
 	FolderColumnType type;
 	gboolean visible;
 };
 
-struct _FolderView
-{
+struct _FolderView {
 	GtkWidget *scrolledwin;
 	GtkWidget *ctree;
 	GtkWidget *headerpopupmenu;
@@ -63,18 +60,18 @@ struct _FolderView
 	GdkColor color_new;
 	GdkColor color_op;
 
-	MainWindow   *mainwin;
-	SummaryView  *summaryview;
+	MainWindow *mainwin;
+	SummaryView *summaryview;
 
 	gint folder_update_callback_id;
 	gint folder_item_update_callback_id;
-	
+
 	/* DND states */
 	GSList *nodes_to_recollapse;
-	guint   drag_timer_id;		/* timer id */
-	FolderItem *drag_item;		/* dragged item */
-	GtkCMCTreeNode *drag_node;	/* drag node */
-	
+	guint drag_timer_id; /* timer id */
+	FolderItem *drag_item; /* dragged item */
+	GtkCMCTreeNode *drag_node; /* drag node */
+
 	GtkTargetList *target_list; /* DnD */
 	FolderColumnState col_state[N_FOLDER_COLS];
 	gint col_pos[N_FOLDER_COLS];
@@ -88,70 +85,57 @@ struct _FolderView
 	guint postpone_select_id;
 };
 
-struct _FolderViewPopup
-{
-	gchar			 *klass;
-	gchar			 *path;
-	GtkActionEntry		 *entries;
-	gint		 	  n_entries;
-	GtkToggleActionEntry	 *toggle_entries;
-	gint		 	  n_toggle_entries;
-	GtkRadioActionEntry	 *radio_entries;
-	gint		  	  n_radio_entries;
-	gint			  radio_default;
-	void		  	(*radio_callback)	(GtkAction *action, GtkRadioAction *current, gpointer data);
-	void			(*add_menuitems)	(GtkUIManager *ui_manager, FolderItem *item);
-	void			(*set_sensitivity)	(GtkUIManager *ui_manager, FolderItem *item);
+struct _FolderViewPopup {
+	gchar *klass;
+	gchar *path;
+	GtkActionEntry *entries;
+	gint n_entries;
+	GtkToggleActionEntry *toggle_entries;
+	gint n_toggle_entries;
+	GtkRadioActionEntry *radio_entries;
+	gint n_radio_entries;
+	gint radio_default;
+	void (*radio_callback) (GtkAction *action, GtkRadioAction *current, gpointer data);
+	void (*add_menuitems) (GtkUIManager *ui_manager, FolderItem *item);
+	void (*set_sensitivity) (GtkUIManager *ui_manager, FolderItem *item);
 };
 
-void folderview_initialize		(void);
-FolderView *folderview_create		(MainWindow *mainwin);
-void folderview_init			(FolderView	*folderview);
+void folderview_initialize(void);
+FolderView *folderview_create(MainWindow *mainwin);
+void folderview_init(FolderView *folderview);
 
-void folderview_set			(FolderView	*folderview);
-void folderview_set_all			(void);
+void folderview_set(FolderView *folderview);
+void folderview_set_all(void);
 
-void folderview_select			(FolderView	*folderview,
-					 FolderItem	*item);
-void folderview_unselect		(FolderView	*folderview);
-void folderview_select_next_with_flag	(FolderView	*folderview,
-					 MsgPermFlags    flag);
+void folderview_select(FolderView *folderview, FolderItem *item);
+void folderview_unselect(FolderView *folderview);
+void folderview_select_next_with_flag(FolderView *folderview, MsgPermFlags flag);
 
-FolderItem *folderview_get_selected_item(FolderView	*folderview);
-FolderItem *folderview_get_opened_item(FolderView	*folderview);
+FolderItem *folderview_get_selected_item(FolderView *folderview);
+FolderItem *folderview_get_opened_item(FolderView *folderview);
 
-void folderview_rescan_tree		(Folder		*folder,
-					 gboolean	 rebuild);
-gint folderview_check_new		(Folder		*folder);
-void folderview_check_new_all		(void);
+void folderview_rescan_tree(Folder *folder, gboolean rebuild);
+gint folderview_check_new(Folder *folder);
+void folderview_check_new_all(void);
 
-void folderview_update_all_updated	(gboolean	 update_summary);
+void folderview_update_all_updated(gboolean update_summary);
 
 void folderview_run_processing(FolderItem *item);
 
-void folderview_move_folder		(FolderView 	*folderview,
-					 FolderItem 	*from_folder,
-					 FolderItem 	*to_folder,
-					 gboolean	 copy);
+void folderview_move_folder(FolderView *folderview, FolderItem *from_folder, FolderItem *to_folder, gboolean copy);
 
-void folderview_set_target_folder_color (gint		color_op);
+void folderview_set_target_folder_color(gint color_op);
 
-void folderview_reinit_fonts		(FolderView *folderview);
+void folderview_reinit_fonts(FolderView *folderview);
 
-void folderview_reflect_prefs		(void);
-void folderview_register_popup		(FolderViewPopup	*fpopup);
-void folderview_unregister_popup	(FolderViewPopup	*fpopup);
-void folderview_update_search_icon	(FolderItem 		*item, 	
-					 gboolean 		 matches);
-void folderview_set_column_order	(FolderView		*folderview);
-void folderview_finish_dnd		(const gchar 		*data, 
-					 GdkDragContext 	*drag_context,
-			   		 guint 			 time, 
-					 FolderItem 		*item);
-void folderview_close_opened		(FolderView 		*folderview,
-					 gboolean		 dirty);
-void folderview_remove_item(FolderView *folderview,
-			    FolderItem *item);
+void folderview_reflect_prefs(void);
+void folderview_register_popup(FolderViewPopup *fpopup);
+void folderview_unregister_popup(FolderViewPopup *fpopup);
+void folderview_update_search_icon(FolderItem *item, gboolean matches);
+void folderview_set_column_order(FolderView *folderview);
+void folderview_finish_dnd(const gchar *data, GdkDragContext *drag_context, guint time, FolderItem *item);
+void folderview_close_opened(FolderView *folderview, gboolean dirty);
+void folderview_remove_item(FolderView *folderview, FolderItem *item);
 
 void folderview_freeze(FolderView *folderview);
 void folderview_thaw(FolderView *folderview);

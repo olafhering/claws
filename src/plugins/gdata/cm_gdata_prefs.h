@@ -23,15 +23,15 @@
 #define GDATA_TOKEN_PWD_STRING "oauth2_refresh_token"
 
 typedef struct {
-  char *username;
-  char *password;
-  int max_num_results;
-  int max_cache_age;
-  char *oauth2_refresh_token;
+	char *username;
+	char *password;
+	int max_num_results;
+	int max_cache_age;
+	char *oauth2_refresh_token;
 } CmGDataPrefs;
 
 extern CmGDataPrefs cm_gdata_config;
-extern PrefParam    cm_gdata_param[];
+extern PrefParam cm_gdata_param[];
 
 void cm_gdata_prefs_init(void);
 void cm_gdata_prefs_done(void);

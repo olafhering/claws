@@ -26,22 +26,21 @@
 
 typedef struct _BogofilterConfig BogofilterConfig;
 
-typedef void (*MessageCallback) (gchar *, gint total, gint done, gboolean thread_safe);
+typedef void (*MessageCallback)(gchar *, gint total, gint done, gboolean thread_safe);
 
-struct _BogofilterConfig
-{
-	gboolean		 process_emails;
-	guint				 receive_spam;
-	gchar 			*save_folder;
-	guint 			 max_size;
-	gchar			*bogopath;
-	gboolean		 insert_header;
-	gboolean		 whitelist_ab;
-	gchar			*whitelist_ab_folder;
-	gboolean		 learn_from_whitelist;
-	gboolean		 save_unsure;
-	gchar 			*save_unsure_folder;
-	gboolean		 mark_as_read;
+struct _BogofilterConfig {
+	gboolean process_emails;
+	guint receive_spam;
+	gchar *save_folder;
+	guint max_size;
+	gchar *bogopath;
+	gboolean insert_header;
+	gboolean whitelist_ab;
+	gchar *whitelist_ab_folder;
+	gboolean learn_from_whitelist;
+	gboolean save_unsure;
+	gchar *save_unsure_folder;
+	gboolean mark_as_read;
 };
 
 /* Used for values of receive_spam preference. */
@@ -51,9 +50,9 @@ enum {
 	SPAM_MARK_ONLY
 };
 
-BogofilterConfig *bogofilter_get_config	      (void);
-void		    bogofilter_save_config	      (void);
-void 	            bogofilter_set_message_callback (MessageCallback callback);
+BogofilterConfig *bogofilter_get_config(void);
+void bogofilter_save_config(void);
+void bogofilter_set_message_callback(MessageCallback callback);
 gint bogofilter_gtk_init(void);
 void bogofilter_gtk_done(void);
 int bogofilter_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam);

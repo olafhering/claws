@@ -26,25 +26,25 @@
 #define PERLFILTER "perl_filter"
 
 typedef struct {
-  gchar *address;
-  gchar *bookname;
+	gchar *address;
+	gchar *bookname;
 } PerlPluginEmailEntry;
 
 typedef struct {
-  gchar *address;
-  gchar *value;
-  gchar *bookname;
+	gchar *address;
+	gchar *value;
+	gchar *bookname;
 } PerlPluginAttributeEntry;
 
 typedef struct {
-  GSList *g_slist;
-  time_t mtime;
+	GSList *g_slist;
+	time_t mtime;
 } PerlPluginTimedSList;
 
 typedef struct {
-  gint filter_log_verbosity;
+	gint filter_log_verbosity;
 } PerlPluginConfig;
 
-gint execute_detached(gchar**);
+gint execute_detached(gchar **);
 
 #endif /* include guard */

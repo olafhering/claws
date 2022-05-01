@@ -43,14 +43,12 @@ extern "C" {
 
 #include "mailmbox_types.h"
 
-int claws_mailmbox_parse(struct claws_mailmbox_folder * folder);
+	int claws_mailmbox_parse(struct claws_mailmbox_folder *folder);
 
-int
-claws_mailmbox_parse_additionnal(struct claws_mailmbox_folder * folder,
-			   size_t * index);
+	int
+	 claws_mailmbox_parse_additionnal(struct claws_mailmbox_folder *folder, size_t *index);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

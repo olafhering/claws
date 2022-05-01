@@ -23,9 +23,8 @@
 
 #include "compose.h"
 
-
 gboolean cmpy_add_composewindow(PyObject *module);
 
-PyObject* clawsmail_compose_new(PyObject *module, Compose *compose);
+PyObject *clawsmail_compose_new(PyObject *module, Compose *compose);
 
 #endif /* COMPOSEWINDOWTYPE_H */

@@ -26,9 +26,8 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-typedef struct _ClickableText	ClickableText;
-struct _ClickableText
-{
+typedef struct _ClickableText ClickableText;
+struct _ClickableText {
 	gchar *uri;
 
 	gchar *filename;
@@ -38,19 +37,17 @@ struct _ClickableText
 
 	guint start;
 	guint end;
-	
+
 	gboolean is_quote;
 	gint quote_level;
 	gboolean q_expanded;
 	gchar *fg_color;
 };
 
-
 #include "viewtypes.h"
 #include "procmime.h"
 
-struct _TextView
-{
+struct _TextView {
 	GtkWidget *vbox;
 	GtkWidget *scrolledwin;
 	GtkWidget *text;
@@ -85,50 +82,31 @@ struct _TextView
 	gint prev_quote_level;
 };
 
-TextView *textview_create		(void);
-void textview_init			(TextView	*textview);
-void textview_reflect_prefs		(TextView	*textview);
+TextView *textview_create(void);
+void textview_init(TextView *textview);
+void textview_reflect_prefs(TextView *textview);
 
-void textview_show_part		(TextView	*textview,
-				 MimeInfo	*mimeinfo,
-				 FILE		*fp);
-void textview_show_error	(TextView	*textview);
-void textview_show_info		(TextView	*textview,
-				 const gchar	*info_str);
-void textview_show_mime_part	(TextView	*textview,
-				 MimeInfo	*partinfo);
-void textview_clear		(TextView	*textview);
-void textview_destroy		(TextView	*textview);
-void textview_set_font		(TextView	*textview,
-				 const gchar	*codeset);
-void textview_set_text		(TextView	*textview,
-				 const gchar	*text);
-void textview_set_position	(TextView	*textview,
-				 gint		 pos);
-void textview_scroll_one_line	(TextView	*textview,
-				 gboolean	 up);
-gboolean textview_scroll_page	(TextView	*textview,
-				 gboolean	 up);
-void textview_scroll_max	(TextView 	*textview,
-				 gboolean 	 up);
+void textview_show_part(TextView *textview, MimeInfo *mimeinfo, FILE *fp);
+void textview_show_error(TextView *textview);
+void textview_show_info(TextView *textview, const gchar *info_str);
+void textview_show_mime_part(TextView *textview, MimeInfo *partinfo);
+void textview_clear(TextView *textview);
+void textview_destroy(TextView *textview);
+void textview_set_font(TextView *textview, const gchar *codeset);
+void textview_set_text(TextView *textview, const gchar *text);
+void textview_set_position(TextView *textview, gint pos);
+void textview_scroll_one_line(TextView *textview, gboolean up);
+gboolean textview_scroll_page(TextView *textview, gboolean up);
+void textview_scroll_max(TextView *textview, gboolean up);
 
-gboolean textview_search_string			(TextView	*textview,
-						 const gchar	*str,
-						 gboolean	 case_sens);
-gboolean textview_search_string_backward	(TextView	*textview,
-						 const gchar	*str,
-						 gboolean	 case_sens);
+gboolean textview_search_string(TextView *textview, const gchar *str, gboolean case_sens);
+gboolean textview_search_string_backward(TextView *textview, const gchar *str, gboolean case_sens);
 void textview_cursor_wait(TextView *textview);
 void textview_cursor_normal(TextView *textview);
 void textview_show_icon(TextView *textview, const gchar *stock_id);
-void textview_get_selection_offsets	(TextView 	*textview, 
-					 gint 		*sel_start, 
-					 gint		*sel_end);
-gboolean textview_uri_security_check	(TextView 	*textview, 
-					 ClickableText 	*uri,
-					 gboolean	 copied);
-gchar *textview_get_visible_uri		(TextView 	*textview, 
-					 ClickableText 	*uri);
+void textview_get_selection_offsets(TextView *textview, gint *sel_start, gint *sel_end);
+gboolean textview_uri_security_check(TextView *textview, ClickableText *uri, gboolean copied);
+gchar *textview_get_visible_uri(TextView *textview, ClickableText *uri);
 
 #define TEXTVIEW_INSERT(str) \
 	gtk_text_buffer_insert_with_tags_by_name \

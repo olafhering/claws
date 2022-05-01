@@ -26,12 +26,12 @@
 #include "procmsg.h"
 
 struct _FilteringAction {
-	gint	type;
-	gint	account_id;
-	gchar  *destination;
-	gint	labelcolor;
-	gint	score;
-	gchar  *header;
+	gint type;
+	gint account_id;
+	gchar *destination;
+	gint labelcolor;
+	gint score;
+	gchar *header;
 };
 
 typedef struct _FilteringAction FilteringAction;
@@ -40,8 +40,8 @@ struct _FilteringProp {
 	gboolean enabled;
 	gchar *name;
 	gint account_id;
-	MatcherList * matchers;
-	GSList * action_list;
+	MatcherList *matchers;
+	GSList *action_list;
 };
 
 typedef struct _FilteringProp FilteringProp;
@@ -65,50 +65,41 @@ typedef enum {
 	FILTERING_DEBUG_LEVEL_MED,
 	FILTERING_DEBUG_LEVEL_HIGH
 } FilteringDebugLevel;
-	
+
 /* extern GSList * prefs_filtering; */
 
-
-FilteringAction * filteringaction_new(int type, int account_id,
-				      gchar * destination,
-                                      gint labelcolor, gint score, gchar *header);
+FilteringAction *filteringaction_new(int type, int account_id, gchar *destination, gint labelcolor, gint score, gchar *header);
 void filteringaction_free(FilteringAction *action);
-FilteringAction * filteringaction_parse(gchar **str);
-gboolean filteringaction_apply_action_list (GSList *action_list, MsgInfo *info);
+FilteringAction *filteringaction_parse(gchar **str);
+gboolean filteringaction_apply_action_list(GSList *action_list, MsgInfo *info);
 
-FilteringProp * filteringprop_new(gboolean enabled,
-				  const gchar *name,
-				  gint account_id,
-				  MatcherList *matchers,
-				  GSList *action_list);
+FilteringProp *filteringprop_new(gboolean enabled, const gchar *name, gint account_id, MatcherList *matchers, GSList *action_list);
 void filteringprop_free(FilteringProp *prop);
 
-FilteringProp * filteringprop_parse(gchar **str);
+FilteringProp *filteringprop_parse(gchar **str);
 
 void filter_msginfo_move_or_delete(GSList *filtering_list, MsgInfo *info);
 gboolean processing_enabled(GSList *filtering_list);
-gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount *ac_prefs,
-								   FilteringInvocationType context, gchar *extra_info);
+gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount *ac_prefs, FilteringInvocationType context, gchar *extra_info);
 
-gchar * filteringaction_to_string(FilteringAction *action);
+gchar *filteringaction_to_string(FilteringAction *action);
 void prefs_filtering_write_config(void);
 void prefs_filtering_read_config(void);
-gchar * filteringaction_list_to_string(GSList * action_list);
-gchar * filteringprop_to_string(FilteringProp *prop);
+gchar *filteringaction_list_to_string(GSList *action_list);
+gchar *filteringprop_to_string(FilteringProp *prop);
 
 void prefs_filtering_clear(void);
 void prefs_filtering_clear_folder(Folder *folder);
 
-FilteringProp * filteringprop_copy(FilteringProp *src);
+FilteringProp *filteringprop_copy(FilteringProp *src);
 void filtering_move_and_copy_msgs(GSList *msglist);
-extern GSList * filtering_rules;
-extern GSList * pre_global_processing;
-extern GSList * post_global_processing;
+extern GSList *filtering_rules;
+extern GSList *pre_global_processing;
+extern GSList *post_global_processing;
 
 gboolean filtering_peek_per_account_rules(GSList *filtering_list);
 
 GSList *filtering_action_list_sort(GSList *action_list);
-gboolean filtering_action_list_rename_path(GSList *action_list, const gchar *old_path,
-					const gchar *new_path);
+gboolean filtering_action_list_rename_path(GSList *action_list, const gchar *old_path, const gchar *new_path);
 
 #endif

@@ -23,6 +23,6 @@
 
 gboolean cmpy_add_node(PyObject *module);
 
-PyObject* clawsmail_node_new(PyObject *module);
+PyObject *clawsmail_node_new(PyObject *module);
 
 #endif /* NODETYPE_H */

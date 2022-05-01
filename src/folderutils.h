@@ -27,9 +27,8 @@ typedef enum {
 
 #include "folder.h"
 
-gint folderutils_delete_duplicates(FolderItem *item,
-				   DeleteDuplicatesMode mode);
-void folderutils_mark_all_read	  (FolderItem *item, gboolean read);
-void folderutils_mark_all_read_recursive	  (FolderItem *item, gboolean read);
+gint folderutils_delete_duplicates(FolderItem *item, DeleteDuplicatesMode mode);
+void folderutils_mark_all_read(FolderItem *item, gboolean read);
+void folderutils_mark_all_read_recursive(FolderItem *item, gboolean read);
 
 #endif /* FOLDERUTILS_H */

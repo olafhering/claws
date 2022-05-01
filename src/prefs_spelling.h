@@ -20,7 +20,7 @@
 #ifndef PREFS_SPELLING_H
 #define PREFS_SPELLING_H
 
-void prefs_spelling_init	(void);
-void prefs_spelling_done	(void);
+void prefs_spelling_init(void);
+void prefs_spelling_done(void);
 
-#endif /* PREFS_SPELLING_H */ 
+#endif /* PREFS_SPELLING_H */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -59,7 +59,7 @@
 #include "inc.h"
 #include "account.h"
 #ifdef USE_GNUTLS
-#  include "ssl.h"
+#include "ssl.h"
 #endif
 #include "main.h"
 #include "file-utils.h"
@@ -69,14 +69,13 @@
 #define NNTPS_PORT	563
 #endif
 
-typedef struct _NewsFolder	NewsFolder;
-typedef struct _NewsSession	NewsSession;
+typedef struct _NewsFolder NewsFolder;
+typedef struct _NewsSession NewsSession;
 
 #define NEWS_FOLDER(obj)	((NewsFolder *)obj)
 #define NEWS_SESSION(obj)       ((NewsSession *)obj)
 
-struct _NewsFolder
-{
+struct _NewsFolder {
 	RemoteFolder rfolder;
 
 	gboolean use_auth;
@@ -84,72 +83,40 @@ struct _NewsFolder
 	guint refcnt;
 };
 
-struct _NewsSession
-{
+struct _NewsSession {
 	Session session;
 	Folder *folder;
 	gchar *group;
 };
 
-static void news_folder_init(Folder *folder, const gchar *name,
-			     const gchar *path);
+static void news_folder_init(Folder *folder, const gchar *name, const gchar *path);
 
-static Folder	*news_folder_new	(const gchar	*name,
-					 const gchar	*folder);
-static void	 news_folder_destroy	(Folder		*folder);
+static Folder *news_folder_new(const gchar *name, const gchar *folder);
+static void news_folder_destroy(Folder *folder);
 
-static gchar *news_fetch_msg		(Folder		*folder,
-					 FolderItem	*item,
-					 gint		 num);
-static void news_remove_cached_msg	(Folder 	*folder, 
-					 FolderItem 	*item, 
-					 MsgInfo 	*msginfo);
+static gchar *news_fetch_msg(Folder *folder, FolderItem *item, gint num);
+static void news_remove_cached_msg(Folder *folder, FolderItem *item, MsgInfo *msginfo);
 #ifdef USE_GNUTLS
-static Session *news_session_new	 (Folder		*folder,
-					  const PrefsAccount 	*account,
-					  gushort		 port,
-					  SSLType		 ssl_type);
+static Session *news_session_new(Folder *folder, const PrefsAccount *account, gushort port, SSLType ssl_type);
 #else
-static Session *news_session_new	 (Folder		*folder,
-					  const PrefsAccount 	*account,
-					  gushort		 port);
+static Session *news_session_new(Folder *folder, const PrefsAccount *account, gushort port);
 #endif
 
-static gint news_get_article		 (Folder	*folder,
-					  gint		 num,
-					  gchar		*filename);
+static gint news_get_article(Folder *folder, gint num, gchar *filename);
 
-static gint news_select_group		 (Folder	*folder,
-					  const gchar	*group,
-					  gint		*num,
-					  gint		*first,
-					  gint		*last);
-static MsgInfo *news_parse_xover	 (struct newsnntp_xover_resp_item *item);
-static gint news_get_num_list		 	 (Folder 	*folder, 
-					  FolderItem 	*item,
-					  GSList       **list,
-					  gboolean	*old_uids_valid);
-static MsgInfo *news_get_msginfo		 (Folder 	*folder, 
-					  FolderItem 	*item,
-					  gint 		 num);
-static GSList *news_get_msginfos		 (Folder 	*folder,
-					  FolderItem 	*item,
-					  GSList 	*msgnum_list);
-static gboolean news_scan_required		 (Folder 	*folder,
-					  FolderItem 	*item);
+static gint news_select_group(Folder *folder, const gchar *group, gint *num, gint *first, gint *last);
+static MsgInfo *news_parse_xover(struct newsnntp_xover_resp_item *item);
+static gint news_get_num_list(Folder *folder, FolderItem *item, GSList **list, gboolean *old_uids_valid);
+static MsgInfo *news_get_msginfo(Folder *folder, FolderItem *item, gint num);
+static GSList *news_get_msginfos(Folder *folder, FolderItem *item, GSList *msgnum_list);
+static gboolean news_scan_required(Folder *folder, FolderItem *item);
 
-static gchar *news_folder_get_path	 (Folder	*folder);
-static gchar *news_item_get_path		 (Folder	*folder,
-					  FolderItem	*item);
-static void news_synchronise		 (FolderItem	*item, gint days);
-static int news_remove_msg		 (Folder 	*folder, 
-					  FolderItem 	*item, 
-					  gint 		 msgnum);
-static gint news_rename_folder		 (Folder *folder,
-					  FolderItem *item,
-					  const gchar *name);
-static gint news_remove_folder		 (Folder	*folder,
-					  FolderItem	*item);
+static gchar *news_folder_get_path(Folder *folder);
+static gchar *news_item_get_path(Folder *folder, FolderItem *item);
+static void news_synchronise(FolderItem *item, gint days);
+static int news_remove_msg(Folder *folder, FolderItem *item, gint msgnum);
+static gint news_rename_folder(Folder *folder, FolderItem *item, const gchar *name);
+static gint news_remove_folder(Folder *folder, FolderItem *item);
 static FolderClass news_class;
 
 FolderClass *news_get_class(void)
@@ -200,9 +167,7 @@ void nntp_folder_unref(Folder *folder)
 		((NewsFolder *)folder)->refcnt--;
 }
 
-static int news_remove_msg		 (Folder 	*folder, 
-					  FolderItem 	*item, 
-					  gint 		 msgnum)
+static int news_remove_msg(Folder *folder, FolderItem *item, gint msgnum)
 {
 	gchar *path, *filename;
 
@@ -212,7 +177,7 @@ static int news_remove_msg		 (Folder 	*folder,
 	path = folder_item_get_path(item);
 	if (!is_dir_exist(path))
 		make_dir_hier(path);
-	
+
 	filename = g_strconcat(path, G_DIR_SEPARATOR_S, itos(msgnum), NULL);
 	g_free(path);
 	claws_unlink(filename);
@@ -266,8 +231,7 @@ static void news_folder_destroy(Folder *folder)
 	folder_remote_folder_destroy(REMOTE_FOLDER(folder));
 }
 
-static void news_folder_init(Folder *folder, const gchar *name,
-			     const gchar *path)
+static void news_folder_init(Folder *folder, const gchar *name, const gchar *path)
 {
 	folder_remote_folder_init(folder, name, path);
 }
@@ -291,17 +255,12 @@ static gboolean nntp_ping(gpointer data)
 
 	if (session->state != SESSION_READY || news_folder_locked(news_session->folder))
 		return FALSE;
-	
+
 	news_folder_lock(NEWS_FOLDER(news_session->folder));
 
 	if ((r = nntp_threaded_date(news_session->folder, &lt)) != NEWSNNTP_NO_ERROR) {
-		if (r != NEWSNNTP_ERROR_COMMAND_NOT_SUPPORTED &&
-		    r != NEWSNNTP_ERROR_COMMAND_NOT_UNDERSTOOD) {
-			log_warning(LOG_PROTOCOL, _("NNTP connection to %s:%d has been"
-			      " disconnected.\n"),
-			    news_session->folder->account->nntp_server,
-			    news_session->folder->account->set_nntpport ?
-			    news_session->folder->account->nntpport : NNTP_PORT);
+		if (r != NEWSNNTP_ERROR_COMMAND_NOT_SUPPORTED && r != NEWSNNTP_ERROR_COMMAND_NOT_UNDERSTOOD) {
+			log_warning(LOG_PROTOCOL, _("NNTP connection to %s:%d has been" " disconnected.\n"), news_session->folder->account->nntp_server, news_session->folder->account->set_nntpport ? news_session->folder->account->nntpport : NNTP_PORT);
 			REMOTE_FOLDER(news_session->folder)->session = NULL;
 			news_folder_unlock(NEWS_FOLDER(news_session->folder));
 			session->state = SESSION_DISCONNECTED;
@@ -316,10 +275,8 @@ static gboolean nntp_ping(gpointer data)
 	return TRUE;
 }
 
-
 #ifdef USE_GNUTLS
-static Session *news_session_new(Folder *folder, const PrefsAccount *account, gushort port,
-				 SSLType ssl_type)
+static Session *news_session_new(Folder *folder, const PrefsAccount *account, gushort port, SSLType ssl_type)
 #else
 static Session *news_session_new(Folder *folder, const PrefsAccount *account, gushort port)
 #endif
@@ -331,29 +288,25 @@ static Session *news_session_new(Folder *folder, const PrefsAccount *account, gu
 
 	cm_return_val_if_fail(server != NULL, NULL);
 
-	log_message(LOG_PROTOCOL,
-			_("Account '%s': Connecting to NNTP server: %s:%d...\n"),
-			folder->account->account_name, server, port);
+	log_message(LOG_PROTOCOL, _("Account '%s': Connecting to NNTP server: %s:%d...\n"), folder->account->account_name, server, port);
 
 	session = g_new0(NewsSession, 1);
 	session_init(SESSION(session), folder->account, FALSE);
-	SESSION(session)->type             = SESSION_NEWS;
-	SESSION(session)->server           = g_strdup(server);
-	SESSION(session)->port             = port;
- 	SESSION(session)->sock             = NULL;
-	SESSION(session)->destroy          = news_session_destroy;
+	SESSION(session)->type = SESSION_NEWS;
+	SESSION(session)->server = g_strdup(server);
+	SESSION(session)->port = port;
+	SESSION(session)->sock = NULL;
+	SESSION(session)->destroy = news_session_destroy;
 
 	if (account->use_proxy) {
 		if (account->use_default_proxy) {
 			proxy_info = (ProxyInfo *)&(prefs_common.proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY,
-					PWS_CORE_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS);
 		} else {
 			proxy_info = (ProxyInfo *)&(account->proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get_account(account->account_id,
-					PWS_ACCOUNT_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get_account(account->account_id, PWS_ACCOUNT_PROXY_PASS);
 		}
 	}
 	SESSION(session)->proxy_info = proxy_info;
@@ -367,7 +320,7 @@ static Session *news_session_new(Folder *folder, const PrefsAccount *account, gu
 	else
 #endif
 		r = nntp_threaded_connect(folder, server, port, proxy_info);
-	
+
 	if (r != NEWSNNTP_NO_ERROR) {
 		log_error(LOG_PROTOCOL, _("Error logging in to %s:%d...\n"), server, port);
 		session_destroy(SESSION(session));
@@ -394,20 +347,11 @@ static Session *news_session_new_for_folder(Folder *folder)
 	ac = folder->account;
 
 #ifdef USE_GNUTLS
-	port = ac->set_nntpport ? ac->nntpport
-		: ac->ssl_nntp ? NNTPS_PORT : NNTP_PORT;
+	port = ac->set_nntpport ? ac->nntpport : ac->ssl_nntp ? NNTPS_PORT : NNTP_PORT;
 	session = news_session_new(folder, ac, port, ac->ssl_nntp);
 #else
 	if (ac->ssl_nntp != SSL_NONE) {
-		if (alertpanel_full(_("Insecure connection"),
-			_("This connection is configured to be secured "
-			  "using TLS, but TLS is not available "
-			  "in this build of Claws Mail. \n\n"
-			  "Do you want to continue connecting to this "
-			  "server? The communication would not be "
-			  "secure."),
-			  GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL,
-				ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE)
+		if (alertpanel_full(_("Insecure connection"), _("This connection is configured to be secured " "using TLS, but TLS is not available " "in this build of Claws Mail. \n\n" "Do you want to continue connecting to this " "server? The communication would not be " "secure."), GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE)
 			return NULL;
 	}
 	port = ac->set_nntpport ? ac->nntpport : NNTP_PORT;
@@ -417,12 +361,9 @@ static Session *news_session_new_for_folder(Folder *folder)
 	if (ac->use_nntp_auth && ac->userid && ac->userid[0]) {
 		userid = ac->userid;
 		if (password_get(userid, ac->nntp_server, "nntp", port, &passwd)) {
-			/* NOP */;
-		} else if ((passwd = passwd_store_get_account(ac->account_id,
-					PWS_ACCOUNT_RECV)) == NULL) {
-			passwd = input_dialog_query_password_keep(ac->nntp_server,
-								  userid,
-								  &(ac->session_passwd));
+			/* NOP */ ;
+		} else if ((passwd = passwd_store_get_account(ac->account_id, PWS_ACCOUNT_RECV)) == NULL) {
+			passwd = input_dialog_query_password_keep(ac->nntp_server, userid, &(ac->session_passwd));
 		}
 	}
 
@@ -432,50 +373,46 @@ static Session *news_session_new_for_folder(Folder *folder)
 		r = NEWSNNTP_ERROR_CONNECTION_REFUSED;
 
 	if (r != NEWSNNTP_NO_ERROR) {
-	    if (r == NEWSNNTP_WARNING_REQUEST_AUTHORIZATION_USERNAME) {
-	        /*
-	           FIX ME when libetpan implements 480 to indicate authorization
-	           is required to use this capability. Libetpan treats a 480 as a
-	           381 which is clearly wrong.
-	           RFC 4643 section 2.
-	           Response code 480
-	           Generic response
-	           Meaning: command unavailable until the client
-	           has authenticated itself.
-	        */
-		/* if the server does not advertise the capability MODE-READER,
-		   we normally should not send MODE READER. However this can't
-		   hurt: a transit-only server returns 502 and closes the cnx.
-		   Ref.: http://tools.ietf.org/html/rfc3977#section-5.3
-		*/
-	        log_error(LOG_PROTOCOL, _("Libetpan does not support return code 480 "
-	        "so for now we choose to continue\n"));
-	    }
-	    else if (r == NEWSNNTP_ERROR_UNEXPECTED_RESPONSE) {
-		/* if the server does not advertise the capability MODE-READER,
-		   we normally should not send MODE READER. However this can't
-		   hurt: a transit-only server returns 502 and closes the cnx.
-		   Ref.: http://tools.ietf.org/html/rfc3977#section-5.3
-		*/
-		log_error(LOG_PROTOCOL, _("Mode reader failed, continuing nevertheless\n")); 
-	    }
-	    else {
-	        /* An error state bail out */
-	        log_error(LOG_PROTOCOL, _("Error creating session with %s:%d\n"), ac->nntp_server, port);
-		if (session != NULL)
-			session_destroy(SESSION(session));
-		g_free(passwd);
-		if (ac->session_passwd) {
-			g_free(ac->session_passwd);
-			ac->session_passwd = NULL;
+		if (r == NEWSNNTP_WARNING_REQUEST_AUTHORIZATION_USERNAME) {
+			/*
+			   FIX ME when libetpan implements 480 to indicate authorization
+			   is required to use this capability. Libetpan treats a 480 as a
+			   381 which is clearly wrong.
+			   RFC 4643 section 2.
+			   Response code 480
+			   Generic response
+			   Meaning: command unavailable until the client
+			   has authenticated itself.
+			 */
+			/* if the server does not advertise the capability MODE-READER,
+			   we normally should not send MODE READER. However this can't
+			   hurt: a transit-only server returns 502 and closes the cnx.
+			   Ref.: http://tools.ietf.org/html/rfc3977#section-5.3
+			 */
+			log_error(LOG_PROTOCOL, _("Libetpan does not support return code 480 " "so for now we choose to continue\n"));
+		} else if (r == NEWSNNTP_ERROR_UNEXPECTED_RESPONSE) {
+			/* if the server does not advertise the capability MODE-READER,
+			   we normally should not send MODE READER. However this can't
+			   hurt: a transit-only server returns 502 and closes the cnx.
+			   Ref.: http://tools.ietf.org/html/rfc3977#section-5.3
+			 */
+			log_error(LOG_PROTOCOL, _("Mode reader failed, continuing nevertheless\n"));
+		} else {
+			/* An error state bail out */
+			log_error(LOG_PROTOCOL, _("Error creating session with %s:%d\n"), ac->nntp_server, port);
+			if (session != NULL)
+				session_destroy(SESSION(session));
+			g_free(passwd);
+			if (ac->session_passwd) {
+				g_free(ac->session_passwd);
+				ac->session_passwd = NULL;
+			}
+			return NULL;
 		}
-		return NULL;
-	    }
 	}
 
 	if ((session != NULL) && ac->use_nntp_auth) { /* FIXME:  && ac->use_nntp_auth_onconnect */
-		if (nntp_threaded_login(folder, userid, passwd) !=
-			NEWSNNTP_NO_ERROR) {
+		if (nntp_threaded_login(folder, userid, passwd) != NEWSNNTP_NO_ERROR) {
 			log_error(LOG_PROTOCOL, _("Error authenticating to %s:%d...\n"), ac->nntp_server, port);
 			session_destroy(SESSION(session));
 			g_free(passwd);
@@ -494,15 +431,12 @@ static Session *news_session_new_for_folder(Folder *folder)
 static NewsSession *news_session_get(Folder *folder)
 {
 	RemoteFolder *rfolder = REMOTE_FOLDER(folder);
-	
+
 	cm_return_val_if_fail(folder != NULL, NULL);
 	cm_return_val_if_fail(FOLDER_CLASS(folder) == &news_class, NULL);
 	cm_return_val_if_fail(folder->account != NULL, NULL);
 
-	if (prefs_common.work_offline && 
-	    !inc_offline_should_override(FALSE,
-		_("Claws Mail needs network access in order "
-		  "to access the News server."))) {
+	if (prefs_common.work_offline && !inc_offline_should_override(FALSE, _("Claws Mail needs network access in order " "to access the News server."))) {
 		return NULL;
 	}
 
@@ -520,9 +454,8 @@ static NewsSession *news_session_get(Folder *folder)
 		session_register_ping(SESSION(rfolder->session), nntp_ping);
 		goto newsession;
 	}
-	
-	if (time(NULL) - rfolder->session->last_access_time <
-		SESSION_TIMEOUT_INTERVAL) {
+
+	if (time(NULL) - rfolder->session->last_access_time < SESSION_TIMEOUT_INTERVAL) {
 		return NEWS_SESSION(rfolder->session);
 	}
 
@@ -531,7 +464,7 @@ static NewsSession *news_session_get(Folder *folder)
 		session_register_ping(SESSION(rfolder->session), nntp_ping);
 	}
 
-newsession:
+ newsession:
 	if (rfolder->session)
 		session_set_access_time(rfolder->session);
 
@@ -595,8 +528,7 @@ static gchar *news_fetch_msg(Folder *folder, FolderItem *item, gint num)
 	}
 
 	debug_print("getting article %d...\n", num);
-	ok = news_get_article(folder,
-			      num, filename);
+	ok = news_get_article(folder, num, filename);
 	if (ok != NEWSNNTP_NO_ERROR) {
 		g_warning("can't read article %d", num);
 		if (ok == NEWSNNTP_ERROR_STREAM) {
@@ -610,8 +542,7 @@ static gchar *news_fetch_msg(Folder *folder, FolderItem *item, gint num)
 	return filename;
 }
 
-static NewsGroupInfo *news_group_info_new(const gchar *name,
-					  gint first, gint last, gchar type)
+static NewsGroupInfo *news_group_info_new(const gchar *name, gint first, gint last, gchar type)
 {
 	NewsGroupInfo *ginfo;
 
@@ -630,8 +561,7 @@ static void news_group_info_free(NewsGroupInfo *ginfo)
 	g_free(ginfo);
 }
 
-static gint news_group_info_compare(NewsGroupInfo *ginfo1,
-				    NewsGroupInfo *ginfo2)
+static gint news_group_info_compare(NewsGroupInfo *ginfo1, NewsGroupInfo *ginfo2)
 {
 	return g_ascii_strcasecmp(ginfo1->name, ginfo2->name);
 }
@@ -659,7 +589,7 @@ GSList *news_get_group_list(Folder *folder)
 		clist *grouplist = NULL;
 		clistiter *cur;
 		fp = claws_fopen(filename, "wb");
-		
+
 		if (!fp) {
 			g_free(filename);
 			return NULL;
@@ -672,7 +602,7 @@ GSList *news_get_group_list(Folder *folder)
 		}
 
 		ok = nntp_threaded_list(folder, &grouplist);
-		
+
 		if (ok != NEWSNNTP_NO_ERROR) {
 			if (ok == NEWSNNTP_ERROR_STREAM) {
 				session_destroy(SESSION(session));
@@ -682,16 +612,12 @@ GSList *news_get_group_list(Folder *folder)
 			g_free(filename);
 			return NULL;
 		}
-		
+
 		if (grouplist) {
 			for (cur = clist_begin(grouplist); cur; cur = clist_next(cur)) {
 				struct newsnntp_group_info *info = (struct newsnntp_group_info *)
-									clist_content(cur);
-				if (fprintf(fp, "%s %d %d %c\n",
-					info->grp_name,
-					info->grp_last,
-					info->grp_first,
-					info->grp_type) < 0) {
+				    clist_content(cur);
+				if (fprintf(fp, "%s %d %d %c\n", info->grp_name, info->grp_last, info->grp_first, info->grp_type) < 0) {
 					log_error(LOG_PROTOCOL, ("Can't write newsgroup list\n"));
 					session_destroy(SESSION(session));
 					REMOTE_FOLDER(folder)->session = NULL;
@@ -727,7 +653,8 @@ GSList *news_get_group_list(Folder *folder)
 		NewsGroupInfo *ginfo;
 
 		p = strchr(p, ' ');
-		if (!p) continue;
+		if (!p)
+			continue;
 		*p = '\0';
 		p++;
 		name = buf;
@@ -748,7 +675,7 @@ GSList *news_get_group_list(Folder *folder)
 	claws_fclose(fp);
 	g_free(filename);
 
-	list = g_slist_sort(list, (GCompareFunc)news_group_info_compare);
+	list = g_slist_sort(list, (GCompareFunc) news_group_info_compare);
 
 	return list;
 }
@@ -757,7 +684,8 @@ void news_group_list_free(GSList *group_list)
 {
 	GSList *cur;
 
-	if (!group_list) return;
+	if (!group_list)
+		return;
 
 	for (cur = group_list; cur != NULL; cur = cur->next)
 		news_group_info_free((NewsGroupInfo *)cur->data);
@@ -791,13 +719,13 @@ gint news_post(Folder *folder, const gchar *file)
 	cm_return_val_if_fail(folder != NULL, -1);
 	cm_return_val_if_fail(FOLDER_CLASS(folder) == &news_class, -1);
 	cm_return_val_if_fail(contents != NULL, -1);
-	
+
 	session = news_session_get(folder);
-	if (!session)  {
+	if (!session) {
 		g_free(contents);
 		return -1;
 	}
-	
+
 	ok = nntp_threaded_post(folder, contents, strlen(contents));
 
 	g_free(contents);
@@ -815,9 +743,9 @@ static gint news_get_article(Folder *folder, gint num, gchar *filename)
 	size_t len;
 	char *result = NULL;
 	int r;
-	
+
 	r = nntp_threaded_article(folder, num, &result, &len);
-	
+
 	if (r == NEWSNNTP_NO_ERROR) {
 		if (str_write_to_file(result, filename, FALSE) < 0) {
 			mmap_string_unref(result);
@@ -825,7 +753,7 @@ static gint news_get_article(Folder *folder, gint num, gchar *filename)
 		}
 		mmap_string_unref(result);
 	}
-	
+
 	return r;
 }
 
@@ -842,8 +770,7 @@ static gint news_get_article(Folder *folder, gint num, gchar *filename)
  *
  * Return value: NNTP result code.
  **/
-static gint news_select_group(Folder *folder, const gchar *group,
-			      gint *num, gint *first, gint *last)
+static gint news_select_group(Folder *folder, const gchar *group, gint *num, gint *first, gint *last)
 {
 	gint ok;
 	gint num_, first_, last_;
@@ -851,7 +778,7 @@ static gint news_select_group(Folder *folder, const gchar *group,
 	NewsSession *session = NEWS_SESSION(news_session_get(folder));
 
 	cm_return_val_if_fail(session != NULL, -1);
-	
+
 	if (!num || !first || !last) {
 		if (session->group && g_ascii_strcasecmp(session->group, group) == 0)
 			return NEWSNNTP_NO_ERROR;
@@ -864,7 +791,7 @@ static gint news_select_group(Folder *folder, const gchar *group,
 	session->group = NULL;
 
 	ok = nntp_threaded_group(folder, group, &info);
-	
+
 	if (ok == NEWSNNTP_NO_ERROR && info) {
 		session->group = g_strdup(group);
 		*num = info->grp_first;
@@ -898,54 +825,52 @@ static MsgInfo *news_parse_xover(struct newsnntp_xover_resp_item *item)
 	remove_return(msginfo->fromname);
 	remove_return(msginfo->subject);
 
-        if (item->ovr_message_id) {
+	if (item->ovr_message_id) {
 		gchar *tmp = g_strdup(item->ovr_message_id);
-                extract_parenthesis(tmp, '<', '>');
-                remove_space(tmp);
-                if (*tmp != '\0')
-                        msginfo->msgid = g_strdup(tmp);
+		extract_parenthesis(tmp, '<', '>');
+		remove_space(tmp);
+		if (*tmp != '\0')
+			msginfo->msgid = g_strdup(tmp);
 		g_free(tmp);
-        }                        
+	}
 
-        /* FIXME: this is a quick fix; references' meaning was changed
-         * into having the actual list of references in the References: header.
-         * We need a GSList here, so msginfo_free() and msginfo_copy() can do 
-         * their things properly. */ 
-        if (item->ovr_references && *(item->ovr_references)) {	 
+	/* FIXME: this is a quick fix; references' meaning was changed
+	 * into having the actual list of references in the References: header.
+	 * We need a GSList here, so msginfo_free() and msginfo_copy() can do 
+	 * their things properly. */
+	if (item->ovr_references && *(item->ovr_references)) {
 		gchar **ref_tokens = g_strsplit(item->ovr_references, " ", -1);
 		guint i = 0;
 		char *tmp;
 		char *p;
 		while (ref_tokens[i]) {
 			gchar *cur_ref = ref_tokens[i];
-			msginfo->references = references_list_append(msginfo->references, 
-					cur_ref);
+			msginfo->references = references_list_append(msginfo->references, cur_ref);
 			i++;
 		}
 		g_strfreev(ref_tokens);
-		
+
 		tmp = g_strdup(item->ovr_references);
-                eliminate_parenthesis(tmp, '(', ')');
-                if ((p = strrchr(tmp, '<')) != NULL) {
-                        extract_parenthesis(p, '<', '>');
-                        remove_space(p);
-                        if (*p != '\0')
-                                msginfo->inreplyto = g_strdup(p);
-                }
+		eliminate_parenthesis(tmp, '(', ')');
+		if ((p = strrchr(tmp, '<')) != NULL) {
+			extract_parenthesis(p, '<', '>');
+			remove_space(p);
+			if (*p != '\0')
+				msginfo->inreplyto = g_strdup(p);
+		}
 		g_free(tmp);
-	} 
+	}
 
 	return msginfo;
 }
 
-gint news_cancel_article(Folder * folder, MsgInfo * msginfo)
+gint news_cancel_article(Folder *folder, MsgInfo *msginfo)
 {
-	gchar * tmp;
-	FILE * tmpfp;
+	gchar *tmp;
+	FILE *tmpfp;
 	gchar date[RFC822_DATE_BUFFSIZE];
 
-	tmp = g_strdup_printf("%s%ccancel%p", get_tmp_dir(),
-			      G_DIR_SEPARATOR, msginfo);
+	tmp = g_strdup_printf("%s%ccancel%p", get_tmp_dir(), G_DIR_SEPARATOR, msginfo);
 	if (tmp == NULL)
 		return -1;
 
@@ -958,27 +883,12 @@ gint news_cancel_article(Folder * folder, MsgInfo * msginfo)
 		FILE_OP_ERROR(tmp, "chmod");
 		g_warning("can't change file mode");
 	}
-	
+
 	if (prefs_common.hide_timezone)
 		get_rfc822_date_hide_tz(date, sizeof(date));
 	else
 		get_rfc822_date(date, sizeof(date));
-	if (fprintf(tmpfp, "From: %s\r\n"
-		       "Newsgroups: %s\r\n"
-		       "Subject: cmsg cancel <%s>\r\n"
-		       "Control: cancel <%s>\r\n"
-		       "Approved: %s\r\n"
-		       "X-Cancelled-by: %s\r\n"
-		       "Date: %s\r\n"
-		       "\r\n"
-		       "removed with Claws Mail\r\n",
-		       msginfo->from,
-		       msginfo->newsgroups,
-		       msginfo->msgid,
-		       msginfo->msgid,
-		       msginfo->from,
-		       msginfo->from,
-		       date) < 0) {
+	if (fprintf(tmpfp, "From: %s\r\n" "Newsgroups: %s\r\n" "Subject: cmsg cancel <%s>\r\n" "Control: cancel <%s>\r\n" "Approved: %s\r\n" "X-Cancelled-by: %s\r\n" "Date: %s\r\n" "\r\n" "removed with Claws Mail\r\n", msginfo->from, msginfo->newsgroups, msginfo->msgid, msginfo->msgid, msginfo->from, msginfo->from, date) < 0) {
 		FILE_OP_ERROR(tmp, "fprintf");
 		claws_fclose(tmpfp);
 		claws_unlink(tmp);
@@ -1005,12 +915,9 @@ static gchar *news_folder_get_path(Folder *folder)
 {
 	gchar *folder_path;
 
-        cm_return_val_if_fail(folder->account != NULL, NULL);
+	cm_return_val_if_fail(folder->account != NULL, NULL);
 
-        folder_path = g_strconcat(get_news_cache_dir(),
-                                  G_DIR_SEPARATOR_S,
-                                  folder->account->nntp_server,
-                                  NULL);
+	folder_path = g_strconcat(get_news_cache_dir(), G_DIR_SEPARATOR_S, folder->account->nntp_server, NULL);
 	return folder_path;
 }
 
@@ -1022,23 +929,19 @@ static gchar *news_item_get_path(Folder *folder, FolderItem *item)
 	cm_return_val_if_fail(item != NULL, NULL);
 	folder_path = news_folder_get_path(folder);
 
-        cm_return_val_if_fail(folder_path != NULL, NULL);
-        if (g_path_is_absolute(folder_path)) {
-                if (item->path)
-                        path = g_strconcat(folder_path, G_DIR_SEPARATOR_S,
-                                           item->path, NULL);
-                else
-                        path = g_strdup(folder_path);
-        } else {
-                if (item->path)
-                        path = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S,
-                                           folder_path, G_DIR_SEPARATOR_S,
-                                           item->path, NULL);
-                else
-                        path = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S,
-                                           folder_path, NULL);
-        }
-        g_free(folder_path);
+	cm_return_val_if_fail(folder_path != NULL, NULL);
+	if (g_path_is_absolute(folder_path)) {
+		if (item->path)
+			path = g_strconcat(folder_path, G_DIR_SEPARATOR_S, item->path, NULL);
+		else
+			path = g_strdup(folder_path);
+	} else {
+		if (item->path)
+			path = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S, folder_path, G_DIR_SEPARATOR_S, item->path, NULL);
+		else
+			path = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S, folder_path, NULL);
+	}
+	g_free(folder_path);
 #ifdef G_OS_WIN32
 	while (strchr(path, '/'))
 		*strchr(path, '/') = '\\';
@@ -1060,7 +963,7 @@ static gint news_get_num_list(Folder *folder, FolderItem *item, GSList **msgnum_
 	cm_return_val_if_fail(session != NULL, -1);
 
 	*old_uids_valid = TRUE;
-	
+
 	news_folder_lock(NEWS_FOLDER(item->folder));
 
 	ok = news_select_group(folder, item->path, &num, &first, &last);
@@ -1074,16 +977,13 @@ static gint news_get_num_list(Folder *folder, FolderItem *item, GSList **msgnum_
 	if (num <= 0)
 		remove_all_numbered_files(dir);
 	else if (last < first)
-		log_warning(LOG_PROTOCOL, _("invalid article range: %d - %d\n"),
-			    first, last);
+		log_warning(LOG_PROTOCOL, _("invalid article range: %d - %d\n"), first, last);
 	else {
 		for (i = first; i <= last; i++) {
-			*msgnum_list = g_slist_prepend(*msgnum_list, 
-						       GINT_TO_POINTER(i));
+			*msgnum_list = g_slist_prepend(*msgnum_list, GINT_TO_POINTER(i));
 			nummsgs++;
 		}
-		debug_print("removing old messages from %d to %d in %s\n",
-			    first, last, dir);
+		debug_print("removing old messages from %d to %d in %s\n", first, last, dir);
 		remove_numbered_files(dir, 1, first - 1);
 	}
 	g_free(dir);
@@ -1095,19 +995,17 @@ static void news_set_msg_flags(FolderItem *item, MsgInfo *msginfo)
 {
 	msginfo->flags.tmp_flags = 0;
 	if (item->folder->account->mark_crosspost_read && msginfo->msgid) {
-		if (item->folder->newsart &&
-		    g_hash_table_lookup(item->folder->newsart, msginfo->msgid) != NULL) {
+		if (item->folder->newsart && g_hash_table_lookup(item->folder->newsart, msginfo->msgid) != NULL) {
 			msginfo->flags.perm_flags = MSG_COLORLABEL_TO_FLAGS(item->folder->account->crosspost_col);
-				
+
 		} else {
-			if (!item->folder->newsart) 
+			if (!item->folder->newsart)
 				item->folder->newsart = g_hash_table_new(g_str_hash, g_str_equal);
-			g_hash_table_insert(item->folder->newsart,
-					g_strdup(msginfo->msgid), GINT_TO_POINTER(1));
-			msginfo->flags.perm_flags = MSG_NEW|MSG_UNREAD;
+			g_hash_table_insert(item->folder->newsart, g_strdup(msginfo->msgid), GINT_TO_POINTER(1));
+			msginfo->flags.perm_flags = MSG_NEW | MSG_UNREAD;
 		}
 	} else {
-		msginfo->flags.perm_flags = MSG_NEW|MSG_UNREAD;
+		msginfo->flags.perm_flags = MSG_NEW | MSG_UNREAD;
 	}
 }
 
@@ -1120,7 +1018,7 @@ static void news_get_extra_fields(NewsSession *session, FolderItem *item, GSList
 	clistiter *hdr;
 	gint first = -1, last = -1;
 	GHashTable *hash_table;
-	
+
 	cm_return_if_fail(session != NULL);
 	cm_return_if_fail(item != NULL);
 	cm_return_if_fail(item->folder != NULL);
@@ -1132,15 +1030,14 @@ static void news_get_extra_fields(NewsSession *session, FolderItem *item, GSList
 	news_folder_lock(NEWS_FOLDER(item->folder));
 
 	hash_table = g_hash_table_new(g_direct_hash, g_direct_equal);
-	
+
 	for (cur = msglist; cur; cur = cur->next) {
 		msginfo = (MsgInfo *)cur->data;
 		if (first == -1 || msginfo->msgnum < first)
 			first = msginfo->msgnum;
 		if (last == -1 || msginfo->msgnum > last)
 			last = msginfo->msgnum;
-		g_hash_table_insert(hash_table,
-				GINT_TO_POINTER(msginfo->msgnum), msginfo);
+		g_hash_table_insert(hash_table, GINT_TO_POINTER(msginfo->msgnum), msginfo);
 	}
 
 	if (first == -1 || last == -1) {
@@ -1174,7 +1071,7 @@ static void news_get_extra_fields(NewsSession *session, FolderItem *item, GSList
 	}
 	newsnntp_xhdr_free(hdrlist);
 	hdrlist = NULL;
-	
+
 /* To */
 	ok = nntp_threaded_xhdr(item->folder, "to", first, last, &hdrlist);
 
@@ -1201,7 +1098,7 @@ static void news_get_extra_fields(NewsSession *session, FolderItem *item, GSList
 	}
 	newsnntp_xhdr_free(hdrlist);
 	hdrlist = NULL;
-	
+
 /* Cc */
 	ok = nntp_threaded_xhdr(item->folder, "cc", first, last, &hdrlist);
 
@@ -1244,11 +1141,10 @@ static GSList *news_get_msginfos_for_range(NewsSession *session, FolderItem *ite
 	cm_return_val_if_fail(session != NULL, NULL);
 	cm_return_val_if_fail(item != NULL, NULL);
 
-	log_message(LOG_PROTOCOL, _("getting xover %d - %d in %s...\n"),
-		    begin, end, item->path);
+	log_message(LOG_PROTOCOL, _("getting xover %d - %d in %s...\n"), begin, end, item->path);
 
 	news_folder_lock(NEWS_FOLDER(item->folder));
-	
+
 	ok = news_select_group(item->folder, item->path, NULL, NULL, NULL);
 	if (ok != NEWSNNTP_NO_ERROR) {
 		log_warning(LOG_PROTOCOL, _("couldn't set group: %s\n"), item->path);
@@ -1257,7 +1153,7 @@ static GSList *news_get_msginfos_for_range(NewsSession *session, FolderItem *ite
 	}
 
 	ok = nntp_threaded_xover(item->folder, begin, end, NULL, &msglist);
-	
+
 	if (ok != NEWSNNTP_NO_ERROR) {
 		log_warning(LOG_PROTOCOL, _("couldn't get xover\n"));
 		if (ok == NEWSNNTP_ERROR_STREAM) {
@@ -1274,7 +1170,7 @@ static GSList *news_get_msginfos_for_range(NewsSession *session, FolderItem *ite
 		for (cur = clist_begin(msglist); cur; cur = clist_next(cur)) {
 			struct newsnntp_xover_resp_item *ritem = (struct newsnntp_xover_resp_item *)clist_content(cur);
 			msginfo = news_parse_xover(ritem);
-			
+
 			if (!msginfo) {
 				log_warning(LOG_PROTOCOL, _("invalid xover line\n"));
 				continue;
@@ -1299,7 +1195,7 @@ static GSList *news_get_msginfos_for_range(NewsSession *session, FolderItem *ite
 	session_set_access_time(SESSION(session));
 
 	news_get_extra_fields(session, item, newlist);
-	
+
 	return newlist;
 }
 
@@ -1315,13 +1211,13 @@ static MsgInfo *news_get_msginfo(Folder *folder, FolderItem *item, gint num)
 	cm_return_val_if_fail(item->folder != NULL, NULL);
 	cm_return_val_if_fail(FOLDER_CLASS(item->folder) == &news_class, NULL);
 
- 	msglist = news_get_msginfos_for_range(session, item, num, num);
- 
- 	if (msglist)
+	msglist = news_get_msginfos_for_range(session, item, num, num);
+
+	if (msglist)
 		msginfo = msglist->data;
-	
+
 	g_slist_free(msglist);
-	
+
 	return msginfo;
 }
 
@@ -1330,12 +1226,12 @@ static GSList *news_get_msginfos(Folder *folder, FolderItem *item, GSList *msgnu
 	NewsSession *session;
 	GSList *elem, *msginfo_list = NULL, *tmp_msgnum_list, *tmp_msginfo_list;
 	guint first, last, next;
-	
+
 	cm_return_val_if_fail(folder != NULL, NULL);
 	cm_return_val_if_fail(FOLDER_CLASS(folder) == &news_class, NULL);
 	cm_return_val_if_fail(msgnum_list != NULL, NULL);
 	cm_return_val_if_fail(item != NULL, NULL);
-	
+
 	session = news_session_get(folder);
 	cm_return_val_if_fail(session != NULL, NULL);
 
@@ -1346,26 +1242,26 @@ static GSList *news_get_msginfos(Folder *folder, FolderItem *item, GSList *msgnu
 
 	first = GPOINTER_TO_INT(tmp_msgnum_list->data);
 	last = first;
-	
+
 	news_folder_lock(NEWS_FOLDER(item->folder));
-	
-	for(elem = g_slist_next(tmp_msgnum_list); elem != NULL; elem = g_slist_next(elem)) {
+
+	for (elem = g_slist_next(tmp_msgnum_list); elem != NULL; elem = g_slist_next(elem)) {
 		next = GPOINTER_TO_INT(elem->data);
-		if(next != (last + 1)) {
+		if (next != (last + 1)) {
 			tmp_msginfo_list = news_get_msginfos_for_range(session, item, first, last);
 			msginfo_list = g_slist_concat(msginfo_list, tmp_msginfo_list);
 			first = next;
 		}
 		last = next;
 	}
-	
+
 	news_folder_unlock(NEWS_FOLDER(item->folder));
-	
+
 	tmp_msginfo_list = news_get_msginfos_for_range(session, item, first, last);
 	msginfo_list = g_slist_concat(msginfo_list, tmp_msginfo_list);
 
 	g_slist_free(tmp_msgnum_list);
-	
+
 	progressindicator_stop(PROGRESS_TYPE_NETWORK);
 
 	return msginfo_list;
@@ -1376,16 +1272,15 @@ static gboolean news_scan_required(Folder *folder, FolderItem *item)
 	return TRUE;
 }
 
-void news_synchronise(FolderItem *item, gint days) 
+void news_synchronise(FolderItem *item, gint days)
 {
 	news_gtk_synchronise(item, days);
 }
 
-static gint news_rename_folder(Folder *folder, FolderItem *item,
-				const gchar *name)
+static gint news_rename_folder(Folder *folder, FolderItem *item, const gchar *name)
 {
 	gchar *path;
-	 
+
 	cm_return_val_if_fail(folder != NULL, -1);
 	cm_return_val_if_fail(item != NULL, -1);
 	cm_return_val_if_fail(item->path != NULL, -1);
@@ -1432,7 +1327,7 @@ void nntp_disconnect_all(gboolean have_connectivity)
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
 	error = NULL;
 	short_timeout = !networkmanager_is_online(&error);
-	if(error) {
+	if (error) {
 		short_timeout = TRUE;
 		g_error_free(error);
 	}
@@ -1440,7 +1335,7 @@ void nntp_disconnect_all(gboolean have_connectivity)
 	short_timeout = TRUE;
 #endif
 
-	if(short_timeout)
+	if (short_timeout)
 		nntp_main_set_timeout(1);
 
 	for (list = account_get_list(); list != NULL; list = list->next) {
@@ -1459,7 +1354,7 @@ void nntp_disconnect_all(gboolean have_connectivity)
 		}
 	}
 
-	if(short_timeout)
+	if (short_timeout)
 		nntp_main_set_timeout(prefs_common.io_timeout_secs);
 }
 
@@ -1477,42 +1372,39 @@ static void warn_etpan(void)
 	static gboolean missing_news_warning = TRUE;
 	if (missing_news_warning) {
 		missing_news_warning = FALSE;
-		alertpanel_error(
-			_("You have one or more News accounts "
-			  "defined. However this version of "
-			  "Claws Mail has been built without "
-			  "News support; your News accounts are "
-			  "disabled.\n\n"
-			  "You probably need to "
-			  "install libetpan and recompile "
-			  "Claws Mail."));
+		alertpanel_error(_("You have one or more News accounts " "defined. However this version of " "Claws Mail has been built without " "News support; your News accounts are " "disabled.\n\n" "You probably need to " "install libetpan and recompile " "Claws Mail."));
 	}
 }
+
 static Folder *news_folder_new(const gchar *name, const gchar *path)
 {
 	warn_etpan();
 	return NULL;
 }
+
 void news_group_list_free(GSList *group_list)
 {
 	warn_etpan();
 }
+
 void news_remove_group_list_cache(Folder *folder)
 {
 	warn_etpan();
 }
+
 int news_folder_locked(Folder *folder)
 {
 	warn_etpan();
 	return 0;
 }
+
 gint news_post(Folder *folder, const gchar *file)
 {
 	warn_etpan();
 	return -1;
 }
 
-gint news_cancel_article(Folder * folder, MsgInfo * msginfo)
+gint news_cancel_article(Folder *folder, MsgInfo *msginfo)
 {
 	warn_etpan();
 	return -1;
@@ -1523,7 +1415,6 @@ GSList *news_get_group_list(Folder *folder)
 	warn_etpan();
 	return NULL;
 }
-
 
 FolderClass *news_get_class(void)
 {
@@ -1544,3 +1435,6 @@ void nntp_disconnect_all(gboolean have_connectivity)
 }
 
 #endif
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

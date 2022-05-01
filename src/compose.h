@@ -20,8 +20,8 @@
 #ifndef __COMPOSE_H__
 #define __COMPOSE_H__
 
-typedef struct _Compose		Compose;
-typedef struct _AttachInfo	AttachInfo;
+typedef struct _Compose Compose;
+typedef struct _AttachInfo AttachInfo;
 
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -43,8 +43,7 @@ typedef struct _AttachInfo	AttachInfo;
 #define COMPOSE_CHECK_BEFORE_SEND_HOOKLIST "compose_check_before_send"
 #define COMPOSE_CREATED_HOOKLIST "compose_created"
 
-typedef enum
-{
+typedef enum {
 	COMPOSE_TO,
 	COMPOSE_CC,
 	COMPOSE_BCC,
@@ -54,8 +53,7 @@ typedef enum
 	COMPOSE_INREPLYTO
 } ComposeEntryType;
 
-typedef enum
-{
+typedef enum {
 	COMPOSE_REPLY,
 	COMPOSE_REPLY_WITH_QUOTE,
 	COMPOSE_REPLY_WITHOUT_QUOTE,
@@ -78,8 +76,7 @@ typedef enum
 	COMPOSE_REEDIT
 } ComposeMode;
 
-typedef enum
-{
+typedef enum {
 	COMPOSE_QUEUE_SUCCESS = 0,
 	COMPOSE_QUEUE_ERROR_NO_MSG = -1,
 	COMPOSE_QUEUE_ERROR_WITH_ERRNO = -2,
@@ -109,8 +106,7 @@ typedef struct {
 	ComposePrefType type;
 } ComposeHeaderEntry;
 
-struct _Compose
-{
+struct _Compose {
 	/* start with window widget don`t change order */
 	GtkWidget *window;
 	GtkWidget *vbox;
@@ -119,7 +115,7 @@ struct _Compose
 	/* Toolbar handlebox */
 	GtkWidget *handlebox;
 	Toolbar *toolbar;
-	
+
 	GtkWidget *vbox2;
 
 	/* Header */
@@ -163,24 +159,24 @@ struct _Compose
 	MsgInfo *fwdinfo;
 
 	GtkWidget *header_table;
-	GSList    *header_list;
-	guint	   header_nextrow;
+	GSList *header_list;
+	guint header_nextrow;
 	ComposeHeaderEntry *header_last;
 
 	GHashTable *email_hashtable;
 
-	gchar	*replyto;
-	gchar	*cc;
-	gchar	*bcc;
-	gchar	*newsgroups;
-	gchar	*followup_to;
+	gchar *replyto;
+	gchar *cc;
+	gchar *bcc;
+	gchar *newsgroups;
+	gchar *followup_to;
 
-	gchar	*ml_post;
+	gchar *ml_post;
 
-	gchar	*inreplyto;
-	gchar	*references;
-	gchar	*msgid;
-	gchar	*boundary;
+	gchar *inreplyto;
+	gchar *references;
+	gchar *msgid;
+	gchar *boundary;
 
 	gboolean autowrap;
 	gboolean autoindent;
@@ -204,11 +200,11 @@ struct _Compose
 	gboolean modified;
 
 	gboolean sending;
-	
+
 	gboolean return_receipt;
 
 	gboolean batch;
-	
+
 	GSList *to_list;
 	GSList *newsgroup_list;
 
@@ -221,20 +217,20 @@ struct _Compose
 	gboolean sig_inserted;
 
 	/* external editor */
-	gchar      *exteditor_file;
-	GPid        exteditor_pid;
-	gint        exteditor_tag;
-	GtkWidget  *exteditor_socket;
+	gchar *exteditor_file;
+	GPid exteditor_pid;
+	gint exteditor_tag;
+	GtkWidget *exteditor_socket;
 
- 	/* Priority */
- 	gint priority;
+	/* Priority */
+	gint priority;
 
 	gchar *redirect_filename;
-	
+
 	gboolean remove_references;
 
 	gint64 draft_timeout_tag;
-	
+
 	GtkTextTag *no_wrap_tag;
 	GtkTextTag *no_join_tag;
 	GtkTextTag *signature_tag;
@@ -259,8 +255,8 @@ struct _Compose
 
 	gint folder_update_callback_id;
 #if USE_ENCHANT
-        /* GNU/aspell spell checker */
-        GtkAspell *gtkaspell;
+	/* GNU/aspell spell checker */
+	GtkAspell *gtkaspell;
 	GtkWidget *aspell_options_menu;
 #endif
 
@@ -271,8 +267,7 @@ struct _Compose
 #endif
 };
 
-struct _AttachInfo
-{
+struct _AttachInfo {
 	gchar *file;
 	gchar *content_type;
 	EncodingType encoding;
@@ -282,8 +277,7 @@ struct _AttachInfo
 	gboolean insert;
 };
 
-typedef enum
-{
+typedef enum {
 	COMPOSE_QUIT_EDITING,
 	COMPOSE_KEEP_EDITING,
 	COMPOSE_AUTO_SAVE,
@@ -292,74 +286,43 @@ typedef enum
 
 /*#warning FIXME_GTK2 */
 /* attach_files will be locale encode */
-Compose *compose_new			(PrefsAccount	*account,
-				 	 const gchar	*mailto,
-				 	 GList		*attach_files);
+Compose *compose_new(PrefsAccount *account, const gchar *mailto, GList *attach_files);
 
-Compose *compose_new_with_folderitem	(PrefsAccount	*account,
-					 FolderItem	*item,
-					 const gchar	*mailto);
+Compose *compose_new_with_folderitem(PrefsAccount *account, FolderItem *item, const gchar *mailto);
 
-Compose *compose_new_with_list		(PrefsAccount	*account,
-					 GList          *listAddress);
+Compose *compose_new_with_list(PrefsAccount *account, GList *listAddress);
 
-Compose *compose_forward		(PrefsAccount *account,
-					 MsgInfo	*msginfo,
-					 gboolean	 as_attach,
-					 const gchar	*body,
-					 gboolean	 no_extedit,
-					 gboolean	 batch);
+Compose *compose_forward(PrefsAccount *account, MsgInfo *msginfo, gboolean as_attach, const gchar *body, gboolean no_extedit, gboolean batch);
 
-Compose *compose_redirect		(PrefsAccount	*account,
-					 MsgInfo	*msginfo,
-					 gboolean	 batch);
-Compose *compose_reedit			(MsgInfo	*msginfo,
-					 gboolean	 batch);
+Compose *compose_redirect(PrefsAccount *account, MsgInfo *msginfo, gboolean batch);
+Compose *compose_reedit(MsgInfo *msginfo, gboolean batch);
 
-const GList *compose_get_compose_list	(void);
+const GList *compose_get_compose_list(void);
 
-void compose_entry_append		(Compose	  *compose,
-					 const gchar	  *address,
-					 ComposeEntryType  type,
-					 ComposePrefType   pref_type);
+void compose_entry_append(Compose *compose, const gchar *address, ComposeEntryType type, ComposePrefType pref_type);
 
+gint compose_send(Compose *compose);
 
-gint compose_send			(Compose	  *compose);
+void compose_update_actions_menu(Compose *compose);
+void compose_reflect_prefs_all(void);
+void compose_reflect_prefs_pixmap_theme(void);
 
-void compose_update_actions_menu	(Compose	*compose);
-void compose_reflect_prefs_all			(void);
-void compose_reflect_prefs_pixmap_theme	(void);
+void compose_destroy_all(void);
+gboolean compose_draft(gpointer data, guint action);
+void compose_toolbar_cb(gint action, gpointer data);
+void compose_reply_to_address(MessageView *msgview, MsgInfo *msginfo, const gchar *address);
+void compose_reply_from_messageview(MessageView *msgview, GSList *msginfo_list, guint action);
+void compose_action_cb(void *data);
 
-void compose_destroy_all                (void);
-gboolean compose_draft	                (gpointer data, guint action);
-void compose_toolbar_cb			(gint 		action, 
-					 gpointer 	data);
-void compose_reply_to_address		(MessageView	*msgview,
-					 MsgInfo	*msginfo,
-					 const gchar	*address);
-void compose_reply_from_messageview	(MessageView 	*msgview, 
-					 GSList 	*msginfo_list, 
-					 guint 		 action);
-void compose_action_cb			(void 		*data);
-
-void compose_set_position				(Compose	*compose,
-						 gint		 pos);
-gboolean compose_search_string			(Compose	*compose,
-						 const gchar	*str,
-						 gboolean	 case_sens);
-gboolean compose_search_string_backward	(Compose	*compose,
-						 const gchar	*str,
-						 gboolean	 case_sens);
-ComposeQueueResult compose_queue	(Compose *compose,
-					 gint *msgnum, 
-					 FolderItem **item, 
-					 gchar **msgpath,
-					 gboolean remove_reedit_target);
-gboolean compose_close			(Compose *compose);
-void compose_close_toolbar		(Compose *compose);
-void compose_clear_exit_drafts		(void);
-void compose_reopen_exit_drafts		(void);
-void compose_attach_from_list (Compose *compose, GList *file_list, gboolean free_data);
+void compose_set_position(Compose *compose, gint pos);
+gboolean compose_search_string(Compose *compose, const gchar *str, gboolean case_sens);
+gboolean compose_search_string_backward(Compose *compose, const gchar *str, gboolean case_sens);
+ComposeQueueResult compose_queue(Compose *compose, gint *msgnum, FolderItem **item, gchar **msgpath, gboolean remove_reedit_target);
+gboolean compose_close(Compose *compose);
+void compose_close_toolbar(Compose *compose);
+void compose_clear_exit_drafts(void);
+void compose_reopen_exit_drafts(void);
+void compose_attach_from_list(Compose *compose, GList *file_list, gboolean free_data);
 void compose_check_for_email_account(Compose *compose);
 
 void compose_use_signing(Compose *compose, gboolean use_signing);

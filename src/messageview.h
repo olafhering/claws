@@ -34,9 +34,7 @@
 
 #define MESSAGE_VIEW_SHOW_DONE_HOOKLIST "message_view_show_done_hooklist"
 
-
-struct _MessageView
-{
+struct _MessageView {
 	GtkWidget *vbox;
 
 	gboolean new_window;
@@ -64,14 +62,14 @@ struct _MessageView
 
 	/* this message was filtered by an action */
 	gboolean filtered;
-  
+
 	/* From messageview_show */
 	gboolean all_headers;
 
 	gint msginfo_update_callback_id;
 	gboolean updating;
 	gboolean deferred_destroy;
-	
+
 	gboolean show_full_text;
 	gboolean partial_display_shown;
 	gboolean update_needed;
@@ -80,58 +78,43 @@ struct _MessageView
 	gint trail_pos;
 };
 
-struct _MimeInfoSearch
-{
+struct _MimeInfoSearch {
 	MimeInfo *parent;
 	MimeInfo *current;
 	MimeInfo *found;
 };
 typedef struct _MimeInfoSearch MimeInfoSearch;
 
-MessageView *messageview_create			(MainWindow	*mainwin);
-MessageView *messageview_create_with_new_window	(MainWindow	*mainwin);
+MessageView *messageview_create(MainWindow *mainwin);
+MessageView *messageview_create_with_new_window(MainWindow *mainwin);
 
-void messageview_init				(MessageView	*messageview);
-gint messageview_show				(MessageView	*messageview,
-						 MsgInfo	*msginfo,
-						 gboolean	 all_headers);
-void messageview_clear				(MessageView	*messageview);
-void messageview_destroy			(MessageView	*messageview);
+void messageview_init(MessageView *messageview);
+gint messageview_show(MessageView *messageview, MsgInfo *msginfo, gboolean all_headers);
+void messageview_clear(MessageView *messageview);
+void messageview_destroy(MessageView *messageview);
 
-TextView *messageview_get_current_textview	(MessageView	*messageview);
-MimeInfo *messageview_get_selected_mime_part	(MessageView	*messageview);
+TextView *messageview_get_current_textview(MessageView *messageview);
+MimeInfo *messageview_get_selected_mime_part(MessageView *messageview);
 
-void messageview_copy_clipboard			(MessageView	*messageview);
-void messageview_select_all			(MessageView	*messageview);
-void messageview_set_position			(MessageView	*messageview,
-						 gint		 pos);
-const GList *messageview_get_msgview_list	(void);
-void messageview_delete				(MessageView 	*messageview);
-gboolean messageview_search_string		(MessageView	*messageview,
-						 const gchar	*str,
-						 gboolean	 case_sens);
-gboolean messageview_search_string_backward	(MessageView	*messageview,
-						 const gchar	*str,
-						 gboolean	 case_sens);
+void messageview_copy_clipboard(MessageView *messageview);
+void messageview_select_all(MessageView *messageview);
+void messageview_set_position(MessageView *messageview, gint pos);
+const GList *messageview_get_msgview_list(void);
+void messageview_delete(MessageView *messageview);
+gboolean messageview_search_string(MessageView *messageview, const gchar *str, gboolean case_sens);
+gboolean messageview_search_string_backward(MessageView *messageview, const gchar *str, gboolean case_sens);
 
-gboolean messageview_is_visible			(MessageView	*messageview);
+gboolean messageview_is_visible(MessageView *messageview);
 
-void messageview_update_actions_menu		(MessageView	*msgview);
-void messageview_reflect_prefs_pixmap_theme	(void);
-gchar *messageview_get_selection		(MessageView 	*msgview);
+void messageview_update_actions_menu(MessageView *msgview);
+void messageview_reflect_prefs_pixmap_theme(void);
+gchar *messageview_get_selection(MessageView *msgview);
 
-void messageview_set_menu_sensitive		(MessageView	*msgview);
-void messageview_learn				(MessageView	*msgview,
-						 gboolean is_spam);
-void messageview_print				(MsgInfo	*msginfo,
-						 gboolean	 all_headers,
-						 gint		 sel_start,
-						 gint		 sel_end,
-						 gint		 partnum);
-void messageview_list_urls			(MessageView	*msgview);
-void messageview_show_partial_display		(MessageView 	*msgview, 
-						 MsgInfo 	*msginfo,
-						 size_t 	 length);
+void messageview_set_menu_sensitive(MessageView *msgview);
+void messageview_learn(MessageView *msgview, gboolean is_spam);
+void messageview_print(MsgInfo *msginfo, gboolean all_headers, gint sel_start, gint sel_end, gint partnum);
+void messageview_list_urls(MessageView *msgview);
+void messageview_show_partial_display(MessageView *msgview, MsgInfo *msginfo, size_t length);
 gboolean messageview_nav_has_prev(MessageView *messageview);
 gboolean messageview_nav_has_next(MessageView *messageview);
 MsgInfo *messageview_nav_get_prev(MessageView *messageview);

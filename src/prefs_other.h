@@ -20,7 +20,7 @@
 #ifndef PREFS_OTHER_H
 #define PREFS_OTHER_H
 
-void prefs_other_init	(void);
-void prefs_other_done	(void);
+void prefs_other_init(void);
+void prefs_other_done(void);
 
-#endif /* PREFS_OTHER_H */ 
+#endif /* PREFS_OTHER_H */

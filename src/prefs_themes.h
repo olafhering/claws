@@ -23,6 +23,4 @@
 void prefs_themes_init(void);
 void prefs_themes_done(void);
 
-
 #endif /* PREFS_THEMES_H */
-

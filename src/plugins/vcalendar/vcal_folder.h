@@ -32,14 +32,12 @@ void vcal_folder_gtk_init(void);
 void vcal_folder_gtk_done(void);
 GSList *vcal_folder_get_waiting_events(void);
 GSList *vcal_folder_get_webcal_events(void);
-GSList * vcal_folder_get_webcal_events_for_folder(FolderItem *item);
+GSList *vcal_folder_get_webcal_events_for_folder(FolderItem *item);
 void vcal_folder_export(Folder *folder);
 
 gboolean vcal_curl_put(gchar *url, FILE *fp, gint filesize, const gchar *user, const gchar *pass);
-gchar *vcal_curl_read(const char *url, const gchar *label, gboolean verbose, 
-	void (*callback)(const gchar *url, gchar *data, gboolean verbose, gchar
-		*error));
-gchar* get_item_event_list_for_date(FolderItem *item, EventTime date);
+gchar *vcal_curl_read(const char *url, const gchar *label, gboolean verbose, void (*callback)(const gchar *url, gchar *data, gboolean verbose, gchar *error));
+gchar *get_item_event_list_for_date(FolderItem *item, EventTime date);
 void vcal_folder_block_export(gboolean block);
 void vcal_folder_refresh_cal(FolderItem *item);
 GSList *vcal_get_events_list(FolderItem *item);

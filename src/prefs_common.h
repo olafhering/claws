@@ -36,7 +36,7 @@
 
 #define CLAWS_CONFIG_VERSION 4
 
-typedef struct _PrefsCommon	PrefsCommon;
+typedef struct _PrefsCommon PrefsCommon;
 
 typedef enum {
 	RECV_DIALOG_ALWAYS,
@@ -57,8 +57,7 @@ typedef enum {
 	CTE_8BIT
 } TransferEncodingMethod;
 
-typedef enum
-{
+typedef enum {
 /* U = unread, N = new, M = marked */
 	SELECTONENTRY_NOTHING,
 	SELECTONENTRY_UNM,
@@ -70,8 +69,7 @@ typedef enum
 	SELECTONENTRY_LAST
 } SelectOnEntry;
 
-typedef enum
-{
+typedef enum {
 	ACTION_UNSET = 0, /* for backward compatibility */
 	ACTION_OLDEST_MARKED,
 	ACTION_OLDEST_NEW,
@@ -85,30 +83,26 @@ typedef enum
 	ACTION_NEWEST_UNREAD
 } EntryAction;
 
-typedef enum
-{
+typedef enum {
 	NEXTUNREADMSGDIALOG_ALWAYS,
 	NEXTUNREADMSGDIALOG_ASSUME_YES,
 	NEXTUNREADMSGDIALOG_ASSUME_NO
 } NextUnreadMsgDialogShow;
 
-typedef enum
-{
+typedef enum {
 	SHOW_NAME,
 	SHOW_ADDR,
 	SHOW_BOTH
 } SummaryFromShow;
 
-typedef enum
-{
+typedef enum {
 	AVATARS_DISABLE = 0,
 	AVATARS_ENABLE_CAPTURE = 1,
 	AVATARS_ENABLE_RENDER = 2,
 	AVATARS_ENABLE_BOTH = 3
 } EnableAvatars;
 
-typedef enum
-{
+typedef enum {
 	COL_MISSPELLED,
 	COL_QUOTE_LEVEL1,
 	COL_QUOTE_LEVEL2,
@@ -143,8 +137,7 @@ typedef enum
 	COL_LAST_COLOR_INDEX
 } ColorIndex;
 
-struct _PrefsCommon
-{
+struct _PrefsCommon {
 	gint config_version;
 
 	/* Receive */
@@ -155,9 +148,9 @@ struct _PrefsCommon
 	gint autochk_itv;
 	gboolean chk_on_startup;
 	gboolean open_inbox_on_inc;
- 	gboolean newmail_notify_auto;
- 	gboolean newmail_notify_manu;
- 	gchar   *newmail_notify_cmd;
+	gboolean newmail_notify_auto;
+	gboolean newmail_notify_manu;
+	gchar *newmail_notify_cmd;
 	RecvDialogMode recv_dialog_mode;
 	gint receivewin_width;
 	gint receivewin_height;
@@ -215,7 +208,7 @@ struct _PrefsCommon
 	gboolean forward_as_attachment;
 	gboolean redirect_keep_from;
 	gchar *quote_chars;
-	
+
 	gboolean enable_aspell;
 	gchar *dictionary;
 	gchar *alt_dictionary;
@@ -265,7 +258,7 @@ struct _PrefsCommon
 	gboolean bold_marked;
 	gboolean next_on_delete;
 	gboolean thread_by_subject;
-	gint thread_by_subject_max_age; /*!< Max. age of a thread which was threaded
+	gint thread_by_subject_max_age;	/*!< Max. age of a thread which was threaded
 					 *   by subject (days) */
 	FolderSortKey default_sort_key;
 	FolderSortType default_sort_type;
@@ -340,7 +333,7 @@ struct _PrefsCommon
 	gint msgwin_height;
 
 	gint mimeview_tree_height;
-	
+
 	gint sourcewin_width;
 	gint sourcewin_height;
 
@@ -409,7 +402,7 @@ struct _PrefsCommon
 	SelectOnEntry select_on_entry;
 	gboolean show_tooltips;
 
-	EntryAction summary_select_prio[SUMMARY_OPEN_ACTIONS-1];
+	EntryAction summary_select_prio[SUMMARY_OPEN_ACTIONS - 1];
 
 	NextUnreadMsgDialogShow next_unread_msg_dialog;
 	SummaryFromShow summary_from_show;
@@ -437,8 +430,8 @@ struct _PrefsCommon
 	gchar *ext_editor_cmd;
 	gboolean cmds_use_system_default;
 
-    	gboolean cliplog;
-    	guint loglength;
+	gboolean cliplog;
+	guint loglength;
 	gboolean enable_log_standard;
 	gboolean enable_log_warning;
 	gboolean enable_log_error;
@@ -464,15 +457,15 @@ struct _PrefsCommon
 
 	gboolean gtk_can_change_accels;
 	gboolean gtk_enable_accels;
-	
-	/* Memory cache*/
+
+	/* Memory cache */
 	gint cache_max_mem_usage;
 	gint cache_min_keep_time;
-	
+
 	/* boolean for work offline 
 	   stored here for use in inc.c */
 	gboolean work_offline;
-	
+
 	gint summary_quicksearch_type;
 	gint summary_quicksearch_sticky;
 	gint summary_quicksearch_recurse;
@@ -561,7 +554,7 @@ struct _PrefsCommon
 	gint print_margin_bottom;
 	gint print_margin_left;
 	gint print_margin_right;
-  
+
 	gint print_use_color;
 	gint print_use_collate;
 	gint print_use_reverse;
@@ -569,7 +562,7 @@ struct _PrefsCommon
 	gint print_imgs;
 	gint print_previewwin_width;
 	gint print_previewwin_height;
-	
+
 	gboolean use_networkmanager;
 	gboolean use_shred;
 	gboolean two_line_vert;
@@ -594,19 +587,18 @@ struct _PrefsCommon
 	gboolean use_proxy;
 	ProxyInfo proxy_info;
 
-    /* Quicksearch */
-    guint qs_press_timeout;
+	/* Quicksearch */
+	guint qs_press_timeout;
 };
 
 extern PrefsCommon prefs_common;
 
 PrefsCommon *prefs_common_get_prefs(void);
 
-GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, const gchar *history,
-															  GList *default_list);
-void prefs_common_read_config	(void);
-void prefs_common_write_config	(void);
-void prefs_common_open		(void);
+GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, const gchar *history, GList *default_list);
+void prefs_common_read_config(void);
+void prefs_common_write_config(void);
+void prefs_common_open(void);
 void pref_get_unescaped_pref(gchar *out, const gchar *in);
 void pref_get_escaped_pref(gchar *out, const gchar *in);
 void pref_set_textview_from_pref(GtkTextView *textview, const gchar *txt);

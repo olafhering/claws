@@ -35,19 +35,12 @@
 			 G_CALLBACK(manage_window_destroy), NULL); \
 }
 
-gint manage_window_focus_in		(GtkWidget	*widget,
-					 GdkEventFocus	*event,
-					 gpointer	 data);
-gint manage_window_focus_out		(GtkWidget	*widget,
-					 GdkEventFocus	*event,
-					 gpointer	 data);
-gint manage_window_unmap		(GtkWidget	*widget,
-					 GdkEventAny	*event,
-					 gpointer	 data);
-void manage_window_destroy		(GtkWidget	*widget,
-					 gpointer	 data);
+gint manage_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer data);
+gint manage_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer data);
+gint manage_window_unmap(GtkWidget *widget, GdkEventAny *event, gpointer data);
+void manage_window_destroy(GtkWidget *widget, gpointer data);
 
-void manage_window_set_transient	(GtkWindow	*window);
+void manage_window_set_transient(GtkWindow *window);
 
 extern GtkWidget *focus_window;
 

@@ -22,7 +22,7 @@
 #define URI_OPENER_H
 #include "mainwindow.h"
 
-void uri_opener_create (void); 
-void uri_opener_open 	(MessageView *msgview, GSList *uris); 
+void uri_opener_create(void);
+void uri_opener_open(MessageView *msgview, GSList *uris);
 
 #endif

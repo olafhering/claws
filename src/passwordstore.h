@@ -46,30 +46,20 @@ typedef struct _PasswordBlock {
  *
  * Function will make a copy of the strings where necessary and doesn't
  * take ownership of any of the passed arguments. */
-gboolean passwd_store_set(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id,
-		const gchar *password,
-		gboolean encrypted);
+gboolean passwd_store_set(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id, const gchar *password, gboolean encrypted);
 
 /* Retrieves a password. Returned string should be freed by the caller. */
-gchar *passwd_store_get(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id);
+gchar *passwd_store_get(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id);
 
 /* Returns TRUE if such password exists in the password store,
  * false otherwise. No decryption happens. */
-gboolean passwd_store_has_password(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id);
+gboolean passwd_store_has_password(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id);
 
-gboolean passwd_store_delete_block(PasswordBlockType block_type,
-		const gchar *block_name);
+gboolean passwd_store_delete_block(PasswordBlockType block_type, const gchar *block_name);
 
 /* Reencrypts all stored passwords using new_mpwd as an encryption
  * password. */
-void passwd_store_reencrypt_all(const gchar *old_mpwd,
-		const gchar *new_mpwd);
+void passwd_store_reencrypt_all(const gchar *old_mpwd, const gchar *new_mpwd);
 
 /* Writes/reads password store to/from file. */
 void passwd_store_write_config(void);
@@ -78,14 +68,9 @@ int passwd_store_read_config(void);
 /* Convenience wrappers for handling account passwords.
  * (This is to save some boilerplate code converting account_id to
  * a string and freeing the string afterwards.) */
-gboolean passwd_store_set_account(gint account_id,
-		const gchar *password_id,
-		const gchar *password,
-		gboolean encrypted);
-gchar *passwd_store_get_account(gint account_id,
-		const gchar *password_id);
-gboolean passwd_store_has_password_account(gint account_id,
-		const gchar *password_id);
+gboolean passwd_store_set_account(gint account_id, const gchar *password_id, const gchar *password, gboolean encrypted);
+gchar *passwd_store_get_account(gint account_id, const gchar *password_id);
+gboolean passwd_store_has_password_account(gint account_id, const gchar *password_id);
 
 /* Macros for standard, predefined password IDs. */
 #define PWS_ACCOUNT_RECV      "recv"
