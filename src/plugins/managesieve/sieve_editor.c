@@ -44,7 +44,7 @@
 #include "sieve_manager.h"
 #include "sieve_editor.h"
 
-GSList *editors = NULL;
+GSList *editors;
 
 static void sieve_editor_destroy(SieveEditorPage *page);
 
