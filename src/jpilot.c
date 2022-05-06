@@ -161,7 +161,7 @@ gboolean convert_charcode = TRUE;
 
 static const gchar *jpilot_get_charset(void)
 {
-	static const gchar *charset = NULL;
+	static const gchar *charset;
 
 	if (charset == NULL)
 		charset = g_getenv("PILOT_CHARSET");
