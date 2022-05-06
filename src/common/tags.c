@@ -40,10 +40,10 @@
 #include "tags.h"
 #include "file-utils.h"
 
-static GHashTable *tags_table = NULL;
-static GHashTable *tags_reverse_table = NULL;
+static GHashTable *tags_table;
+static GHashTable *tags_reverse_table;
 
-static int tag_max_id = 0;
+static int tag_max_id;
 
 void tags_read_tags(void)
 {
