@@ -32,7 +32,7 @@ enum {
 	LAST_SIGNAL
 };
 
-static gpointer gtk_hotkey_registry_parent_class = NULL;
+static gpointer gtk_hotkey_registry_parent_class;
 
 static GType default_registry_type = G_TYPE_INVALID;
 
@@ -273,7 +273,7 @@ static void gtk_hotkey_registry_finalize(GtkHotkeyRegistry *self)
 
 GType gtk_hotkey_registry_get_type(void)
 {
-	static GType gtk_hotkey_registry_type_id = 0;
+	static GType gtk_hotkey_registry_type_id;
 
 	if (G_UNLIKELY(gtk_hotkey_registry_type_id == 0)) {
 		static const GTypeInfo g_define_type_info = {
