@@ -149,9 +149,9 @@ typedef struct _BogoFilterData {
 	gboolean in_thread;
 } BogoFilterData;
 
-static BogoFilterData *to_filter_data = NULL;
+static BogoFilterData *to_filter_data;
 #ifdef USE_PTHREAD
-static gboolean filter_th_done = FALSE;
+static gboolean filter_th_done;
 static pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t wait_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t wait_cond = PTHREAD_COND_INITIALIZER;
@@ -361,7 +361,7 @@ static void *bogofilter_filtering_thread(void *data)
 	return NULL;
 }
 
-static pthread_t filter_th = 0;
+static pthread_t filter_th;
 
 static void bogofilter_start_thread(void)
 {
@@ -402,7 +402,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	MsgInfo *msginfo = mail_filtering_data->msginfo;
 	GSList *msglist = mail_filtering_data->msglist;
 	GSList *cur = NULL;
-	static gboolean warned_error = FALSE;
+	static gboolean warned_error;
 	int status = 0;
 	int total = 0, curnum = 0;
 	GSList *new_hams = NULL, *new_spams = NULL;
