@@ -98,7 +98,7 @@ static struct _ImpLdif_Dlg {
 static struct _AddressFileSelection _imp_ldif_file_selector_;
 static AddressBookFile *_importedBook_;
 static AddressIndex *_imp_addressIndex_;
-static LdifFile *_ldifFile_ = NULL;
+static LdifFile *_ldifFile_;
 
 static GdkPixbuf *markxpm;
 
