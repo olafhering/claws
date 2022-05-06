@@ -56,8 +56,8 @@ static GtkActionEntry archiver_main_menu[] = { {
 						}
 };
 
-static gint main_menu_id = 0;
-static char *plugin_description = NULL;
+static gint main_menu_id;
+static char *plugin_description;
 
 gint plugin_init(gchar **error)
 {
