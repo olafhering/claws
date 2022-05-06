@@ -78,8 +78,8 @@ typedef enum {
 
 PrefsAccount *cur_account;
 
-static GList *account_list = NULL;
-static gboolean account_list_dirty = FALSE;
+static GList *account_list;
+static gboolean account_list_dirty;
 
 static struct EditAccount {
 	GtkWidget *window;
@@ -1728,7 +1728,7 @@ gboolean password_get(const gchar *user, const gchar *server, const gchar *proto
 	return FALSE;
 }
 
-static GSList *account_sigsep_list = NULL;
+static GSList *account_sigsep_list;
 
 /* create a list of unique signatures from accounts list */
 void account_sigsep_matchlist_create(void)
