@@ -11,7 +11,7 @@ case "$1" in
 		CXXFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
 	bash autogen.sh	\
 		--prefix=/dev/shm/$PPID \
-		--disable-nls
+		"$@"
 	;;
 	-t)
 	find * ../{glib,gtk}.git -name '*.[ch]' | ctags -L -
