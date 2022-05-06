@@ -508,16 +508,14 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 
 static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response)
 {
-	gint len;
 	gint ret;
 	gint toread = OAUTH2BUFSIZE - 1;
 	time_t startplus = time(NULL);
-	len = strlen(request);
 
 	*response = '\0';
 	startplus += 10;
 
-	if (sock_write(sock, request, len + 1) < 0) {
+	if (sock_write(sock, request, strlen(request)) < 0) {
 		log_message(LOG_PROTOCOL, _("OAuth2 socket write error\n"));
 		return (1);
 	}
