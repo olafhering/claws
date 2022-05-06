@@ -26,7 +26,7 @@
 
 #define MISSING "x"
 
-static GHashTable *federated = NULL;
+static GHashTable *federated;
 
 /**
  * Get the associated avatar URL for a domain.
