@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: claws-mail 3.17.4git90\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
 "POT-Creation-Date: 2022-05-06 18:21+0200\n"
-"PO-Revision-Date: 2022-05-06 18:30+0200\n"
+"PO-Revision-Date: 2022-05-06 23:04+0200\n"
 "Last-Translator: Simon Legner <simon.legner@gmail.com>, 2020\n"
 "Language-Team: German (https://www.transifex.com/simon04/teams/92790/de/)\n"
 "Language: de\n"
@@ -54,38 +54,32 @@ msgstr ""
 "markiert das Standardkonto."
 
 #: src/account.c:728
-#, fuzzy
 msgid "Create a new account"
-msgstr "Neues _Konto erstellen..."
+msgstr "Neues _Konto erstellen"
 
 #: src/account.c:734
-#, fuzzy
 msgid "Edit preferences for the selected account"
-msgstr "Einstellungen für neues Konto"
+msgstr "Einstellungen für gewähltes Konto bearbeiten"
 
 #: src/account.c:740
-#, fuzzy
 msgid "Delete the selected account from the list"
-msgstr "Markierte Aktion aus der Liste löschen"
+msgstr "Markiertes Konto aus der Liste löschen"
 
 #: src/account.c:746
-#, fuzzy
 msgid "Create a new copy of the selected account"
-msgstr "Mit gewähltem Konto verfassen"
+msgstr "Eine Kopie des gewählten Kontos erstellen"
 
 #: src/account.c:752
-#, fuzzy
 msgid "Move the selected account down"
-msgstr "Markierte Regel abwärts bewegen"
+msgstr "Markiertes Konto abwärts bewegen"
 
 #: src/account.c:758
-#, fuzzy
 msgid "Move the selected account up"
-msgstr "Markierte Aktion aufwärts bewegen"
+msgstr "Markiertes Konto aufwärts bewegen"
 
 #: src/account.c:764
 msgid " _Set as default account "
-msgstr "_Als Standardkonto setzen"
+msgstr " _Als Standardkonto setzen"
 
 #: src/account.c:844
 msgid "Accounts with remote folders cannot be copied."
@@ -391,7 +385,7 @@ msgstr ""
 
 #: src/addrduplicates.c:298
 msgid "No duplicate email addresses found in the address book"
-msgstr "keine doppelten E-Mailadressen im Adressbuch gefunden"
+msgstr "Keine doppelten E-Mailadressen im Adressbuch gefunden"
 
 #: src/addrduplicates.c:326
 msgid "Duplicate email addresses"
@@ -704,7 +698,7 @@ msgid ""
 "The addresses it contains will not be lost."
 msgstr ""
 "Diese Gruppe(n) wirklich löschen?\n"
-"Die enthaltenen Adressen gehen nicht verloren"
+"Die enthaltenen Adressen gehen nicht verloren."
 
 #: src/addressbook.c:1971
 msgid "Cannot paste. Target address book is read-only."
@@ -741,7 +735,7 @@ msgstr "Ordner löschen"
 
 #: src/addressbook.c:2730
 msgid "Delete _folder only"
-msgstr "nur _Ordner löschen"
+msgstr "Nur _Ordner löschen"
 
 #: src/addressbook.c:2730
 msgid "Delete folder and _addresses"
@@ -1105,9 +1099,8 @@ msgid "Your version of Claws Mail is too old for the plugin."
 msgstr "Ihre Claws Mail-Version ist zu alt für das Plugin."
 
 #: src/common/session.c:187 src/imap.c:1014
-#, fuzzy
 msgid "TLS handshake failed\n"
-msgstr "SSL/TLS-Verbindung schlug fehl\n"
+msgstr "TLS-Verbindung schlug fehl\n"
 
 #: src/common/smtp.c:173
 msgid "No SMTP AUTH method available\n"
@@ -1257,19 +1250,19 @@ msgid "%dB"
 msgstr "%dB"
 
 #: src/common/utils.c:190
-#, fuzzy, c-format
+#, c-format
 msgid "%d.%02dKiB"
-msgstr "%d.%02dKB"
+msgstr "%d.%02dKiB"
 
 #: src/common/utils.c:191
-#, fuzzy, c-format
+#, c-format
 msgid "%d.%02dMiB"
-msgstr "%d.%02dMB"
+msgstr "%d.%02dMiB"
 
 #: src/common/utils.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "%.2fGiB"
-msgstr "%.2fGB"
+msgstr "%.2fGiB"
 
 #: src/common/utils.c:4072
 msgctxt "Complete day name for use by strftime"
@@ -1568,7 +1561,7 @@ msgstr "_Spezielles Einfügen"
 
 #: src/compose.c:466
 msgid "As _quotation"
-msgstr "als _Zitat"
+msgstr "Als _Zitat"
 
 #: src/compose.c:467
 msgid "_Wrapped"
@@ -2859,9 +2852,8 @@ msgid "STARTTLS"
 msgstr "STARTTLS"
 
 #: src/editldap.c:453 src/prefs_account.c:3808
-#, fuzzy
 msgid "TLS"
-msgstr "SSL/TLS"
+msgstr "TLS"
 
 #: src/editldap.c:456
 msgid ""
@@ -3216,7 +3208,7 @@ msgstr "Stylesheet"
 #: src/plugins/libravatar/libravatar_prefs.c:276 src/prefs_account.c:1073
 #: src/prefs_toolbar.c:661 src/prefs_toolbar.c:1230 src/summaryview.c:5564
 msgid "None"
-msgstr "ohne"
+msgstr "Ohne"
 
 #: src/exphtmldlg.c:426 src/prefs_folder_item.c:476
 #: src/prefs_folder_item.c:1089 src/prefs_folder_item.c:1117
@@ -3749,7 +3741,7 @@ msgstr "Verschiebe %s nach %s...\n"
 #: src/folder.c:3500
 #, c-format
 msgid "Updating cache for %s..."
-msgstr "aktualisiere Pufferspeicher für %s..."
+msgstr "Aktualisiere Pufferspeicher für %s..."
 
 #: src/folder.c:4365
 msgid "Processing messages..."
@@ -3835,7 +3827,7 @@ msgstr "_Verarbeitungsregeln..."
 
 #: src/folderview.c:190
 msgid "Empty _trash..."
-msgstr "_Papierkorb leeren"
+msgstr "_Papierkorb leeren..."
 
 #: src/folderview.c:191
 msgid "Send _queue..."
@@ -3843,7 +3835,7 @@ msgstr "_Postausgang senden..."
 
 #: src/folderview.c:197
 msgid "Set Displayed columns"
-msgstr " Angezeigte Spalten"
+msgstr "Angezeigte Spalten"
 
 #: src/folderview.c:320 src/folderview.c:365
 #: src/plugins/notification/notification_lcdproc.c:135
@@ -4043,7 +4035,8 @@ msgstr ""
 
 #: src/folderview.c:2383
 msgid "A folder cannot be moved between different mailboxes."
-msgstr "Ordner können nicht zwischen verschiedenen Mailboxen verschoben werden"
+msgstr ""
+"Ordner können nicht zwischen verschiedenen Mailboxen verschoben werden."
 
 #: src/folderview.c:2386
 msgid "Copy failed!"
@@ -4143,13 +4136,12 @@ msgstr ""
 "Claws Mail-Projekt spenden möchten, hier entlang:"
 
 #: src/gtk/about.c:135 src/gtk/about.c:683
-#, fuzzy
 msgid ""
 "Copyright (C) 1999-2022\n"
 "The Claws Mail Team\n"
 "and Hiroyuki Yamamoto"
 msgstr ""
-"Copyright (C) 1999-2020\n"
+"Copyright (C) 1999-2022\n"
 "Das Claws Mail Team\n"
 "und Hiroyuki Yamamoto"
 
@@ -4485,7 +4477,7 @@ msgstr "Unbekanntes Wort ersetzen"
 #: src/gtk/gtkaspell.c:1286
 #, c-format
 msgid "Replace \"%s\" with: "
-msgstr "Ersetze \"%s\" durch:"
+msgstr "Ersetze \"%s\" durch: "
 
 #: src/gtk/gtkaspell.c:1324
 msgid ""
@@ -4567,7 +4559,7 @@ msgstr "Fehlgeschlagen: Keine Daten für diesen Anbieter gefunden."
 
 #: src/gtk/gtkutils.c:1776
 msgid "Failed: network error."
-msgstr "Fehlgeschlagen: Netzwerkfehler"
+msgstr "Fehlgeschlagen: Netzwerkfehler."
 
 #: src/gtk/gtkutils.c:1779
 #, c-format
@@ -5985,7 +5977,6 @@ msgid "Insecure connection"
 msgstr "Unsichere Verbindung"
 
 #: src/imap.c:965 src/inc.c:784 src/news.c:354 src/send_message.c:266
-#, fuzzy
 msgid ""
 "This connection is configured to be secured using TLS, but TLS is not "
 "available in this build of Claws Mail. \n"
@@ -5993,8 +5984,8 @@ msgid ""
 "Do you want to continue connecting to this server? The communication would "
 "not be secure."
 msgstr ""
-"Für diese Verbindung ist SSL/TLS-Schutz vorgesehen, doch SSL/TLS ist in "
-"dieser Variante von Claws Mail nicht verfügbar. \n"
+"Für diese Verbindung ist TLS-Schutz vorgesehen, doch TLS ist in dieser "
+"Variante von Claws Mail nicht verfügbar. \n"
 "\n"
 "Soll die Verbindung zu diesem Server fortgesetzt werden? Die Kommunikation "
 "wäre nicht geschützt."
@@ -6265,7 +6256,7 @@ msgstr "Möchten Sie nach nicht abonnierten Unterordnern von '%s' suchen?"
 
 #: src/imap_gtk.c:500
 msgid "Search recursively"
-msgstr "rekursive Suche"
+msgstr "Rekursive Suche"
 
 #: src/imap_gtk.c:504 src/imap_gtk.c:553
 msgid "Subscriptions"
@@ -6492,7 +6483,7 @@ msgstr "Verarbeite"
 
 #: src/importmutt.c:142
 msgid "Error importing MUTT file."
-msgstr "Fehler beim Importieren der MUTT-Datei"
+msgstr "Fehler beim Importieren der MUTT-Datei."
 
 #: src/importmutt.c:159
 msgid "Select MUTT File"
@@ -7108,17 +7099,14 @@ msgid "  --toggle-debug         toggle debug mode"
 msgstr "  --toggle-debug       Debug-Modus umschalten"
 
 #: src/main.c:1992
-#, fuzzy
 msgid "  --help -h              display this help"
 msgstr "  --help -h            zeigt diese Hilfe"
 
 #: src/main.c:1993
-#, fuzzy
 msgid "  --version -v           output version information"
 msgstr "  --version -v         gibt Versionsinformationen aus"
 
 #: src/main.c:1994
-#, fuzzy
 msgid ""
 "  --version-full -V      output version and built-in features information"
 msgstr ""
@@ -7351,9 +7339,8 @@ msgid "Next la_beled message"
 msgstr "nächster eingefärbter Nach_richt"
 
 #: src/mainwindow.c:458
-#, fuzzy
 msgid "Previously opened message"
-msgstr "voriger geöffneter Nachricht"
+msgstr "Vorige geöffneter Nachricht"
 
 #: src/mainwindow.c:459 src/messageview.c:200
 msgid "Next opened message"
@@ -7712,9 +7699,8 @@ msgid "Exp_unge"
 msgstr "_Löschen"
 
 #: src/mainwindow.c:644
-#, fuzzy
 msgid "TLS cer_tificates"
-msgstr "SSL-TLS-_Zertifikate"
+msgstr "TLS-_Zertifikate"
 
 #: src/mainwindow.c:647
 msgid "Filtering Lo_g"
@@ -9701,7 +9687,6 @@ msgstr "Warnung: fehlender Anhang?"
 #: src/plugins/attachwarner/attachwarner.c:261
 #: src/plugins/attachwarner/attachwarner.c:311
 #: src/plugins/attachwarner/attachwarner_prefs.c:209
-#, fuzzy
 msgid "AttachWarner"
 msgstr "Anhangswarner"
 
@@ -9783,7 +9768,6 @@ msgstr ""
 
 #: src/plugins/attachwarner/attachwarner_prefs.c:136
 #: src/plugins/keyword_warner/keyword_warner_prefs.c:136
-#, fuzzy
 msgid "Exclude"
 msgstr "Ausschließen"
 
@@ -12392,17 +12376,13 @@ msgid "   Key servers are sometimes slow.\n"
 msgstr "   Schlüsselserver sind manchmal sehr langsam.\n"
 
 #: src/plugins/pgpcore/pgp_viewer.c:276
-#, fuzzy
 msgid "   You can try to import it manually with the command:"
 msgstr ""
-"   Sie können versuchen, ihn mit folgendem Befehl manuell zu importieren:\n"
-"\n"
-"   "
+"   Sie können versuchen, ihn mit folgendem Befehl manuell zu importieren:"
 
 #: src/plugins/pgpcore/pgp_viewer.c:280
-#, fuzzy
 msgid "or"
-msgstr "Port"
+msgstr "oder"
 
 #: src/plugins/pgpcore/pgp_viewer.c:298
 msgid "   This key is in your keyring.\n"
@@ -16839,14 +16819,12 @@ msgid "bytes"
 msgstr "Bytes"
 
 #: src/prefs_matcher.c:350
-#, fuzzy
 msgid "kibibytes"
-msgstr "Kilobytes"
+msgstr "KiBiBytes"
 
 #: src/prefs_matcher.c:351
-#, fuzzy
 msgid "mebibytes"
-msgstr "Megabytes"
+msgstr "MeBiBytes"
 
 #: src/prefs_matcher.c:355
 msgid "contains"
@@ -19231,9 +19209,8 @@ msgid "Expiry"
 msgstr "Verfall"
 
 #: src/ssl_manager.c:156
-#, fuzzy
 msgid "Saved TLS certificates"
-msgstr "Gespeicherte SSL/TLS-Zertifikate"
+msgstr "Gespeicherte TLS-Zertifikate"
 
 #: src/ssl_manager.c:372
 msgid "Delete certificate"
@@ -20384,7 +20361,7 @@ msgstr "Ihre E-Mail-Adresse:"
 
 #: src/wizard.c:997
 msgid "Your organization:"
-msgstr "Ihre Organisation: "
+msgstr "Ihre Organisation:"
 
 #: src/wizard.c:1031
 msgid "Mailbox name:"
@@ -20408,7 +20385,7 @@ msgstr ""
 
 #: src/wizard.c:1113
 msgid "SMTP server address:"
-msgstr "SMTP-Serveradresse"
+msgstr "SMTP-Serveradresse:"
 
 #: src/wizard.c:1128
 msgid "(empty to use the same as receive)"
@@ -20423,18 +20400,16 @@ msgid "SMTP password:"
 msgstr "SMTP-Kennwort:"
 
 #: src/wizard.c:1166
-#, fuzzy
 msgid "Use TLS to connect to SMTP server"
-msgstr "SSL/TLS für Verbindung zum SMTP-Server verwenden"
+msgstr "TLS für Verbindung zum SMTP-Server verwenden"
 
 #: src/wizard.c:1177 src/wizard.c:1597
 msgid "Use STARTTLS command to start encryption"
 msgstr "Mittels STARTTLS-Befehl eine Verschlüsselung einleiten"
 
 #: src/wizard.c:1189 src/wizard.c:1609
-#, fuzzy
 msgid "Client TLS certificate (optional)"
-msgstr "SSL/TLS-Benutzerzertifikat (optional)"
+msgstr "TLS-Benutzerzertifikat (optional)"
 
 #: src/wizard.c:1257 src/wizard.c:1289 src/wizard.c:1544
 msgid "Server address:"
@@ -20461,9 +20436,8 @@ msgstr ""
 "B.: \"mail.example.com:110\""
 
 #: src/wizard.c:1586
-#, fuzzy
 msgid "Use TLS to connect to receiving server"
-msgstr "SSL/TLS für Verbindung zum empfangenden Server verwenden"
+msgstr "TLS für Verbindung zum empfangenden Server verwenden"
 
 #: src/wizard.c:1651
 msgid "IMAP server directory:"
@@ -20511,7 +20485,7 @@ msgstr "Über Sie"
 
 #: src/wizard.c:1849 src/wizard.c:1864 src/wizard.c:1879 src/wizard.c:1895
 msgid "Bold fields must be completed"
-msgstr "Felder in Fettschrift müssen ausgefüllt werden."
+msgstr "Felder in Fettschrift müssen ausgefüllt werden"
 
 #: src/wizard.c:1856
 msgid "Receiving mail"
