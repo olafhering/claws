@@ -52,8 +52,8 @@ gboolean check_file_integrity()
 static gboolean verify_folderlist_xml()
 {
 	GNode *node;
-	static gchar *filename = NULL;
-	static gchar *bak = NULL;
+	static gchar *filename;
+	static gchar *bak;
 	time_t date;
 	struct tm *ts;
 	gchar buf[BUFFSIZE];
