@@ -155,7 +155,7 @@ static gboolean went_offline_nm;
 #endif
 
 #ifdef HAVE_DBUS_GLIB
-static DBusGProxy *awn_proxy = NULL;
+static DBusGProxy *awn_proxy;
 #endif
 
 gchar *prog_version;
@@ -164,14 +164,14 @@ gchar *argv0;
 #endif
 
 #ifdef HAVE_STARTUP_NOTIFICATION
-static SnLauncheeContext *sn_context = NULL;
-static SnDisplay *sn_display = NULL;
+static SnLauncheeContext *sn_context;
+static SnDisplay *sn_display;
 #endif
 
 static gint lock_socket = -1;
-static gint lock_socket_tag = 0;
+static gint lock_socket_tag;
 #ifdef G_OS_UNIX
-static gchar *x_display = NULL;
+static gchar *x_display;
 #endif
 typedef enum {
 	ONLINE_MODE_DONT_CHANGE,
@@ -257,7 +257,7 @@ static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev, gpoint
 
 static MainWindow *static_mainwindow;
 
-static gboolean emergency_exit = FALSE;
+static gboolean emergency_exit;
 
 #ifdef HAVE_STARTUP_NOTIFICATION
 static void sn_error_trap_push(SnDisplay *display, Display *xdisplay)
@@ -308,7 +308,7 @@ static void claws_gtk_idle(void)
 	g_usleep(50000);
 }
 
-static gboolean sc_starting = FALSE;
+static gboolean sc_starting;
 
 static gboolean defer_check_all(void *data)
 {
@@ -571,7 +571,7 @@ static void new_ice_connection(IceConn connection, IcePointer client_data, Bool 
 
 static void sc_session_manager_connect(MainWindow *mainwin)
 {
-	static gboolean connected = FALSE;
+	static gboolean connected;
 	SmcCallbacks callbacks;
 	gchar *client_id;
 	IceIOErrorHandler default_handler;
@@ -632,9 +632,9 @@ static void sc_session_manager_connect(MainWindow *mainwin)
 }
 #endif
 
-static gboolean sc_exiting = FALSE;
+static gboolean sc_exiting;
 static gboolean show_at_startup = TRUE;
-static gboolean claws_crashed_bool = FALSE;
+static gboolean claws_crashed_bool;
 
 gboolean claws_crashed(void)
 {
@@ -647,7 +647,7 @@ void main_set_show_at_startup(gboolean show)
 }
 
 #ifdef G_OS_WIN32
-static HANDLE win32_debug_log = NULL;
+static HANDLE win32_debug_log;
 static guint win32_log_handler_app_id;
 static guint win32_log_handler_glib_id;
 static guint win32_log_handler_gtk_id;
@@ -2195,7 +2195,7 @@ gboolean claws_is_starting(void)
  */
 gchar *claws_get_socket_name(void)
 {
-	static gchar *filename = NULL;
+	static gchar *filename;
 	gchar *socket_dir = NULL;
 	gchar md5sum[33];
 
@@ -2232,7 +2232,7 @@ gchar *claws_get_socket_name(void)
 
 static gchar *get_crashfile_name(void)
 {
-	static gchar *filename = NULL;
+	static gchar *filename;
 
 	if (filename == NULL) {
 		filename = g_strdup_printf("%s%cclaws-crashed", get_tmp_dir(), G_DIR_SEPARATOR);
