@@ -605,7 +605,7 @@ static gboolean summary_search_prereduce_msg_list()
 	SummaryView *summaryview = search_window.summaryview;
 	gboolean result;
 	FolderItem *item = summaryview->folder_item;
-	static GdkCursor *watch_cursor = NULL;
+	static GdkCursor *watch_cursor;
 	if (!watch_cursor)
 		watch_cursor = gdk_cursor_new(GDK_WATCH);
 
