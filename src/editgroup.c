@@ -71,7 +71,7 @@ static struct _GroupEdit_dlg {
 
 } groupeditdlg;
 
-static gchar *_edit_group_dfl_message_ = NULL;
+static gchar *_edit_group_dfl_message_;
 
 static void edit_group_status_show(gchar *msg)
 {
