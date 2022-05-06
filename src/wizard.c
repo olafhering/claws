@@ -298,7 +298,7 @@ static gchar *accountrc_tmpl =
 
 static gchar *wizard_get_default_domain_name(void)
 {
-	static gchar *domain_name = NULL;
+	static gchar *domain_name;
 	
 	if (domain_name == NULL) {
 		domain_name = g_strdup(get_domain_name());
@@ -603,7 +603,7 @@ static void write_welcome_email(WizardWindow *wizard)
 
 static gboolean wizard_write_config(WizardWindow *wizard)
 {
-	static gboolean mailbox_ok = FALSE;
+	static gboolean mailbox_ok;
 	PrefsAccount *prefs_account = prefs_account_new();
 	GList *account_list = NULL;
 	gchar *smtp_server, *recv_server;
@@ -1361,8 +1361,8 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	gchar *address = NULL;
 	AutoConfigureData *recv_data;
 	AutoConfigureData *send_data;
-	static GCancellable *recv_cancel = NULL;
-	static GCancellable *send_cancel = NULL;
+	static GCancellable *recv_cancel;
+	static GCancellable *send_cancel;
 	WizardWindow *wizard = (WizardWindow *)data;
 	RecvProtocol protocol = combobox_get_active_data(GTK_COMBO_BOX(wizard->recv_type));
 
