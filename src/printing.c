@@ -104,8 +104,8 @@ static void cb_preview_request_page_setup(GtkPrintOperation *, GtkPrintContext *
 static void printing_preview_update_zoom_sensitivity(PreviewData *);
 
 /* variables */
-static GtkPrintSettings *settings = NULL;
-static GtkPageSetup *page_setup = NULL;
+static GtkPrintSettings *settings;
+static GtkPageSetup *page_setup;
 
 /* other static functions */
 static void printing_layout_set_text_attributes(PrintData *, GtkPrintContext *, gboolean *);
