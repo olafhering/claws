@@ -49,7 +49,7 @@ static gboolean noticeview_visi_notify(GtkWidget *widget, GdkEventVisibility *ev
 static gboolean noticeview_leave_notify(GtkWidget *widget, GdkEventCrossing *event, NoticeView *textview);
 static gboolean noticeview_enter_notify(GtkWidget *widget, GdkEventCrossing *event, NoticeView *textview);
 
-static GdkCursor *hand_cursor = NULL;
+static GdkCursor *hand_cursor;
 
 NoticeView *noticeview_create(MainWindow *mainwin)
 {
