@@ -35,7 +35,7 @@
 #include "prefs_common.h"
 #include "alertpanel.h"
 
-static gint starting_config_version = 0;
+static gint starting_config_version;
 
 gboolean _version_check(gint ver)
 {
