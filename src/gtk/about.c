@@ -49,11 +49,11 @@ extern SessionStats session_stats;
 static GtkTextBuffer *stats_text_buffer;
 
 static GtkWidget *window;
-static gchar *uri_hover = NULL;
+static gchar *uri_hover;
 static GtkTextIter uri_hover_start_iter;
 static GtkTextIter uri_hover_end_iter;
-static GdkCursor *hand_cursor = NULL;
-static GdkCursor *text_cursor = NULL;
+static GdkCursor *hand_cursor;
+static GdkCursor *text_cursor;
 
 static void about_create(void);
 static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event);
