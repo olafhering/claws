@@ -130,7 +130,7 @@ static guint sctree_signals[LAST_SIGNAL];
 GType
 gtk_sctree_get_type (void)
 {
-	static GType sctree_type = 0;
+	static GType sctree_type;
 
 	if (!sctree_type) {
 		GTypeInfo sctree_info = {
