@@ -730,7 +730,7 @@ void vcal_manager_free_event(VCalEvent *event)
 
 gchar *vcal_manager_get_event_path(void)
 {
-	static gchar *event_path = NULL;
+	static gchar *event_path;
 	if (!event_path)
 		event_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "vcalendar", NULL);
 
