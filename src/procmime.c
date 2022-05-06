@@ -95,7 +95,7 @@ static gboolean procmime_mimeinfo_parameters_destroy(gpointer key, gpointer valu
 	return TRUE;
 }
 
-static gchar *forced_charset = NULL;
+static gchar *forced_charset;
 
 void procmime_force_charset(const gchar *str)
 {
@@ -105,7 +105,7 @@ void procmime_force_charset(const gchar *str)
 		forced_charset = g_strdup(str);
 }
 
-static EncodingType forced_encoding = 0;
+static EncodingType forced_encoding;
 
 void procmime_force_encoding(EncodingType encoding)
 {
@@ -992,7 +992,7 @@ gboolean procmime_msginfo_is_encrypted(MsgInfo *msginfo)
 
 gchar *procmime_get_tmp_file_name(MimeInfo *mimeinfo)
 {
-	static guint32 id = 0;
+	static guint32 id;
 	gchar *base;
 	gchar *filename;
 	gchar f_prefix[10];
@@ -1029,7 +1029,7 @@ gchar *procmime_get_tmp_file_name(MimeInfo *mimeinfo)
 	return filename;
 }
 
-static GList *mime_type_list = NULL;
+static GList *mime_type_list;
 
 gchar *procmime_get_mime_type(const gchar *filename)
 {
@@ -1038,7 +1038,7 @@ gchar *procmime_get_mime_type(const gchar *filename)
 	gchar *base;
 	gchar *str;
 #ifndef G_OS_WIN32
-	static GHashTable *mime_type_table = NULL;
+	static GHashTable *mime_type_table;
 	MimeType *mime_type;
 
 	if (!mime_type_table) {
@@ -1901,7 +1901,7 @@ static void procmime_parse_content_encoding(const gchar *content_encoding, MimeI
 	return;
 }
 
-static GSList *registered_parsers = NULL;
+static GSList *registered_parsers;
 
 static MimeParser *procmime_get_mimeparser_for_type(MimeMediaType type, const gchar *sub_type)
 {
