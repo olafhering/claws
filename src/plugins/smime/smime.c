@@ -508,7 +508,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 {
 	MimeInfo *encinfo, *decinfo, *parseinfo;
 	gpgme_data_t cipher = NULL, plain = NULL;
-	static gint id = 0;
+	static gint id;
 	FILE *dstfp;
 	gchar *fname;
 	gpgme_verify_result_t sigstat = NULL;
