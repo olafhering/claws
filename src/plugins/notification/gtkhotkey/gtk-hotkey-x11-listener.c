@@ -39,7 +39,7 @@ static void hotkey_activated_cb(char *signature, gpointer user_data);
 
 static GtkHotkeyInfo *find_hotkey_from_key_id(GtkHotkeyX11Listener *self, const gchar *key_id);
 
-static gpointer gtk_hotkey_x11_listener_parent_class = NULL;
+static gpointer gtk_hotkey_x11_listener_parent_class;
 
 /**
  * SECTION:gtk-hotkey-x11-listener
@@ -181,7 +181,7 @@ static void gtk_hotkey_x11_listener_finalize(GtkHotkeyX11Listener *self)
 
 GType gtk_hotkey_x11_listener_get_type(void)
 {
-	static GType gtk_hotkey_x11_listener_type_id = 0;
+	static GType gtk_hotkey_x11_listener_type_id;
 
 	if (G_UNLIKELY(gtk_hotkey_x11_listener_type_id == 0)) {
 		static const GTypeInfo g_define_type_info = {
