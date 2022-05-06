@@ -93,11 +93,11 @@ typedef struct {
 /*******************************************************************************/
 
 static gint g_ref_count; /* list ref count */
-static GList *g_completion_list = NULL;	/* list of strings to be checked */
-static GList *g_address_list = NULL; /* address storage */
+static GList *g_completion_list;	/* list of strings to be checked */
+static GList *g_address_list; /* address storage */
 static GCompletion *g_completion; /* completion object */
 
-static GHashTable *_groupAddresses_ = NULL;
+static GHashTable *_groupAddresses_;
 static gboolean _allowCommas_ = TRUE;
 
 /* To allow for continuing completion we have to keep track of the state
@@ -111,7 +111,7 @@ static gchar *g_completion_prefix; /* last prefix. (this is cached here
 				    * because the prefix passed to g_completion
 				    * is g_utf8_strdown()'ed */
 
-static gchar *completion_folder_path = NULL;
+static gchar *completion_folder_path;
 
 /*******************************************************************************/
 
@@ -765,7 +765,7 @@ gint end_address_completion(void)
 /**
  * Completion window.
  */
-static CompletionWindow *_compWindow_ = NULL;
+static CompletionWindow *_compWindow_;
 
 /**
  * Mutex to protect callback from multiple threads.
@@ -775,16 +775,16 @@ static pthread_mutex_t _completionMutex_ = PTHREAD_MUTEX_INITIALIZER;
 /**
  * Completion queue list.
  */
-static GList *_displayQueue_ = NULL;
+static GList *_displayQueue_;
 /**
  * Current query ID.
  */
-static gint _queryID_ = 0;
+static gint _queryID_;
 
 /**
  * Completion idle ID.
  */
-static guint _completionIdleID_ = 0;
+static guint _completionIdleID_;
 
 /*
  * address completion entry ui. the ui (completion list was inspired by galeon's
@@ -946,8 +946,8 @@ static void addrcompl_resize_window(CompletionWindow *cw)
 
 }
 
-static GdkPixbuf *group_pixbuf = NULL;
-static GdkPixbuf *email_pixbuf = NULL;
+static GdkPixbuf *group_pixbuf;
+static GdkPixbuf *email_pixbuf;
 
 /**
  * Add an address the completion window address list.
