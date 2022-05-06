@@ -54,12 +54,12 @@ struct file_info {
 	char *name;
 };
 
-static GSList *msg_trash_list = NULL;
-static GSList *file_list = NULL;
-static gboolean stop_action = FALSE;
+static GSList *msg_trash_list;
+static GSList *file_list;
+static gboolean stop_action;
 
 #ifdef _TEST
-static int permissions = 0;
+static int permissions;
 #endif
 
 static void free_msg_trash(MsgTrash *trash)
