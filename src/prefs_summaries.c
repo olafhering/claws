@@ -100,7 +100,7 @@ static void always_show_msg_toggled(GtkToggleButton *button, gpointer user_data)
 
 static GtkWidget *date_format_create(GtkButton *button, void *data)
 {
-	static GtkWidget *datefmt_win = NULL;
+	static GtkWidget *datefmt_win;
 
 	GtkWidget *vbox1;
 	GtkWidget *scrolledwindow1;
