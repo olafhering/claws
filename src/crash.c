@@ -472,7 +472,7 @@ static gboolean is_crash_dialog_allowed(void)
 static void crash_handler(int sig)
 {
 	pid_t pid;
-	static volatile unsigned long crashed_ = 0;
+	static volatile unsigned long crashed_;
 
 	/*
 	 * let's hope argv0 aren't trashed.
