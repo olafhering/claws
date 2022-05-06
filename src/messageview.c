@@ -76,7 +76,7 @@
 #include "addressadd.h"
 #include "addressbook-dbus.h"
 #endif
-static GList *messageview_list = NULL;
+static GList *messageview_list;
 
 static gint messageview_delete_cb(GtkWidget *widget, GdkEventAny *event, MessageView *messageview);
 static void messageview_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation);
@@ -153,7 +153,7 @@ static void messageview_nothing_cb(GtkAction *action, gpointer data)
 
 }
 
-static GList *msgview_list = NULL;
+static GList *msgview_list;
 static GtkActionEntry msgview_entries[] = {
 	{"Menu", NULL, "Menu", NULL, NULL, NULL},
 /* menus */
@@ -2440,7 +2440,7 @@ static void msg_hide_quotes_cb(GtkToggleAction *action, gpointer data)
 {
 	MessageView *messageview = (MessageView *)data;
 	MsgInfo *msginfo = messageview->msginfo;
-	static gboolean updating_menu = FALSE;
+	static gboolean updating_menu;
 
 	if (updating_menu)
 		return;
