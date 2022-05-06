@@ -110,7 +110,7 @@ enum
   LAST_PROP
 };
 
-static guint signals[LAST_SIGNAL] = { 0 };
+static guint signals[LAST_SIGNAL];
 
 G_DEFINE_TYPE (GtkCMOptionMenu, gtk_cmoption_menu, GTK_TYPE_BUTTON)
 
