@@ -46,13 +46,13 @@
 #include "addressbook-dbus.h"
 #include "client-bindings.h"
 
-static DBusGProxy *proxy = NULL;
-static DBusGConnection *connection = NULL;
-static Compose *compose_instance = NULL;
+static DBusGProxy *proxy;
+static DBusGConnection *connection;
+static Compose *compose_instance;
 
 static GQuark client_object_error_quark()
 {
-	static GQuark quark = 0;
+	static GQuark quark;
 	if (!quark)
 		quark = g_quark_from_static_string("client_object_error");
 
