@@ -48,7 +48,7 @@
 #include "defs.h"
 #include "file-utils.h"
 
-static GHashTable *warned_expired = NULL;
+static GHashTable *warned_expired;
 
 gboolean prefs_common_unsafe_ssl_certs(void);
 
