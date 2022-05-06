@@ -199,7 +199,7 @@ static GtkTargetEntry mimeview_mime_types[] = {
 GSList *mimeviewer_factories;
 GSList *mimeviews;
 
-static GdkCursor *hand_cursor = NULL;
+static GdkCursor *hand_cursor;
 
 static gboolean mimeview_visi_notify(GtkWidget *widget, GdkEventVisibility *event, MimeView *mimeview)
 {
