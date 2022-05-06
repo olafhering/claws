@@ -75,8 +75,8 @@ static const gchar *clamd_tokens[] = {
 	NULL
 };
 
-static Clamd_Socket *Socket = NULL;
-static Config *config = NULL;
+static Clamd_Socket *Socket;
+static Config *config;
 
 /**
  *  clamd commands used
@@ -88,7 +88,7 @@ static const gchar ping[] = "nPING\n";
 static const gchar version[] = "nVERSION\n";
 static const gchar scan[] = "nSCAN";
 static const gchar contscan[] = "nCONTSCAN";
-static const gchar instream[10] = "zINSTREAM\0";
+static const gchar instream[] = "zINSTREAM";
 
 void clamd_create_config_automatic(const gchar *path)
 {
