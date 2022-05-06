@@ -66,7 +66,7 @@ typedef struct _MsgColorsPage {
 
 static GtkWidget *color_dialog;
 static const gchar *color_dialog_title[COL_LAST_COLOR_INDEX];
-static gboolean color_dialog_title_init = FALSE;
+static gboolean color_dialog_title_init;
 
 static void quote_color_set_dialog(GtkWidget *widget, gpointer data);
 static void quote_colors_set_dialog_ok(GtkWidget *widget, gpointer data);
