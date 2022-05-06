@@ -139,9 +139,9 @@ static gint conv_anytodisp(gchar *outbuf, gint outlen, const gchar *inbuf);
 static gint conv_ustodisp(gchar *outbuf, gint outlen, const gchar *inbuf);
 static gint conv_noconv(gchar *outbuf, gint outlen, const gchar *inbuf);
 
-static gboolean codeconv_strict_mode = FALSE;
-static gboolean codeconv_allow_jisx0201_kana = FALSE;
-static gboolean codeconv_broken_are_utf8 = FALSE;
+static gboolean codeconv_strict_mode;
+static gboolean codeconv_allow_jisx0201_kana;
+static gboolean codeconv_broken_are_utf8;
 
 void codeconv_set_strict(gboolean mode)
 {
@@ -1457,7 +1457,7 @@ static CharSet conv_get_locale_charset_no_utf8(void)
 
 const gchar *conv_get_locale_charset_str(void)
 {
-	static const gchar *codeset = NULL;
+	static const gchar *codeset;
 
 	if (!codeset)
 		codeset = conv_get_charset_str(conv_get_locale_charset());
@@ -1467,7 +1467,7 @@ const gchar *conv_get_locale_charset_str(void)
 
 const gchar *conv_get_locale_charset_str_no_utf8(void)
 {
-	static const gchar *codeset = NULL;
+	static const gchar *codeset;
 
 	if (!codeset)
 		codeset = conv_get_charset_str(conv_get_locale_charset_no_utf8());
