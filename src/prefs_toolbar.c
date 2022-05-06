@@ -193,9 +193,9 @@ struct _ToolbarPluginItem {
 };
 
 /* items registered by plugins */
-static GHashTable *plugin_items_mainwin = NULL;
-static GHashTable *plugin_items_compose = NULL;
-static GHashTable *plugin_items_msgview = NULL;
+static GHashTable *plugin_items_mainwin;
+static GHashTable *plugin_items_compose;
+static GHashTable *plugin_items_msgview;
 
 static void prefs_toolbar_populate(ToolbarPage *prefs_toolbar);
 
@@ -1386,7 +1386,7 @@ static gboolean ok_cb(gpointer data)
 
 static gboolean icon_list_button_release(GtkWidget *widget, GdkEventButton *event, ToolbarPage *prefs_toolbar)
 {
-	static guint id = 0;
+	static guint id;
 	if (id > 0) {
 		g_source_remove(id);
 		id = 0;
