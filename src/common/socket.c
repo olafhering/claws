@@ -125,7 +125,7 @@ struct _SockSource {
 
 static guint io_timeout = 60;
 
-static GList *sock_connect_data_list = NULL;
+static GList *sock_connect_data_list;
 
 #ifdef USE_GNUTLS
 static gboolean ssl_sock_prepare(GSource * source, gint *timeout);
@@ -189,7 +189,7 @@ gint sock_set_io_timeout(guint sec)
 void refresh_resolvers(void)
 {
 #ifdef G_OS_UNIX
-	static time_t resolv_conf_changed = (time_t)NULL;
+	static time_t resolv_conf_changed;
 	GStatBuf s;
 
 	/* This makes the glibc re-read resolv.conf, if it changed
