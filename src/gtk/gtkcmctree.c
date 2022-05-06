@@ -57,7 +57,7 @@
 GType
 gtk_cmctree_pos_get_type (void)
 {
-  static GType etype = 0;
+  static GType etype;
   if (etype == 0) {
     static const GEnumValue values[] = {
       { GTK_CMCTREE_POS_BEFORE, "GTK_CMCTREE_POS_BEFORE", "before" },
@@ -72,7 +72,7 @@ gtk_cmctree_pos_get_type (void)
 GType
 gtk_cmctree_line_style_get_type (void)
 {
-  static GType etype = 0;
+  static GType etype;
   if (etype == 0) {
     static const GEnumValue values[] = {
       { GTK_CMCTREE_LINES_NONE, "GTK_CMCTREE_LINES_NONE", "none" },
@@ -85,7 +85,7 @@ gtk_cmctree_line_style_get_type (void)
 GType
 gtk_cmctree_expander_style_get_type (void)
 {
-  static GType etype = 0;
+  static GType etype;
   if (etype == 0) {
     static const GEnumValue values[] = {
       { GTK_CMCTREE_EXPANDER_NONE, "GTK_CMCTREE_EXPANDER_NONE", "none" },
@@ -99,7 +99,7 @@ gtk_cmctree_expander_style_get_type (void)
 GType
 gtk_cmctree_expansion_type_get_type (void)
 {
-  static GType etype = 0;
+  static GType etype;
   if (etype == 0) {
     static const GEnumValue values[] = {
       { GTK_CMCTREE_EXPANSION_EXPAND, "GTK_CMCTREE_EXPANSION_EXPAND", "expand" },
@@ -335,15 +335,15 @@ enum
   LAST_SIGNAL
 };
 
-static GtkCMCListClass *parent_class = NULL;
-static GtkContainerClass *container_class = NULL;
-static guint ctree_signals[LAST_SIGNAL] = {0};
+static GtkCMCListClass *parent_class;
+static GtkContainerClass *container_class;
+static guint ctree_signals[LAST_SIGNAL];
 
 
 GType
 gtk_cmctree_get_type (void)
 {
-  static GType ctree_type = 0;
+  static GType ctree_type;
 
   if (!ctree_type)
     {
