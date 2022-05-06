@@ -39,10 +39,10 @@
 
 static gulong hook_id = HOOK_NONE;
 
-static FILE *NewLog = NULL;
-static char *LogName = NULL;
-static int truncLog = 1;
-static char *pluginDesc = NULL;
+static FILE *NewLog;
+static char *LogName;
+static int truncLog;
+static char *pluginDesc;
 
 static gchar *defstr(gchar *s)
 {
