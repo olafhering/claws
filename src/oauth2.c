@@ -125,7 +125,7 @@ static gchar *OAUTH2CodeMarker[5][2] = {
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body);
 static gint oauth2_filter_refresh(gchar *json, gchar *refresh_token);
 static gint oauth2_filter_access(gchar *json, gchar *access_token, gint *expiry);
-static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response);
+static void oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response);
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
 {
@@ -336,7 +336,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
-	ret = oauth2_contact_server(sock, request, response);
+	oauth2_contact_server(sock, request, response);
 
 	if (oauth2_filter_access(response, access_token, &expiry) == 0) {
 		OAUTH2Data->access_token = g_strdup(access_token);
@@ -470,7 +470,7 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	}
 
 	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
-	ret = oauth2_contact_server(sock, request, response);
+	oauth2_contact_server(sock, request, response);
 
 	if (oauth2_filter_access(response, access_token, &expiry) == 0) {
 		OAUTH2Data->access_token = g_strdup(access_token);
@@ -506,7 +506,7 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	return (ret);
 }
 
-static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response)
+static void oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response)
 {
 	gint ret;
 	gint toread = OAUTH2BUFSIZE - 1;
@@ -517,7 +517,7 @@ static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *respons
 
 	if (sock_write(sock, request, strlen(request)) < 0) {
 		log_message(LOG_PROTOCOL, _("OAuth2 socket write error\n"));
-		return (1);
+		return;
 	}
 
 	do {
@@ -536,8 +536,6 @@ static gint oauth2_contact_server(SockInfo *sock, gchar *request, gchar *respons
 
 	if (time(NULL) >= startplus)
 		log_message(LOG_PROTOCOL, _("OAuth2 socket timeout error\n"));
-
-	return (0);
 }
 
 gint oauth2_authorisation_url(Oauth2Service provider, gchar **url, const gchar *custom_client_id)
