@@ -41,9 +41,9 @@
 #include "ssl.h"
 #include "version.h"
 
-static gboolean claws_initialized = FALSE;
+static gboolean claws_initialized;
 static gchar *startup_dir;
-static void (*claws_idle_function)(void) = NULL;
+static void (*claws_idle_function)(void);
 
 /**
  * Parse program parameters and remove all parameters
