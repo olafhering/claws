@@ -189,7 +189,7 @@ static void tags_window_create_list_view_columns(GtkWidget *list_view)
 
 }
 
-static GtkWidget *tags_popup_menu = NULL;
+static GtkWidget *tags_popup_menu;
 
 static void tags_popup_delete(GtkAction *action, gpointer data)
 {
