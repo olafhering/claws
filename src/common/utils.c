@@ -91,7 +91,7 @@
 
 #define BUFFSIZE	8192
 
-static gboolean debug_mode = FALSE;
+static gboolean debug_mode;
 
 void list_free_strings_full(GList *list)
 {
@@ -183,7 +183,7 @@ gchar *to_human_readable(goffset size)
 	return human_readable_string;
 
 	static gchar str[14];
-	static gchar *b_format = NULL, *kb_format = NULL, *mb_format = NULL, *gb_format = NULL;
+	static gchar *b_format, *kb_format, *mb_format, *gb_format;
 	register int t = 0, r = 0;
 	if (b_format == NULL) {
 		b_format = _("%dB");
@@ -1687,8 +1687,8 @@ const gchar *get_locale_dir(void)
 const gchar *get_home_dir(void)
 {
 #ifdef G_OS_WIN32
-	static char home_dir_utf16[MAX_PATH] = "";
-	static gchar *home_dir_utf8 = NULL;
+	static char home_dir_utf16[MAX_PATH];
+	static gchar *home_dir_utf8;
 	if (home_dir_utf16[0] == '\0') {
 		if (w32_shgetfolderpath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, home_dir_utf16) < 0)
 			strcpy(home_dir_utf16, "C:\\" PACKAGE_NAME "");
@@ -1696,7 +1696,7 @@ const gchar *get_home_dir(void)
 	}
 	return home_dir_utf8;
 #else
-	static const gchar *homeenv = NULL;
+	static const gchar *homeenv;
 
 	if (homeenv)
 		return homeenv;
@@ -1710,8 +1710,8 @@ const gchar *get_home_dir(void)
 #endif
 }
 
-static gchar *claws_rc_dir = NULL;
-static gboolean rc_dir_alt = FALSE;
+static gchar *claws_rc_dir;
+static gboolean rc_dir_alt;
 const gchar *get_rc_dir(void)
 {
 
@@ -1765,7 +1765,7 @@ const gchar *get_mail_base_dir(void)
 
 const gchar *get_news_cache_dir(void)
 {
-	static gchar *news_cache_dir = NULL;
+	static gchar *news_cache_dir;
 	if (!news_cache_dir)
 		news_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, NEWS_CACHE_DIR, NULL);
 
@@ -1774,7 +1774,7 @@ const gchar *get_news_cache_dir(void)
 
 const gchar *get_imap_cache_dir(void)
 {
-	static gchar *imap_cache_dir = NULL;
+	static gchar *imap_cache_dir;
 
 	if (!imap_cache_dir)
 		imap_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, IMAP_CACHE_DIR, NULL);
@@ -1784,7 +1784,7 @@ const gchar *get_imap_cache_dir(void)
 
 const gchar *get_mime_tmp_dir(void)
 {
-	static gchar *mime_tmp_dir = NULL;
+	static gchar *mime_tmp_dir;
 
 	if (!mime_tmp_dir)
 		mime_tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, MIME_TMP_DIR, NULL);
@@ -1794,7 +1794,7 @@ const gchar *get_mime_tmp_dir(void)
 
 const gchar *get_template_dir(void)
 {
-	static gchar *template_dir = NULL;
+	static gchar *template_dir;
 
 	if (!template_dir)
 		template_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, TEMPLATE_DIR, NULL);
@@ -1826,7 +1826,7 @@ const gchar *get_desktop_file(void)
 const gchar *get_plugin_dir(void)
 {
 #ifdef G_OS_WIN32
-	static gchar *plugin_dir = NULL;
+	static gchar *plugin_dir;
 
 	if (!plugin_dir)
 		plugin_dir = g_strconcat(w32_get_module_dir(), "\\lib\\claws-mail\\plugins\\", NULL);
@@ -1835,7 +1835,7 @@ const gchar *get_plugin_dir(void)
 	if (is_dir_exist(PLUGINDIR))
 		return PLUGINDIR;
 	else {
-		static gchar *plugin_dir = NULL;
+		static gchar *plugin_dir;
 		if (!plugin_dir)
 			plugin_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "plugins", G_DIR_SEPARATOR_S, NULL);
 		return plugin_dir;
@@ -1847,7 +1847,7 @@ const gchar *get_plugin_dir(void)
 /* Return the default directory for Themes. */
 const gchar *w32_get_themes_dir(void)
 {
-	static gchar *themes_dir = NULL;
+	static gchar *themes_dir;
 
 	if (!themes_dir)
 		themes_dir = g_strconcat(w32_get_module_dir(), "\\share\\claws-mail\\themes", NULL);
@@ -1857,7 +1857,7 @@ const gchar *w32_get_themes_dir(void)
 
 const gchar *get_tmp_dir(void)
 {
-	static gchar *tmp_dir = NULL;
+	static gchar *tmp_dir;
 
 	if (!tmp_dir)
 		tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, TMP_DIR, NULL);
@@ -1868,7 +1868,7 @@ const gchar *get_tmp_dir(void)
 gchar *get_tmp_file(void)
 {
 	gchar *tmp_file;
-	static guint32 id = 0;
+	static guint32 id;
 
 	tmp_file = g_strdup_printf("%s%ctmpfile.%08x", get_tmp_dir(), G_DIR_SEPARATOR, id++);
 
@@ -1878,7 +1878,7 @@ gchar *get_tmp_file(void)
 const gchar *get_domain_name(void)
 {
 #ifdef G_OS_UNIX
-	static gchar *domain_name = NULL;
+	static gchar *domain_name;
 	struct addrinfo hints, *res;
 	char hostname[256];
 	int s;
@@ -4030,39 +4030,27 @@ gboolean sc_g_slist_bigger(GSList *list, gint max)
 	return (i > max);
 }
 
-const gchar *daynames[] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static const gchar *daynames[7];
+static const gchar *monthnames[12];
+static const gchar *s_daynames[7];
+static const gchar *s_monthnames[12];
 
-const gchar *monthnames[] = { NULL, NULL, NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, NULL, NULL
-};
-const gchar *s_daynames[] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static gint daynames_len[7];
+static gint monthnames_len[12];
+static gint s_daynames_len[7];
+static gint s_monthnames_len[12];
 
-const gchar *s_monthnames[] = { NULL, NULL, NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, NULL, NULL
-};
+static const gchar *s_am_up;
+static const gchar *s_pm_up;
+static const gchar *s_am_low;
+static const gchar *s_pm_low;
 
-gint daynames_len[] = { 0, 0, 0, 0, 0, 0, 0 };
+static gint s_am_up_len;
+static gint s_pm_up_len;
+static gint s_am_low_len;
+static gint s_pm_low_len;
 
-gint monthnames_len[] = { 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0
-};
-gint s_daynames_len[] = { 0, 0, 0, 0, 0, 0, 0 };
-
-gint s_monthnames_len[] = { 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0
-};
-
-const gchar *s_am_up = NULL;
-const gchar *s_pm_up = NULL;
-const gchar *s_am_low = NULL;
-const gchar *s_pm_low = NULL;
-
-gint s_am_up_len = 0;
-gint s_pm_up_len = 0;
-gint s_am_low_len = 0;
-gint s_pm_low_len = 0;
-
-static gboolean time_names_init_done = FALSE;
+static gboolean time_names_init_done;
 
 static void init_time_names(void)
 {
@@ -4145,7 +4133,7 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 	gchar *curpos = buf;
 	gint total_done = 0;
 	gchar subbuf[64], subfmt[64];
-	static time_t last_tzset = (time_t)0;
+	static time_t last_tzset;
 
 	if (!time_names_init_done)
 		init_time_names();
