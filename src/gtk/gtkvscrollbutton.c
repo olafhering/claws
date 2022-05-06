@@ -77,7 +77,7 @@ static void gtk_vscrollbutton_set_sensitivity(GtkAdjustment *adjustment, GtkVScr
 
 GType gtk_vscrollbutton_get_type(void)
 {
-	static GType vscrollbutton_type = 0;
+	static GType vscrollbutton_type;
 
 	if (!vscrollbutton_type) {
 		static const GTypeInfo vscrollbutton_info = {
@@ -107,7 +107,7 @@ static void gtk_vscrollbutton_class_init(GtkVScrollbuttonClass *class)
 {
 }
 
-static GdkCursor *hand_cursor = NULL;
+static GdkCursor *hand_cursor;
 
 static gboolean vscroll_visi_notify(GtkWidget *widget, GdkEventVisibility *event, gpointer data)
 {
