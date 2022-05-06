@@ -253,6 +253,7 @@ LIBS=$syl_save_LIBS
 
 dnl for gettext
 ALL_LINGUAS="ca cs da de el_GR en_GB es fi fr hu id_ID it ja nb nl pl pt_BR pt_PT ro ru sk sv tr zh_TW"
+ALL_LINGUAS="de"
 GETTEXT_PACKAGE=claws-mail
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define text domain.])
