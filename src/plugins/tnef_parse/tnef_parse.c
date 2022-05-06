@@ -52,7 +52,7 @@
 
 #include "tnef_dump.h"
 
-static MimeParser *tnef_parser = NULL;
+static MimeParser *tnef_parser;
 
 static MimeInfo *tnef_broken_mimeinfo(const gchar *reason)
 {
