@@ -32,7 +32,7 @@ GtkCMUnitVtable _gtk_unit_vtable = { NULL, };
 
 void gtk_base_init(GtkCMUnitVtable *vtable)
 {
-	static gboolean gtk_base_initialized = FALSE;
+	static gboolean gtk_base_initialized;
 
 	g_return_if_fail(vtable != NULL);
 
@@ -60,7 +60,7 @@ static void string_to_unit(const GValue *src_value, GValue *dest_value);
 
 GType gtk_unit_get_type(void)
 {
-	static GType unit_type = 0;
+	static GType unit_type;
 
 	if (!unit_type) {
 		const GTypeInfo type_info = { 0, };
@@ -470,7 +470,7 @@ static gboolean gtk_param_unit_value_validate(GParamSpec *pspec, GValue *value);
  **/
 GType gtk_param_unit_get_type(void)
 {
-	static GType spec_type = 0;
+	static GType spec_type;
 
 	if (!spec_type) {
 		const GTypeInfo type_info = {
