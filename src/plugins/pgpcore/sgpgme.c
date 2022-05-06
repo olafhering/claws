@@ -408,7 +408,7 @@ gchar *sgpgme_sigstat_info_short(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 	gpgme_key_t key;
 	gchar *result = NULL;
 	gpgme_error_t err = 0;
-	static gboolean warned = FALSE;
+	static gboolean warned;
 
 	if (GPOINTER_TO_INT(status) == -GPG_ERR_SYSTEM_ERROR) {
 		return g_strdup_printf(_("The signature can't be checked - %s"), privacy_get_error());
