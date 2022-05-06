@@ -66,8 +66,8 @@ static struct Templates {
 	GtkWidget *text_value;
 } templates;
 
-static int modified = FALSE;
-static int modified_list = FALSE;
+static int modified;
+static int modified_list;
 
 static struct {
 	gchar *label;
@@ -983,8 +983,8 @@ static void prefs_template_list_view_insert_template(GtkWidget *list_view, gint 
 	}
 }
 
-static GtkActionGroup *prefs_template_popup_action = NULL;
-static GtkWidget *prefs_template_popup_menu = NULL;
+static GtkActionGroup *prefs_template_popup_action;
+static GtkWidget *prefs_template_popup_menu;
 
 static GtkActionEntry prefs_template_popup_entries[] = {
 	{"PrefsTemplatePopup", NULL, "PrefsTemplatePopup", NULL, NULL, NULL},
