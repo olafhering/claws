@@ -383,7 +383,7 @@ gboolean notification_foldercheck_read_array(void)
 /* Stolen from folder.c. Return value should NOT be freed. */
 static gchar *foldercheck_get_array_path(void)
 {
-	static gchar *filename = NULL;
+	static gchar *filename;
 
 	if (!filename)
 		filename = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDERCHECK_ARRAY, NULL);
