@@ -6,6 +6,7 @@ case "$1" in
 		wait
 	;;
 	-c)
+	shift
 	env \
 		CFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
 		CXXFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
