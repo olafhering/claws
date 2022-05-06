@@ -63,7 +63,7 @@
 #define COL_FOLDER_WIDTH	150
 #define COL_NUM_WIDTH		32
 
-static GList *folderview_list = NULL;
+static GList *folderview_list;
 
 static GtkStyle *bold_style;
 
@@ -2470,10 +2470,10 @@ void folderview_set_target_folder_color(gint color_op)
 	}
 }
 
-static gchar *last_smallfont = NULL;
-static gchar *last_normalfont = NULL;
-static gchar *last_boldfont = NULL;
-static gboolean last_derive = 0;
+static gchar *last_smallfont;
+static gchar *last_normalfont;
+static gchar *last_boldfont;
+static gboolean last_derive;
 
 void folderview_reinit_fonts(FolderView *folderview)
 {
