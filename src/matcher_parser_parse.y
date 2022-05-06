@@ -32,29 +32,29 @@
 #include "colorlabel.h"
 #include "folder_item_prefs.h"
 
-static gint error = 0;
-static gint bool_op = 0;
-static gint match_type = 0;
-static gchar *header = NULL;
+static gint error;
+static gint bool_op;
+static gint match_type;
+static gchar *header;
 
 static MatcherProp *prop;
 
-static GSList *matchers_list = NULL;
+static GSList *matchers_list;
 
 static gboolean enabled = TRUE;
-static gchar *name = NULL;
-static gint account_id = 0;
+static gchar *name;
+static gint account_id;
 static MatcherList *cond;
-static GSList *action_list = NULL;
-static FilteringAction *action = NULL;
+static GSList *action_list;
+static FilteringAction *action;
 static gboolean matcher_is_fast = TRUE;
-static gboolean disable_warnings = FALSE;
+static gboolean disable_warnings;
 
 static FilteringProp *filtering;
-static gboolean filtering_ptr_externally_managed = FALSE;
+static gboolean filtering_ptr_externally_managed;
 
-static GSList **prefs_filtering = NULL;
-static int enable_compatibility = 0;
+static GSList **prefs_filtering;
+static int enable_compatibility;
 
 enum {
         MATCHER_PARSE_FILE,
