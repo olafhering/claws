@@ -139,7 +139,7 @@ static void foldersel_cb(GtkWidget *widget, gpointer data)
 
 static GtkWidget *date_format_create(GtkButton *button, void *data)
 {
-	static GtkWidget *datefmt_win = NULL;
+	static GtkWidget *datefmt_win;
 
 	GtkWidget *vbox1;
 	GtkWidget *scrolledwindow1;
