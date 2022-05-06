@@ -134,7 +134,7 @@
 /**
  * Singleton object.
  */
-static AddressIndex *_addressIndex_ = NULL;
+static AddressIndex *_addressIndex_;
 
 /*
  * Define attribute name-value pair.
