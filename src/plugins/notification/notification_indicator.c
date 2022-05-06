@@ -34,10 +34,10 @@
 
 #define CLAWS_DESKTOP_FILE PACKAGE_TARNAME ".desktop"
 
-static MessagingMenuApp *mmapp = NULL;
-static gboolean mmapp_registered = FALSE;
-static UnityLauncherEntry *launcher = NULL;
-static gulong mainwin_state_changed_signal_id = 0;
+static MessagingMenuApp *mmapp;
+static gboolean mmapp_registered;
+static UnityLauncherEntry *launcher;
+static gulong mainwin_state_changed_signal_id;
 
 static void show_claws_mail(MessagingMenuApp *mmapp, const gchar *id, gpointer data);
 
