@@ -26,8 +26,8 @@
 #include "procmime.h"
 #include "procmsg.h"
 
-static GSList *systems = NULL;
-static gchar *privacy_last_error = NULL;
+static GSList *systems;
+static gchar *privacy_last_error;
 
 void privacy_set_error(const gchar *format, ...)
 {
