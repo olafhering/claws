@@ -935,7 +935,7 @@ static gboolean procmsg_is_last_for_account(FolderItem *queue, MsgInfo *msginfo,
 	return TRUE;
 }
 
-static gboolean send_queue_lock = FALSE;
+static gboolean send_queue_lock;
 
 gboolean procmsg_queue_lock(char **errstr)
 {
@@ -2348,7 +2348,7 @@ MsgInfo *procmsg_msginfo_new_from_mimeinfo(MsgInfo *src_msginfo, MimeInfo *mimei
 	return tmp_msginfo;
 }
 
-static GSList *spam_learners = NULL;
+static GSList *spam_learners;
 
 void procmsg_register_spam_learner(int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam))
 {
@@ -2387,8 +2387,8 @@ int procmsg_spam_learner_learn(MsgInfo *info, GSList *list, gboolean spam)
 	return ret;
 }
 
-static gchar *spam_folder_item = NULL;
-static FolderItem *(*procmsg_spam_get_folder_func)(MsgInfo *msginfo) = NULL;
+static gchar *spam_folder_item;
+static FolderItem *(*procmsg_spam_get_folder_func)(MsgInfo *msginfo);
 void procmsg_spam_set_folder(const char *item_identifier, FolderItem *(*spam_get_folder_func)(MsgInfo *info))
 {
 	g_free(spam_folder_item);
