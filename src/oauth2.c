@@ -230,7 +230,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	SockInfo *sock;
 	gchar *client_id;
 	gchar *client_secret;
-	gchar *token = NULL;
+	g_autofree gchar *token = NULL;
 	gchar *tmp;
 	gint i;
 
@@ -248,7 +248,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	sock = sock_connect(OAUTH2info[i][OA2_BASE_URL], 443);
 	if (sock == NULL) {
 		log_message(LOG_PROTOCOL, _("OAuth2 connection error\n"));
-		g_free(token);
 		return (1);
 	}
 	sock->ssl_cert_auto_accept = TRUE;
@@ -258,7 +257,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	sock->gnutls_priority = "NORMAL:!VERS-SSL3.0:!VERS-TLS1.0:!VERS-TLS1.1";
 	if (ssl_init_socket(sock) == FALSE) {
 		log_message(LOG_PROTOCOL, _("OAuth2 TLS connection error\n"));
-		g_free(token);
 		return (1);
 	}
 
@@ -275,7 +273,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	body = g_strconcat("client_id=", uri, "&code=", uri2, NULL);
 	g_free(uri2);
 	g_free(uri);
-	g_free(token);
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET][0]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
