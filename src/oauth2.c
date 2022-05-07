@@ -123,7 +123,6 @@ static gchar *OAUTH2CodeMarker[5][2] = {
 };
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body);
-static gint oauth2_filter_refresh(gchar *json, gchar *refresh_token);
 static void oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response);
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
@@ -175,23 +174,24 @@ static gint oauth2_filter_access(gchar *json, gchar **access_token_p, gint *expi
 	return 0;
 }
 
-static gint oauth2_filter_refresh(gchar *json, gchar *refresh_token)
+static gint oauth2_filter_refresh(gchar *json, gchar **refresh_token_p)
 {
 	GMatchInfo *matchInfo;
 	GRegex *regex;
+	gchar *refresh_token = NULL;
+	gboolean matched;
 
 	regex = g_regex_new("\"refresh_token\": ?\"(.*?)\",?", 0, 0, NULL);
-	g_regex_match(regex, json, 0, &matchInfo);
-	if (g_match_info_matches(matchInfo))
-		g_stpcpy(refresh_token, g_match_info_fetch(matchInfo, 1));
-	else {
-		g_match_info_free(matchInfo);
-		return (-1);
-	}
-
+	if (!regex)
+		return -1;
+	matched = g_regex_match(regex, json, 0, &matchInfo);
+	if (matched)
+		refresh_token = g_match_info_fetch(matchInfo, 1);
 	g_match_info_free(matchInfo);
+	g_regex_unref(regex);
+	*refresh_token_p = refresh_token;
 
-	return (0);
+	return (!matched || !refresh_token) ? -1 : 0;
 }
 
 static gchar *oauth2_get_token_from_response(Oauth2Service provider, const gchar *response)
@@ -263,7 +263,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		return (1);
 	}
 
-	refresh_token = g_malloc(OAUTH2BUFSIZE + 1);
 	request = g_malloc(OAUTH2BUFSIZE + 1);
 	response = g_malloc0(OAUTH2BUFSIZE + 1);
 
@@ -355,8 +354,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		ret = 1;
 	}
 
-	if (oauth2_filter_refresh(response, refresh_token) == 0) {
-		OAUTH2Data->refresh_token = g_strdup(refresh_token);
+	if (oauth2_filter_refresh(response, &refresh_token) == 0) {
+		OAUTH2Data->refresh_token = refresh_token;
 		log_message(LOG_PROTOCOL, _("OAuth2 refresh token obtained\n"));
 	} else {
 		log_message(LOG_PROTOCOL, _("OAuth2 refresh token not obtained\n"));
@@ -369,7 +368,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
-	g_free(refresh_token);
 
 	return (ret);
 }
@@ -412,7 +410,6 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 		return (1);
 	}
 
-	refresh_token = g_malloc(OAUTH2BUFSIZE + 1);
 	request = g_malloc(OAUTH2BUFSIZE + 1);
 	response = g_malloc(OAUTH2BUFSIZE + 1);
 
@@ -487,8 +484,8 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 		ret = 1;
 	}
 
-	if (oauth2_filter_refresh(response, refresh_token) == 0) {
-		OAUTH2Data->refresh_token = g_strdup(refresh_token);
+	if (oauth2_filter_refresh(response, &refresh_token) == 0) {
+		OAUTH2Data->refresh_token = refresh_token;
 		log_message(LOG_PROTOCOL, _("OAuth2 replacement refresh token provided\n"));
 	} else
 		log_message(LOG_PROTOCOL, _("OAuth2 replacement refresh token not provided\n"));
@@ -503,7 +500,6 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
-	g_free(refresh_token);
 
 	return (ret);
 }
