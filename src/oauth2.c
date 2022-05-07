@@ -123,6 +123,7 @@ static gchar *OAUTH2CodeMarker[5][2] = {
 };
 
 static void oauth2_contact_server(SockInfo *sock, gchar *request, gchar *response);
+static guchar *oauth2_decode(const gchar *in);
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
 {
@@ -656,7 +657,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 }
 
 /* returns allocated string which must be freed */
-guchar *oauth2_decode(const gchar *in)
+static guchar *oauth2_decode(const gchar *in)
 {
 	guchar *tmp;
 	gsize len;
