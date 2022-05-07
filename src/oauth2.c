@@ -392,7 +392,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	return (ret);
 }
 
-gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
+static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 {
 
 	gchar *request;
