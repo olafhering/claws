@@ -144,6 +144,8 @@ static gint oauth2_filter_access(gchar *json, gchar *access_token, gint *expiry)
 	GRegex *regex;
 
 	regex = g_regex_new("\"access_token\": ?\"(.*?)\",?", 0, 0, NULL);
+	if (!regex)
+		return -1;
 	g_regex_match(regex, json, 0, &matchInfo);
 	if (g_match_info_matches(matchInfo))
 		g_stpcpy(access_token, g_match_info_fetch(matchInfo, 1));
