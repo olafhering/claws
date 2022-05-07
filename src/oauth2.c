@@ -128,7 +128,6 @@ static gchar *OAUTH2CodeMarker[5][2] = {
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body);
 static gint oauth2_filter_refresh(gchar *json, gchar *refresh_token);
-static gint oauth2_filter_access(gchar *json, gchar *access_token, gint *expiry);
 
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
 {
@@ -141,35 +140,41 @@ static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar 
 		return snprintf(buf, OAUTH2BUFSIZE, "POST %s HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nAccept: text/html,application/json\r\nContent-Length: %i\r\nHost: %s\r\nConnection: close\r\nUser-Agent: ClawsMail\r\n\r\n%s", resource, len, host, body);
 }
 
-static gint oauth2_filter_access(gchar *json, gchar *access_token, gint *expiry)
+static gchar *oauth2_filter_access(const gchar *json, gint *expiry)
 {
 	GMatchInfo *matchInfo;
 	GRegex *regex;
+	gchar *access_token = NULL;
+	gboolean matched;
 
 	regex = g_regex_new("\"access_token\": ?\"(.*?)\",?", G_REGEX_RAW, 0, NULL);
-	g_regex_match(regex, json, 0, &matchInfo);
-	if (g_match_info_matches(matchInfo))
-		g_stpcpy(access_token, g_match_info_fetch(matchInfo, 1));
-	else {
-		g_match_info_free(matchInfo);
-		return (-1);
-	}
-
+	if (!regex)
+		return NULL;
+	matched = g_regex_match(regex, json, 0, &matchInfo);
+	if (matched)
+		access_token = g_match_info_fetch(matchInfo, 1);
 	g_match_info_free(matchInfo);
+	g_regex_unref(regex);
+	if (!matched || !access_token)
+		return NULL;
 
+	*expiry = 0;
 	regex = g_regex_new("\"expires_in\": ?([0-9]*),?", G_REGEX_RAW, 0, NULL);
-	g_regex_match(regex, json, 0, &matchInfo);
-	if (g_match_info_matches(matchInfo)) {
+	if (!regex)
+		return access_token;
+	matched = g_regex_match(regex, json, 0, &matchInfo);
+	if (matched) {
+		g_autofree gchar *str = g_match_info_fetch(matchInfo, 1);
+		gint expires_in = atoi(str);
 		// Reduce available token life to avoid attempting connections with (near) expired tokens
-		*expiry = (g_get_real_time() / G_USEC_PER_SEC) + atoi(g_match_info_fetch(matchInfo, 1)) - 120;
-	} else {
-		g_match_info_free(matchInfo);
-		return (-2);
+		if (expires_in > 120)
+			expires_in -= 120;
+		*expiry = (g_get_real_time() / G_USEC_PER_SEC) + expires_in;
 	}
-
 	g_match_info_free(matchInfo);
+	g_regex_unref(regex);
 
-	return (0);
+	return access_token;
 }
 
 static gint oauth2_filter_refresh(gchar *json, gchar *refresh_token)
@@ -307,7 +312,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	refresh_token = g_malloc(OAUTH2BUFSIZE + 1);
-	access_token = g_malloc(OAUTH2BUFSIZE + 1);
 	request = g_malloc(OAUTH2BUFSIZE + 1);
 
 	if (OAUTH2Data->custom_client_id)
@@ -374,8 +378,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
 	response = oauth2_contact_server(sock, request);
 
-	if (response &&oauth2_filter_access(response, access_token, &expiry) == 0) {
-		OAUTH2Data->access_token = g_strdup(access_token);
+	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
+		OAUTH2Data->access_token = access_token;
 		OAUTH2Data->expiry = expiry;
 		OAUTH2Data->expiry_str = g_strdup_printf("%i", expiry);
 		ret = 0;
@@ -400,7 +404,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
-	g_free(access_token);
 	g_free(refresh_token);
 
 	return (ret);
@@ -415,7 +418,7 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	gchar *uri;
 	gchar *header;
 	gchar *tmp_hd, *tmp_hd_encoded;
-	gchar *access_token;
+	gchar *access_token = NULL;
 	gchar *refresh_token;
 	gint expiry = 0;
 	gint ret;
@@ -446,7 +449,6 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 		return (1);
 	}
 
-	access_token = g_malloc(OAUTH2BUFSIZE + 1);
 	refresh_token = g_malloc(OAUTH2BUFSIZE + 1);
 	request = g_malloc(OAUTH2BUFSIZE + 1);
 
@@ -509,8 +511,8 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
 	response = oauth2_contact_server(sock, request);
 
-	if (response &&oauth2_filter_access(response, access_token, &expiry) == 0) {
-		OAUTH2Data->access_token = g_strdup(access_token);
+	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
+		OAUTH2Data->access_token = access_token;
 		OAUTH2Data->expiry = expiry;
 		OAUTH2Data->expiry_str = g_strdup_printf("%i", expiry);
 		ret = 0;
@@ -537,7 +539,6 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
-	g_free(access_token);
 	g_free(refresh_token);
 
 	return (ret);
