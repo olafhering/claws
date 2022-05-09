@@ -405,6 +405,7 @@ static void prefs_account_pop_auth_type_set_optmenu(PrefParam *pparam);
 
 static void prefs_account_oauth2_provider_set_data_from_optmenu(PrefParam *pparam);
 static void prefs_account_oauth2_provider_set_optmenu(PrefParam *pparam);
+static void prefs_account_oauth2_open_url(GtkButton *button, gpointer data);
 static void prefs_account_oauth2_copy_url(GtkButton *button, gpointer data);
 static void prefs_account_oauth2_set_sensitivity(void);
 static void prefs_account_oauth2_set_auth_sensitivity(void);
@@ -2153,7 +2154,7 @@ static void oauth2_create_widget_func(PrefsPage *_page, GtkWindow *window, gpoin
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
 	oauth2_link_button = gtk_button_new_with_label(_("Open default browser with request"));
-	g_signal_connect(G_OBJECT(oauth2_link_button), "clicked", G_CALLBACK(prefs_account_oauth2_copy_url), NULL);
+	g_signal_connect(G_OBJECT(oauth2_link_button), "clicked", G_CALLBACK(prefs_account_oauth2_open_url), NULL);
 	gtk_widget_set_sensitive(oauth2_link_button, TRUE);
 	gtk_widget_show(oauth2_link_button);
 	gtk_box_pack_start(GTK_BOX(hbox), oauth2_link_button, FALSE, FALSE, 0);
@@ -4685,6 +4686,19 @@ static void prefs_account_oauth2_set_sensitivity(void)
 		gtk_widget_set_sensitive(oauth2_page.oauth2_sensitive, FALSE);
 	else
 		gtk_widget_set_sensitive(oauth2_page.oauth2_sensitive, TRUE);
+}
+
+static void prefs_account_oauth2_open_url(GtkButton *button, gpointer data)
+{
+	struct BasicProtocol *protocol_optmenu = (struct BasicProtocol *)oauth2_page.protocol_optmenu;
+	GtkWidget *optmenu = protocol_optmenu->combobox;
+	g_autofree gchar *url = g_malloc(OAUTH2BUFSIZE + 1);
+	Oauth2Service service = combobox_get_active_data(GTK_COMBO_BOX(optmenu));
+	const gchar *custom_client_id = gtk_entry_get_text(GTK_ENTRY(oauth2_page.oauth2_client_id_entry));
+
+	oauth2_authorisation_url(service, &url, custom_client_id);
+
+	open_uri(url, prefs_common_get_uri_cmd());
 }
 
 static void prefs_account_oauth2_copy_url(GtkButton *button, gpointer data)
