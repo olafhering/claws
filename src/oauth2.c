@@ -609,23 +609,21 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 	gchar *uid = g_strdup_printf("%d", ac_prefs->account_id);
 	gint expiry;
 	OAUTH2Data *OAUTH2Data = g_malloc(sizeof(*OAUTH2Data));
-	gint ret;
+	gint ret = 0;
 	gchar *acc;
 
 	oauth2_init(OAUTH2Data);
 
-	OAUTH2Data->custom_client_id = ac_prefs->oauth2_client_id;
-	OAUTH2Data->custom_client_secret = ac_prefs->oauth2_client_secret;
+	OAUTH2Data->custom_client_id = g_strdup(ac_prefs->oauth2_client_id);
+	OAUTH2Data->custom_client_secret = g_strdup(ac_prefs->oauth2_client_secret);
 
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_EXPIRY)) {
 		acc = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY);
 		expiry = atoi(acc);
 		g_free(acc);
 		if (expiry > (g_get_real_time() / G_USEC_PER_SEC)) {
-			g_free(OAUTH2Data);
 			log_message(LOG_PROTOCOL, _("OAuth2 access token still fresh\n"));
-			g_free(uid);
-			return (0);
+			goto out;
 		}
 	}
 
@@ -654,6 +652,8 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 		log_message(LOG_PROTOCOL, _("OAuth2 access and refresh token updated\n"));
 	}
 
+out:
+	oauth2_release(OAUTH2Data);
 	g_free(OAUTH2Data);
 	g_free(uid);
 
@@ -702,6 +702,14 @@ gint oauth2_init(OAUTH2Data *OAUTH2Data)
 	OAUTH2Data->custom_client_secret = NULL;
 
 	return (0);
+}
+void oauth2_release(OAUTH2Data *OAUTH2Data)
+{
+	g_free(OAUTH2Data->refresh_token);
+	g_free(OAUTH2Data->access_token);
+	g_free(OAUTH2Data->expiry_str);
+	g_free(OAUTH2Data->custom_client_id);
+	g_free(OAUTH2Data->custom_client_secret);
 }
 /*
  * vim: noet ts=4 shiftwidth=4

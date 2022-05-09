@@ -4772,6 +4772,7 @@ static void prefs_account_oauth2_obtain_tokens(GtkButton *button, gpointer data)
 
 		tmp_ac_prefs.oauth2_date = g_get_real_time() / G_USEC_PER_SEC;
 	}
+	oauth2_release(OAUTH2Data);
 	g_free(trim_text);
 	g_free(OAUTH2Data);
 }
