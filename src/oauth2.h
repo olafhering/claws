@@ -68,9 +68,10 @@ struct _OAUTH2Data {
 	gchar *custom_client_secret;
 };
 
-gint oauth2_init(OAUTH2Data *OAUTH2Data);
-gint oauth2_check_passwds(PrefsAccount *ac_prefs);
-gint oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
+gint oauth2_init (OAUTH2Data *OAUTH2Data);
+void oauth2_release(OAUTH2Data *OAUTH2Data);
+gint oauth2_check_passwds (PrefsAccount *ac_prefs);
+gint oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
 gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_client_id);
 guchar *oauth2_decode(const gchar *in);
 void oauth2_encode(const gchar *in);
