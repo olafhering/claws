@@ -4830,11 +4830,11 @@ static void prefs_account_oauth2_open_url(GtkButton *button, gpointer data)
 {
 	struct BasicProtocol *protocol_optmenu = (struct BasicProtocol *)oauth2_page.protocol_optmenu;
 	GtkWidget *optmenu = protocol_optmenu->combobox;
-	g_autofree gchar *url = g_malloc(OAUTH2BUFSIZE + 1);
+	g_autofree gchar *url;
 	Oauth2Service service = combobox_get_active_data(GTK_COMBO_BOX(optmenu));
 	const gchar *custom_client_id = gtk_entry_get_text(GTK_ENTRY(oauth2_page.oauth2_client_id_entry));
 
-	oauth2_authorisation_url(service, &url, custom_client_id);
+	url = oauth2_authorisation_url(service, custom_client_id);
 
 	open_uri(url, prefs_common_get_uri_cmd());
 	prefs_account_oauth2_start_listener_task(optmenu);
@@ -4845,12 +4845,12 @@ static void prefs_account_oauth2_copy_url(GtkButton *button, gpointer data)
 	struct BasicProtocol *protocol_optmenu = (struct BasicProtocol *)oauth2_page.protocol_optmenu;
 	GtkWidget *optmenu = protocol_optmenu->combobox;
 	GtkWidget *win = gtk_widget_get_toplevel(optmenu);
-	g_autofree gchar *url = g_malloc(OAUTH2BUFSIZE + 1);
+	g_autofree gchar *url;
 	Oauth2Service service = combobox_get_active_data(GTK_COMBO_BOX(optmenu));
 	const gchar *custom_client_id = gtk_entry_get_text(GTK_ENTRY(oauth2_page.oauth2_client_id_entry));
 	GtkClipboard *clip;
 
-	oauth2_authorisation_url(service, &url, custom_client_id);
+	url = oauth2_authorisation_url(service, custom_client_id);
 
 	clip = gtk_widget_get_clipboard(win, GDK_SELECTION_CLIPBOARD);
 	gtk_clipboard_set_text(clip, url, strlen(url));
