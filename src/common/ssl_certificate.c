@@ -501,13 +501,13 @@ static gboolean ssl_certificate_compare(SSLCertificate *cert_a, SSLCertificate *
 		return FALSE;
 	}
 	if (cert_size_a != cert_size_b) {
-		g_warning("size differ %" G_GSIZE_FORMAT " %" G_GSIZE_FORMAT, cert_size_a, cert_size_b);
+		debug_print("size differ %" G_GSIZE_FORMAT " %" G_GSIZE_FORMAT, cert_size_a, cert_size_b);
 		g_free(output_a);
 		g_free(output_b);
 		return FALSE;
 	}
 	if (memcmp(output_a, output_b, cert_size_a)) {
-		g_warning("contents differ");
+		debug_print("contents differ");
 		g_free(output_a);
 		g_free(output_b);
 		return FALSE;
