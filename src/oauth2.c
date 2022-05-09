@@ -608,11 +608,9 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 {
 	gchar *uid = g_strdup_printf("%d", ac_prefs->account_id);
 	gint expiry;
-	OAUTH2Data *OAUTH2Data = g_malloc(sizeof(*OAUTH2Data));
+	OAUTH2Data *OAUTH2Data = g_malloc0(sizeof(*OAUTH2Data));
 	gint ret = 0;
 	gchar *acc;
-
-	oauth2_init(OAUTH2Data);
 
 	OAUTH2Data->custom_client_id = g_strdup(ac_prefs->oauth2_client_id);
 	OAUTH2Data->custom_client_secret = g_strdup(ac_prefs->oauth2_client_secret);
@@ -692,17 +690,6 @@ void oauth2_encode(const gchar *in)
 	g_free(result);
 }
 
-gint oauth2_init(OAUTH2Data *OAUTH2Data)
-{
-	OAUTH2Data->refresh_token = NULL;
-	OAUTH2Data->access_token = NULL;
-	OAUTH2Data->expiry_str = NULL;
-	OAUTH2Data->expiry = 0;
-	OAUTH2Data->custom_client_id = NULL;
-	OAUTH2Data->custom_client_secret = NULL;
-
-	return (0);
-}
 void oauth2_release(OAUTH2Data *OAUTH2Data)
 {
 	g_free(OAUTH2Data->refresh_token);

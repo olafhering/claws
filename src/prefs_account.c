@@ -4726,13 +4726,11 @@ static void prefs_account_oauth2_obtain_tokens(GtkButton *button, gpointer data)
 
 	GtkWidget *optmenu = protocol_optmenu->combobox;
 	Oauth2Service service;
-	OAUTH2Data *OAUTH2Data = g_malloc(sizeof(*OAUTH2Data));
+	OAUTH2Data *OAUTH2Data = g_malloc0(sizeof(*OAUTH2Data));
 	const gchar *authcode = gtk_entry_get_text((GtkEntry *)oauth2_page.oauth2_authcode_entry);
 	gchar *trim_text = g_strdup(authcode);
 	g_strstrip(trim_text);
 	gint ret;
-
-	oauth2_init(OAUTH2Data);
 
 	OAUTH2Data->custom_client_secret = g_strdup(gtk_entry_get_text((GtkEntry *)oauth2_page.oauth2_client_secret_entry));
 	OAUTH2Data->custom_client_id = g_strdup(gtk_entry_get_text((GtkEntry *)oauth2_page.oauth2_client_id_entry));
