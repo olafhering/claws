@@ -536,71 +536,72 @@ static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request)
 	return g_string_free(response, !success);
 }
 
-gint oauth2_authorisation_url(Oauth2Service provider, gchar **url, const gchar *custom_client_id)
+gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_client_id)
 {
 	gint i;
-	gchar *client_id = NULL;
+	g_autofree gchar *client_id = NULL;
 	gchar *tmp;
-	gchar *uri;
+	GString *url;
 
 	i = (int)provider - 1;
 	if (i < 0 || i > (OAUTH2AUTH_LAST - 1))
-		return (1);
+		return NULL;
 
-	if (!custom_client_id)
+	url = g_string_sized_new(1024);
+
+	g_string_append(url, "https://");
+   	g_string_append(url, OAUTH2info[i][OA2_BASE_URL]);
+   	g_string_append(url, OAUTH2info[i][OA2_AUTH_RESOURCE]);
+   	g_string_append(url, "?client_id=");
+
+	if (custom_client_id) {
+		tmp = g_uri_escape_string(custom_client_id, NULL, FALSE);
+	} else {
 		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
-
-	uri = g_uri_escape_string(custom_client_id ? custom_client_id : client_id, NULL, FALSE);
-	*url = g_strconcat("https://", OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_AUTH_RESOURCE], "?client_id=", uri, NULL);
-	g_free(uri);
-	if (client_id)
-		g_free(client_id);
+		tmp = g_uri_escape_string(client_id, NULL, FALSE);
+	}
+   	g_string_append(url, tmp);
+	g_free(tmp);
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
-		tmp = g_strconcat(*url, "&redirect_uri=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
+		g_string_append(url, "&redirect_uri=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 
 	}
 	if (OAUTH2info[i][OA2_RESPONSE_TYPE][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_TYPE], NULL, FALSE);
-		tmp = g_strconcat(*url, "&response_type=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_TYPE], NULL, FALSE);
+		g_string_append(url, "&response_type=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
 	if (OAUTH2info[i][OA2_SCOPE_FOR_AUTH][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
-		tmp = g_strconcat(*url, "&scope=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
+		g_string_append(url, "&scope=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
 	if (OAUTH2info[i][OA2_TENANT][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
-		tmp = g_strconcat(*url, "&tenant=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
+		g_string_append(url, "&tenant=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
 	if (OAUTH2info[i][OA2_RESPONSE_MODE][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_MODE], NULL, FALSE);
-		tmp = g_strconcat(*url, "&response_mode=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_MODE], NULL, FALSE);
+		g_string_append(url, "&response_mode=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
 	if (OAUTH2info[i][OA2_STATE][0]) {
-		uri = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
-		tmp = g_strconcat(*url, "&state=", uri, NULL);
-		g_free(*url);
-		*url = tmp;
-		g_free(uri);
+		tmp = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
+		g_string_append(url, "&state=");
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
 
-	return (0);
+	return g_string_free(url, FALSE);
 }
 
 gint oauth2_check_passwds(PrefsAccount *ac_prefs)

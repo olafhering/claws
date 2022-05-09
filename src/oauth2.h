@@ -28,8 +28,6 @@
 #include "smtp.h"
 #include "prefs_account.h"
 
-#define OAUTH2BUFSIZE		8192
-
 typedef enum
 {
 	OA2_BASE_URL,
@@ -75,5 +73,5 @@ struct _OAUTH2Data
 gint oauth2_init (OAUTH2Data *OAUTH2Data);
 gint oauth2_check_passwds (PrefsAccount *ac_prefs);
 gint oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
-gint oauth2_authorisation_url (Oauth2Service provider, gchar **url, const gchar *custom_client_id);
+gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_client_id);
 void oauth2_encode(const gchar *in);
