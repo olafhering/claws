@@ -309,7 +309,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(uri);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_GRANT_TYPE_ACCESS][0]) {
+	if (OAUTH2info[i][OA2_GRANT_TYPE_ACCESS]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_GRANT_TYPE_ACCESS], NULL, FALSE);
 		tmp = g_strconcat(body, "&grant_type=", uri, NULL);
 		g_free(body);
