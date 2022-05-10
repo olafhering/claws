@@ -63,7 +63,7 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_TENANT] = "",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
-	 "",
+		[OA2_SCOPE_FOR_ACCESS] = "",
 	 "",
 	 ""},
 	{
@@ -81,7 +81,7 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_TENANT] = "common",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
-	 "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
+		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 	 "query",
 	 ""},
 	{
@@ -99,7 +99,7 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_TENANT] = "common",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
-	 "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
+		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 	 "query",
 	 ""},
 	{
@@ -117,7 +117,7 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_TENANT] = "",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
-	 "",
+		[OA2_SCOPE_FOR_ACCESS] = "",
 	 "",
 	 "1"}
 };
