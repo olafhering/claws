@@ -62,7 +62,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
-		[OA2_SCOPE_FOR_ACCESS] = "",
 		[OA2_RESPONSE_MODE] = "",
 		[OA2_HEADER_AUTH_BASIC] = "",
 	},
@@ -117,7 +116,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
-		[OA2_SCOPE_FOR_ACCESS] = "",
 		[OA2_RESPONSE_MODE] = "",
 		[OA2_HEADER_AUTH_BASIC] = "1",
 	},
@@ -351,7 +349,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(body);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS][0]) {
+	if (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS]) {
 		tmp = g_strconcat(body, "&scope=", OAUTH2info[i][OA2_SCOPE_FOR_ACCESS], NULL);
 		g_free(body);
 		body = tmp;
@@ -473,7 +471,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		g_free(uri);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS][0]) {
+	if (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_ACCESS], NULL, FALSE);
 		tmp = g_strconcat(body, "&scope=", uri, NULL);
 		g_free(body);
