@@ -486,6 +486,7 @@ static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, co
 			if (regcomp(prop->preg, down_expr, REG_NOSUB | REG_EXTENDED | ((prop->matchtype == MATCHTYPE_REGEXPCASE)
 										       ? REG_ICASE : 0)) != 0) {
 				prop->error = 1;
+				regfree(prop->preg);
 				g_free(prop->preg);
 				prop->preg = NULL;
 			}
