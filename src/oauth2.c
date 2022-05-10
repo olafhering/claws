@@ -47,7 +47,7 @@
 //Yahoo requires token requests to send POST header Authorization: Basic
 //where the password is Base64 encoding of client_id:client_secret
 
-static gchar *OAUTH2info[4][OA2_LAST] = {
+static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	{
 		[OA2_BASE_URL] = "accounts.google.com",
 		[OA2_CLIENT_ID] = "",
