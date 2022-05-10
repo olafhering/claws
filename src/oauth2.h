@@ -56,8 +56,13 @@ typedef enum
 	OAUTH2AUTH_OUTLOOK,
 	OAUTH2AUTH_EXCHANGE,
 	OAUTH2AUTH_YAHOO,
-	OAUTH2AUTH_LAST = OAUTH2AUTH_YAHOO
+	OAUTH2AUTH_LAST,
 } Oauth2Service;
+
+static inline gboolean Oauth2Service_is_valid(Oauth2Service provider)
+{
+	return provider > OAUTH2AUTH_NONE && provider < OAUTH2AUTH_LAST;
+}
 
 typedef struct _OAUTH2Data OAUTH2Data;
 struct _OAUTH2Data
