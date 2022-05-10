@@ -65,7 +65,8 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
 		[OA2_RESPONSE_MODE] = "",
-	 ""},
+		[OA2_HEADER_AUTH_BASIC] = "",
+	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
 		[OA2_CLIENT_ID] = "",
@@ -83,7 +84,8 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 		[OA2_RESPONSE_MODE] = "query",
-	 ""},
+		[OA2_HEADER_AUTH_BASIC] = "",
+	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
 		[OA2_CLIENT_ID] = "",
@@ -101,7 +103,8 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 		[OA2_RESPONSE_MODE] = "query",
-	 ""},
+		[OA2_HEADER_AUTH_BASIC] = "",
+	},
 	{
 		[OA2_BASE_URL] = "api.login.yahoo.com",
 		[OA2_CLIENT_ID] = "",
@@ -119,7 +122,8 @@ static gchar *OAUTH2info[4][17] = {
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
 		[OA2_RESPONSE_MODE] = "",
-	 "1"}
+		[OA2_HEADER_AUTH_BASIC] = "1",
+	},
 };
 
 static gchar *OAUTH2CodeMarker[5][2] = {
