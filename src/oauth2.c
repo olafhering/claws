@@ -56,7 +56,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_SCOPE_FOR_AUTH] = "https://mail.google.com",
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
-		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_RESPONSE_MODE] = "",
 		[OA2_HEADER_AUTH_BASIC] = "",
@@ -73,7 +72,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_TENANT] = "common",
-		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "wl.imap offline_access",
 		[OA2_RESPONSE_MODE] = "fragment",
@@ -91,7 +89,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_TENANT] = "common",
-		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 		[OA2_RESPONSE_MODE] = "fragment",
@@ -109,7 +106,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_SCOPE_FOR_AUTH] = "",
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
-		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_RESPONSE_MODE] = "",
 		[OA2_HEADER_AUTH_BASIC] = "1",
@@ -326,7 +322,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(uri);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_STATE][0]) {
+	if (OAUTH2info[i][OA2_STATE]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
 		tmp = g_strconcat(body, "&state=", uri, NULL);
 		g_free(body);
@@ -452,7 +448,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		g_free(uri);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_STATE][0]) {
+	if (OAUTH2info[i][OA2_STATE]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
 		tmp = g_strconcat(body, "&state=", uri, NULL);
 		g_free(body);
@@ -596,7 +592,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 		g_string_append(url, tmp);
 		g_free(tmp);
 	}
-	if (OAUTH2info[i][OA2_STATE][0]) {
+	if (OAUTH2info[i][OA2_STATE]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
 		g_string_append(url, "&state=");
 		g_string_append(url, tmp);
