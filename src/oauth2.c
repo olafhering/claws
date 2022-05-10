@@ -44,7 +44,8 @@
 //where the password is Base64 encoding of client_id:client_secret
 
 static gchar *OAUTH2info[4][17] = {
-	{"accounts.google.com",
+	{
+		[OA2_BASE_URL] = "accounts.google.com",
 	 "",
 	 ".",
 	 "urn:ietf:wg:oauth:2.0:oob",
@@ -61,7 +62,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "",
 	 "",
 	 ""},
-	{"login.microsoftonline.com",
+	{
+		[OA2_BASE_URL] = "login.microsoftonline.com",
 	 "",
 	 "",
 	 "https://login.microsoftonline.com/common/oauth2/nativeclient",
@@ -78,7 +80,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "wl.imap offline_access",
 	 "fragment",
 	 ""},
-	{"login.microsoftonline.com",
+	{
+		[OA2_BASE_URL] = "login.microsoftonline.com",
 	 "",
 	 "",
 	 "https://login.microsoftonline.com/common/oauth2/nativeclient",
@@ -95,7 +98,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 	 "fragment",
 	 ""},
-	{"api.login.yahoo.com",
+	{
+		[OA2_BASE_URL] = "api.login.yahoo.com",
 	 "",
 	 ".",
 	 "oob",
