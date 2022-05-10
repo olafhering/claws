@@ -48,7 +48,8 @@
 //where the password is Base64 encoding of client_id:client_secret
 
 static gchar *OAUTH2info[4][17] = {
-	{"accounts.google.com",
+	{
+		[OA2_BASE_URL] = "accounts.google.com",
 	 "",
 	 ".",
 	 "http://127.0.0.1:8888",
@@ -65,7 +66,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "",
 	 "",
 	 ""},
-	{"login.microsoftonline.com",
+	{
+		[OA2_BASE_URL] = "login.microsoftonline.com",
 	 "",
 	 "",
 	 "http://127.0.0.1:8888",
@@ -82,7 +84,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 	 "query",
 	 ""},
-	{"login.microsoftonline.com",
+	{
+		[OA2_BASE_URL] = "login.microsoftonline.com",
 	 "",
 	 "",
 	 "http://127.0.0.1:8888",
@@ -99,7 +102,8 @@ static gchar *OAUTH2info[4][17] = {
 	 "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 	 "query",
 	 ""},
-	{"api.login.yahoo.com",
+	{
+		[OA2_BASE_URL] = "api.login.yahoo.com",
 	 "",
 	 ".",
 	 "oob",
