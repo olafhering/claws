@@ -62,7 +62,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_RESPONSE_MODE] = "",
-		[OA2_HEADER_AUTH_BASIC] = "",
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
@@ -357,7 +356,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		body = tmp;
 	}
 
-	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC][0]) {
+	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
 		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
@@ -483,7 +482,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		body = tmp;
 	}
 
-	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC][0]) {
+	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
 		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
