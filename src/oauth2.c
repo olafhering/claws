@@ -98,12 +98,9 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 };
 
-static gchar *OAUTH2CodeMarker[5][2] = {
-	{"", ""},
-	{"google_begin_mark", "google_end_mark"}, /* Not used since token avalable to user to copy in browser window */
-	{"#code=", "&session_state"},
-	{"#code=", "&session_state"},
-	{"yahoo_begin_mark", "yahoo_end_mark"} /* Not used since token avalable to user to copy in browser window */
+static gchar *OAUTH2CodeMarker[OAUTH2AUTH_LAST - 1][2] = {
+	[OAUTH2AUTH_OUTLOOK] = {"#code=", "&session_state"},
+	[OAUTH2AUTH_EXCHANGE] = {"#code=", "&session_state"},
 };
 
 static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request);
