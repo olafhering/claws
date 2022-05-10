@@ -46,7 +46,6 @@
 static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	{
 		[OA2_BASE_URL] = "accounts.google.com",
-		[OA2_CLIENT_ID] = "",
 		[OA2_CLIENT_SECRET] = ".",
 		[OA2_REDIRECT_URI] = "urn:ietf:wg:oauth:2.0:oob",
 		[OA2_AUTH_RESOURCE] = "/o/oauth2/auth",
@@ -59,7 +58,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-		[OA2_CLIENT_ID] = "",
 		[OA2_REDIRECT_URI] = "https://login.microsoftonline.com/common/oauth2/nativeclient",
 		[OA2_AUTH_RESOURCE] = "/common/oauth2/v2.0/authorize",
 		[OA2_ACCESS_RESOURCE] = "/common/oauth2/v2.0/token",
@@ -74,7 +72,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-		[OA2_CLIENT_ID] = "",
 		[OA2_REDIRECT_URI] = "https://login.microsoftonline.com/common/oauth2/nativeclient",
 		[OA2_AUTH_RESOURCE] = "/common/oauth2/v2.0/authorize",
 		[OA2_ACCESS_RESOURCE] = "/common/oauth2/v2.0/token",
@@ -89,7 +86,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 	{
 		[OA2_BASE_URL] = "api.login.yahoo.com",
-		[OA2_CLIENT_ID] = "",
 		[OA2_CLIENT_SECRET] = ".",
 		[OA2_REDIRECT_URI] = "oob",
 		[OA2_AUTH_RESOURCE] = "/oauth2/request_auth",
@@ -218,7 +214,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_autofree gchar *request = NULL;
 	g_autofree gchar *response = NULL;
 	gchar *body;
-	gchar *uri, *uri2;
+	gchar *uri = NULL, *uri2;
 	gchar *header;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
@@ -226,8 +222,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	gint expiry = 0;
 	gint ret;
 	SockInfo *sock;
-	gchar *client_id;
-	gchar *client_secret;
+	gchar *client_id = NULL;
+	gchar *client_secret = NULL;
 	g_autofree gchar *token = NULL;
 	gchar *tmp;
 	gint i;
@@ -258,14 +254,12 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		return (1);
 	}
 
-	if (OAUTH2Data->custom_client_id)
+	if (OAUTH2Data->custom_client_id) {
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
-	else
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
-
-	uri = g_uri_escape_string(client_id, NULL, FALSE);
+		uri = g_uri_escape_string(client_id, NULL, FALSE);
+	}
 	uri2 = g_uri_escape_string(token, NULL, FALSE);
-	body = g_strconcat("client_id=", uri, "&code=", uri2, NULL);
+	body = g_strconcat("client_id=", uri ? : "", "&code=", uri2, NULL);
 	g_free(uri2);
 	g_free(uri);
 
@@ -280,8 +274,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(body);
 		g_free(uri);
 		body = tmp;
-	} else {
-		client_secret = g_strconcat("", NULL);
 	}
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
@@ -321,7 +313,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
-		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
+		tmp_hd = g_strconcat(client_id ? : "", ":", client_secret ? : "", NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
@@ -368,7 +360,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	g_autofree gchar *request = NULL;
 	g_autofree gchar *response = NULL;
 	gchar *body;
-	gchar *uri;
+	gchar *uri = NULL;
 	gchar *header;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token = NULL;
@@ -376,8 +368,8 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	gint expiry = 0;
 	gint ret;
 	SockInfo *sock;
-	gchar *client_id;
-	gchar *client_secret;
+	gchar *client_id = NULL;
+	gchar *client_secret = NULL;
 	gchar *tmp;
 	gint i;
 
@@ -400,13 +392,11 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		return (1);
 	}
 
-	if (OAUTH2Data->custom_client_id)
+	if (OAUTH2Data->custom_client_id) {
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
-	else
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
-
-	uri = g_uri_escape_string(client_id, NULL, FALSE);
-	body = g_strconcat("client_id=", uri, "&refresh_token=", OAUTH2Data->refresh_token, NULL);
+		uri = g_uri_escape_string(client_id, NULL, FALSE);
+	}
+	body = g_strconcat("client_id=", uri ? : "", "&refresh_token=", OAUTH2Data->refresh_token, NULL);
 	g_free(uri);
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
@@ -420,8 +410,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		g_free(body);
 		g_free(uri);
 		body = tmp;
-	} else {
-		client_secret = g_strconcat("", NULL);
 	}
 
 	if (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH]) {
@@ -447,7 +435,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
-		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
+		tmp_hd = g_strconcat(client_id ? : "", ":", client_secret ? : "", NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
@@ -544,12 +532,9 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 
 	if (custom_client_id) {
 		tmp = g_uri_escape_string(custom_client_id, NULL, FALSE);
-	} else {
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
-		tmp = g_uri_escape_string(client_id, NULL, FALSE);
+		g_string_append(url, tmp);
+		g_free(tmp);
 	}
-   	g_string_append(url, tmp);
-	g_free(tmp);
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
