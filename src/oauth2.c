@@ -56,7 +56,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_SCOPE_FOR_AUTH] = "https://mail.google.com",
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
-		[OA2_TENANT] = "",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
@@ -111,7 +110,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_SCOPE_FOR_AUTH] = "",
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
-		[OA2_TENANT] = "",
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
@@ -316,7 +314,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(uri);
 		body = tmp;
 	}
-	if (OAUTH2info[i][OA2_TENANT][0]) {
+	if (OAUTH2info[i][OA2_TENANT]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
 		tmp = g_strconcat(body, "&tenant=", uri, NULL);
 		g_free(body);
@@ -588,7 +586,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 		g_string_append(url, tmp);
 		g_free(tmp);
 	}
-	if (OAUTH2info[i][OA2_TENANT][0]) {
+	if (OAUTH2info[i][OA2_TENANT]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
 		g_string_append(url, "&tenant=");
 		g_string_append(url, tmp);
