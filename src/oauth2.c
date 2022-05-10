@@ -107,7 +107,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_ACCESS_RESOURCE] = "/oauth2/get_token",
 		[OA2_REFRESH_RESOURCE] = "/oauth2/get_token",
 		[OA2_RESPONSE_TYPE] = "code",
-		[OA2_SCOPE_FOR_AUTH] = "",
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_ACCESS_TYPE] = "",
@@ -562,7 +561,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 		g_string_append(url, tmp);
 		g_free(tmp);
 	}
-	if (OAUTH2info[i][OA2_SCOPE_FOR_AUTH][0]) {
+	if (OAUTH2info[i][OA2_SCOPE_FOR_AUTH]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
 		g_string_append(url, "&scope=");
 		g_string_append(url, tmp);
