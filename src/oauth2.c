@@ -558,7 +558,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 		g_free(tmp);
 
 	}
-	if (OAUTH2info[i][OA2_RESPONSE_TYPE][0]) {
+	if (OAUTH2info[i][OA2_RESPONSE_TYPE]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_TYPE], NULL, FALSE);
 		g_string_append(url, "&response_type=");
 		g_string_append(url, tmp);
