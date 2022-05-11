@@ -401,7 +401,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	g_free(boundary);
 	claws_fclose(fp);
 
-	gpgme_data_new_from_mem(&gpgtext, textstr, (size_t)strlen(textstr), 0);
+	gpgme_data_new_from_mem(&gpgtext, textstr, strlen(textstr), 0);
 	gpgme_data_new(&gpgsig);
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print(("Couldn't initialize GPG context, %s\n"), gpgme_strerror(err));
@@ -641,7 +641,7 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	claws_fclose(fp);
 
 	/* encrypt data */
-	gpgme_data_new_from_mem(&gpgtext, textstr, (size_t)strlen(textstr), 0);
+	gpgme_data_new_from_mem(&gpgtext, textstr, strlen(textstr), 0);
 	gpgme_data_new(&gpgenc);
 	gpgme_set_armor(ctx, 1);
 	cm_gpgme_data_rewind(gpgtext);
