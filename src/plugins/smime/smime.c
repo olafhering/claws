@@ -582,7 +582,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 		return NULL;
 	}
 
-	chars = sgpgme_data_release_and_get_mem(plain, &len);
+	chars = sgpgme_get_mem(plain, &len);
 
 	if (len > 0) {
 		if (claws_fwrite(chars, 1, len, dstfp) < len) {
@@ -771,7 +771,7 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 	}
 
 	gpgme_release(ctx);
-	sigcontent = sgpgme_data_release_and_get_mem(gpgsig, &len);
+	sigcontent = sgpgme_get_mem(gpgsig, &len);
 	gpgme_data_release(gpgtext);
 	g_free(textstr);
 
@@ -943,7 +943,7 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	for (gint x = 0; x < i; x++)
 		gpgme_key_unref(kset[x]);
 	g_free(kset);
-	enccontent = sgpgme_data_release_and_get_mem(gpgenc, &len);
+	enccontent = sgpgme_get_mem(gpgenc, &len);
 
 	if (!enccontent) {
 		g_warning("no enccontent");
