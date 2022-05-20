@@ -47,7 +47,7 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	{
 		[OA2_BASE_URL] = "accounts.google.com",
 		[OA2_CLIENT_SECRET] = ".",
-		[OA2_REDIRECT_URI] = "urn:ietf:wg:oauth:2.0:oob",
+		[OA2_REDIRECT_URI] = "http://127.0.0.1:1",
 		[OA2_AUTH_RESOURCE] = "/o/oauth2/auth",
 		[OA2_ACCESS_RESOURCE] = "/o/oauth2/token",
 		[OA2_REFRESH_RESOURCE] = "/o/oauth2/token",
