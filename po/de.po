@@ -19740,7 +19740,7 @@ msgstr "Ver_größern"
 
 #: src/textview.c:2324
 msgid "Zoom _Out"
-msgstr "Ver_kleinern"
+msgstr "Ve_rkleinern"
 
 #: src/textview.c:2332
 msgid "Reset _zoom"
