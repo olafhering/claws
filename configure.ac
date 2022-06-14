@@ -477,6 +477,10 @@ dnl *****************
 
 dnl check for glib
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= 2.36 gmodule-2.0 >= 2.36 gobject-2.0 >= 2.36 gthread-2.0 >= 2.36])
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_44, [Ignore post 2.44 deprecations])
+AC_DEFINE(GLIB_VERSION_MAX_ALLOWED,  GLIB_VERSION_2_44, [Prevent post 2.44 APIs])
+AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_2_24, [Ignore post 2.24 deprecations])
+AC_DEFINE(GDK_VERSION_MAX_ALLOWED,  GDK_VERSION_2_24, [Prevent post 2.24 APIs])
 
 GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 AC_SUBST(GLIB_GENMARSHAL)
