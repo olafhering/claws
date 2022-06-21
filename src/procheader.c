@@ -360,6 +360,14 @@ Header *procheader_parse_header(gchar *buf)
 			p++;
 			while (*p == ' ' || *p == '\t')
 				p++;
+			buf = p;
+			while (*buf) {
+				if (*buf != '\n') {
+					buf++;
+					continue;
+				}
+				memmove(buf, buf + 1, strlen(buf));
+			}
 			header->body = conv_unmime_header(p, NULL, addr_field);
 			return header;
 		}
