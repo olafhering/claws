@@ -1833,8 +1833,8 @@ static void mimeview_save_all_info(gint errors, gint total)
 					"%d files saved successfully.",
 					total),
 				total);
-		aval = alertpanel_full(_("Notice"), msg, NULL, _("_Close"),
-				       NULL, NULL, NULL, NULL, ALERTFOCUS_FIRST,
+		aval = alertpanel_full(_("Notice"), msg, GTK_STOCK_CLOSE,
+				       NULL, NULL, ALERTFOCUS_FIRST,
 				       TRUE, NULL, ALERT_NOTICE);
 		g_free(msg);
 		if (aval & G_ALERTDISABLE)
@@ -1850,8 +1850,8 @@ static void mimeview_save_all_info(gint errors, gint total)
 					"%s, %d files failed.",
 					errors),
 				msg1, errors);
-		aval = alertpanel_full(_("Warning"), msg2, NULL, _("_Close"),
-				       NULL, NULL, NULL, NULL, ALERTFOCUS_FIRST,
+		aval = alertpanel_full(_("Warning"), msg2, GTK_STOCK_CLOSE,
+				       NULL, NULL, ALERTFOCUS_FIRST,
 				       TRUE, NULL, ALERT_WARNING);
 		g_free(msg2);
 		g_free(msg1);
