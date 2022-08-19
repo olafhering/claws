@@ -15841,11 +15841,11 @@ msgstr "Rückgängig-Stufen"
 
 #: src/prefs_compose_writing.c:186
 msgid "Warn when inserting a file larger than"
-msgstr "Warne, wenn eine Datei eingefügt wird, welche größer ist als"
+msgstr "Warne, wenn eine Datei in den Nachrichtenkörper eingefügt wird, welche größer ist als"
 
 #: src/prefs_compose_writing.c:194
 msgid "KiB into message body "
-msgstr "KiB in den Nachrichtenkörper "
+msgstr "KiB "
 
 #: src/prefs_compose_writing.c:199
 msgid "Replying"
