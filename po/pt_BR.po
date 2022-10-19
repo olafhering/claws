@@ -4,13 +4,13 @@
 # as the Claws Mail package, see COPYING file.
 #
 #
-# Frederico Goncalves Guimaraes <frederico@teia.bio.br>, 2006-2018, 2021, 2022.
+# Frederico Goncalves Guimaraes <frederico@teia.bio.br>, 2006-2017, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: claws-mail 3.14.0git127\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
 "POT-Creation-Date: 2022-03-27 09:43+0100\n"
-"PO-Revision-Date: 2022-03-31 22:50-0300\n"
+"PO-Revision-Date: 2022-10-16 11:57-0300\n"
 "Last-Translator: Frederico Gonçalves Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: Portuguese <kde-i18n-pt_BR@kde.org>\n"
 "Language: pt_BR\n"
@@ -535,7 +535,7 @@ msgstr "Enviar _mensagem para"
 
 #: src/addressbook.c:438 src/addressbook.c:487
 msgid "_Merge"
-msgstr "Me_sclar"
+msgstr "_Mesclar"
 
 #: src/addressbook.c:442
 msgid "Import _LDIF file..."
@@ -885,7 +885,7 @@ msgstr "Coletando endereços..."
 
 #: src/addrgather.c:254
 msgid "address added by Claws Mail"
-msgstr "endereço adicionado pelo Claws-Mail"
+msgstr "endereço adicionado pelo Claws Mail"
 
 #: src/addrgather.c:285
 msgid "Addresses collected successfully."
@@ -1481,10 +1481,10 @@ msgid ""
 "\n"
 "Signing and encrypting have been disabled for this message."
 msgstr ""
-"Você optou por assinar e/ou criptografar essa mensagem, mas não selecionou "
+"Você optou por assinar e/ou criptografar esta mensagem, mas não selecionou "
 "nenhum sistema de privacidade.\n"
 "\n"
-"A assinatura e a criptografia foram desabilitadas para essa mensagem."
+"A assinatura e a criptografia foram desabilitadas para esta mensagem."
 
 #: src/compose.c:609
 msgid "_Add..."
@@ -2330,7 +2330,8 @@ msgstr ""
 msgid ""
 "Socket communication with an external editor is not available on Windows."
 msgstr ""
-"A comunicação via socket com um editor externo não está disponível no Windows."
+"A comunicação via socket com um editor externo não está disponível no "
+"Windows."
 
 #: src/compose.c:9742
 #, c-format
@@ -2875,8 +2876,8 @@ msgid ""
 "sure to check the correct configuration in ldap.conf (TLS_CACERTDIR and "
 "TLS_REQCERT fields)."
 msgstr ""
-"Habilitar conexão segura com o servidor LDAP via TLS. Caso a conexão não "
-"se efetue, certifique-se de verificar a configuração correta em ldap.conf "
+"Habilitar conexão segura com o servidor LDAP via TLS. Caso a conexão não se "
+"efetue, certifique-se de verificar a configuração correta em ldap.conf "
 "(campos TLS_CACERTDIR e TLS_REQCERT)."
 
 #: src/editldap.c:491
@@ -2940,7 +2941,7 @@ msgstr ""
 
 #: src/editldap.c:600
 msgid "Max Query Age (secs)"
-msgstr "Duração máxima da consulta (s)"
+msgstr "Duração máxima da consulta (seg)"
 
 #: src/editldap.c:614
 msgid ""
@@ -3031,7 +3032,7 @@ msgstr "Exibir a senha"
 
 #: src/editldap.c:748 src/plugins/spamassassin/spamassassin_gtk.c:397
 msgid "Timeout (secs)"
-msgstr "Limite de tempo (s)"
+msgstr "Limite de tempo (seg)"
 
 #: src/editldap.c:761
 msgid "The timeout period in seconds."
@@ -3561,7 +3562,7 @@ msgid ""
 "rule is account-based, not matching the account currently used to retrieve "
 "messages\n"
 msgstr ""
-"a regra é associada a conta, não correspondendo à conta atualmente usada "
+"a regra é associada à conta, não correspondendo à conta atualmente usada "
 "para recuperar as mensagens\n"
 
 #: src/filtering.c:627
@@ -3570,7 +3571,7 @@ msgid ""
 "rule is account-based [id=%d, name='%s'], not matching the account currently "
 "used to retrieve messages [id=%d, name='%s']\n"
 msgstr ""
-"a regra é associada a conta [id=%d, nome='%s'], não correspondendo à conta "
+"a regra é associada à conta [id=%d, nome='%s'], não correspondendo à conta "
 "atualmente usada para recuperar as mensagens [id=%d, nome='%s']\n"
 
 #: src/filtering.c:646
@@ -5100,7 +5101,7 @@ msgstr "Lembrar disso"
 
 #: src/gtk/logwindow.c:450
 msgid "_Go to last error"
-msgstr "Ir para o último _erro"
+msgstr "Ir para o úl_timo erro"
 
 #: src/gtk/logwindow.c:457
 msgid "Clear _Log"
@@ -5273,11 +5274,13 @@ msgstr "mensagens excluídas"
 
 #: src/gtk/quicksearch.c:482
 msgid "messages whose date is after requested date (time is optional)"
-msgstr "mensagens cuja data é posterior à data requisitada (hora é opcional)"
+msgstr ""
+"mensagens cuja data seja posterior à data solicitada (o horário é opcional)"
 
 #: src/gtk/quicksearch.c:484
 msgid "messages whose date is before requested date (time is optional)"
-msgstr "mensagens cuja data é anterior à data requisitada (hora é opcional)"
+msgstr ""
+"mensagens cuja data seja anterior à data solicitada (o horário é opcional)"
 
 #: src/gtk/quicksearch.c:486
 msgid "messages which contain S in the Sender field"
@@ -5313,7 +5316,7 @@ msgstr "mensagens que contenham S no cabeçalho Message-Id"
 
 #: src/gtk/quicksearch.c:494
 msgid "messages which contain S in In-Reply-To header"
-msgstr "mensagens que contenham S no cabeçalho In-Reply-To"
+msgstr "mensagens que contenham S no cabeçalho 'In-Reply-To'"
 
 #: src/gtk/quicksearch.c:495
 msgid "messages which are marked with color #"
@@ -5353,15 +5356,15 @@ msgstr "mensagens que contenham S no assunto"
 
 #: src/gtk/quicksearch.c:504
 msgid "messages whose score is equal to # points"
-msgstr "mensagens com pontuação igual a # pontos"
+msgstr "mensagens com pontuação igual a #"
 
 #: src/gtk/quicksearch.c:505
 msgid "messages whose score is greater than # points"
-msgstr "mensagens com pontuação maior que # pontos"
+msgstr "mensagens com pontuação maior que #"
 
 #: src/gtk/quicksearch.c:506
 msgid "messages whose score is lower than # points"
-msgstr "mensagens com pontuação menor que # pontos"
+msgstr "mensagens com pontuação menor que #"
 
 #: src/gtk/quicksearch.c:507
 msgid "messages whose size is equal to # bytes"
@@ -5397,7 +5400,7 @@ msgstr "mensagens não lidas"
 
 #: src/gtk/quicksearch.c:515
 msgid "messages which contain S in References header"
-msgstr "mensagens que contenham S no cabeçalho References"
+msgstr "mensagens que contenham S no cabeçalho 'References'"
 
 #: src/gtk/quicksearch.c:516
 #, c-format
@@ -5408,23 +5411,23 @@ msgstr ""
 
 #: src/gtk/quicksearch.c:517
 msgid "messages which contain S in X-Label header"
-msgstr "mensagens que contenham S no cabeçalho X-Label"
+msgstr "mensagens que contenham S no cabeçalho 'X-Label'"
 
 #: src/gtk/quicksearch.c:519
 msgid "logical AND operator"
-msgstr "operador lógico E"
+msgstr "operador lógico 'E'"
 
 #: src/gtk/quicksearch.c:520
 msgid "logical OR operator"
-msgstr "operador lógico OU"
+msgstr "operador lógico 'OU'"
 
 #: src/gtk/quicksearch.c:521
 msgid "logical NOT operator"
-msgstr "operador lógico NÃO"
+msgstr "operador lógico 'NÃO'"
 
 #: src/gtk/quicksearch.c:522
 msgid "case sensitive search"
-msgstr "diferenciar maiúsc./minúsc."
+msgstr "a pesquisa diferencia maiúsc./minúsc."
 
 #: src/gtk/quicksearch.c:523
 msgid "match using regular expressions instead of substring search"
@@ -5513,7 +5516,7 @@ msgstr "Correto%s"
 #: src/gtk/sslcertwindow.c:180 src/gtk/sslcertwindow.c:182
 #: src/ssl_manager.c:301 src/ssl_manager.c:305
 msgid " (expired)"
-msgstr " (expirado)"
+msgstr "(expirado)"
 
 #: src/gtk/sslcertwindow.c:187
 msgid "Owner"
@@ -5990,8 +5993,8 @@ msgid ""
 "Do you want to continue connecting to this server? The communication would "
 "not be secure."
 msgstr ""
-"Essa conexão está configurada para ser segura usando TLS, mas o TLS "
-"não está disponível nessa compilação do Claws Mail. \n"
+"Essa conexão está configurada para ser segura usando TLS, mas o TLS não está "
+"disponível nessa compilação do Claws Mail. \n"
 "\n"
 "Você quer continuar a conexão ao servidor? A comunicação não será segura."
 
@@ -6038,7 +6041,7 @@ msgstr "Copiando mensagens..."
 
 #: src/imap.c:2526
 msgid "Search failed due to server error."
-msgstr "Não foi possível realizar a pesquisa devido a uma falha no servidor."
+msgstr "Não foi possível realizar a pesquisa devido a um erro no servidor."
 
 #: src/imap.c:2610
 msgid "can't set deleted flags\n"
@@ -7593,7 +7596,7 @@ msgstr "Marcar como _não-spam"
 
 #: src/mainwindow.c:730 src/prefs_filtering_action.c:177 src/toolbar.c:517
 msgid "Lock"
-msgstr "Travar"
+msgstr "Bloquear"
 
 #: src/mainwindow.c:731 src/prefs_filtering_action.c:178 src/toolbar.c:518
 msgid "Unlock"
@@ -7725,8 +7728,8 @@ msgid "_Forget all session passwords"
 msgstr "Es_quecer todas as senhas da sessão"
 
 #: src/mainwindow.c:799
-msgid "Forget _primary passphrase"
-msgstr "Es_quecer a senha primária"
+msgid "Forget _master passphrase"
+msgstr "Es_quecer a senha mestra"
 
 #: src/mainwindow.c:803
 msgid "C_hange current account"
@@ -8596,8 +8599,8 @@ msgstr ""
 #, c-format
 msgid "Error checking the signature. Click the icon or hit '%s' to try again."
 msgstr ""
-"Erro durante a checagem da assinatura. Clique no ícone ou pressione "
-"'%s' para tentar novamente."
+"Erro durante a checagem da assinatura. Clique no ícone ou pressione '%s' "
+"para tentar novamente."
 
 #: src/mimeview.c:1223
 msgid "Checking signature..."
@@ -8922,31 +8925,31 @@ msgid ""
 msgstr "OAuth2 decodificado: %s\n"
 
 #: src/password.c:128 src/password.c:129
-msgid "Input primary passphrase"
-msgstr "Digite a senha primária"
+msgid "Input master passphrase"
+msgstr "Digite a senha mestra"
 
 #: src/password.c:141
-msgid "Incorrect primary passphrase."
-msgstr "Senha primária incorreta."
+msgid "Incorrect master passphrase."
+msgstr "Senha mestra incorreta."
 
 #: src/password_gtk.c:67
 msgid "New passphrases do not match, try again."
 msgstr "As novas senhas não conferem, tente novamente."
 
 #: src/password_gtk.c:80
-msgid "Incorrect old primary passphrase entered, try again."
-msgstr "A senha primária anterior está incorreta, tente novamente."
+msgid "Incorrect old master passphrase entered, try again."
+msgstr "A senha mestra anterior está incorreta, tente novamente."
 
 #: src/password_gtk.c:144
-msgid "Changing primary passphrase"
-msgstr "Alterando a senha primária"
+msgid "Changing master passphrase"
+msgstr "Alterando a senha mestra"
 
 #: src/password_gtk.c:165
 msgid ""
-"If a primary passphrase is currently active, it\n"
+"If a master passphrase is currently active, it\n"
 "needs to be entered."
 msgstr ""
-"Caso exista uma senha primária atualmente ativa,\n"
+"Caso exista uma senha mestra atualmente ativa,\n"
 "ela deve ser digitada."
 
 #: src/password_gtk.c:175
@@ -9120,7 +9123,7 @@ msgstr "Campos de onde preservar os endereços"
 #, c-format
 msgctxt "address keeper: %s stands for a header name"
 msgid "Keep addresses which appear in '%s' headers"
-msgstr "Armazenar os endereços que apareçam nos cabeçalhos '%s'"
+msgstr "Armazenar os endereços que aparecem nos cabeçalhos '%s'"
 
 #: src/plugins/address_keeper/address_keeper_prefs.c:185
 msgid ""
@@ -9629,7 +9632,7 @@ msgstr "Os anexos foram removidos de todas as %d mensagens selecionadas."
 
 #: src/plugins/att_remover/att_remover.c:503
 msgid "This message doesn't have any attachments."
-msgstr "Essa mensagem não possui nenhum anexo."
+msgstr "Essa mensagem não tem nenhum anexo."
 
 #: src/plugins/att_remover/att_remover.c:516
 msgid "Remove attachments..."
@@ -9697,9 +9700,8 @@ msgstr "anexo"
 msgid ""
 "Warn when one of the following regular expressions is matched (one per line)"
 msgstr ""
-"Avisar quando for encontrada correspondência para uma das seguintes"
-" expressões "
-"regulares (uma por linha)"
+"Avisar quando for encontrada correspondência para uma das seguintes "
+"expressões regulares (uma por linha)"
 
 #: src/plugins/attachwarner/attachwarner_prefs.c:87
 #: src/plugins/keyword_warner/keyword_warner_prefs.c:87
@@ -10461,7 +10463,7 @@ msgstr "Ao clicar em um link, por padrão"
 
 #: src/plugins/fancy/fancy_prefs.c:285
 msgid "Open in External Browser"
-msgstr "Abra em um navegador externo"
+msgstr "Abrir em um navegador externo"
 
 #: src/plugins/fancy/fancy_prefs.c:299
 msgid "The CSS in this file will be applied to all HTML parts"
@@ -10519,7 +10521,7 @@ msgstr "%s é uma fonte malformada ou não suportada"
 
 #: src/plugins/fancy/fancy_viewer.c:759
 msgid "Search the Web"
-msgstr "Pesquisar a Web"
+msgstr "Pesquisar na Web"
 
 #: src/plugins/fancy/fancy_viewer.c:770
 msgid "Open in Viewer"
@@ -10863,8 +10865,8 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
-"Uma palavra-chave foi usada na mensagem que você está enviando. Ela "
-"aparece na linha %d, que começa com o texto: %s\n"
+"Uma palavra-chave foi usada na mensagem que você está enviando. Ela aparece "
+"na linha %d, que começa com o texto: %s\n"
 "\n"
 "%s"
 
@@ -10883,8 +10885,8 @@ msgid ""
 "Shows a warning when sending or queueing a message and a reference to one or "
 "more keywords is found in the message text."
 msgstr ""
-"Exibe um aviso ao enviar ou enfileirar uma mensagem e uma referência para uma "
-"ou mais palavras-chave forem encontradas no corpo dessa mensagem."
+"Exibe um aviso ao enviar ou enfileirar uma mensagem e uma referência para "
+"uma ou mais palavras-chave forem encontradas no corpo dessa mensagem."
 
 #: src/plugins/keyword_warner/keyword_warner_prefs.c:137
 msgid "Don't check for keywords when forwarding or redirecting messages"
@@ -12285,7 +12287,8 @@ msgstr "Importação de chaves"
 msgid ""
 "This key is not in your keyring. Do you want Claws Mail to try to import it?"
 msgstr ""
-"Essa chave não está no seu chaveiro. Deseja que o Claws Mail tente importá-la?"
+"Essa chave não está no seu chaveiro. Deseja que o Claws Mail tente importá-"
+"la?"
 
 #: src/plugins/pgpcore/pgp_viewer.c:182
 msgid "_No"
@@ -14150,7 +14153,7 @@ msgid ""
 "You have no account matching any attendee.\n"
 "Do you want to reply anyway?"
 msgstr ""
-"Você não possui nenhuma conta correspondente a nenhum dos participantes.\n"
+"Você não tem nenhuma conta correspondente a nenhum dos participantes.\n"
 "Deseja responder mesmo assim?"
 
 #: src/plugins/vcalendar/vcalendar.c:1062
@@ -15771,8 +15774,8 @@ msgid ""
 "Opening the filter action dialog will clear current modifications of the "
 "command-line."
 msgstr ""
-"Abrir a janela de ação do filtro eliminará as modificações da linha "
-"de comando."
+"Abrir a janela de ação do filtro eliminará as modificações da linha de "
+"comando."
 
 #: src/prefs_actions.c:1332 src/prefs_filtering.c:1081
 #: src/prefs_filtering.c:1139
@@ -16644,7 +16647,7 @@ msgid ""
 "Caution: enabling this option will slow down the filtering/processing, this "
 "might be critical when applying many rules upon thousands of messages."
 msgstr ""
-"Se marcado, ativa o relatório das regras de filtragem e processamento.\n"
+"Se marcada, ativa o relatório das regras de filtragem e processamento.\n"
 "O relatório pode ser acessado em 'Ferramentas/Relatório de filtragem'.\n"
 "Atenção: habilitar essa opção tornará a filtragem/processamento mais lentos, "
 "isso pode se tornar crítico ao se aplicar muitas regras sobre milhares de "
@@ -17295,22 +17298,22 @@ msgstr "Habilitar coloração do fundo do texto"
 #: src/prefs_msg_colors.c:256
 msgctxt "Tooltip"
 msgid "Pick color for 1st level text background"
-msgstr "Selecione a cor para o fundo do texto do 1º nível"
+msgstr "Escolha a cor para o fundo do texto de 1º nível"
 
 #: src/prefs_msg_colors.c:269
 msgctxt "Tooltip"
 msgid "Pick color for 2nd level text background"
-msgstr "Selecione a cor para o fundo do texto do 2º nível"
+msgstr "Escolha a cor para o fundo do texto de 2º nível"
 
 #: src/prefs_msg_colors.c:282
 msgctxt "Tooltip"
 msgid "Pick color for 3rd level text background"
-msgstr "Selecione a cor para o fundo do texto do 3º nível"
+msgstr "Escolha a cor para o fundo do texto de 3º nível"
 
 #: src/prefs_msg_colors.c:294
 msgctxt "Tooltip"
 msgid "Pick color for links"
-msgstr "Selecione a cor para os links"
+msgstr "Escolha a cor para os links"
 
 #: src/prefs_msg_colors.c:298
 msgid "URI link"
@@ -17319,7 +17322,7 @@ msgstr "Links URI"
 #: src/prefs_msg_colors.c:306
 msgctxt "Tooltip"
 msgid "Pick color for signatures"
-msgstr "Selecione a cor para as assinaturas"
+msgstr "Escolha a cor para as assinaturas"
 
 #. TRANSLATORS: A patch is a text file listing the differences between 2 or more different
 #. versions of the same text file
@@ -17330,7 +17333,7 @@ msgstr "Mensagens de patch e anexos"
 #: src/prefs_msg_colors.c:324
 msgctxt "Tooltip"
 msgid "Pick color for inserted lines"
-msgstr "Selecione a cor para linhas inseridas"
+msgstr "Escolha a cor para linhas inseridas"
 
 #: src/prefs_msg_colors.c:326
 msgid "Inserted lines"
@@ -17339,7 +17342,7 @@ msgstr "Linhas inseridas"
 #: src/prefs_msg_colors.c:333
 msgctxt "Tooltip"
 msgid "Pick color for removed lines"
-msgstr "Selecione a cor para as linhas removidas"
+msgstr "Escolha a cor para linhas removidas"
 
 #: src/prefs_msg_colors.c:336
 msgid "Removed lines"
@@ -17349,7 +17352,7 @@ msgstr "Linhas removidas"
 #: src/prefs_msg_colors.c:344
 msgctxt "Tooltip"
 msgid "Pick color for hunk lines"
-msgstr "Selecione a cor para as linhas de diferenças"
+msgstr "Escolha a cor para as linhas com as diferenças"
 
 #. TRANSLATORS: A hunk is a section of the patch indicating how the files differ
 #: src/prefs_msg_colors.c:348
@@ -17366,9 +17369,9 @@ msgid ""
 "Pick color for Target folder. Target folder is used when the option 'Execute "
 "immediately when moving or deleting messages' is turned off"
 msgstr ""
-"Selecione a cor para a pasta de destino. A pasta de destino é utilizada "
-"quando a opção 'Executar imediatamente ao mover ou excluir mensagens' está "
-"desativada"
+"Escolha a cor para a pasta de destino. A pasta de destino é utilizada quando"
+" a "
+"opção 'Executar imediatamente ao mover ou excluir mensagens' está desativada"
 
 #: src/prefs_msg_colors.c:362
 msgid "Target folder"
@@ -17377,7 +17380,7 @@ msgstr "Pasta de destino"
 #: src/prefs_msg_colors.c:369
 msgctxt "Tooltip"
 msgid "Pick color for folders containing new messages"
-msgstr "Selecione a cor para as pastas que contenham novas mensagens"
+msgstr "Escolha a cor para as pastas que contenham novas mensagens"
 
 #: src/prefs_msg_colors.c:373
 msgid "Folder containing new messages"
@@ -17436,7 +17439,7 @@ msgstr "Seleção de cor para os links"
 #: src/prefs_msg_colors.c:543
 msgctxt "Dialog title"
 msgid "Pick color for target folder"
-msgstr "Seleção de cor para pasta de destino"
+msgstr "Seleção de cor para pasta de destino."
 
 #: src/prefs_msg_colors.c:545
 msgctxt "Dialog title"
@@ -17446,22 +17449,22 @@ msgstr "Seleção de cor para as assinaturas"
 #: src/prefs_msg_colors.c:547
 msgctxt "Dialog title"
 msgid "Pick color for folder"
-msgstr "Seleção de cor para as pastas"
+msgstr "Seleção de cor para a pasta"
 
 #: src/prefs_msg_colors.c:549
 msgctxt "Dialog title"
 msgid "Pick color for inserted lines"
-msgstr "Seleção de cor para as linhas inseridas"
+msgstr "Seleção de cor para linhas inseridas"
 
 #: src/prefs_msg_colors.c:551
 msgctxt "Dialog title"
 msgid "Pick color for removed lines"
-msgstr "Seleção de cor para as linhas removidas"
+msgstr "Seleção de cor para linhas removidas"
 
 #: src/prefs_msg_colors.c:553
 msgctxt "Dialog title"
 msgid "Pick color for hunk lines"
-msgstr "Seleção de cor para as linhas de diferenças"
+msgstr "Seleção de cor para as linhas com as diferenças"
 
 #. TRANSLATORS: 'color %d' refers to the filtering/processing
 #. rule name and should not be translated
@@ -17521,7 +17524,7 @@ msgstr "Habilitar atalhos do teclado"
 
 #: src/prefs_other.c:521
 msgid "Enable customisable keyboard shortcuts"
-msgstr "Habilitar a personalização de atalhos do teclado"
+msgstr "Habilitar atalhos de teclado personalizáveis"
 
 #: src/prefs_other.c:524
 msgid ""
@@ -17529,10 +17532,10 @@ msgid ""
 "by focusing on the menu item and pressing a key combination.\n"
 "Uncheck this option if you want to lock all existing keyboard shortcuts."
 msgstr ""
-"Se marcado, permite que você altere os atalhos de teclado da maioria dos "
-"itens do menu, parando o ponteiro do mouse sobre o item e pressionando uma "
-"combinação de teclas.\n"
-"Desmarque essa opção caso você deseje travar todos os atalhos de teclado."
+"Se marcada, permite que você altere os atalhos de teclado da maioria dos "
+"itens dos menu, indicando o item e pressionando a combinação de teclas.\n"
+"Desmarque essa opção caso você queira travar todos os atalhos de teclado "
+"existentes."
 
 #: src/prefs_other.c:531
 msgid " Choose preset keyboard shortcuts... "
@@ -17610,25 +17613,25 @@ msgid "Synchronise offline folders as soon as possible"
 msgstr "Sincronize as pastas off-line assim que possível"
 
 #: src/prefs_other.c:615
-msgid "Primary passphrase"
-msgstr "Senha primária"
+msgid "Master passphrase"
+msgstr "Senha mestra"
 
 #: src/prefs_other.c:618
-msgid "Use a primary passphrase"
-msgstr "Usar uma senha primária"
+msgid "Use a master passphrase"
+msgstr "Usar uma senha mestra"
 
 #: src/prefs_other.c:621
 msgid ""
-"If checked, your saved account passwords will be protected by a primary "
-"passphrase. If no primary passphrase is set, you will be prompted to set one."
+"If checked, your saved account passwords will be protected by a master "
+"passphrase. If no master passphrase is set, you will be prompted to set one."
 msgstr ""
-"Se selecionado, as senhas salvas das suas contas serão protegidas por uma"
-" senha "
-"primária. Caso não exista uma senha primária, será solicitada uma a você."
+"Se marcada, as senhas salvas das suas contas serão protegidas por uma "
+"senha mestra. Caso não exista uma senha mestra, você será solicitado a "
+"definir uma."
 
 #: src/prefs_other.c:626
-msgid "Change primary passphrase"
-msgstr "Alterar a senha primária"
+msgid "Change master passphrase"
+msgstr "Alterar a senha mestra"
 
 #: src/prefs_other.c:816
 msgid "Miscellaneous"
@@ -18040,8 +18043,8 @@ msgid ""
 "Run processing rules before marking all messages in a folder as read or "
 "unread"
 msgstr ""
-"Executar regras de processamento antes de marcar todas as mensagens "
-"em uma pasta como lidas ou não lidas"
+"Executar regras de processamento antes de marcar todas as mensagens em uma "
+"pasta como lidas ou não lidas"
 
 #: src/prefs_summaries.c:426
 msgid "Abbreviate newsgroup names longer than"
@@ -18554,11 +18557,11 @@ msgstr ""
 
 #: src/prefs_toolbar.c:188
 msgid "Item has no icon defined."
-msgstr "O item não possui ícone definido."
+msgstr "O item não tem ícone definido."
 
 #: src/prefs_toolbar.c:189
 msgid "Item has no text defined."
-msgstr "O item não possui texto definido."
+msgstr "O item não tem texto definido."
 
 #: src/prefs_toolbar.c:897
 msgid "Toolbar item"
@@ -18594,7 +18597,7 @@ msgstr "Ícone"
 
 #: src/prefs_toolbar.c:1011
 msgid "A_dd"
-msgstr "_Adicionar"
+msgstr "A_dicionar"
 
 #: src/prefs_toolbar.c:1231 src/prefs_toolbar.c:1245 src/prefs_toolbar.c:1259
 msgid "Toolbars"
@@ -20464,3 +20467,73 @@ msgid ""
 msgstr ""
 "O Claws Mail está pronto.\n"
 "Clique em Salvar para iniciar."
+
+#~ msgid "_New"
+#~ msgstr "_Nova"
+
+#~ msgid "_Down"
+#~ msgstr "_Baixo"
+
+#~ msgid "_Up"
+#~ msgstr "_Cima"
+
+#~ msgid "_Execute"
+#~ msgstr "E_xecutar"
+
+#~ msgid "_Stop"
+#~ msgstr "_Parar"
+
+#~ msgid "_Yes"
+#~ msgstr "_Sim"
+
+#~ msgid "_Add"
+#~ msgstr "_Adicionar"
+
+#~ msgid "_Previous"
+#~ msgstr "_Anterior"
+
+#~ msgid "_Next"
+#~ msgstr "_Próxima"
+
+#~ msgid "_Refresh"
+#~ msgstr "A_tualizar"
+
+#~ msgid "_Apply"
+#~ msgstr "_Aplicar"
+
+#~ msgid "_Quit"
+#~ msgstr "_Sair"
+
+#~ msgid "Find and _Replace"
+#~ msgstr "Procurar e _substituir"
+
+#~ msgid "_Rename"
+#~ msgstr "_Renomear"
+
+#, c-format
+#~ msgid ""
+#~ "All folders and messages under '%s' will be permanently deleted.\n"
+#~ "Recovery will not be possible.\n"
+#~ "\n"
+#~ "Do you really want to delete?"
+#~ msgstr ""
+#~ "Todas as pastas e mensagens dentro de '%s' serão excluídas "
+#~ "permanentemente.\n"
+#~ "Não será possível recuperá-las.\n"
+#~ "\n"
+#~ "Confirma a exclusão?"
+
+#~ msgid "_Top"
+#~ msgstr "_Início"
+
+#~ msgid "_Bottom"
+#~ msgstr "_Final"
+
+#~ msgid "Primary passphrase"
+#~ msgstr "Senha primária"
+
+#~ msgid "Open in browser"
+#~ msgstr "Abrir no navegador"
+
+#~ msgid "File:"
+#~ msgstr "Arquivo:"
