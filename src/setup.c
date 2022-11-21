@@ -1,6 +1,6 @@
 /*
- * Sylpheed -- a GTK+ based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2012 Hiroyuki Yamamoto and the Claws Mail team
+ * Claws Mail -- a GTK based, lightweight, and fast e-mail client
+ * Copyright (C) 1999-2022 Hiroyuki Yamamoto and the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 #ifdef HAVE_CONFIG_H
@@ -65,21 +64,6 @@ gboolean setup_write_mailbox_path(MainWindow *mainwin, const gchar *path)
 	folder_set_ui_func(folder, NULL, NULL);
 	g_free(base);
 	return TRUE;
-}
-
-void setup(MainWindow *mainwin)
-{
-	gchar *path;
-	
-	path = input_dialog
-		(_("Mailbox setting"),
-		 _("First, you have to set the location of mailbox.\n"
-		   "You can use existing mailbox in MH format\n"
-		   "if you have the one.\n"
-		   "If you're not sure, just select OK."),
-		 "Mail");
-	setup_write_mailbox_path(mainwin, path);
-	g_free(path);
 }
 
 static void scan_tree_func(Folder *folder, FolderItem *item, gpointer data)
