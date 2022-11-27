@@ -10,7 +10,7 @@ endif
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = dist-bzip2 dist-xz
 
-SUBDIRS = m4 po src tools config doc manual
+SUBDIRS = po src tools config doc manual
 
 EXTRA_DIST = \
 	ChangeLog \
@@ -26,6 +26,7 @@ EXTRA_DIST = \
 	claws-mail.png \
 	autogen.sh \
 	claws-features.h.in \
+	m4 \
 	version
 
 # hicolor icon theme, base class of all icon themes
