@@ -1066,8 +1066,15 @@ else
 fi
 AM_CONDITIONAL(BUILD_TESTS, test "x$enable_tests" = "xyes")
 
+dnl =======================
+dnl section for debug calls
+dnl =======================
+
+DEBUG_CALLS=""
+
 AC_MSG_CHECKING([whether to build addressbook debug calls])
 if test x$enable_addressbook_debug = xyes; then
+	DEBUG_CALLS="$DEBUG_CALLS AddressBook"
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(DEBUG_ADDRBOOK, 1, [Define if you want addressbook debug calls])
 else
@@ -1076,10 +1083,17 @@ fi
 
 AC_MSG_CHECKING([whether to build LDAP debug calls])
 if test x$enable_ldap_debug = xyes; then
+	DEBUG_CALLS="$DEBUG_CALLS LDAP"
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(DEBUG_LDAP, 1, [Define if you want LDAP debug calls])
 else
 	AC_MSG_RESULT(no)
+fi
+
+if test -z "$DEBUG_CALLS"; then
+	DEBUG_CALLS="no"
+else
+	DEBUG_CALLS=`echo $DEBUG_CALLS | sed 's/^\s+|\s+$//;s/\s/, /g'`
 fi
 
 dnl *************************
@@ -2309,6 +2323,7 @@ echo "SVG support        : $enable_svg"
 echo "Config dir         : $ac_cv_with_config_dir"
 echo "Password crypto    : $pwd_crypto"
 echo "Unit tests         : $enable_tests"
+echo "Debug calls        : $DEBUG_CALLS"
 
 echo "Plugins"
 echo "   Built:"
