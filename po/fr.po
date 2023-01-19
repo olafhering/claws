@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: Claws Mail 3.17.8.89\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
 "POT-Creation-Date: 2022-10-11 10:32+0100\n"
-"PO-Revision-Date: 2022-10-16 11:06+0100\n"
+"PO-Revision-Date: 2023-01-19 12:02+0100\n"
 "Last-Translator: Tristan Chabredier (wwp) <wwp@claws-mail.org>\n"
 "Language-Team: Claws Mail translators <translators@lists.claws-mail.org>\n"
 "Language: fr\n"
@@ -2265,7 +2265,7 @@ msgstr "A_utres"
 
 #: src/compose.c:8117
 msgid "S_ubject:"
-msgstr "S_ujet :"
+msgstr "_Sujet :"
 
 #: src/compose.c:8341
 #, c-format
