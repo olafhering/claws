@@ -316,6 +316,7 @@ static char *CONTRIBS_LIST[] = {
 "Aleksandar Urošević",
 "Petr Vanek",
 "Jeroen Versteeg",
+"Viatrix",
 "Kevin Vigor",
 "Michael Vilain",
 "Johan Vromans",
