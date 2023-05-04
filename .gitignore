@@ -4,6 +4,7 @@
 *.o
 *.swp
 *_test
+*~
 .deps
 .libs
 /*.patchset
