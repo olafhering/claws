@@ -439,10 +439,10 @@ mkdir -vp %{buildroot}%{_datadir}/%{name}
 cp -avt   %{buildroot}%{_datadir}/%{name} tools
 find      %{buildroot}%{_datadir}/%{name}/tools -name "Make*" -print -delete
 find      %{buildroot}%{_datadir}/%{name}/tools -name ca-certificates.crt -print -delete
-find      %{buildroot}%{_datadir}/%{name}/tools -type f              -print0 | xargs -0 --verbose --no-run-if-empty chmod -v 444
-find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.sh" -print0 | xargs -0 --verbose --no-run-if-empty chmod -v 555
-find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.pl" -print0 | xargs -0 --verbose --no-run-if-empty chmod -v 555
-find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.py" -print0 | xargs -0 --verbose --no-run-if-empty chmod -v 555
+find      %{buildroot}%{_datadir}/%{name}/tools -type f              -exec chmod -c 444 '{}' +
+find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.sh" -exec chmod -c 555 '{}' +
+find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.pl" -exec chmod -c 555 '{}' +
+find      %{buildroot}%{_datadir}/%{name}/tools -type f -name "*.py" -exec chmod -c 555 '{}' +
 %find_lang %{name} %{?no_lang_C}
 
 %files
