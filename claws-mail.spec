@@ -425,7 +425,7 @@ CFLAGS='%{optflags} -Wno-deprecated-declarations -std=gnu99'
 %endif
 	--with-config-dir=".claws-mail"
 diff -u src/common/version.h{.in,} && exit 1
-make %{?_smp_mflags}
+%make_build
 
 %install
 %makeinstall
