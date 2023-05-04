@@ -1,0 +1,14 @@
+<services>
+  <service name="obs_scm">
+    <param name="extract">claws-mail.spec</param>
+    <param name="filename">claws-mail</param>
+    <param name="revision">olh-3.19.0</param>
+    <param name="scm">git</param>
+    <param name="submodules">disable</param>
+    <param name="url">https://github.com/olafhering/claws.git</param>
+    <param name='versionformat'>%ci.%h</param>
+  </service>
+  <service mode="buildtime" name="set_version">
+    <param name="basename">claws-mail</param>
+  </service>
+</services>
