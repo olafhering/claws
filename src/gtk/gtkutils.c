@@ -730,7 +730,6 @@ GtkWidget *label_window_create(const gchar *str)
 	GtkWidget *wait_progress = gtk_progress_bar_new();
 
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "gtkutils");
-	gtk_widget_set_size_request(window, 380, 70);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 8);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(window), str);
