@@ -57,6 +57,7 @@ Summary:        A lightweight and highly configurable email client
 Group:          Productivity/Networking/Email/Clients
 Conflicts:      %name-debuginfo < %version-%release
 Conflicts:      %name-debugsource < %version-%release
+Conflicts:      %name-lang < %version-%release
 URL:            https://github.com/olafhering/claws/compare/3.19.0...olh-3.19.0
 #
 BuildRequires:  automake
