@@ -37,7 +37,7 @@
 %bcond_without claws_plugin_notification
 %bcond_without claws_plugin_pdf_viewer
 %bcond_without claws_plugin_perl
-%bcond_without claws_plugin_python
+%bcond_with    claws_plugin_python
 %bcond_without claws_plugin_pgpcore
 %bcond_without claws_plugin_pgpmime
 %bcond_without claws_plugin_pgpinline
