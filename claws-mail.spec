@@ -91,6 +91,7 @@ BuildRequires:  pkgconfig(gtk+-2.0) >= 2.24
 %endif
 %if %{with claws_enchant}
 BuildRequires:  pkgconfig(enchant)
+Requires:       myspell-de_DE
 %endif
 %if %{with claws_compface}
 BuildRequires:  compface-devel
