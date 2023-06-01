@@ -314,7 +314,7 @@ static void prefs_filtering_create(void)
 
 	gtkut_stock_button_set_create_with_help(&confirm_area, &help_btn, &cancel_btn, GTK_STOCK_CANCEL, &ok_btn, GTK_STOCK_OK, NULL, NULL);
 	gtk_widget_show(confirm_area);
-	gtk_box_pack_end(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 0);
 	gtk_widget_grab_default(ok_btn);
 
 	gtk_window_set_title(GTK_WINDOW(window), _("Filtering/Processing configuration"));
