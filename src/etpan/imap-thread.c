@@ -32,6 +32,9 @@
 #if (defined(__DragonFly__) || defined (__NetBSD__) || defined (__FreeBSD__) || defined (__OpenBSD__) || defined (__CYGWIN__))
 #include <sys/socket.h>
 #endif
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <fcntl.h>
 #ifndef G_OS_WIN32
 #include <sys/mman.h>
@@ -640,6 +643,26 @@ static void connect_ssl_run(struct etpan_thread_op *op)
 	CHECK_IMAP();
 
 	r = do_mailimap_ssl_connect_with_callback(param->imap, param->server, param->port, etpan_connect_ssl_context_cb, param->account, param->proxy_info);
+	switch (r) {
+	case MAILIMAP_NO_ERROR:
+	case MAILIMAP_NO_ERROR_AUTHENTICATED:
+	case MAILIMAP_NO_ERROR_NON_AUTHENTICATED:
+	{
+		int fd = mailimap_idle_get_fd(param->imap);
+		if (fd >= 0) {
+			int keepalive = 1, keepcnt = 2, keepidle = 33, keepintvl = 44;
+			unsigned int user_timeout = 22 * 1000;
+			setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive , sizeof(keepalive));
+			setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt));
+			setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle));
+			setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
+			setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout, sizeof(user_timeout));
+		}
+		break;
+	}
+	default:
+		break;
+	}
 	result->error = r;
 }
 
