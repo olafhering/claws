@@ -113,7 +113,7 @@ BuildRequires:  pkgconfig(pilot-link)
 BuildRequires:  pkgconfig(libnm)
 %endif
 %if %{with claws_libetpan}
-BuildRequires:  libetpan-devel
+BuildRequires:  pkgconfig(libetpan)
 %endif
 %if %{with claws_svg}
 BuildRequires:  pkgconfig(librsvg-2.0) >= 2.39.0
