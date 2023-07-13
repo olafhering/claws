@@ -121,7 +121,7 @@ struct _SMTPSession
 #endif
 };
 
-Session *smtp_session_new	(const void *prefs_account);
+SMTPSession *smtp_session_new (const void *prefs_account);
 gint smtp_from(SMTPSession *session);
 gint smtp_quit(SMTPSession *session);
 
