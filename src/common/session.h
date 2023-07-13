@@ -136,7 +136,7 @@ struct _Session
 	const void *account;
 	gboolean is_smtp;
 	gboolean ssl_cert_auto_accept;
-	gint ping_tag;
+	guint ping_tag;
 
 	/* Pointer to ProxyInfo struct holding the info about proxy
 	 * to be used. Set to NULL if no proxy is used.
