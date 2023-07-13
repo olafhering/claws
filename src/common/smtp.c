@@ -74,7 +74,6 @@ Session *smtp_session_new(void *prefs_account)
 	SESSION(session)->is_smtp = TRUE;
 	SESSION(session)->recv_msg = smtp_session_recv_msg;
 
-	SESSION(session)->recv_data_finished = NULL;
 	SESSION(session)->send_data_finished = smtp_session_send_data_finished;
 
 	SESSION(session)->destroy = smtp_session_destroy;
@@ -85,24 +84,7 @@ Session *smtp_session_new(void *prefs_account)
 	session->tls_init_done = FALSE;
 #endif
 
-	session->hostname = NULL;
-	session->user = NULL;
-	session->pass = NULL;
-
-	session->from = NULL;
-	session->to_list = NULL;
-	session->cur_to = NULL;
-
-	session->send_data = NULL;
-	session->send_data_len = 0;
-
-	session->avail_auth_type = 0;
-	session->forced_auth_type = 0;
-	session->auth_type = 0;
-	session->esmtp_flags = 0;
-
 	session->error_val = SM_OK;
-	session->error_msg = NULL;
 
 	return SESSION(session);
 }
