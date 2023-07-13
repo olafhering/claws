@@ -17,6 +17,6 @@ case "$1" in
 		"$@"
 	;;
 	-t)
-	find * ../{glib,gtk,libetpan}.git -name '*.[ch]' | ctags -L -
+	find * ../{glib,gnutls,gtk,libetpan}.git -name '*.[ch]' | ctags -L -
 	;;
 esac
