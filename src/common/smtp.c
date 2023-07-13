@@ -61,7 +61,7 @@ static gint smtp_eom(SMTPSession * session);
 static gint smtp_session_recv_msg(Session *session, const gchar *msg);
 static gint smtp_session_send_data_finished(Session *session, guint len);
 
-Session *smtp_session_new(void *prefs_account)
+Session *smtp_session_new(const void *prefs_account)
 {
 	SMTPSession *session;
 
