@@ -154,8 +154,7 @@ struct _Session
 };
 
 void session_init		(Session	*session, 
-				 const void 	*prefs_account,
-				 gboolean	 is_smtp);
+				 const void 	*prefs_account);
 gint session_connect		(Session	*session,
 				 const gchar	*server,
 				 gushort	 port);

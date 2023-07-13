@@ -509,7 +509,7 @@ Session *pop3_session_new(PrefsAccount *account)
 
 	session = g_new0(Pop3Session, 1);
 
-	session_init(SESSION(session), account, FALSE);
+	session_init(SESSION(session), account);
 
 	SESSION(session)->recv_msg = pop3_session_recv_msg;
 	SESSION(session)->recv_data_finished = pop3_session_recv_data_finished;

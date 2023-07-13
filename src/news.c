@@ -291,7 +291,7 @@ static Session *news_session_new(Folder *folder, const PrefsAccount *account, gu
 	log_message(LOG_PROTOCOL, _("Account '%s': Connecting to NNTP server: %s:%d...\n"), folder->account->account_name, server, port);
 
 	session = g_new0(NewsSession, 1);
-	session_init(SESSION(session), folder->account, FALSE);
+	session_init(SESSION(session), folder->account);
 	SESSION(session)->server = g_strdup(server);
 	SESSION(session)->port = port;
 	SESSION(session)->sock = NULL;
