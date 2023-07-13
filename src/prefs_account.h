@@ -233,7 +233,7 @@ struct _PrefsAccount
 
 	struct _Folder *folder;
 	GHashTable *privacy_prefs;
-	SMTPSession *session;
+	SMTPSession *smtp_session;
 
 	gint config_version;
 };
