@@ -693,6 +693,7 @@ ReportInterface
 RsvgHandle
 SC_HTMLParser
 SC_HTMLTag
+SMTPSession
 SSL
 SSLCertificate
 SearchInterface
