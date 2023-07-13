@@ -69,8 +69,6 @@ Session *smtp_session_new(void *prefs_account)
 
 	session_init(SESSION(session), prefs_account, TRUE);
 
-	SESSION(session)->type = SESSION_SMTP;
-
 	SESSION(session)->recv_msg = smtp_session_recv_msg;
 
 	SESSION(session)->recv_data_finished = NULL;

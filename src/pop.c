@@ -511,8 +511,6 @@ Session *pop3_session_new(PrefsAccount *account)
 
 	session_init(SESSION(session), account, FALSE);
 
-	SESSION(session)->type = SESSION_POP3;
-
 	SESSION(session)->recv_msg = pop3_session_recv_msg;
 	SESSION(session)->recv_data_finished = pop3_session_recv_data_finished;
 	SESSION(session)->send_data_finished = NULL;

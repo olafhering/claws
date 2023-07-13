@@ -39,14 +39,6 @@ typedef struct _Session	Session;
 #define SESSION(obj)	((Session *)obj)
 
 typedef enum {
-	SESSION_UNKNOWN,
-	SESSION_IMAP,
-	SESSION_NEWS,
-	SESSION_SMTP,
-	SESSION_POP3
-} SessionType;
-
-typedef enum {
 	SESSION_READY,
 	SESSION_SEND,
 	SESSION_RECV,
@@ -76,8 +68,6 @@ typedef gint (*SendDataNotify)			(Session	*session,
 
 struct _Session
 {
-	SessionType type;
-
 	SockInfo *sock;
 
 	gchar *server;
