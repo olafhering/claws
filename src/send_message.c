@@ -242,7 +242,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		procmsg_msginfo_free(&tmp_msginfo);
 	}
 
-	if (!ac_prefs->session) {
+	if (!ac_prefs->smtp_session) {
 		/* we can't reuse a previously initialised session */
 		session = smtp_session_new(ac_prefs);
 		session->ssl_cert_auto_accept = ac_prefs->ssl_certs_auto_accept;
@@ -335,8 +335,8 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		/* everything is ready to start at MAIL FROM:, just
 		 * reinit useful variables. 
 		 */
-		session = SESSION(ac_prefs->session);
-		ac_prefs->session = NULL;
+		session = SESSION(ac_prefs->smtp_session);
+		ac_prefs->smtp_session = NULL;
 		smtp_session = SMTP_SESSION(session);
 		smtp_session->state = SMTP_HELO;
 		send_dialog = (SendProgressDialog *)smtp_session->dialog;
@@ -368,7 +368,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	if (!was_inited && session_connect(session, ac_prefs->smtp_server, port) < 0) {
 		session_destroy(session);
 		send_progress_dialog_destroy(send_dialog);
-		ac_prefs->session = NULL;
+		ac_prefs->smtp_session = NULL;
 		return -1;
 	}
 
@@ -416,15 +416,15 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		while (session_is_connected(session) && !send_dialog->cancelled)
 			gtk_main_iteration();
 		session_destroy(session);
-		ac_prefs->session = NULL;
+		ac_prefs->smtp_session = NULL;
 		send_progress_dialog_destroy(send_dialog);
 	} else {
 		g_free(smtp_session->from);
 		g_free(smtp_session->send_data);
 		g_free(smtp_session->error_msg);
 	}
-	if (keep_session && ret == 0 && ac_prefs->session == NULL)
-		ac_prefs->session = SMTP_SESSION(session);
+	if (keep_session && ret == 0 && ac_prefs->smtp_session == NULL)
+		ac_prefs->smtp_session = SMTP_SESSION(session);
 
 	statusbar_pop_all();
 	statusbar_verbosity_set(FALSE);
