@@ -433,7 +433,7 @@ static gint send_recv_message(Session *session, const gchar *msg, gpointer data)
 {
 	gchar buf[BUFFSIZE];
 	SMTPSession *smtp_session = SMTP_SESSION(session);
-	SendProgressDialog *dialog = (SendProgressDialog *)data;
+	SendProgressDialog *dialog = data;
 	gchar *state_str = NULL;
 
 	cm_return_val_if_fail(dialog != NULL, -1);
