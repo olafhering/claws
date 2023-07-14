@@ -488,12 +488,13 @@ static gint send_recv_message(Session *session, const gchar *msg, gpointer data)
 static gint send_send_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data)
 {
 	gchar buf[BUFFSIZE];
+	SMTPSession *smtp_session = SMTP_SESSION(session);
 	SendProgressDialog *dialog = data;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 
 	cm_return_val_if_fail(dialog != NULL, -1);
 
-	if (SMTP_SESSION(session)->state != SMTP_SEND_DATA && SMTP_SESSION(session)->state != SMTP_EOM)
+	if (smtp_session->state != SMTP_SEND_DATA && smtp_session->state != SMTP_EOM)
 		return 0;
 
 	g_snprintf(buf, sizeof(buf), _("Sending message (%d / %d bytes)"), cur_len, total_len);
