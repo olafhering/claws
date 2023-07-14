@@ -286,6 +286,8 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 			if (!smtp_session->pass)
 				smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, password_id);
 			if (!smtp_session->pass)
+				smtp_session->pass = ac_prefs->session_passwd ? g_strdup(ac_prefs->session_passwd) : NULL;
+			if (!smtp_session->pass)
 				smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &ac_prefs->session_smtp_passwd);
 			if (!smtp_session->pass) {
 				session_destroy(&smtp_session->session);
