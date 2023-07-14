@@ -597,13 +597,14 @@ static void send_cancel_button_cb(GtkWidget *widget, gpointer data)
 
 static void send_put_error(Session *session)
 {
+	SMTPSession *smtp_session = SMTP_SESSION(session);
 	gchar *msg;
 	gchar *log_msg = NULL;
 	gchar *err_msg = NULL;
 
-	msg = SMTP_SESSION(session)->error_msg;
+	msg = smtp_session->error_msg;
 
-	switch (SMTP_SESSION(session)->error_val) {
+	switch (smtp_session->error_val) {
 	case SM_ERROR:
 	case SM_UNRECOVERABLE:
 		log_msg = _("Error occurred while sending the message.");
