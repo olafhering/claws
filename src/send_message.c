@@ -488,7 +488,7 @@ static gint send_recv_message(Session *session, const gchar *msg, gpointer data)
 static gint send_send_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data)
 {
 	gchar buf[BUFFSIZE];
-	SendProgressDialog *dialog = (SendProgressDialog *)data;
+	SendProgressDialog *dialog = data;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 
 	cm_return_val_if_fail(dialog != NULL, -1);
