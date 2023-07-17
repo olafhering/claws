@@ -273,11 +273,13 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 
 		if (ac_prefs->use_smtp_auth) {
 			const gchar *password_id = PWS_ACCOUNT_RECV;
+			gboolean has_smtp_userid = FALSE;
 
 			smtp_session->forced_auth_type = ac_prefs->smtp_auth_type;
 			if (ac_prefs->smtp_userid && strlen(ac_prefs->smtp_userid)) {
 				smtp_session->user = g_strdup(ac_prefs->smtp_userid);
 				password_id = PWS_ACCOUNT_SEND;
+				has_smtp_userid = TRUE;
 			} else {
 				smtp_session->user = g_strdup(ac_prefs->userid);
 			}
@@ -285,8 +287,8 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 			password_get(smtp_session->user, ac_prefs->smtp_server, "smtp", port, &smtp_session->pass);
 			if (!smtp_session->pass)
 				smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, password_id);
-			if (!smtp_session->pass)
-				smtp_session->pass = ac_prefs->session_passwd ? g_strdup(ac_prefs->session_passwd) : NULL;
+			if (!smtp_session->pass && !has_smtp_userid && ac_prefs->session_passwd)
+				smtp_session->pass = g_strdup(ac_prefs->session_passwd);
 			if (!smtp_session->pass)
 				smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &ac_prefs->session_smtp_passwd);
 			if (!smtp_session->pass) {
