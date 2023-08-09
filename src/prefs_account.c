@@ -1888,7 +1888,7 @@ static void receive_create_widget_func(PrefsPage * _page,
 	gtk_widget_show (imap_batch_size_spinbtn);
 	gtk_box_pack_start(GTK_BOX(hbox1), imap_batch_size_spinbtn, FALSE, FALSE, 0);
 
-	hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+	hbox1 = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 4);
 
