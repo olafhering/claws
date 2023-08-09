@@ -1,8 +1,8 @@
 /*
- * Claws Mail -- a GTK+ based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Claws Mail -- a GTK based, lightweight, and fast e-mail client
+ * Copyright (C) 1999-2023 the Claws Mail team and Hiroyuki Yamamoto
  *
- * This program is free software; you can redistribute it and/or modify
+  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -986,6 +986,7 @@ static void account_clone(GtkWidget *widget, gpointer data)
 	ac_clon->autocheck_timer = 0;
 
 	ACP_FASSIGN(imap_auth_type);
+	ACP_FASSIGN(imap_batch_size);
 
 	/* send */
 	ACP_FASSIGN(gen_msgid);
