@@ -338,7 +338,8 @@ static ComposeQueueResult compose_queue_sub			(Compose	*compose,
 						 gboolean	perform_checks,
 						 gboolean 	remove_reedit_target);
 static int compose_add_attachments		(Compose	*compose,
-						 MimeInfo	*parent);
+						 MimeInfo	*parent,
+						 gint 		 action);
 static gchar *compose_get_header		(Compose	*compose);
 static gchar *compose_get_manual_headers_info	(Compose	*compose);
 
@@ -5928,7 +5929,7 @@ static gint compose_write_to_file(Compose *compose, FILE *fp, gint action, gbool
 		g_node_append(mimempart->node, mimetext->node);
 		g_node_append(mimemsg->node, mimempart->node);
 
-		if (compose_add_attachments(compose, mimempart) < 0)
+		if (compose_add_attachments(compose, mimempart, action) < 0)
 			return COMPOSE_QUEUE_ERROR_NO_MSG;
 	} else
 		g_node_append(mimemsg->node, mimetext->node);
@@ -6416,7 +6417,7 @@ static ComposeQueueResult compose_queue_sub(Compose *compose, gint *msgnum, Fold
 	return COMPOSE_QUEUE_SUCCESS;
 }
 
-static int compose_add_attachments(Compose *compose, MimeInfo *parent)
+static int compose_add_attachments(Compose *compose, MimeInfo *parent, gint action)
 {
 	AttachInfo *ainfo;
 	GtkTreeView *tree_view = GTK_TREE_VIEW(compose->attach_clist);
@@ -6443,8 +6444,8 @@ static int compose_add_attachments(Compose *compose, MimeInfo *parent)
 		if (!is_file_exist(ainfo->file)) {
 			gchar *msg = g_strdup_printf(_("Attachment %s doesn't exist anymore. Ignore?"), ainfo->file);
 			AlertValue val = alertpanel_full(_("Warning"), msg,
-					_("Cancel sending"), _("Ignore attachment"), NULL,
-					ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
+					action == COMPOSE_WRITE_FOR_STORE? _("Cancel drafting"): _("Cancel sending"),
+					_("Ignore attachment"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
 			g_free(msg);
 			if (val == G_ALERTDEFAULT) {
 				return -1;
