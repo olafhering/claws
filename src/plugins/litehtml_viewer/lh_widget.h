@@ -81,7 +81,6 @@ class lh_widget : public container_linux
 		GtkWidget *m_scrolled_window;
 		GtkWidget *m_viewport;
 		GtkWidget *m_context_menu;
-		litehtml::context m_context;
 		gint m_height;
 		litehtml::element::ptr m_over_element;
 		gboolean m_showing_url;
