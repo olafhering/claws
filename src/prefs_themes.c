@@ -496,10 +496,13 @@ static void prefs_themes_btn_remove_clicked_cb(GtkWidget *widget, gpointer data)
 	gchar      *theme_str;
 	gchar      *alert_title = NULL;
 	AlertValue  val = 0;
+	gchar      *tmp = NULL;
 
 	theme_str = tdata->displayed;
 
-	alert_title = g_strdup_printf(_("Remove theme '%s'"), g_path_get_basename(theme_str));
+	tmp = g_path_get_basename(theme_str);
+	alert_title = g_strdup_printf(_("Remove theme '%s'"), tmp);
+	g_free(tmp);
 
 	val = alertpanel(alert_title,
 			 _("Are you sure you want to remove this theme?"),
@@ -560,10 +563,8 @@ static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data
 				 _("This folder doesn't seem to be a theme"
 				   "folder.\nInstall anyway?"),
 				 GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
-		if (G_ALERTALTERNATE != val) {
-			g_free(alert_title);
+		if (G_ALERTALTERNATE != val)
 			goto end_inst;
-		}
 	}
 
 	cinfo->dest = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
@@ -620,6 +621,7 @@ end_inst:
 	g_free(themeinfo);
 	g_free(cinfo);
 	g_free(themename);
+	g_free(alert_title);
 }
 
 static gboolean prefs_themes_viewall_key_pressed(GtkWidget *keywidget,
