@@ -3080,7 +3080,6 @@ static gchar *compose_parse_references(const gchar *ref, const gchar *msgid)
 {
 	GSList *ref_id_list, *cur;
 	GString *new_ref;
-	gchar *new_ref_str;
 
 	ref_id_list = references_list_append(NULL, ref);
 	if (!ref_id_list) return NULL;
@@ -3118,10 +3117,7 @@ static gchar *compose_parse_references(const gchar *ref, const gchar *msgid)
 
 	slist_free_strings_full(ref_id_list);
 
-	new_ref_str = new_ref->str;
-	g_string_free(new_ref, FALSE);
-
-	return new_ref_str;
+	return g_string_free(new_ref, FALSE);
 }
 
 static gchar *compose_quote_fmt(Compose *compose, MsgInfo *msginfo,
@@ -4194,10 +4190,9 @@ static gchar * compose_get_itemized_chars(GtkTextBuffer *buffer,
 	gunichar wc;
 	gint len = 0;
 	GString *item_chars = g_string_new("");
-	gchar *str = NULL;
 
 	if (gtk_text_iter_ends_line(&iter)) {
-		g_string_free(item_chars, FALSE);
+		g_string_free(item_chars, TRUE);
 		return NULL;
 	}
 
@@ -4212,9 +4207,7 @@ static gchar * compose_get_itemized_chars(GtkTextBuffer *buffer,
 		g_string_append_unichar(item_chars, wc);
 	}
 
-	str = item_chars->str;
-	g_string_free(item_chars, FALSE);
-	return str;
+	return g_string_free(item_chars, FALSE);
 }
 
 /* return the number of spaces at a line's start */
@@ -7001,10 +6994,7 @@ static gchar *compose_get_header(Compose *compose)
 		g_free(headername_wcolon);		
 	}
 
-	str = header->str;
-	g_string_free(header, FALSE);
-
-	return str;
+	return g_string_free(header, FALSE);
 }
 
 #undef IS_IN_CUSTOM_HEADER
