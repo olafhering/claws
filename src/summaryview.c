@@ -1343,14 +1343,8 @@ gboolean summary_show(SummaryView *summaryview, FolderItem *item, gboolean avoid
 		gboolean changed = FALSE;
 
 		val = alertpanel(_("Process mark"),
-<<<<<<< HEAD
 				 _("Some marks are left. Process them?"),
 				 GTK_STOCK_NO, GTK_STOCK_YES, GTK_STOCK_CANCEL, ALERTFOCUS_FIRST);
-=======
-				 _("Some Mark are left. Process them?"),
-				 NULL, _("_No"), NULL, _("_Yes"), NULL, _("_Cancel"),
-				 ALERTFOCUS_FIRST);
->>>>>>> 07245a4ad (revert menu label changes, give translators context instead)
 		if (G_ALERTALTERNATE == val) {
 			summary_unlock(summaryview);
 			summary_execute(summaryview);
