@@ -74,7 +74,7 @@ Makefile.in
 /patches
 /*.patchset
 /po/boldquot.sed
-/po/claws-mail.pot
+/po/*.pot
 /po/en@boldquot.header
 /po/en@quot.header
 /po/*.gmo

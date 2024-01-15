@@ -103,10 +103,10 @@ gboolean claws_init(int *argc, char ***argv)
 
 	setlocale(LC_ALL, "");
 #ifdef ENABLE_NLS
-	bindtextdomain(PACKAGE, get_locale_dir () );
-	bind_textdomain_codeset (PACKAGE, "UTF-8");
-	textdomain(PACKAGE);
-#endif /*ENABLE_NLS*/
+	bindtextdomain(PACKAGE_TARNAME, get_locale_dir());
+	bind_textdomain_codeset(PACKAGE_TARNAME, "UTF-8");
+	textdomain(PACKAGE_TARNAME);
+#endif /*ENABLE_NLS */
 	putenv("G_BROKEN_FILENAMES=1");
 	putenv("LIBOVERLAY_SCROLLBAR=0");
 
