@@ -49,7 +49,7 @@
 #define mkdir(a,b) mkdir(a)
 #endif
 
-#define DFL_DIR_CLAWS_OUT  "claws-mail-out"
+#define DFL_DIR_CLAWS_OUT  PACKAGE_TARNAME "-out"
 #define DFL_FILE_CLAWS_OUT "addressbook.html"
 
 #define FMT_BUFSIZE         2048
@@ -61,7 +61,7 @@
 
 /* Stylesheet names */
 #define FILENAME_NONE       ""
-#define FILENAME_DEFAULT    "claws-mail.css"
+#define FILENAME_DEFAULT    PACKAGE_TARNAME ".css"
 #define FILENAME_FULL       "full.css"
 #define FILENAME_CUSTOM     "custom.css"
 #define FILENAME_CUSTOM2    "custom2.css"

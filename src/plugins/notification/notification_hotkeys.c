@@ -28,7 +28,7 @@
 
 #include "gtkhotkey.h"
 
-#define HOTKEYS_APP_ID "claws-mail"
+#define HOTKEYS_APP_ID PACKAGE_TARNAME
 #define HOTKEY_KEY_ID_TOGGLED "toggle-mainwindow"
 
 static GtkHotkeyInfo *hotkey_toggle_mainwindow = NULL;
