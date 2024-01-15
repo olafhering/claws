@@ -706,7 +706,7 @@ void gtkut_widget_set_composer_icon(GtkWidget *widget)
 }
 
 static gboolean move_bar;
-static gint move_bar_id = -1;
+static guint move_bar_id;
 
 static gboolean move_bar_cb(gpointer data)
 {
@@ -754,7 +754,7 @@ GtkWidget *label_window_create(const gchar *str)
 
 	gtk_widget_show_now(window);
 
-	if (move_bar_id == -1) {
+	if (move_bar_id == 0) {
 		move_bar_id = g_timeout_add(200, move_bar_cb, wait_progress);
 		move_bar = TRUE;
 	}
@@ -768,7 +768,7 @@ void label_window_destroy(GtkWidget *window)
 {
 	move_bar = FALSE;
 	g_source_remove(move_bar_id);
-	move_bar_id = -1;
+	move_bar_id = 0;
 	GTK_EVENTS_FLUSH();
 	gtk_widget_destroy(window);
 }
