@@ -15,14 +15,14 @@ BEGIN
 		BEGIN
 //			VALUE "Comments", ""
 			VALUE "CompanyName", "The Claws Mail Team"
-			VALUE "FileDescription", "Claws Mail Address Keeper Plugin"
+			VALUE "FileDescription", PACKAGE_NAME " Address Keeper Plugin"
 			VALUE "FileVersion", "@VERSION@"
 			VALUE "InternalName", "address_keeper"
 			VALUE "LegalCopyright", "GPL-3.0-or-later / © 1999-2021 The Claws Mail Team & Hiroyuki Yamamoto"
 //			VALUE "LegalTrademarks", ""
 			VALUE "OriginalFilename", "address_keeper.dll"
 //			VALUE "PrivateBuild", ""
-			VALUE "ProductName", "Claws Mail"
+			VALUE "ProductName", PACKAGE_NAME
 			VALUE "ProductVersion", "@GIT_VERSION@ for Windows"
 //			VALUE "SpecialBuild", ""
 		END

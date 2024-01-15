@@ -7,8 +7,8 @@ pkglibdir=${libdir}/@PACKAGE_TARNAME@
 pkgincludedir=${includedir}/@PACKAGE_TARNAME@
 plugindir=${pkglibdir}/plugins
 
-Name: Claws Mail
-Description: Claws Mail
+Name: @PACKAGE_NAME@
+Description: @PACKAGE_NAME@
 Version: @MAJOR_VERSION@.@MINOR_VERSION@.@MICRO_VERSION@.@EXTRA_VERSION@
 
 Cflags: -I${pkgincludedir}/common -I${pkgincludedir}/gtk @ENCHANT_CFLAGS@ @GPGME_CFLAGS@ -I${pkgincludedir}

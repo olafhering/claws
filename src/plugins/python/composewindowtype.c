@@ -583,7 +583,7 @@ static PyMethodDef ComposeWindow_methods[] = {
 	 "save_message_to(folder) - save message to folder id\n" "\n" "Set the folder where the sent message will be saved to. folder may be\n" "a Folder, a string of the folder identifier (e.g. #mh/foo/bar), or\n" "None is which case the message will not be saved at all."},
 
 	{"set_modified", (PyCFunction) ComposeWindow_set_modified, METH_VARARGS,
-	 "set_modified(bool) - set or unset modification marker of compose window\n" "\n" "Set or unset the modification marker of the compose window. This marker determines\n" "for example whether you get a confirmation dialog when closing the compose window\n" "or not.\n" "In the usual case, Claws Mail keeps track of the modification status itself.\n" "However, there are cases when it might be desirable to overwrite the marker,\n" "for example because a compose_any script modifies the body or subject which\n" "can be regarded compose window preprocessing and should not trigger a confirmation\n" "dialog on close like a manual edit."},
+	 "set_modified(bool) - set or unset modification marker of compose window\n" "\n" "Set or unset the modification marker of the compose window. This marker determines\n" "for example whether you get a confirmation dialog when closing the compose window\n" "or not.\n" "In the usual case, " PACKAGE_NAME " keeps track of the modification status itself.\n" "However, there are cases when it might be desirable to overwrite the marker,\n" "for example because a compose_any script modifies the body or subject which\n" "can be regarded compose window preprocessing and should not trigger a confirmation\n" "dialog on close like a manual edit."},
 
 	{NULL}
 };
