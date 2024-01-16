@@ -65,8 +65,7 @@ typedef struct _OAUTH2Data OAUTH2Data;
 struct _OAUTH2Data {
 	gchar *refresh_token;
 	gchar *access_token;
-	gint expiry;
-	gchar *expiry_str;
+	gchar *expiry;
 	gchar *custom_client_id;
 	gchar *custom_client_secret;
 };

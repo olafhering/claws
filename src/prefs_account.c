@@ -4892,9 +4892,9 @@ static void prefs_account_oauth2_obtain_tokens(GtkButton *button, gpointer data)
 			gtk_entry_set_text(GTK_ENTRY(send_page.smtp_pass_entry), OAUTH2Data->access_token);
 		}
 
-		if (OAUTH2Data->expiry_str != NULL) {
+		if (OAUTH2Data->expiry != NULL) {
 			passwd_store_set_account(tmp_ac_prefs.account_id,
-						 PWS_ACCOUNT_OAUTH2_EXPIRY, OAUTH2Data->expiry_str, FALSE);
+						 PWS_ACCOUNT_OAUTH2_EXPIRY, OAUTH2Data->expiry, FALSE);
 			log_message(LOG_PROTOCOL, "OAuth2 access token expiry stored\n");
 		}
 
@@ -5801,10 +5801,10 @@ static void prefs_account_oauth2_callback(GObject *source, GAsyncResult *res, gp
 			log_message(LOG_PROTOCOL, "OAuth2 access token stored\n");
 		}
 
-		if (oauth2_listener_data->OAUTH2Data->expiry_str != NULL) {
+		if (oauth2_listener_data->OAUTH2Data->expiry != NULL) {
 			passwd_store_set_account(tmp_ac_prefs.account_id,
 						 PWS_ACCOUNT_OAUTH2_EXPIRY,
-						 oauth2_listener_data->OAUTH2Data->expiry_str,
+						 oauth2_listener_data->OAUTH2Data->expiry,
 						 FALSE);
 			log_message(LOG_PROTOCOL, "OAuth2 access token expiry stored\n");
 		}
