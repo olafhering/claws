@@ -50,8 +50,8 @@
 static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	{
 		[OA2_BASE_URL] = "accounts.google.com",
-		[OA2_CLIENT_ID] = "",
-		[OA2_CLIENT_SECRET] = ".",
+		[OA2_CLIENT_ID] = "406964657835-aq8lmia8j95dhl1a2bvharmfk3t1hgqj.apps.googleusercontent.com",
+		[OA2_CLIENT_SECRET] = "kSmqreRr0qwBWJgbf5Y-PjSU",
 		[OA2_REDIRECT_URI] = "http://127.0.0.1:8888",
 		[OA2_AUTH_RESOURCE] = "/o/oauth2/auth",
 		[OA2_ACCESS_RESOURCE] = "/o/oauth2/token",
