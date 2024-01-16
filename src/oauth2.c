@@ -63,7 +63,7 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-		[OA2_CLIENT_ID] = "",
+		[OA2_CLIENT_ID] = "9e5f94bc-e8a4-4e73-b8be-63364c29d753",
 		[OA2_REDIRECT_URI] = "http://127.0.0.1:8888",
 		[OA2_AUTH_RESOURCE] = "/common/oauth2/v2.0/authorize",
 		[OA2_ACCESS_RESOURCE] = "/common/oauth2/v2.0/token",
