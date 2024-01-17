@@ -79,9 +79,8 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-		[OA2_CLIENT_ID] = "",
-		[OA2_CLIENT_SECRET] = "",
-		[OA2_REDIRECT_URI] = "http://127.0.0.1:8888",
+		[OA2_CLIENT_ID] = "9e5f94bc-e8a4-4e73-b8be-63364c29d753",
+		[OA2_REDIRECT_URI] = "https://login.microsoftonline.com/common/oauth2/nativeclient",
 		[OA2_AUTH_RESOURCE] = "/common/oauth2/v2.0/authorize",
 		[OA2_ACCESS_RESOURCE] = "/common/oauth2/v2.0/token",
 		[OA2_REFRESH_RESOURCE] = "/common/oauth2/v2.0/token",
@@ -92,7 +91,7 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_TENANT] = "common",
 		[OA2_STATE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-		[OA2_RESPONSE_MODE] = "query",
+		[OA2_RESPONSE_MODE] = "fragment",
 		[OA2_HEADER_AUTH_BASIC] = "",
 	},
 	{
