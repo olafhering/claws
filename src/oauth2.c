@@ -298,7 +298,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		return (1);
 	}
 
-	if (OAUTH2Data->custom_client_id)
+	if (OAUTH2Data->custom_client_id && strlen(OAUTH2Data->custom_client_id))
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
 	else
 		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
@@ -308,7 +308,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
-		if (OAUTH2Data->custom_client_secret)
+		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
 			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
 		else
 			client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
@@ -427,7 +427,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		return (1);
 	}
 
-	if (OAUTH2Data->custom_client_id)
+	if (OAUTH2Data->custom_client_id && strlen(OAUTH2Data->custom_client_id))
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
 	else
 		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
@@ -438,7 +438,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
-		if (OAUTH2Data->custom_client_secret)
+		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
 			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
 		else
 			client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
@@ -533,7 +533,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
    	g_string_append(url, OAUTH2info[i][OA2_AUTH_RESOURCE]);
    	g_string_append(url, "?client_id=");
 
-	if (custom_client_id) {
+	if (custom_client_id && strlen(custom_client_id)) {
 		tmp = g_uri_escape_string(custom_client_id, NULL, FALSE);
 	} else {
 		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
