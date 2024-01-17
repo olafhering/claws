@@ -2311,10 +2311,6 @@ static void oauth2_create_widget_func(PrefsPage *_page, GtkWindow *window, gpoin
 			g_free(buf);
 		}
 	}
-
-	/* For testing */
-	/*      oauth2_encode(OAUTH2info[0][OA2_CLIENT_ID]); */
-
 }
 #endif
 
