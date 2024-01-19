@@ -334,13 +334,11 @@ void matcherprop_free(MatcherProp *prop)
 {
 	g_free(prop->expr);
 	g_free(prop->header);
-#ifndef G_OS_WIN32
 	if (prop->preg != NULL) {
 		regfree(prop->preg);
 		g_free(prop->preg);
 	}
 	g_free(prop->casefold_expr);
-#endif
 	g_free(prop);
 }
 
