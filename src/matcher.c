@@ -358,9 +358,6 @@ MatcherProp *matcherprop_copy(const MatcherProp *src)
 	prop->expr = src->expr ? g_strdup(src->expr) : NULL;
 	prop->matchtype = src->matchtype;
 
-#ifndef G_OS_WIN32
-	prop->preg = NULL; /* will be re-evaluated */
-#endif
 	prop->casefold_expr = src->casefold_expr ? g_strdup(src->casefold_expr) : NULL;
 	prop->value = src->value;
 	prop->error = src->error;
