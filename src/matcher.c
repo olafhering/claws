@@ -317,9 +317,6 @@ MatcherProp *matcherprop_new(gint criteria, const gchar *header, gint matchtype,
 	prop->expr = expr != NULL ? g_strdup(expr) : NULL;
 
 	prop->matchtype = matchtype;
-#ifndef G_OS_WIN32
-	prop->preg = NULL;
-#endif
 	prop->casefold_expr = NULL;
 	prop->value = value;
 	prop->error = 0;
