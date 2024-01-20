@@ -447,25 +447,22 @@ static gboolean match_with_addresses_in_addressbook(MatcherProp *prop, GSList *a
  */
 static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, const gchar *debug_context)
 {
-	gchar *str1;
+	gchar *case_str = NULL;
 	const gchar *down_expr;
 	gboolean ret = FALSE;
-	gboolean should_free = FALSE;
+
 	if (str == NULL)
 		return FALSE;
 
 	if (prop->matchtype == MATCHTYPE_REGEXPCASE || prop->matchtype == MATCHTYPE_MATCHCASE) {
-		str1 = g_utf8_casefold(str, -1);
+		case_str = g_utf8_casefold(str, -1);
 		if (!prop->casefold_expr) {
 			prop->casefold_expr = g_utf8_casefold(prop->expr, -1);
 		}
 		down_expr = prop->casefold_expr;
 
-		should_free = TRUE;
 	} else {
-		str1 = (gchar *)str;
 		down_expr = prop->expr;
-		should_free = FALSE;
 	}
 
 	switch (prop->matchtype) {
@@ -487,7 +484,7 @@ static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, co
 			goto free_strs;
 		}
 
-		if (regexec(prop->preg, str1, 0, NULL, 0) == 0)
+		if (regexec(prop->preg, case_str?:str, 0, NULL, 0) == 0)
 			ret = TRUE;
 		else
 			ret = FALSE;
@@ -507,7 +504,7 @@ static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, co
 		break;
 	case MATCHTYPE_MATCHCASE:
 	case MATCHTYPE_MATCH:
-		ret = (strstr(str1, down_expr) != NULL);
+		ret = (strstr(case_str?:str, down_expr) != NULL);
 
 		/* debug output */
 		if (debug_filtering_session && prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_HIGH) {
@@ -528,9 +525,7 @@ static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, co
 	}
 
  free_strs:
-	if (should_free) {
-		g_free(str1);
-	}
+	g_free(case_str);
 	return ret;
 }
 
