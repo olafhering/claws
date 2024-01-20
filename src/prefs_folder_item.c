@@ -1591,6 +1591,7 @@ static regex_t *summary_compile_simplify_regexp(gchar *simplify_subject_regexp)
 	err = string_match_precompile(simplify_subject_regexp, preg, REG_EXTENDED);
 	if (err) {
 		regerror(err, preg, buf, BUFFSIZE);
+		regfree(preg);
 		g_free(preg);
 		preg = NULL;
 	}
