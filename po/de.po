@@ -3438,7 +3438,7 @@ msgstr "Adressbuch in LDIF-Datei exportieren"
 msgid "Distinguished Name"
 msgstr "Distinguished Name"
 
-#: src/export.c:112 src/summaryview.c:7553
+#: src/export.c:112 src/summaryview.c:7554
 msgid "Export to mbox file"
 msgstr "Export in Mbox-Datei"
 
@@ -15016,7 +15016,7 @@ msgstr "Alternatives Standard-Wörterbuch"
 
 #: src/prefs_account.c:2538 src/prefs_account.c:3853
 #: src/prefs_compose_writing.c:315 src/prefs_folder_item.c:1383
-#: src/prefs_folder_item.c:1701 src/prefs_quote.c:105 src/prefs_quote.c:186
+#: src/prefs_folder_item.c:1700 src/prefs_quote.c:105 src/prefs_quote.c:186
 #: src/prefs_spelling.c:287 src/prefs_wrapping.c:139
 msgid "Compose"
 msgstr "Verfassen"
@@ -15287,7 +15287,7 @@ msgstr "Senden"
 msgid "OAuth2"
 msgstr "OAuth2"
 
-#: src/prefs_account.c:3871 src/prefs_folder_item.c:1717 src/prefs_quote.c:187
+#: src/prefs_account.c:3871 src/prefs_folder_item.c:1716 src/prefs_quote.c:187
 msgid "Templates"
 msgstr "Vorlagen"
 
@@ -16365,11 +16365,11 @@ msgstr ""
 "Möchten Sie lokal zwischengespeicherte Daten für diesen Ordner wirklich "
 "verwerfen?"
 
-#: src/prefs_folder_item.c:1685
+#: src/prefs_folder_item.c:1684
 msgid "General"
 msgstr "Allgemein"
 
-#: src/prefs_folder_item.c:1761
+#: src/prefs_folder_item.c:1760
 #, c-format
 msgid "Properties for folder %s"
 msgstr "Einstellungen für Ordner %s"
@@ -19416,11 +19416,11 @@ msgstr ""
 "Fehler in Regulärem Ausdruck (regexp):\n"
 "%s"
 
-#: src/summaryview.c:7472
+#: src/summaryview.c:7473
 msgid "Go back to the folder list (You have unread messages)"
 msgstr "Zurück zur Ordnerliste (Es gibt ungelesene Nachrichten)"
 
-#: src/summaryview.c:7476
+#: src/summaryview.c:7477
 msgid "Go back to the folder list"
 msgstr "Zurück zur Ordnerliste"
 
