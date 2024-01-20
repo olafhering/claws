@@ -464,7 +464,7 @@ static gboolean matcherprop_string_match(MatcherProp *prop, const gchar *str, co
 		should_free = TRUE;
 	} else {
 		str1 = (gchar *)str;
-		down_expr = (gchar *)prop->expr;
+		down_expr = prop->expr;
 		should_free = FALSE;
 	}
 
