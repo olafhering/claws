@@ -1239,7 +1239,7 @@ msgstr "P12-Zertifikat %s fehlt (%s)\n"
 msgid "<not in certificate>"
 msgstr "<nicht im Zertifikat>"
 
-#: src/common/string_match.c:80
+#: src/common/string_match.c:68
 msgid "(Subject cleared by RegExp)"
 msgstr "(Betreff gelöscht durch RegExp)"
 
@@ -8247,30 +8247,30 @@ msgstr "Körperzeile"
 msgid "tag"
 msgstr "Marke"
 
-#: src/matcher.c:501 src/matcher.c:503 src/matcher.c:518 src/matcher.c:520
+#: src/matcher.c:498 src/matcher.c:500 src/matcher.c:515 src/matcher.c:517
 #: src/message_search.c:198 src/prefs_matcher.c:711 src/summary_search.c:399
 msgid "Case sensitive"
 msgstr "Groß-/Kleinschreibung"
 
-#: src/matcher.c:501 src/matcher.c:503 src/matcher.c:518 src/matcher.c:520
+#: src/matcher.c:498 src/matcher.c:500 src/matcher.c:515 src/matcher.c:517
 msgid "Case insensitive"
 msgstr "Unabhängig von Groß- oder Kleinschreibung"
 
-#: src/matcher.c:1722
+#: src/matcher.c:1717
 #, c-format
 msgid "checking if message matches [ %s ]\n"
 msgstr "prüfe, ob Nachricht auf [ %s ] passt\n"
 
-#: src/matcher.c:1795 src/matcher.c:1813 src/matcher.c:1826
+#: src/matcher.c:1790 src/matcher.c:1808 src/matcher.c:1821
 msgid "message matches\n"
 msgstr "Nachricht ist passend\n"
 
-#: src/matcher.c:1801 src/matcher.c:1819 src/matcher.c:1828
+#: src/matcher.c:1796 src/matcher.c:1814 src/matcher.c:1823
 msgid "message does not match\n"
 msgstr "Nachricht ist unpassend\n"
 
-#: src/matcher.c:2075 src/matcher.c:2076 src/matcher.c:2077 src/matcher.c:2078
-#: src/matcher.c:2079 src/matcher.c:2080 src/matcher.c:2081 src/matcher.c:2082
+#: src/matcher.c:2070 src/matcher.c:2071 src/matcher.c:2072 src/matcher.c:2073
+#: src/matcher.c:2074 src/matcher.c:2075 src/matcher.c:2076 src/matcher.c:2077
 msgid "(none)"
 msgstr "(nichts)"
 
