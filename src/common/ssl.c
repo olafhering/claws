@@ -468,7 +468,7 @@ gboolean ssl_init_socket(SockInfo *sockinfo)
 
 void ssl_done_socket(SockInfo *sockinfo)
 {
-	if (sockinfo && sockinfo->ssl) {
+	if (sockinfo->ssl) {
 		if (sockinfo->xcred)
 			gnutls_certificate_free_credentials(sockinfo->xcred);
 		gnutls_deinit(sockinfo->ssl);
