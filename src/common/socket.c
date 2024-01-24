@@ -397,8 +397,6 @@ static gint set_nonblocking_mode(gint fd, gboolean nonblock)
 
 gint sock_set_nonblocking_mode(SockInfo *sock, gboolean nonblock)
 {
-	cm_return_val_if_fail(sock != NULL, -1);
-
 	return set_nonblocking_mode(sock->sock, nonblock);
 }
 
