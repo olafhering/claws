@@ -1418,7 +1418,6 @@ gint sock_close(SockInfo *sock, gboolean close_fd)
 		ssl_done_socket(sock);
 	if (sock->g_source != 0 && g_main_context_find_source_by_id(NULL, sock->g_source) != NULL)
 		g_source_remove(sock->g_source);
-	sock->g_source = 0;
 #endif
 	if (close_fd) {
 #ifdef G_OS_WIN32
