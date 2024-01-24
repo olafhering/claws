@@ -305,19 +305,16 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
 	debug_print("Body: %s\n", body);
 
-	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
-		//Only allow custom client secret if the service provider would usually expect a client secret
-		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
-			client_secret = OAUTH2Data->custom_client_secret;
-		else
-			client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
+	if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
+		client_secret = OAUTH2Data->custom_client_secret;
+	else
+		client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
+	if (client_secret) {
 		uri = g_uri_escape_string(client_secret, NULL, FALSE);
 		tmp = g_strconcat(body, "&client_secret=", uri, NULL);
 		g_free(body);
 		g_free(uri);
 		body = tmp;
-	} else {
-		client_secret = "";
 	}
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
@@ -347,7 +344,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
-		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
+		tmp_hd = g_strconcat(client_id, ":", client_secret?:"", NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
@@ -433,19 +430,16 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	body = g_strconcat("client_id=", uri, "&refresh_token=", OAUTH2Data->refresh_token, NULL);
 	g_free(uri);
 
-	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
-		//Only allow custom client secret if the service provider would usually expect a client secret
-		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
-			client_secret = OAUTH2Data->custom_client_secret;
-		else
-			client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
+	if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
+		client_secret = OAUTH2Data->custom_client_secret;
+	else
+		client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
+	if (client_secret) {
 		uri = g_uri_escape_string(client_secret, NULL, FALSE);
 		tmp = g_strconcat(body, "&client_secret=", uri, NULL);
 		g_free(body);
 		g_free(uri);
 		body = tmp;
-	} else {
-		client_secret = "";
 	}
 
 	if (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH]) {
@@ -471,7 +465,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
-		tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
+		tmp_hd = g_strconcat(client_id, ":", client_secret?:"", NULL);
 		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
