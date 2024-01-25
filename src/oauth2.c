@@ -497,8 +497,8 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		g_get_current_time(&tv);
 		t = (time_t)atol(expiry?:"0");
 		t += tv.tv_sec;
-		OAUTH2Data->expiry = g_strdup_printf("%zu", t);
 		g_free(expiry);
+		expiry = OAUTH2Data->expiry = g_strdup_printf("%zu", t);
 
 		OAUTH2Data->access_token = access_token;
 		ret = 0;
