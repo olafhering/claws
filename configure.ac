@@ -409,8 +409,6 @@ fi
 AC_SUBST(SM_LIBS)
 
 dnl Checks for header files.
-AC_HEADER_DIRENT
-
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(fcntl.h sys/file.h unistd.h paths.h \
 		 sys/param.h sys/utsname.h sys/select.h \
