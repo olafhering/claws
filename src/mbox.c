@@ -352,7 +352,7 @@ gint lock_mbox(const gchar *base, LockType type)
 	} else if (type == LOCK_FLOCK) {
 		gint lockfd;
 		gboolean fcntled = FALSE;
-#if HAVE_FCNTL_H && !defined(G_OS_WIN32)
+#if !defined(G_OS_WIN32)
 		struct flock fl;
 		fl.l_type = F_WRLCK;
 		fl.l_whence = SEEK_SET;
@@ -368,7 +368,7 @@ gint lock_mbox(const gchar *base, LockType type)
 			FILE_OP_ERROR(base, "open");
 			return -1;
 		}
-#if HAVE_FCNTL_H && !defined(G_OS_WIN32)
+#if !defined(G_OS_WIN32)
 		if (fcntl(lockfd, F_SETLK, &fl) == -1) {
 			g_warning("can't fnctl %s (%s)", base, g_strerror(errno));
 			close(lockfd);
@@ -421,7 +421,7 @@ gint unlock_mbox(const gchar *base, gint fd, LockType type)
 
 		return 0;
 	} else if (type == LOCK_FLOCK) {
-#if HAVE_FCNTL_H && !defined(G_OS_WIN32)
+#if !defined(G_OS_WIN32)
 		gboolean fcntled = FALSE;
 		struct flock fl;
 		fl.l_type = F_UNLCK;

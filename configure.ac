@@ -410,7 +410,7 @@ AC_SUBST(SM_LIBS)
 
 dnl Checks for header files.
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(fcntl.h sys/file.h unistd.h paths.h \
+AC_CHECK_HEADERS(sys/file.h unistd.h paths.h \
 		 sys/param.h sys/utsname.h sys/select.h \
 		 wchar.h wctype.h locale.h netdb.h)
 AC_CHECK_HEADER([execinfo.h], [AC_DEFINE(HAVE_BACKTRACE,1,[Has backtrace*() needed for retrieving stack traces])])
