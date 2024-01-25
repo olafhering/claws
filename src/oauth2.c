@@ -358,9 +358,18 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	debug_print("Response: %s\n", response);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
-		OAUTH2Data->access_token = access_token;
-		OAUTH2Data->expiry = expiry;
+		GTimeVal tv;
+		time_t t;
+
 		debug_print("access_token %s expiry %s\n", access_token, expiry);
+
+		g_get_current_time(&tv);
+		t = (time_t)atol(expiry?:"0");
+		t += tv.tv_sec;
+		OAUTH2Data->expiry = g_strdup_printf("%zu", t);
+		g_free(expiry);
+
+		OAUTH2Data->access_token = access_token;
 		ret = 0;
 		log_message(LOG_PROTOCOL, _("OAuth2 access token obtained\n"));
 	} else {
@@ -480,8 +489,18 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	debug_print("Response: %s\n", response);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
+		GTimeVal tv;
+		time_t t;
+
+		debug_print("access_token %s expiry %s\n", access_token, expiry);
+
+		g_get_current_time(&tv);
+		t = (time_t)atol(expiry?:"0");
+		t += tv.tv_sec;
+		OAUTH2Data->expiry = g_strdup_printf("%zu", t);
+		g_free(expiry);
+
 		OAUTH2Data->access_token = access_token;
-		OAUTH2Data->expiry = expiry;
 		ret = 0;
 		log_message(LOG_PROTOCOL, _("OAuth2 access token obtained\n"));
 	} else {
@@ -576,22 +595,41 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 {
 	gchar *uid = g_strdup_printf("%d", ac_prefs->account_id);
-	gint expiry;
 	OAUTH2Data *OAUTH2Data = g_malloc0(sizeof(*OAUTH2Data));
 	gint ret = 0;
-	gchar *acc;
 
 	OAUTH2Data->custom_client_id = g_strdup(ac_prefs->oauth2_client_id);
 	OAUTH2Data->custom_client_secret = g_strdup(ac_prefs->oauth2_client_secret);
 
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_EXPIRY)) {
+		GTimeVal tv;
+		struct tm *tm_expiry, *tm_now;
+		time_t expiry, now, diff;
+		g_autofree gchar *acc;
+		char buf_expiry[32], buf_now[32];
+	   	const char *expiry_hint;
+		static const char tm_fmt[] = "%Y-%m-%d %H:%M:%S %Z";
+
 		acc = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY);
-		expiry = atoi(acc);
-		g_free(acc);
+		g_get_current_time(&tv);
+		now = tv.tv_sec;
+		expiry = (time_t)atol(acc);
+		tm_expiry = gmtime(&expiry);
+		tm_now = gmtime(&now);
+		strftime(buf_expiry, sizeof(buf_expiry), tm_fmt, tm_expiry);
+		strftime(buf_now, sizeof(buf_now), tm_fmt, tm_now);
+		if (expiry > now) {
+			diff = expiry - now;
+			expiry_hint = "s remaining";
+		} else {
+			diff = now - expiry;
+			expiry_hint = "s stale";
+		}
+		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry: %s, now %s %zu %s\n", uid, PWS_ACCOUNT_OAUTH2_EXPIRY, buf_expiry, buf_now, diff, expiry_hint);
 		// Reduce available token life to avoid attempting connections with (near) expired tokens
 		if (expiry > 120)
 			expiry -= 120;
-		if (expiry > (g_get_real_time() / G_USEC_PER_SEC)) {
+		if (expiry > now) {
 			log_message(LOG_PROTOCOL, _("OAuth2 access token still fresh\n"));
 			goto out;
 		}
@@ -600,12 +638,13 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_REFRESH)) {
 		log_message(LOG_PROTOCOL, _("OAuth2 obtaining access token using refresh token\n"));
 		OAUTH2Data->refresh_token = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_REFRESH);
+		debug_print("%s PWS_ACCOUNT_OAUTH2_REFRESH %s\n", uid, PWS_ACCOUNT_OAUTH2_REFRESH);
 		ret = oauth2_use_refresh_token(ac_prefs->oauth2_provider, OAUTH2Data);
 	} else if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_AUTH)) {
 		log_message(LOG_PROTOCOL, _("OAuth2 trying for fresh access token with authorization code\n"));
+		g_autofree gchar *acc;
 		acc = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_AUTH);
 		ret = oauth2_obtain_tokens(ac_prefs->oauth2_provider, OAUTH2Data, acc);
-		g_free(acc);
 	} else
 		ret = 1;
 
