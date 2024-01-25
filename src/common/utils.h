@@ -255,13 +255,9 @@ extern "C" {
 	void debug_set_mode(gboolean mode);
 	gboolean debug_get_mode(void);
 
-#ifdef HAVE_VA_OPT
-#define debug_print(format, ...) debug_print_real(__FILE__, __LINE__, format __VA_OPT__(,) __VA_ARGS__)
-#else
 #define debug_print \
 	debug_print_real("%s:%d:", debug_srcname(__FILE__), __LINE__), \
 	debug_print_real
-#endif
 
 /* for macro expansion */
 #define Str(x)	#x
@@ -415,11 +411,7 @@ extern "C" {
 	size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt);
 
 /* debugging */
-#ifdef HAVE_VA_OPT
-	void debug_print_real(const char *file, int line, const gchar *format, ...) G_GNUC_PRINTF(3, 4);
-#else
 	void debug_print_real(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
-#endif
 	const char *debug_srcname(const char *file);
 
 /* subject threading */
