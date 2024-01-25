@@ -454,7 +454,7 @@ AC_CHECK_SIZEOF(unsigned long, 4)
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strcasestr \
-	       flock lockf inet_aton inet_addr \
+	       flock lockf inet_addr \
 	       fchmod mkstemp truncate getuid regcomp)
 
 AC_CHECK_FUNCS(fgets_unlocked fgetc_unlocked fputs_unlocked fputc_unlocked fread_unlocked fwrite_unlocked feof_unlocked ferror_unlocked fmemopen)
