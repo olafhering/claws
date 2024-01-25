@@ -44,11 +44,6 @@
 #include "xmlprops.h"
 #include "file-utils.h"
 
-#ifdef MKDIR_TAKES_ONE_ARG
-#undef mkdir
-#define mkdir(a,b) mkdir(a)
-#endif
-
 #define DFL_DIR_CLAWS_OUT  PACKAGE_TARNAME "-out"
 #define DFL_FILE_CLAWS_OUT "addressbook.html"
 
@@ -1041,7 +1036,7 @@ gboolean exporthtml_create_dir(ExportHtmlCtl *ctl)
 	gboolean retVal = FALSE;
 
 	ctl->rcCreate = 0;
-	if (mkdir(ctl->dirOutput, S_IRWXU) == 0) {
+	if (g_mkdir(ctl->dirOutput, S_IRWXU) == 0) {
 		retVal = TRUE;
 	} else {
 		ctl->rcCreate = errno;

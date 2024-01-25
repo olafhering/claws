@@ -427,9 +427,6 @@ if test $ac_cv_dirent_d_type = yes; then
 		  Define if `struct dirent' has `d_type' member.)
 fi
 
-# Check whether mkdir does not take the permission argument.
-AX_FUNC_MKDIR
-
 dnl Checks for header files.
 AC_HEADER_DIRENT
 
