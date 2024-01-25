@@ -625,7 +625,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 			diff = now - expiry;
 			expiry_hint = "s stale";
 		}
-		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry: %s, now %s %zu %s\n", uid, PWS_ACCOUNT_OAUTH2_EXPIRY, buf_expiry, buf_now, diff, expiry_hint);
+		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry: %s, now %s %zu%s\n", uid, acc, buf_expiry, buf_now, diff, expiry_hint);
 		// Reduce available token life to avoid attempting connections with (near) expired tokens
 		if (expiry > 120)
 			expiry -= 120;
