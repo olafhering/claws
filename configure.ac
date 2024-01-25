@@ -455,7 +455,7 @@ dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strcasestr \
 	       flock lockf \
-	       fchmod getuid regcomp)
+	       fchmod regcomp)
 
 AC_CHECK_FUNCS(fgets_unlocked fgetc_unlocked fputs_unlocked fputc_unlocked fread_unlocked fwrite_unlocked feof_unlocked ferror_unlocked fmemopen)
 
