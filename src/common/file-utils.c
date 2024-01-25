@@ -775,11 +775,7 @@ gint copy_dir(const gchar *src, const gchar *dst)
 
 gint change_file_mode_rw(FILE *fp, const gchar *file)
 {
-#if HAVE_FCHMOD
-	return fchmod(fileno(fp), S_IRUSR | S_IWUSR);
-#else
 	return g_chmod(file, S_IRUSR | S_IWUSR);
-#endif
 }
 
 FILE *my_tmpfile(void)
