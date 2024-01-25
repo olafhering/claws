@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: claws-mail 3.17.4git90\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2024-01-25 08:22+0100\n"
+"POT-Creation-Date: 2024-01-25 12:43+0100\n"
 "PO-Revision-Date: 2024-01-01 00:00+0000\n"
 "Last-Translator: Simon Legner <simon.legner@gmail.com>, 2020\n"
 "Language-Team: German (https://www.transifex.com/simon04/teams/92790/de/)\n"
@@ -1263,212 +1263,212 @@ msgstr "%d.%02dMiB"
 msgid "%.2fGiB"
 msgstr "%.2fGiB"
 
-#: src/common/utils.c:4059
+#: src/common/utils.c:4039
 msgctxt "Complete day name for use by strftime"
 msgid "Sunday"
 msgstr "Sonntag"
 
-#: src/common/utils.c:4060
+#: src/common/utils.c:4040
 msgctxt "Complete day name for use by strftime"
 msgid "Monday"
 msgstr "Montag"
 
-#: src/common/utils.c:4061
+#: src/common/utils.c:4041
 msgctxt "Complete day name for use by strftime"
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: src/common/utils.c:4062
+#: src/common/utils.c:4042
 msgctxt "Complete day name for use by strftime"
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: src/common/utils.c:4063
+#: src/common/utils.c:4043
 msgctxt "Complete day name for use by strftime"
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: src/common/utils.c:4064
+#: src/common/utils.c:4044
 msgctxt "Complete day name for use by strftime"
 msgid "Friday"
 msgstr "Freitag"
 
-#: src/common/utils.c:4065
+#: src/common/utils.c:4045
 msgctxt "Complete day name for use by strftime"
 msgid "Saturday"
 msgstr "Samstag"
 
-#: src/common/utils.c:4067
+#: src/common/utils.c:4047
 msgctxt "Complete month name for use by strftime"
 msgid "January"
 msgstr "Januar"
 
-#: src/common/utils.c:4068
+#: src/common/utils.c:4048
 msgctxt "Complete month name for use by strftime"
 msgid "February"
 msgstr "Februar"
 
-#: src/common/utils.c:4069
+#: src/common/utils.c:4049
 msgctxt "Complete month name for use by strftime"
 msgid "March"
 msgstr "März"
 
-#: src/common/utils.c:4070
+#: src/common/utils.c:4050
 msgctxt "Complete month name for use by strftime"
 msgid "April"
 msgstr "April"
 
-#: src/common/utils.c:4071
+#: src/common/utils.c:4051
 msgctxt "Complete month name for use by strftime"
 msgid "May"
 msgstr "Mai"
 
-#: src/common/utils.c:4072
+#: src/common/utils.c:4052
 msgctxt "Complete month name for use by strftime"
 msgid "June"
 msgstr "Juni"
 
-#: src/common/utils.c:4073
+#: src/common/utils.c:4053
 msgctxt "Complete month name for use by strftime"
 msgid "July"
 msgstr "Juli"
 
-#: src/common/utils.c:4074
+#: src/common/utils.c:4054
 msgctxt "Complete month name for use by strftime"
 msgid "August"
 msgstr "August"
 
-#: src/common/utils.c:4075
+#: src/common/utils.c:4055
 msgctxt "Complete month name for use by strftime"
 msgid "September"
 msgstr "September"
 
-#: src/common/utils.c:4076
+#: src/common/utils.c:4056
 msgctxt "Complete month name for use by strftime"
 msgid "October"
 msgstr "Oktober"
 
-#: src/common/utils.c:4077
+#: src/common/utils.c:4057
 msgctxt "Complete month name for use by strftime"
 msgid "November"
 msgstr "November"
 
-#: src/common/utils.c:4078
+#: src/common/utils.c:4058
 msgctxt "Complete month name for use by strftime"
 msgid "December"
 msgstr "Dezember"
 
-#: src/common/utils.c:4080
+#: src/common/utils.c:4060
 msgctxt "Abbr. day name for use by strftime"
 msgid "Sun"
 msgstr "So"
 
-#: src/common/utils.c:4081
+#: src/common/utils.c:4061
 msgctxt "Abbr. day name for use by strftime"
 msgid "Mon"
 msgstr "Mo"
 
-#: src/common/utils.c:4082
+#: src/common/utils.c:4062
 msgctxt "Abbr. day name for use by strftime"
 msgid "Tue"
 msgstr "Di"
 
-#: src/common/utils.c:4083
+#: src/common/utils.c:4063
 msgctxt "Abbr. day name for use by strftime"
 msgid "Wed"
 msgstr "Mi"
 
-#: src/common/utils.c:4084
+#: src/common/utils.c:4064
 msgctxt "Abbr. day name for use by strftime"
 msgid "Thu"
 msgstr "Do"
 
-#: src/common/utils.c:4085
+#: src/common/utils.c:4065
 msgctxt "Abbr. day name for use by strftime"
 msgid "Fri"
 msgstr "Fr"
 
-#: src/common/utils.c:4086
+#: src/common/utils.c:4066
 msgctxt "Abbr. day name for use by strftime"
 msgid "Sat"
 msgstr "Sa"
 
-#: src/common/utils.c:4088
+#: src/common/utils.c:4068
 msgctxt "Abbr. month name for use by strftime"
 msgid "Jan"
 msgstr "Jan"
 
-#: src/common/utils.c:4089
+#: src/common/utils.c:4069
 msgctxt "Abbr. month name for use by strftime"
 msgid "Feb"
 msgstr "Feb"
 
-#: src/common/utils.c:4090
+#: src/common/utils.c:4070
 msgctxt "Abbr. month name for use by strftime"
 msgid "Mar"
 msgstr "Mrz"
 
-#: src/common/utils.c:4091
+#: src/common/utils.c:4071
 msgctxt "Abbr. month name for use by strftime"
 msgid "Apr"
 msgstr "Apr"
 
-#: src/common/utils.c:4092
+#: src/common/utils.c:4072
 msgctxt "Abbr. month name for use by strftime"
 msgid "May"
 msgstr "Mai"
 
-#: src/common/utils.c:4093
+#: src/common/utils.c:4073
 msgctxt "Abbr. month name for use by strftime"
 msgid "Jun"
 msgstr "Jun"
 
-#: src/common/utils.c:4094
+#: src/common/utils.c:4074
 msgctxt "Abbr. month name for use by strftime"
 msgid "Jul"
 msgstr "Jul"
 
-#: src/common/utils.c:4095
+#: src/common/utils.c:4075
 msgctxt "Abbr. month name for use by strftime"
 msgid "Aug"
 msgstr "Aug"
 
-#: src/common/utils.c:4096
+#: src/common/utils.c:4076
 msgctxt "Abbr. month name for use by strftime"
 msgid "Sep"
 msgstr "Sep"
 
-#: src/common/utils.c:4097
+#: src/common/utils.c:4077
 msgctxt "Abbr. month name for use by strftime"
 msgid "Oct"
 msgstr "Okt"
 
-#: src/common/utils.c:4098
+#: src/common/utils.c:4078
 msgctxt "Abbr. month name for use by strftime"
 msgid "Nov"
 msgstr "Nov"
 
-#: src/common/utils.c:4099
+#: src/common/utils.c:4079
 msgctxt "Abbr. month name for use by strftime"
 msgid "Dec"
 msgstr "Dez"
 
-#: src/common/utils.c:4110
+#: src/common/utils.c:4090
 msgctxt "For use by strftime (morning)"
 msgid "AM"
 msgstr "AM"
 
-#: src/common/utils.c:4111
+#: src/common/utils.c:4091
 msgctxt "For use by strftime (afternoon)"
 msgid "PM"
 msgstr "PM"
 
-#: src/common/utils.c:4112
+#: src/common/utils.c:4092
 msgctxt "For use by strftime (morning, lowercase)"
 msgid "am"
 msgstr "am"
 
-#: src/common/utils.c:4113
+#: src/common/utils.c:4093
 msgctxt "For use by strftime (afternoon, lowercase)"
 msgid "pm"
 msgstr "pm"
@@ -8911,65 +8911,65 @@ msgstr "Newsgruppe abmelden"
 msgid "Rename newsgroup folder"
 msgstr "Newsgruppen-Ordner umbenennen"
 
-#: src/oauth2.c:224
+#: src/oauth2.c:222
 msgid "OAuth2 socket write error\n"
 msgstr "OAuth2 Socket-Schreibfehler\n"
 
-#: src/oauth2.c:249
+#: src/oauth2.c:247
 msgid "OAuth2 socket timeout error\n"
 msgstr "OAuth2 Socket-Zeitüberschreitung\n"
 
-#: src/oauth2.c:279
+#: src/oauth2.c:277
 msgid "OAuth2 missing authorization code\n"
 msgstr "OAuth2 fehlender authorization code\n"
 
-#: src/oauth2.c:285 src/oauth2.c:409
+#: src/oauth2.c:283 src/oauth2.c:418
 msgid "OAuth2 connection error\n"
 msgstr ""
 "OAuth2 Verbindungsfehler\n"
 "\n"
 
-#: src/oauth2.c:296 src/oauth2.c:420
+#: src/oauth2.c:294 src/oauth2.c:429
 msgid "OAuth2 TLS connection error\n"
 msgstr "OAuth2 Verbindungsfehler\n"
 
-#: src/oauth2.c:365 src/oauth2.c:485
+#: src/oauth2.c:374 src/oauth2.c:505
 msgid "OAuth2 access token obtained\n"
 msgstr "OAuth2 access token gefunden\n"
 
-#: src/oauth2.c:367 src/oauth2.c:487 src/oauth2.c:612
+#: src/oauth2.c:376 src/oauth2.c:507 src/oauth2.c:652
 msgid "OAuth2 access token not obtained\n"
 msgstr "OAuth2 access token nicht gefunden\n"
 
-#: src/oauth2.c:373
+#: src/oauth2.c:382
 msgid "OAuth2 refresh token obtained\n"
 msgstr "OAuth2 refresh token gefunden\n"
 
-#: src/oauth2.c:375
+#: src/oauth2.c:384
 msgid "OAuth2 refresh token not obtained\n"
 msgstr "OAuth2 refresh token nicht gefunden\n"
 
-#: src/oauth2.c:493
+#: src/oauth2.c:513
 msgid "OAuth2 replacement refresh token provided\n"
 msgstr "OAuth2 replacement refresh token gefunden\n"
 
-#: src/oauth2.c:495
+#: src/oauth2.c:515
 msgid "OAuth2 replacement refresh token not provided\n"
 msgstr "OAuth2 replacement refresh token nicht gefunden\n"
 
-#: src/oauth2.c:594
+#: src/oauth2.c:633
 msgid "OAuth2 access token still fresh\n"
 msgstr "OAuth2 access token immer noch aktuell\n"
 
-#: src/oauth2.c:600
+#: src/oauth2.c:639
 msgid "OAuth2 obtaining access token using refresh token\n"
 msgstr "OAuth2 Abfrage des access token mithilfe des refresh token\n"
 
-#: src/oauth2.c:604
+#: src/oauth2.c:644
 msgid "OAuth2 trying for fresh access token with authorization code\n"
 msgstr "OAuth2 neues access token mithilfe des authorization code abfragen\n"
 
-#: src/oauth2.c:622
+#: src/oauth2.c:662
 msgid "OAuth2 access and refresh token updated\n"
 msgstr "OAuth2 access und refresh token aktualisiert\n"
 
@@ -19077,14 +19077,6 @@ msgstr "Keine weiteren ungelesenen Nachrichten"
 msgid "No unread message found. Search from the end?"
 msgstr "Keine ungelesene Nachricht gefunden. Vom Ende suchen?"
 
-#: src/summaryview.c:1650 src/summaryview.c:1691 src/summaryview.c:1722
-#: src/summaryview.c:1763 src/summaryview.c:1819
-msgid ""
-"Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"
-msgstr ""
-"Interner Fehler: Unerwarteter Wert für 'prefs_common."
-"next_unread_msg_dialog'\n"
-
 #: src/summaryview.c:1661
 msgid "No unread messages."
 msgstr "Keine ungelesenen Nachrichten."
@@ -20272,6 +20264,12 @@ msgid ""
 msgstr ""
 "Claws Mail ist jetzt bereit.\n"
 "Zum Starten 'Speichern' klicken."
+
+#~ msgid ""
+#~ "Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"
+#~ msgstr ""
+#~ "Interner Fehler: Unerwarteter Wert für 'prefs_common."
+#~ "next_unread_msg_dialog'\n"
 
 #, fuzzy
 #~ msgid " needs network access in order to update the feed."
