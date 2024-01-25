@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: claws-mail 3.17.4git90\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2024-01-25 12:43+0100\n"
+"POT-Creation-Date: 2024-01-25 17:39+0100\n"
 "PO-Revision-Date: 2024-01-01 00:00+0000\n"
 "Last-Translator: Simon Legner <simon.legner@gmail.com>, 2020\n"
 "Language-Team: German (https://www.transifex.com/simon04/teams/92790/de/)\n"
@@ -444,7 +444,7 @@ msgstr "Hinzufügen der angegebenen Adresse schlug fehl"
 
 #: src/addressbook.c:126 src/addressbook.c:4715 src/editaddress.c:1150
 #: src/editaddress.c:1185 src/editgroup.c:306 src/expldifdlg.c:468
-#: src/exporthtml.c:605 src/exporthtml.c:766 src/ldif.c:757
+#: src/exporthtml.c:600 src/exporthtml.c:761 src/ldif.c:757
 msgid "Email Address"
 msgstr "E-Mail-Adresse"
 
@@ -840,7 +840,7 @@ msgstr "Adressbuch"
 msgid "Person"
 msgstr "Person"
 
-#: src/addressbook.c:4739 src/exporthtml.c:883 src/folderview.c:280
+#: src/addressbook.c:4739 src/exporthtml.c:878 src/folderview.c:280
 #: src/folderview.c:366 src/prefs_account.c:3190 src/prefs_folder_column.c:75
 msgid "Folder"
 msgstr "Ordner"
@@ -862,7 +862,7 @@ msgid "LDAP Query"
 msgstr "LDAP-Anfrage"
 
 #: src/addressbook_foldersel.c:191 src/exphtmldlg.c:353 src/expldifdlg.c:365
-#: src/exporthtml.c:978 src/importldif.c:528
+#: src/exporthtml.c:973 src/importldif.c:528
 msgid "Address Book"
 msgstr "Adressbuch"
 
@@ -2631,7 +2631,7 @@ msgid "Photo"
 msgstr "Foto"
 
 #: src/editaddress.c:1014 src/editaddress.c:1016 src/expldifdlg.c:467
-#: src/exporthtml.c:763 src/ldif.c:745
+#: src/exporthtml.c:758 src/ldif.c:745
 msgid "Display Name"
 msgstr "Angezeigter Name"
 
@@ -2716,7 +2716,7 @@ msgstr "Ein Gruppenname muss angegeben werden."
 msgid "Edit group data"
 msgstr "Gruppendaten bearbeiten"
 
-#: src/editgroup.c:336 src/exporthtml.c:602
+#: src/editgroup.c:336 src/exporthtml.c:597
 msgid "Group Name"
 msgstr "Gruppenname"
 
@@ -3474,32 +3474,32 @@ msgstr "Export-Datei wählen"
 msgid "Select folder to export"
 msgstr "Ordner zum Exportieren wählen"
 
-#: src/exporthtml.c:769
+#: src/exporthtml.c:764
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
-#: src/exporthtml.c:773 src/importldif.c:897
+#: src/exporthtml.c:768 src/importldif.c:897
 #: src/plugins/archive/archiver_gtk.c:715
 msgid "Attributes"
 msgstr "Merkmal"
 
-#: src/exporthtml.c:968
+#: src/exporthtml.c:963
 msgid "Claws Mail Address Book"
 msgstr "Claws Mail-Adressbuch"
 
-#: src/exporthtml.c:1064 src/exportldif.c:605
+#: src/exporthtml.c:1059 src/exportldif.c:600
 msgid "Name already exists but is not a directory."
 msgstr "Name existiert bereits, ist aber kein Ordner."
 
-#: src/exporthtml.c:1066 src/exportldif.c:607
+#: src/exporthtml.c:1061 src/exportldif.c:602
 msgid "No permissions to create directory."
 msgstr "Keine Berechtigung zum Erstellen des Ordners."
 
-#: src/exporthtml.c:1068 src/exportldif.c:609
+#: src/exporthtml.c:1063 src/exportldif.c:604
 msgid "Name is too long."
 msgstr "Name ist zu lang."
 
-#: src/exporthtml.c:1070 src/exportldif.c:611
+#: src/exporthtml.c:1065 src/exportldif.c:606
 msgid "Not specified."
 msgstr "Nicht angegeben."
 
