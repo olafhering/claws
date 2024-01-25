@@ -245,14 +245,6 @@ AM_ICONV
 dnl floor and ceil are  in -lm
 LIBS="$LIBS -lm"
 
-dnl
-dnl Check for bind_textdomain_codeset, including -lintl if GLib brings it in.
-dnl
-syl_save_LIBS=$LIBS
-LIBS="$LIBS $GTK_LIBS"
-AC_CHECK_FUNCS(bind_textdomain_codeset)
-LIBS=$syl_save_LIBS
-
 dnl for gettext
 ALL_LINGUAS="ca cs da de el_GR en_GB es fi fr hu id_ID it ja nb nl pl pt_BR pt_PT ro ru sk sv tr zh_TW"
 ALL_LINGUAS="de"
@@ -464,12 +456,6 @@ AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
 PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0 >= 2.26])
-
-dnl Check for bind_textdomain_codeset, including -lintl if GLib brings it in.
-syl_save_LIBS=$LIBS
-LIBS="$LIBS $GTK_LIBS"
-AC_CHECK_FUNCS(bind_textdomain_codeset)
-LIBS=$syl_save_LIBS
 
 dnl check for IPv6 option
 dnl automated checks for IPv6 support.
