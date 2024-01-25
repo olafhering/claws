@@ -75,7 +75,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_TENANT] = "common",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 		[OA2_RESPONSE_MODE] = "query",
-		[OA2_HEADER_AUTH_BASIC] = "",
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
@@ -92,7 +91,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_STATE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
 		[OA2_RESPONSE_MODE] = "fragment",
-		[OA2_HEADER_AUTH_BASIC] = "",
 	},
 	{
 		[OA2_BASE_URL] = "api.login.yahoo.com",
