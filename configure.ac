@@ -453,7 +453,7 @@ AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strcasestr \
 	       flock lockf)
 
-AC_CHECK_FUNCS(fgets_unlocked fmemopen)
+AC_CHECK_FUNCS(fgets_unlocked)
 
 dnl *****************
 dnl ** common code **
