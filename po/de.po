@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: claws-mail 3.17.4git90\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2022-06-14 13:00+0200\n"
+"POT-Creation-Date: 2024-01-25 08:22+0100\n"
 "PO-Revision-Date: 2024-01-01 00:00+0000\n"
 "Last-Translator: Simon Legner <simon.legner@gmail.com>, 2020\n"
 "Language-Team: German (https://www.transifex.com/simon04/teams/92790/de/)\n"
@@ -1130,30 +1130,30 @@ msgstr "Nachricht ist zu groß (Maximalgröße ist %s)\n"
 msgid "couldn't start STARTTLS session\n"
 msgstr "STARTTLS-Sitzung kann nicht gestartet werden\n"
 
-#: src/common/socket.c:529
+#: src/common/socket.c:527
 msgid "Socket IO timeout.\n"
 msgstr "Socket I/O-Zeitüberschreitung\n"
 
-#: src/common/socket.c:555
+#: src/common/socket.c:553
 msgid "Connection timed out.\n"
 msgstr "Verbindung abgelaufen.\n"
 
-#: src/common/socket.c:690
+#: src/common/socket.c:688
 #, c-format
 msgid "%s:%d: connection failed (%s).\n"
 msgstr "%s:%d: Verbindung schlug fehl (%s).\n"
 
-#: src/common/socket.c:913
+#: src/common/socket.c:911
 #, c-format
 msgid "%s:%d: unknown host.\n"
 msgstr "%s:%d: unbekannter Host.\n"
 
-#: src/common/socket.c:1000
+#: src/common/socket.c:998
 #, c-format
 msgid "%s:%s: host lookup failed (%s).\n"
 msgstr "%s:%s: Auflösen des Hosts schlug fehl (%s).\n"
 
-#: src/common/socket.c:1302
+#: src/common/socket.c:1300
 #, c-format
 msgid "write on fd%d: %s\n"
 msgstr "schreibe auf fd%d: %s\n"
@@ -8923,53 +8923,53 @@ msgstr "OAuth2 Socket-Zeitüberschreitung\n"
 msgid "OAuth2 missing authorization code\n"
 msgstr "OAuth2 fehlender authorization code\n"
 
-#: src/oauth2.c:285 src/oauth2.c:412
+#: src/oauth2.c:285 src/oauth2.c:409
 msgid "OAuth2 connection error\n"
 msgstr ""
 "OAuth2 Verbindungsfehler\n"
 "\n"
 
-#: src/oauth2.c:296 src/oauth2.c:423
+#: src/oauth2.c:296 src/oauth2.c:420
 msgid "OAuth2 TLS connection error\n"
 msgstr "OAuth2 Verbindungsfehler\n"
 
-#: src/oauth2.c:368 src/oauth2.c:491
+#: src/oauth2.c:365 src/oauth2.c:485
 msgid "OAuth2 access token obtained\n"
 msgstr "OAuth2 access token gefunden\n"
 
-#: src/oauth2.c:370 src/oauth2.c:493 src/oauth2.c:618
+#: src/oauth2.c:367 src/oauth2.c:487 src/oauth2.c:612
 msgid "OAuth2 access token not obtained\n"
 msgstr "OAuth2 access token nicht gefunden\n"
 
-#: src/oauth2.c:376
+#: src/oauth2.c:373
 msgid "OAuth2 refresh token obtained\n"
 msgstr "OAuth2 refresh token gefunden\n"
 
-#: src/oauth2.c:378
+#: src/oauth2.c:375
 msgid "OAuth2 refresh token not obtained\n"
 msgstr "OAuth2 refresh token nicht gefunden\n"
 
-#: src/oauth2.c:499
+#: src/oauth2.c:493
 msgid "OAuth2 replacement refresh token provided\n"
 msgstr "OAuth2 replacement refresh token gefunden\n"
 
-#: src/oauth2.c:501
+#: src/oauth2.c:495
 msgid "OAuth2 replacement refresh token not provided\n"
 msgstr "OAuth2 replacement refresh token nicht gefunden\n"
 
-#: src/oauth2.c:600
+#: src/oauth2.c:594
 msgid "OAuth2 access token still fresh\n"
 msgstr "OAuth2 access token immer noch aktuell\n"
 
-#: src/oauth2.c:606
+#: src/oauth2.c:600
 msgid "OAuth2 obtaining access token using refresh token\n"
 msgstr "OAuth2 Abfrage des access token mithilfe des refresh token\n"
 
-#: src/oauth2.c:610
+#: src/oauth2.c:604
 msgid "OAuth2 trying for fresh access token with authorization code\n"
 msgstr "OAuth2 neues access token mithilfe des authorization code abfragen\n"
 
-#: src/oauth2.c:628
+#: src/oauth2.c:622
 msgid "OAuth2 access and refresh token updated\n"
 msgstr "OAuth2 access und refresh token aktualisiert\n"
 
