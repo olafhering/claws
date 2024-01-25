@@ -1,4 +1,6 @@
 set -e
+ohne_VIM_Markierung=
+test "$1" = "-n" && ohne_VIM_Markierung='ohne_VIM_Markierung'
 # indent kommt damit nicht klar ...
 C_Dateien_ohne_Formatierung=(
 src/gtk/gtkcmclist.c
@@ -1141,15 +1143,19 @@ indent \
 	"${Typen[@]}" \
 	"${H_Dateien_mit_Typen[@]}" \
 	"${C_Dateien_mit_Typen[@]}"
-for C_Datei in ${C_Dateien_mit_Typen[@]}
-do
-	sed -i /vim:/d "${C_Datei}"
-	cat  >> "${C_Datei}" <<'_Ende_'
-/*
- * vim: noet ts=4 shiftwidth=4 nowrap
- */
+if test -z "${ohne_VIM_Markierung}"
+then
+	for C_Datei in ${C_Dateien_mit_Typen[@]}
+	do
+		sed -i /vim:/d "${C_Datei}"
+		cat  >> "${C_Datei}" <<'_Ende_'
+
+	/*
+	 * vim: noet ts=4 shiftwidth=4 nowrap
+	 */
 _Ende_
-done
+	done
+fi
 #
 #
 #
