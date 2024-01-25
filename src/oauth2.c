@@ -638,7 +638,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_REFRESH)) {
 		log_message(LOG_PROTOCOL, _("OAuth2 obtaining access token using refresh token\n"));
 		OAUTH2Data->refresh_token = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_REFRESH);
-		debug_print("%s PWS_ACCOUNT_OAUTH2_REFRESH %s\n", uid, PWS_ACCOUNT_OAUTH2_REFRESH);
+		debug_print("%s PWS_ACCOUNT_OAUTH2_REFRESH %s\n", uid, OAUTH2Data->refresh_token);
 		ret = oauth2_use_refresh_token(ac_prefs->oauth2_provider, OAUTH2Data);
 	} else if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_AUTH)) {
 		log_message(LOG_PROTOCOL, _("OAuth2 trying for fresh access token with authorization code\n"));
