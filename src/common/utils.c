@@ -2045,18 +2045,6 @@ gboolean is_file_entry_regular(const gchar *file)
 	return g_file_test(file, G_FILE_TEST_IS_REGULAR);
 }
 
-gboolean dirent_is_regular_file(struct dirent *d)
-{
-#if !defined(G_OS_WIN32) && defined(HAVE_DIRENT_D_TYPE)
-	if (d->d_type == DT_REG)
-		return TRUE;
-	else if (d->d_type != DT_UNKNOWN)
-		return FALSE;
-#endif
-
-	return g_file_test(d->d_name, G_FILE_TEST_IS_REGULAR);
-}
-
 gint change_dir(const gchar *dir)
 {
 	gchar *prevdir = NULL;
