@@ -85,7 +85,7 @@ BuildRequires:  pkgconfig(gnutls) >= 2.2
 %endif
 BuildRequires:  pkgconfig(gtk+-2.0) >= 2.24
 %if %{with claws_enchant}
-BuildRequires:  pkgconfig(enchant-2)
+BuildRequires:  pkgconfig(enchant)
 Requires:       myspell-de_DE
 %endif
 %if %{with claws_compface}
