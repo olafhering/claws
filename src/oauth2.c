@@ -603,21 +603,25 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_EXPIRY)) {
 		GTimeVal tv;
-		struct tm *tm_expiry, *tm_now;
+		struct tm *tm;
 		time_t expiry, now, diff;
 		g_autofree gchar *acc;
 		char buf_expiry[32], buf_now[32];
 	   	const char *expiry_hint;
 		static const char tm_fmt[] = "%Y-%m-%d %H:%M:%S %Z";
 
+		memset(buf_expiry, 0, sizeof(buf_expiry));
 		acc = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY);
+		expiry = (time_t)atol(acc);
+		tm = gmtime(&expiry);
+		strftime(buf_expiry, sizeof(buf_expiry), tm_fmt, tm);
+
+		memset(buf_now, 0, sizeof(buf_now));
 		g_get_current_time(&tv);
 		now = tv.tv_sec;
-		expiry = (time_t)atol(acc);
-		tm_expiry = gmtime(&expiry);
-		tm_now = gmtime(&now);
-		strftime(buf_expiry, sizeof(buf_expiry), tm_fmt, tm_expiry);
-		strftime(buf_now, sizeof(buf_now), tm_fmt, tm_now);
+		tm = gmtime(&now);
+		strftime(buf_now, sizeof(buf_now), tm_fmt, tm);
+
 		if (expiry > now) {
 			diff = expiry - now;
 			expiry_hint = "s remaining";
@@ -625,7 +629,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 			diff = now - expiry;
 			expiry_hint = "s stale";
 		}
-		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry: %s, now %s %zu%s\n", uid, acc, buf_expiry, buf_now, diff, expiry_hint);
+		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry:%s,Now:%s %zu%s\n", uid, acc, buf_expiry, buf_now, diff, expiry_hint);
 		// Reduce available token life to avoid attempting connections with (near) expired tokens
 		if (expiry > 120)
 			expiry -= 120;
