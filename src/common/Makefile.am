@@ -87,7 +87,6 @@ clawscommoninclude_HEADERS = $(arch_headers) \
 	unmime.h
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/intl \
 	$(GLIB_CFLAGS) \
 	$(VALGRIND_CFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
