@@ -255,7 +255,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_autofree gchar *response = NULL;
 	GString *token_body = g_string_sized_new(1024);
 	gchar *header = NULL;
-	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
 	gchar *expiry;
 	gint ret;
@@ -335,11 +334,9 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
-		tmp_hd = g_strconcat(client_id, ":", client_secret?:"", NULL);
-		tmp_hd_encoded = g_base64_encode(tmp_hd, strlen(tmp_hd));
-		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
-		g_free(tmp_hd_encoded);
-		g_free(tmp_hd);
+		g_autofree gchar *t = g_strconcat(client_id, ":", client_secret?:"", NULL);
+		g_autofree gchar *e = g_base64_encode(t, strlen(t));
+		header = g_strconcat("Authorization: Basic ", e, NULL);
 	}
 
 	debug_print("Complete body: %s\n", token_body->str);
