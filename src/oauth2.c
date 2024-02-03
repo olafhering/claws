@@ -117,7 +117,7 @@ static gchar *oauth2_post_request(gchar *host, gchar *resource, gchar *header, g
 {
 	gint fixed_len = 16+49+36+(17+8)+7+19+23+1;
 	gint len = strlen(body);
-	GString *request = g_string_sized_new(fixed_len + strlen(resource) + len + strlen(header));
+	GString *request = g_string_sized_new(fixed_len + strlen(resource) + len);
 
 	g_string_append_printf(request, "POST %s HTTP/1.1\r\n", resource);
 	g_string_append(request, "Content-Type: application/x-www-form-urlencoded\r\n");
@@ -126,7 +126,7 @@ static gchar *oauth2_post_request(gchar *host, gchar *resource, gchar *header, g
 	g_string_append_printf(request, "Host: %s\r\n", host);
 	g_string_append(request, "Connection: close\r\n");
 	g_string_append(request, "User-Agent: ClawsMail\r\n");
-	if (header[0])
+	if (header)
 		g_string_append_printf(request, "%s\r\n", header);
 	g_string_append_printf(request, "\r\n%s", body);
 
@@ -255,7 +255,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
-	gchar *header;
+	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
 	gchar *expiry;
@@ -347,8 +347,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
 		g_free(tmp_hd);
-	} else {
-		header = g_strconcat("", NULL);
 	}
 
 	debug_print("Complete body: %s\n", body);
@@ -398,7 +396,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
-	gchar *header;
+	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token = NULL;
 	gchar *expiry;
@@ -479,8 +477,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
 		g_free(tmp_hd);
-	} else {
-		header = g_strconcat("", NULL);
 	}
 
 	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
