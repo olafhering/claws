@@ -9,12 +9,18 @@ case "$1" in
 	;;
 	-c)
 	shift
+	if test $# -gt 0
+	then
+		args=("$@")
+	else
+		args=('--disable-nls')
+	fi
 	env \
 		CFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
 		CXXFLAGS='-O2 -g -Wall -Wno-deprecated-declarations -Wno-reorder -Wno-sign-compare -Wno-switch' \
 	bash autogen.sh	\
 		--prefix=/dev/shm/$PPID \
-		"$@"
+		"${args[@]}"
 	;;
 	-t)
 	find * ../{gdk-pixbuf,glib,gnutls,gtk,libetpan}.git -name '*.[ch]' | ctags -L -
