@@ -301,7 +301,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		client_id = OAUTH2info[i][OA2_CLIENT_ID];
 
 	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
-	debug_print("Body: %s\n", body);
 
 	if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
 		client_secret = OAUTH2Data->custom_client_secret;
