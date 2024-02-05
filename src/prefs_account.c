@@ -4880,12 +4880,13 @@ static void prefs_account_oauth2_obtain_tokens(GtkButton *button, gpointer data)
 		if (OAUTH2Data->access_token != NULL) {
 			passwd_store_set_account(tmp_ac_prefs.account_id,
 						 PWS_ACCOUNT_RECV, OAUTH2Data->access_token, FALSE);
-
-			passwd_store_set_account(tmp_ac_prefs.account_id, PWS_ACCOUNT_SEND, OAUTH2Data->access_token, FALSE);
-			log_message(LOG_PROTOCOL, "OAuth2 access token stored\n");
-
 			gtk_entry_set_text(GTK_ENTRY(basic_page.pass_entry), OAUTH2Data->access_token);
-			gtk_entry_set_text(GTK_ENTRY(send_page.smtp_pass_entry), OAUTH2Data->access_token);
+
+			if (tmp_ac_prefs.use_smtp_auth && tmp_ac_prefs.smtp_auth_type == SMTPAUTH_OAUTH2) {
+				passwd_store_set_account(tmp_ac_prefs.account_id, PWS_ACCOUNT_SEND, OAUTH2Data->access_token, FALSE);
+				gtk_entry_set_text(GTK_ENTRY(send_page.smtp_pass_entry), OAUTH2Data->access_token);
+			}
+			log_message(LOG_PROTOCOL, "OAuth2 access token stored\n");
 		}
 
 		if (OAUTH2Data->expiry != NULL) {
@@ -5794,7 +5795,8 @@ static void prefs_account_oauth2_callback(GObject *source, GAsyncResult *res, gp
 						 PWS_ACCOUNT_RECV,
 						 oauth2_listener_data->OAUTH2Data->access_token,
 						 FALSE);
-			passwd_store_set_account(tmp_ac_prefs.account_id, PWS_ACCOUNT_SEND, oauth2_listener_data->OAUTH2Data->access_token, FALSE);
+			if (tmp_ac_prefs.use_smtp_auth && tmp_ac_prefs.smtp_auth_type == SMTPAUTH_OAUTH2)
+				passwd_store_set_account(tmp_ac_prefs.account_id, PWS_ACCOUNT_SEND, oauth2_listener_data->OAUTH2Data->access_token, FALSE);
 			log_message(LOG_PROTOCOL, "OAuth2 access token stored\n");
 		}
 
