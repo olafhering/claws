@@ -293,7 +293,7 @@ gboolean privacy_mimeinfo_is_encrypted(MimeInfo *mimeinfo)
 	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
+		PrivacySystem *system = cur->data;
 
 		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return TRUE;
