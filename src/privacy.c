@@ -120,7 +120,7 @@ void privacy_free_signature_data(SignatureData *sig_data)
 
 void privacy_free_sig_check_task_result(gpointer data)
 {
-	SigCheckTaskResult *result = (SigCheckTaskResult *) data;
+	SigCheckTaskResult *result = data;
 
 	privacy_free_signature_data(result->sig_data);
 	if (result->newinfo)
