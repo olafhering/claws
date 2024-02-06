@@ -88,7 +88,7 @@
 	gettimeofday(&end, NULL);					\
 	mytimersub(&end, &start, &diff);				\
 	debug_print("TIMING %s %s: %ds%03dms\n", 			\
-		__FUNCTION__,						\
+		__func__,						\
 		timing_name, (unsigned int)diff.tv_sec, 		\
 		(unsigned int)diff.tv_usec/1000);
 #else
