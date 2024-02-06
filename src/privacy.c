@@ -375,11 +375,8 @@ static PrivacySystem *privacy_get_system(const gchar *id)
 
 const gchar *privacy_system_get_name(const gchar *id)
 {
-	PrivacySystem *system;
+	PrivacySystem *system = privacy_get_system(id);
 
-	cm_return_val_if_fail(id != NULL, NULL);
-
-	system = privacy_get_system(id);
 	if (system == NULL)
 		return NULL;
 
