@@ -102,11 +102,8 @@ void privacy_unregister_system(PrivacySystem *system)
  */
 void privacy_free_privacydata(PrivacyData *privacydata)
 {
-	PrivacySystem *system = NULL;
+	PrivacySystem *system = privacy_data_get_system(privacydata);
 
-	cm_return_if_fail(privacydata != NULL);
-
-	system = privacy_data_get_system(privacydata);
 	if (!system)
 		return;
 	system->free_privacydata(privacydata);
