@@ -1486,6 +1486,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 	AddrSelectItem *item;
 	AddrItemObject *aio;
 	gchar *addr;
+	ComposeEntryType type = GPOINTER_TO_INT(data);
 
 	compose = addrbook.target_compose;
 	if (!compose)
@@ -1494,7 +1495,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 	/* Nothing selected, but maybe there is something in text entry */
 	addr = (char *)gtk_entry_get_text(GTK_ENTRY(addrbook.entry));
 	if (addr) {
-		compose_entry_append(compose, addr, (ComposeEntryType) data, PREF_NONE);
+		compose_entry_append(compose, addr, type, PREF_NONE);
 	}
 
 	/* Select from address list */
@@ -1507,7 +1508,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 			aio = item->addressItem;
 			if (aio->type == ITEMTYPE_PERSON || aio->type == ITEMTYPE_EMAIL) {
 				addr = addressbook_format_address(aio);
-				compose_entry_append(compose, addr, (ComposeEntryType) data, PREF_NONE);
+				compose_entry_append(compose, addr, type, PREF_NONE);
 				g_free(addr);
 			} else if (aio->type == ITEMTYPE_GROUP) {
 				ItemGroup *group = (ItemGroup *)aio;
@@ -1516,7 +1517,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 					ItemEMail *email = nodeMail->data;
 
 					addr = addressbook_format_address((AddrItemObject *)email);
-					compose_entry_append(compose, addr, (ComposeEntryType) data, PREF_NONE);
+					compose_entry_append(compose, addr, type, PREF_NONE);
 					g_free(addr);
 					nodeMail = g_list_next(nodeMail);
 				}
@@ -1534,7 +1535,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 				ItemEMail *email = nodeMail->data;
 
 				addr = addressbook_format_address((AddrItemObject *)email);
-				compose_entry_append(compose, addr, (ComposeEntryType) data, PREF_NONE);
+				compose_entry_append(compose, addr, type, PREF_NONE);
 				g_free(addr);
 				nodeMail = g_list_next(nodeMail);
 			}
