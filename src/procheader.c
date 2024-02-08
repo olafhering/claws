@@ -638,9 +638,9 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags, gboo
 
 	msginfo->inreplyto = NULL;
 
-	if (avatar_hook_id == HOOK_NONE && (prefs_common.enable_avatars && (AVATARS_ENABLE_CAPTURE || AVATARS_ENABLE_RENDER))) {
+	if (avatar_hook_id == HOOK_NONE && (prefs_common.enable_avatars & (AVATARS_ENABLE_CAPTURE | AVATARS_ENABLE_RENDER))) {
 		avatar_hook_id = hooks_register_hook(AVATAR_HEADER_UPDATE_HOOKLIST, avatar_from_some_face, NULL);
-	} else if (avatar_hook_id != HOOK_NONE && !(prefs_common.enable_avatars && AVATARS_ENABLE_CAPTURE)) {
+	} else if (avatar_hook_id != HOOK_NONE && !(prefs_common.enable_avatars & AVATARS_ENABLE_CAPTURE)) {
 		hooks_unregister_hook(AVATAR_HEADER_UPDATE_HOOKLIST, avatar_hook_id);
 		avatar_hook_id = HOOK_NONE;
 	}
