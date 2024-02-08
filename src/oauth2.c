@@ -389,7 +389,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token = NULL;
-	gchar *expiry;
+	gchar *expiry = NULL;
 	gint ret;
 	SockInfo *sock;
 	const gchar *client_id;
