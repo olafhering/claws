@@ -330,22 +330,28 @@ static void alertpanel_button_toggled(GtkToggleButton *button, gpointer data)
 
 static void alertpanel_button_clicked(GtkWidget *widget, gpointer data)
 {
-	value = (value & ~G_ALERT_VALUE_MASK) | (AlertValue) data;
+	AlertValue v = GPOINTER_TO_UINT(data);
+
+	value = (value & ~G_ALERT_VALUE_MASK) | v;
 }
 
 static gint alertpanel_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
-	value = (value & ~G_ALERT_VALUE_MASK) | (AlertValue) data;
+	AlertValue v = GPOINTER_TO_UINT(data);
+
+	value = (value & ~G_ALERT_VALUE_MASK) | v;
 	return TRUE;
 }
 
 static gboolean alertpanel_close(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
+	AlertValue v = GPOINTER_TO_UINT(data);
+
 	if (event->type == GDK_KEY_PRESS)
 		if (((GdkEventKey *)event)->keyval != GDK_KEY_Escape)
 			return FALSE;
 
-	value = (value & ~G_ALERT_VALUE_MASK) | (AlertValue) data;
+	value = (value & ~G_ALERT_VALUE_MASK) | v;
 	return FALSE;
 }
 /*
