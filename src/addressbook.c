@@ -1486,6 +1486,7 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 	AddrSelectItem *item;
 	AddrItemObject *aio;
 	gchar *addr;
+	const gchar *text;
 	ComposeEntryType type = GPOINTER_TO_INT(data);
 
 	compose = addrbook.target_compose;
@@ -1493,9 +1494,9 @@ static void addressbook_to_clicked(GtkButton *button, gpointer data)
 		return;
 
 	/* Nothing selected, but maybe there is something in text entry */
-	addr = (char *)gtk_entry_get_text(GTK_ENTRY(addrbook.entry));
-	if (addr) {
-		compose_entry_append(compose, addr, type, PREF_NONE);
+	text = gtk_entry_get_text(GTK_ENTRY(addrbook.entry));
+	if (text) {
+		compose_entry_append(compose, text, type, PREF_NONE);
 	}
 
 	/* Select from address list */
