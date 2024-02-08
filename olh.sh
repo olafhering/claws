@@ -16,7 +16,7 @@ case "$1" in
 		args=('--disable-nls')
 	fi
 	env \
-		CFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
+		CFLAGS='-O2 -g -Wall -Wno-deprecated-declarations -Wno-compound-token-split-by-macro' \
 		CXXFLAGS='-O2 -g -Wall -Wno-deprecated-declarations -Wno-reorder -Wno-sign-compare -Wno-switch' \
 	bash autogen.sh	\
 		--prefix=/dev/shm/$PPID \
