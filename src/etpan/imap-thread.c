@@ -651,12 +651,16 @@ static void connect_ssl_run(struct etpan_thread_op *op)
 		int fd = mailimap_idle_get_fd(param->imap);
 		if (fd >= 0) {
 			int keepalive = 1, keepcnt = 2, keepidle = 33, keepintvl = 44;
-			unsigned int user_timeout = 22 * 1000;
 			setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive , sizeof(keepalive));
 			setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt));
 			setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle));
 			setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
+#if defined(TCP_USER_TIMEOUT)
+			{
+			unsigned int user_timeout = 22 * 1000;
 			setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &user_timeout, sizeof(user_timeout));
+			}
+#endif
 		}
 		break;
 	}
