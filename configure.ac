@@ -1,10 +1,12 @@
 
 AC_PREREQ([2.69])
-AC_INIT([Claws Mail],[0],[],[claws-mail-olh],[https://github.com/olafhering/claws])
+m4_define([claws_VERSION], m4_esyscmd([./get-git-version]))
+AC_INIT([Claws Mail],m4_defn([claws_VERSION]),[],[claws-mail-olh],[https://gitlab.com/olafhering/claws])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
-
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE([no-define])
 
 dnl version number
 INTERFACE_AGE=0
@@ -12,21 +14,15 @@ BINARY_AGE=0
 EXTRA_RELEASE=
 EXTRA_GTK2_VERSION=
 
-if test \( -d .git \); then
-    AC_CHECK_PROG([GIT], [git], [yes], [no], [$PATH])
-    if test \( "$GIT" = "no" \); then
-	AC_MSG_ERROR([*** git not found. See http://git-scm.com/])
-    else
-	GIT_VERSION=`git describe --abbrev=6 --dirty --always`
-	echo "echo ${GIT_VERSION}" > ./version
-    fi
-    date="`date -u -d @$(git --no-pager log -n1 --pretty=%at) +%Y%m%dT%H%M%S`"
-    hash="`git --no-pager log -n1 --pretty=%H | cut -b -8`"
-    echo "${date}.${hash}" > VERSION_UI
+GIT_VERSION=m4_defn([claws_VERSION])
+if test -f "$srcdir/VERSION_UI"
+then
+	VERSION_UI="`cat $srcdir/VERSION_UI`"
 else
-    GIT_VERSION=`sh -c ". $srcdir/version"`
+	date="`date -u -d @$(git --no-pager log -n1 --pretty=%at) +%Y%m%dT%H%M%S || echo 0`"
+	hash="`git --no-pager log -n1 --pretty=%H | cut -b -8`"
+	VERSION_UI="${date}.${hash}"
 fi
-VERSION_UI="`cat $srcdir/VERSION_UI`"
 
 if test \( -z "$GIT_VERSION" \); then
 	AC_MSG_ERROR([*** could not determine program version])
@@ -51,11 +47,6 @@ if test \( "x$EXTRA_RELEASE" != "x" \); then
     VERSION=${VERSION}${EXTRA_RELEASE}${EXTRA_GTK2_VERSION}
 fi
 
-dnl set $target
-AC_CANONICAL_TARGET
-
-dnl
-AM_INIT_AUTOMAKE([no-define])
 AC_SUBST(VERSION)
 AC_SUBST(MAJOR_VERSION)
 AC_SUBST(MINOR_VERSION)
@@ -129,13 +120,6 @@ if test -n "$REAL_CXX"; then
 fi
 
 AC_SYS_LARGEFILE
-
-dnl ******************************
-dnl Checks for host
-dnl Not needed anymore because we
-dnl do AC_CANONICAL_TARGET above
-dnl ******************************
-dnl AC_CANONICAL_HOST
 
 dnl Copied from the official gtk+-2 configure.in
 AC_MSG_CHECKING([for host platform])
