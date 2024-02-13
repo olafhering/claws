@@ -119,6 +119,7 @@ static gchar *oauth2_post_request(gchar *host, gchar *resource, gchar *header, g
 	gint len = strlen(body);
 	GString *request = g_string_sized_new(fixed_len + strlen(resource) + len);
 
+	debug_print("Complete body: %s\n", body);
 	g_string_append_printf(request, "POST %s HTTP/1.1\r\n", resource);
 	g_string_append(request, "Content-Type: application/x-www-form-urlencoded\r\n");
 	g_string_append(request, "Accept: text/html,application/json\r\n");
@@ -246,6 +247,7 @@ static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request)
 	if (timeout)
 		log_message(LOG_PROTOCOL, _("OAuth2 socket timeout error\n"));
 
+	debug_print("Response: %s\n", response->str);
 	return g_string_free(response, got_some_error || timeout);
 }
 
@@ -339,11 +341,9 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		header = g_strconcat("Authorization: Basic ", e, NULL);
 	}
 
-	debug_print("Complete body: %s\n", token_body->str);
 	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, token_body->str);
 	if (request)
 		response = oauth2_contact_server(sock, request);
-	debug_print("Response: %s\n", response);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		GTimeVal tv;
@@ -472,7 +472,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
 	if (request)
 		response = oauth2_contact_server(sock, request);
-	debug_print("Response: %s\n", response);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		GTimeVal tv;
