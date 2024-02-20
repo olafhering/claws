@@ -1,6 +1,6 @@
 /*
- * Claws Mail -- a GTK+ based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Claws Mail -- a GTK based, lightweight, and fast e-mail client
+ * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2733,8 +2733,8 @@ static void view_source_cb(GtkAction *action, gpointer data)
 	if (!messageview->msginfo) return;
 
 	srcwin = source_window_create();
-	source_window_show_msg(srcwin, messageview->msginfo);
 	source_window_show(srcwin);
+	source_window_show_msg(srcwin, messageview->msginfo);
 }
 
 static void show_all_header_cb(GtkToggleAction *action, gpointer data)

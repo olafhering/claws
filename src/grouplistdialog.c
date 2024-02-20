@@ -1,6 +1,6 @@
 /*
- * Sylpheed -- a GTK+ based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2012 Hiroyuki Yamamoto and the Claws Mail team
+ * Claws Mail -- a GTK based, lightweight, and fast e-mail client
+ * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -590,8 +590,8 @@ static gboolean button_press_cb(GtkCMCTree *ctree, GdkEventButton *button,
 	list = g_slist_find_custom(subscribed, ginfo->name,
 				   (GCompareFunc)g_ascii_strcasecmp);
 	if (list) {
-		g_free(list->data);
 		subscribed = g_slist_remove(subscribed, list->data);
+		g_free(list->data);
 		gtk_cmclist_unselect_row(GTK_CMCLIST(ctree), row, 0);
 	} else {
 		subscribed = g_slist_append(subscribed, g_strdup(ginfo->name));
