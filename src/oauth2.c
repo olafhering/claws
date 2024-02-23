@@ -347,14 +347,14 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		GTimeVal tv;
-		time_t t;
+		long long t;
 
 		debug_print("access_token %s expiry %s\n", access_token, expiry);
 
 		g_get_current_time(&tv);
-		t = (time_t)atol(expiry?:"0");
+		t = atoll(expiry?:"0");
 		t += tv.tv_sec;
-		OAUTH2Data->expiry = g_strdup_printf("%zu", t);
+		OAUTH2Data->expiry = g_strdup_printf("%lld", t);
 		g_free(expiry);
 
 		OAUTH2Data->access_token = access_token;
@@ -475,15 +475,15 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		GTimeVal tv;
-		time_t t;
+		long long t;
 
 		debug_print("access_token %s expiry %s\n", access_token, expiry);
 
 		g_get_current_time(&tv);
-		t = (time_t)atol(expiry?:"0");
+		t = atoll(expiry?:"0");
 		t += tv.tv_sec;
 		g_free(expiry);
-		expiry = OAUTH2Data->expiry = g_strdup_printf("%zu", t);
+		expiry = OAUTH2Data->expiry = g_strdup_printf("%lld", t);
 
 		OAUTH2Data->access_token = access_token;
 		ret = 0;
@@ -580,7 +580,8 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 	if (passwd_store_has_password(PWS_ACCOUNT, uid, PWS_ACCOUNT_OAUTH2_EXPIRY)) {
 		GTimeVal tv;
 		struct tm *tm;
-		time_t expiry, now, diff;
+		time_t expiry, now;
+		long long diff;
 		g_autofree gchar *acc;
 		char buf_expiry[32], buf_now[32];
 	   	const char *expiry_hint;
@@ -605,7 +606,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 			diff = now - expiry;
 			expiry_hint = "s stale";
 		}
-		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry:%s,Now:%s %zu%s\n", uid, acc, buf_expiry, buf_now, diff, expiry_hint);
+		debug_print("%s PWS_ACCOUNT_OAUTH2_EXPIRY %s. Expiry:%s,Now:%s %lld%s\n", uid, acc, buf_expiry, buf_now, diff, expiry_hint);
 		// Reduce available token life to avoid attempting connections with (near) expired tokens
 		if (expiry > 120)
 			expiry -= 120;
