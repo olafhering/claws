@@ -170,9 +170,11 @@ void primary_passphrase_change_dialog()
 	gtk_widget_show(label);
 
 	table = gtk_table_new(4, 2, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(table), 8);
+	gtk_table_set_col_spacings(GTK_TABLE(table), 8);
 
 	/* Old passphrase */
-	label = gtk_label_new(_("Old passphrase:"));
+	label = gtk_label_new(_("Old passphrase"));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1,
 			GTK_EXPAND | GTK_FILL, 0, 0, 0);
@@ -188,7 +190,7 @@ void primary_passphrase_change_dialog()
 			GTK_FILL | GTK_EXPAND, 0, 0, 5);
 
 	/* New passphrase */
-	label = gtk_label_new(_("New passphrase:"));
+	label = gtk_label_new(_("New passphrase"));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 2, 3,
 			GTK_EXPAND | GTK_FILL, 0, 0, 0);
@@ -199,7 +201,7 @@ void primary_passphrase_change_dialog()
 			GTK_FILL | GTK_EXPAND, 0, 0, 0);
 
 	/* New passphrase again */
-	label = gtk_label_new(_("Confirm passphrase:"));
+	label = gtk_label_new(_("Confirm passphrase"));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 3, 4,
 			GTK_EXPAND | GTK_FILL, 0, 0, 0);
