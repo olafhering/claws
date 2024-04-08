@@ -639,6 +639,7 @@ SockInfo *sock_connect(const gchar *hostname, gushort port)
 	if ((sock = sock_connect_by_getaddrinfo(hostname, port)) < 0) {
 		return NULL;
 	}
+	socket_enable_keepalive(sock);
 
 	return sockinfo_from_fd(hostname, port, sock);
 }
@@ -689,8 +690,6 @@ static gboolean sock_connect_async_cb(GIOChannel *source, GIOCondition condition
 		sock_connect_address_list_async(conn_data);
 		return FALSE;
 	}
-
-	socket_enable_keepalive(fd);
 
 	sockinfo = g_new0(SockInfo, 1);
 	sockinfo->sock = fd;
@@ -808,6 +807,7 @@ static gint sock_connect_address_list_async(SockConnectData *conn_data)
 		}
 
 		set_nonblocking_mode(sock, TRUE);
+		socket_enable_keepalive(fd);
 
 		if (connect(sock, addr_data->addr, addr_data->addr_len) < 0) {
 			if (EINPROGRESS == errno) {
