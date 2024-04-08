@@ -807,7 +807,7 @@ static gint sock_connect_address_list_async(SockConnectData *conn_data)
 		}
 
 		set_nonblocking_mode(sock, TRUE);
-		socket_enable_keepalive(fd);
+		socket_enable_keepalive(sock);
 
 		if (connect(sock, addr_data->addr, addr_data->addr_len) < 0) {
 			if (EINPROGRESS == errno) {
