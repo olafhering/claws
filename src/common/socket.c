@@ -149,7 +149,6 @@ static gint sock_connect_by_getaddrinfo(const gchar *hostname, gushort port);
 static SockInfo *sockinfo_from_fd(const gchar *hostname, gushort port, gint sock);
 static void sock_address_list_free(GList *addr_list);
 
-static gboolean sock_connect_async_cb(GIOChannel *source, GIOCondition condition, gpointer data);
 static gint sock_connect_async_get_address_info_cb(GList *addr_list, gpointer data);
 
 static gint sock_connect_address_list_async(SockConnectData * conn_data);
