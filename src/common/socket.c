@@ -1449,40 +1449,30 @@ void socket_enable_keepalive(int fd)
 		int val = 1;
 		setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &val , sizeof(val));
 	}
-#else
-#warning no SO_KEEPALIVE
 #endif
 #if defined(TCP_KEEPCNT)
 	{
 		int val = 2;
 		setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &val, sizeof(val));
 	}
-#else
-#warning no TCP_KEEPCNT
 #endif
 #if defined(TCP_KEEPIDLE)
 	{
 		int val = 33;
 		setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &val, sizeof(val));
 	}
-#else
-#warning no TCP_KEEPIDLE
 #endif
 #if defined(TCP_KEEPINTVL)
 	{
 		int val = 44;
 		setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &val, sizeof(val));
 	}
-#else
-#warning no TCP_KEEPINTVL
 #endif
 #if defined(TCP_USER_TIMEOUT)
 	{
 		unsigned int val = 22 * 1000;
 		setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &val, sizeof(val));
 	}
-#else
-#warning no TCP_USER_TIMEOUT
 #endif
 }
 
