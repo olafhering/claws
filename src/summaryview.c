@@ -1960,8 +1960,7 @@ void summary_select_prev_unread(SummaryView *summaryview)
  				val = !G_ALERTALTERNATE;
  				break;
  			default:
- 				debug_print(
- 					_("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"));
+ 				debug_print("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n");
  		}
 		if (val != G_ALERTALTERNATE) return;
 		if (summaryview->sort_type == SORT_ASCENDING)
@@ -2008,8 +2007,7 @@ void summary_select_next_unread(SummaryView *summaryview)
  				val = G_ALERTOTHER;
  				break;
  			default:
- 				debug_print(
- 					_("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"));
+ 				debug_print("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n");
  		}
 
 		if (val == G_ALERTALTERNATE)
@@ -2045,8 +2043,7 @@ void summary_select_prev_new(SummaryView *summaryview)
  				val = !G_ALERTALTERNATE;
  				break;
  			default:
- 				debug_print(
- 					_("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"));
+ 				debug_print("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n");
  		}
 		if (val != G_ALERTALTERNATE) return;
 		if (summaryview->sort_type == SORT_ASCENDING)
@@ -2093,8 +2090,7 @@ void summary_select_next_new(SummaryView *summaryview)
  				val = G_ALERTOTHER;
  				break;
  			default:
- 				debug_print(
- 					_("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"));
+ 				debug_print("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n");
  		}
 		if (val == G_ALERTALTERNATE)
 			folderview_select_next_with_flag(summaryview->folderview, MSG_NEW);
@@ -2160,8 +2156,7 @@ void summary_select_next_marked(SummaryView *summaryview)
  				val = G_ALERTOTHER;
  				break;
  			default:
- 				debug_print(
- 					_("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n"));
+ 				debug_print("Internal error: unexpected value for prefs_common.next_unread_msg_dialog\n");
  		}
 		if (val == G_ALERTALTERNATE)
 			folderview_select_next_with_flag(summaryview->folderview, MSG_MARKED);
