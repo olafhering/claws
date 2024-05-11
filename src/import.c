@@ -1,6 +1,6 @@
 /*
- * Claws Mail -- a GTK+ based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2020 the Claws Mail team and Hiroyuki Yamamoto
+ * Claws Mail -- a GTK based, lightweight, and fast e-mail client
+ * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ static void import_destsel_cb(GtkWidget *widget, gpointer data);
 static gint delete_event(GtkWidget *widget, GdkEventAny *event, gpointer data);
 static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-gint import_mbox(FolderItem *default_dest)
+gint import_mbox(FolderItem *default_dest, const gchar* mbox_file)
 /* return values: -2 skipped/cancelled, -1 error, 0 OK */
 {
 	gchar *dest_id = NULL;
@@ -86,7 +86,10 @@ gint import_mbox(FolderItem *default_dest)
 	} else {
 		gtk_entry_set_text(GTK_ENTRY(dest_entry), "");
 	}
-	gtk_entry_set_text(GTK_ENTRY(file_entry), "");
+	if (mbox_file)
+		gtk_entry_set_text(GTK_ENTRY(file_entry), mbox_file);
+	else
+		gtk_entry_set_text(GTK_ENTRY(file_entry), "");
 	gtk_widget_grab_focus(file_entry);
 
 	manage_window_set_transient(GTK_WINDOW(window));
@@ -111,6 +114,7 @@ static void import_create(void)
 
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "import");
 	gtk_window_set_title(GTK_WINDOW(window), _("Import mbox file"));
+	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 5);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
@@ -235,13 +239,13 @@ static void import_ok_cb(GtkWidget *widget, gpointer data)
 
 	g_free(mbox);
 
-	if (gtk_main_level() > 1)
+	if (gtk_main_level() > 0)
 		gtk_main_quit();
 }
 
 static void import_cancel_cb(GtkWidget *widget, gpointer data)
 {
-	if (gtk_main_level() > 1)
+	if (gtk_main_level() > 0)
 		gtk_main_quit();
 }
 
