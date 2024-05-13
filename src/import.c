@@ -204,18 +204,14 @@ static void import_ok_cb(GtkWidget *widget, gpointer data)
 	cm_return_if_fail(destdir);
 
 	if (!*utf8mbox) {
-		alertpanel_error(_("Source mbox filename can't be left empty."));
+		alertpanel_error(_("Mbox file can't be left empty."));
 		gtk_widget_grab_focus(file_entry);
 		return;
 	}
-	if (destdir && !*destdir) {
-		if (alertpanel(_("Import mbox file"),
-						_("Destination folder is not set.\nImport mbox file to the Inbox folder?"),
-						GTK_STOCK_OK, GTK_STOCK_CANCEL, NULL, ALERTFOCUS_FIRST)
-			== G_ALERTALTERNATE) {
-			gtk_widget_grab_focus(dest_entry);
-			return;
-		}
+	if (!*destdir) {
+		alertpanel_error(_("Destination folder can't be left empty."));
+		gtk_widget_grab_focus(dest_entry);
+		return;
 	}
 
 	mbox = g_filename_from_utf8(utf8mbox, -1, NULL, NULL, NULL);
@@ -224,11 +220,7 @@ static void import_ok_cb(GtkWidget *widget, gpointer data)
 		mbox = g_strdup(utf8mbox);
 	}
 
-	if (!*destdir) {
-		dest = folder_find_item_from_path(INBOX_DIR);
-	} else {
-		dest = folder_find_item_from_identifier(destdir);
-	}
+	dest = folder_find_item_from_identifier(destdir);
 
 	if (!dest) {
 		alertpanel_error(_("Can't find the destination folder."));
