@@ -32,7 +32,7 @@
 #include "entity.h"
 #include "file-utils.h"
 
-#define SC_HTMLBUFSIZE	8192
+#define SC_HTMLBUFSIZE	(8192*2)
 #define HR_STR		"────────────────────────────────────────────────"
 #define LI_STR		"• "
 
