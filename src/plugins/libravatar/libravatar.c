@@ -53,7 +53,7 @@ static const char *def_mode[] = {
 
 static gulong update_hook_id = HOOK_NONE;
 static gulong render_hook_id = HOOK_NONE;
-static gchar *cache_dir = NULL;	/* dir-separator terminated */
+static gchar *cache_dir;	/* dir-separator terminated */
 
 static gboolean libravatar_header_update_hook(gpointer source, gpointer data)
 {
