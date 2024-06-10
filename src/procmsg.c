@@ -2058,73 +2058,28 @@ void procmsg_msginfo_change_flags(MsgInfo *msginfo, MsgPermFlags add_perm_flags,
 }
 
 /*!
- *\brief	check for flags (e.g. mark) in prior msgs of current thread
+ *\brief	check for flags (e.g. mark) in prior msg of current thread
  *
  *\param	info Current message
  *\param	perm_flags Flags to be checked
- *\param	parentmsgs Hash of prior msgs to avoid loops
  *
  *\return	gboolean TRUE if perm_flags are found
  */
-static gboolean procmsg_msg_has_flagged_parent_real(MsgInfo *info, MsgPermFlags perm_flags, GHashTable *parentmsgs)
-{
-	MsgInfo *tmp;
-
-	cm_return_val_if_fail(info != NULL, FALSE);
-
-	if (info != NULL && info->folder != NULL && info->inreplyto != NULL) {
-		tmp = folder_item_get_msginfo_by_msgid(info->folder, info->inreplyto);
-		if (tmp && (tmp->flags.perm_flags & perm_flags)) {
-			procmsg_msginfo_free(&tmp);
-			return TRUE;
-		} else if (tmp != NULL) {
-			gboolean result;
-
-			if (g_hash_table_lookup(parentmsgs, info)) {
-				debug_print("loop detected: %d\n", info->msgnum);
-				result = FALSE;
-			} else {
-				g_hash_table_insert(parentmsgs, info, "1");
-				result = procmsg_msg_has_flagged_parent_real(tmp, perm_flags, parentmsgs);
-			}
-			procmsg_msginfo_free(&tmp);
-			return result;
-		} else {
-			return FALSE;
-		}
-	} else
-		return FALSE;
-}
-
-/*!
- *\brief	Callback for cleaning up hash of parentmsgs
- */
-static gboolean parentmsgs_hash_remove(gpointer key, gpointer value, gpointer user_data)
-{
-	return TRUE;
-}
-
-/*!
- *\brief	Set up list of parentmsgs
- *		See procmsg_msg_has_flagged_parent_real()
- */
 gboolean procmsg_msg_has_flagged_parent(MsgInfo *info, MsgPermFlags perm_flags)
 {
-	gboolean result;
-	static GHashTable *parentmsgs = NULL;
+	gboolean result = FALSE;
 
-	if (parentmsgs == NULL)
-		parentmsgs = g_hash_table_new(NULL, NULL);
-
-	result = procmsg_msg_has_flagged_parent_real(info, perm_flags, parentmsgs);
-	g_hash_table_foreach_remove(parentmsgs, parentmsgs_hash_remove, NULL);
-
+	if (info && info->folder && info->inreplyto) {
+		MsgInfo *tmp = folder_item_get_msginfo_by_msgid(info->folder, info->inreplyto);
+		if (tmp && (tmp->flags.perm_flags & perm_flags))
+			result = TRUE;
+		procmsg_msginfo_free(&tmp);
+	}
 	return result;
 }
 
 /*!
- *\brief	Check if msgs prior in thread are marked
- *		See procmsg_msg_has_flagged_parent_real()
+ *\brief	Check if msg prior in thread are marked
  */
 gboolean procmsg_msg_has_marked_parent(MsgInfo *info)
 {
