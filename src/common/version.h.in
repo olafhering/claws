@@ -25,8 +25,8 @@
 #define MAKE_NUMERIC_VERSION(a, b, c, d) ((((guint32)a) << 24) | (((guint32)b) << 16) | \
 					  (((guint32)c) <<  8) |  ((guint32)d)      )
 
-#define PACKAGE			"@PACKAGE@"
-#define PACKAGE_FRIENDLY	"Claws Mail"
+#define PACKAGE			"@PACKAGE_TARNAME@"
+#define PACKAGE_FRIENDLY	"@PACKAGE_NAME@"
 #define VERSION			"@VERSION@"
 #define PROG_VERSION		PACKAGE_FRIENDLY" "VERSION
 #define VERSION_NUMERIC		MAKE_NUMERIC_VERSION(@MAJOR_VERSION@, @MINOR_VERSION@, \

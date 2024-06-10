@@ -1,11 +1,10 @@
 
 AC_PREREQ([2.69])
-AC_INIT
+AC_INIT([Claws Mail (olh)],[0],[],[claws-mail-olh],[https://github.com/olafhering/claws])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
 
-PACKAGE=claws-mail
 
 dnl version number
 INTERFACE_AGE=0
@@ -52,10 +51,7 @@ dnl set $target
 AC_CANONICAL_TARGET
 
 dnl
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
-dnl AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
-dnl AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
-AC_SUBST(PACKAGE)
+AM_INIT_AUTOMAKE([no-define])
 AC_SUBST(VERSION)
 AC_SUBST(MAJOR_VERSION)
 AC_SUBST(MINOR_VERSION)
@@ -246,7 +242,7 @@ LIBS="$LIBS -lm"
 
 dnl for gettext
 ALL_LINGUAS="ca cs da de el_GR en_GB es fi fr hu id_ID it ja nb nl pl pt_BR pt_PT ro ru sk sq sv tr zh_TW"
-GETTEXT_PACKAGE=claws-mail
+GETTEXT_PACKAGE=${PACKAGE_TARNAME}
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define text domain.])
 
@@ -380,12 +376,12 @@ AM_CONDITIONAL(BUILD_MANUAL, test x"$enable_manual" = xyes)
 dnl Set PACKAGE_DATA_DIR in config.h.
 if test "x${datarootdir}" = 'x${prefix}/share'; then
 	if test "x${prefix}" = "xNONE"; then
-    		AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${ac_default_prefix}/share/${PACKAGE}",[PACKAGE_DATA_DIR])
+    		AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${ac_default_prefix}/share/${PACKAGE_TARNAME}",[PACKAGE_DATA_DIR])
   	else
-    		AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}",[PACKAGE_DATA_DIR])
+    		AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE_TARNAME}",[PACKAGE_DATA_DIR])
   	fi
 else
-	AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${datarootdir}/${PACKAGE}",[PACKAGE_DATA_DIR])
+	AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${datarootdir}/${PACKAGE_TARNAME}",[PACKAGE_DATA_DIR])
 fi
 
 AC_CHECK_LIB(xpg4, setlocale)
@@ -2235,7 +2231,7 @@ AC_OUTPUT
 
 dnl Output the configuration summary
 echo ""
-echo "$PACKAGE $VERSION"
+echo "$PACKAGE_NAME $VERSION"
 echo ""
 if test x"$enable_alternate_addressbook" = xyes; then
 	echo "Using Address Book : Alternate experimental interface"

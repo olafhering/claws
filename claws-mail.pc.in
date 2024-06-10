@@ -3,8 +3,8 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-pkglibdir=${libdir}/@PACKAGE@
-pkgincludedir=${includedir}/@PACKAGE@
+pkglibdir=${libdir}/@PACKAGE_TARNAME@
+pkgincludedir=${includedir}/@PACKAGE_TARNAME@
 plugindir=${pkglibdir}/plugins
 
 Name: Claws Mail
