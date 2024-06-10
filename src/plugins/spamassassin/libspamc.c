@@ -158,10 +158,10 @@ struct libspamc_private_message {
 	void (*spamd_header_callback)(struct message * m, int flags, const char *buf, int len);
 };
 
-void (*libspamc_log_callback)(int flags, int level, char *msg, va_list args) = NULL;
+void (*libspamc_log_callback)(int flags, int level, char *msg, va_list args);
 
-int libspamc_timeout = 0;
-int libspamc_connect_timeout = 0; /* Sep 8, 2008 mrgus: separate connect timeout */
+int libspamc_timeout;
+int libspamc_connect_timeout;
 
 /*
  * translate_connect_errno()
