@@ -39,7 +39,7 @@
 #include "sieve_editor.h"
 #include "sieve_prefs.h"
 
-GSList *sessions = NULL;
+GSList *sessions;
 
 static void sieve_session_destroy(Session *session);
 static gint sieve_pop_send_queue(SieveSession *session);
