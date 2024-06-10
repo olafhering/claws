@@ -51,12 +51,12 @@
 
 #define DISABLE_LOG_DURING_LOGIN
 
-static struct etpan_thread_manager *thread_manager = NULL;
-static chash *courier_workaround_hash = NULL;
-static chash *imap_hash = NULL;
-static chash *session_hash = NULL;
-static guint thread_manager_signal = 0;
-static GIOChannel *io_channel = NULL;
+static struct etpan_thread_manager *thread_manager;
+static chash *courier_workaround_hash;
+static chash *imap_hash;
+static chash *session_hash;
+static guint thread_manager_signal;
+static GIOChannel *io_channel;
 
 static int do_mailimap_socket_connect(mailimap *imap, const char *server, gushort port, ProxyInfo *proxy_info)
 {
@@ -309,7 +309,7 @@ static void imap_logger_append(int direction, const char *str, size_t size)
 }
 
 #define ETPAN_DEFAULT_NETWORK_TIMEOUT 60
-gboolean etpan_skip_ssl_cert_check = FALSE;
+gboolean etpan_skip_ssl_cert_check;
 extern void mailsasl_ref(void);
 
 void imap_main_init(gboolean skip_ssl_cert_check)
