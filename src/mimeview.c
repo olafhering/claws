@@ -850,9 +850,6 @@ void mimeview_clear(MimeView *mimeview)
 {
 	GtkTreeModel *model;
 
-	if (!mimeview)
-		return;
-
 	if (g_slist_find(mimeviews, mimeview) == NULL)
 		return;
 
