@@ -474,10 +474,10 @@ static gboolean sock_watch_cb(GIOChannel *source, GIOCondition condition, gpoint
 	return sock->callback(sock, sock->condition, sock->data);
 }
 
-guint sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpointer data)
+void sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpointer data)
 {
 	if (!sock)
-		return FALSE;
+		return;
 
 	sock->callback = func;
 	sock->condition = condition;
@@ -492,11 +492,10 @@ guint sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpoi
 		g_source_set_can_recurse(source, FALSE);
 		sock->g_source = g_source_attach(source, NULL);
 		g_source_unref(source);	/* Refcount back down to 1 */
-		return sock->g_source;
 	}
 #endif
 
-	return g_io_add_watch(sock->sock_ch, condition, sock_watch_cb, sock);
+	sock->g_source = g_io_add_watch(sock->sock_ch, condition, sock_watch_cb, sock);
 }
 
 static gint fd_check_io(gint fd, GIOCondition cond)

@@ -151,9 +151,9 @@ static gboolean sieve_read_chunk_cb(SockInfo *source, GIOCondition condition, gp
 
 		if (read_len == -1 && session->state == SESSION_DISCONNECTED) {
 			g_warning("sock_read: session disconnected");
-			if (session->io_tag > 0) {
-				g_source_remove(session->io_tag);
-				session->io_tag = 0;
+			if (session->sock->g_source > 0) {
+				g_source_remove(session->sock->g_source);
+				session->sock->g_source = 0;
 			}
 			return FALSE;
 		}
@@ -197,9 +197,9 @@ static gboolean sieve_read_chunk_cb(SockInfo *source, GIOCondition condition, gp
 		return TRUE;
 
 	/* complete */
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	/* completion callback */
@@ -219,7 +219,7 @@ static gboolean sieve_read_chunk_idle_cb(gpointer data)
 	ret = sieve_read_chunk_cb(session->sock, G_IO_IN, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, sieve_read_chunk_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, sieve_read_chunk_cb, session);
 
 	return FALSE;
 }
@@ -237,7 +237,7 @@ static gint sieve_session_recv_chunk(SieveSession *sieve_session, guint bytes)
 	if (session->read_buf_len > 0)
 		g_idle_add(sieve_read_chunk_idle_cb, session);
 	else
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, sieve_read_chunk_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, sieve_read_chunk_cb, session);
 	return 0;
 }
 

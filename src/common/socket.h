@@ -87,7 +87,7 @@ void sock_set_io_timeout(unsigned int sec);
 gint sock_set_nonblocking_mode(SockInfo *sock, gboolean nonblock);
 gboolean sock_is_nonblocking_mode(SockInfo *sock);
 
-guint sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpointer data);
+void sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpointer data);
 
 SockInfo *sock_connect(const gchar *hostname, gushort port);
 gint sock_connect_async(const gchar *hostname, gushort port, SockConnectFunc func, gpointer data);

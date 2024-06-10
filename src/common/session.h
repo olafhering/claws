@@ -68,8 +68,6 @@ struct _Session {
 	GDateTime *tv_prev;
 	gint conn_id;
 
-	guint io_tag;
-
 	gchar read_buf[SESSION_BUFFSIZE];
 	gchar *read_buf_p;
 	gint read_buf_len;

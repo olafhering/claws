@@ -177,7 +177,7 @@ static gint session_connect_cb(SockInfo *sock, gpointer data)
 	debug_print("session (%p): connected\n", session);
 
 	session->state = SESSION_RECV;
-	session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
+	sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	if (session->connect_finished)
 		session->connect_finished(session, TRUE);
@@ -258,9 +258,9 @@ static gboolean session_timeout_cb(gpointer data)
 
 	g_warning("session timeout");
 
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	session->timeout_tag = 0;
@@ -317,9 +317,9 @@ static gint session_close(Session *session)
 
 	session_set_timeout(session, 0);
 
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	if (session->sock) {
@@ -382,7 +382,7 @@ gint session_send_msg(Session *session, const gchar *msg)
 	ret = session_write_msg_cb(session->sock, G_IO_OUT, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_OUT, session_write_msg_cb, session);
+		sock_add_watch(session->sock, G_IO_OUT, session_write_msg_cb, session);
 	else if (session->state == SESSION_ERROR)
 		return -1;
 
@@ -398,7 +398,7 @@ gint session_recv_msg(Session *session)
 	if (session->read_buf_len > 0)
 		g_idle_add(session_recv_msg_idle_cb, session);
 	else
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	return 0;
 }
@@ -411,7 +411,7 @@ static gboolean session_recv_msg_idle_cb(gpointer data)
 	ret = session_read_msg_cb(session->sock, G_IO_IN, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	return FALSE;
 }
@@ -445,7 +445,7 @@ gint session_send_data(Session *session, const guchar *data, guint size)
 	ret = session_write_data_cb(session->sock, G_IO_OUT, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_OUT, session_write_data_cb, session);
+		sock_add_watch(session->sock, G_IO_OUT, session_write_data_cb, session);
 	else if (session->state == SESSION_ERROR)
 		return -1;
 
@@ -466,7 +466,7 @@ gint session_recv_data(Session *session, guint size, const gchar *terminator)
 	if (session->read_buf_len > 0)
 		g_idle_add(session_recv_data_idle_cb, session);
 	else
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
 
 	return 0;
 }
@@ -479,7 +479,7 @@ static gboolean session_recv_data_idle_cb(gpointer data)
 	ret = session_read_data_cb(session->sock, G_IO_IN, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
+		sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
 
 	return FALSE;
 }
@@ -505,9 +505,9 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition, gp
 
 		if (read_len == -1 && session->state == SESSION_DISCONNECTED) {
 			g_warning("sock_read: session disconnected");
-			if (session->io_tag > 0) {
-				g_source_remove(session->io_tag);
-				session->io_tag = 0;
+			if (session->sock->g_source > 0) {
+				g_source_remove(session->sock->g_source);
+				session->sock->g_source = 0;
 			}
 			return FALSE;
 		}
@@ -557,9 +557,9 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition, gp
 		return TRUE;
 
 	/* complete */
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	/* callback */
@@ -650,9 +650,9 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition, g
 	}
 
 	/* complete */
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	data_len = data_buf->len - terminator_len;
@@ -767,9 +767,9 @@ static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition, g
 	} else if (ret > 0)
 		return TRUE;
 
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	session_recv_msg(session);
@@ -809,9 +809,9 @@ static gboolean session_write_data_cb(SockInfo *source, GIOCondition condition, 
 		return TRUE;
 	}
 
-	if (session->io_tag > 0) {
-		g_source_remove(session->io_tag);
-		session->io_tag = 0;
+	if (session->sock->g_source > 0) {
+		g_source_remove(session->sock->g_source);
+		session->sock->g_source = 0;
 	}
 
 	/* callback */
