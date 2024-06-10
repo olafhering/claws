@@ -105,9 +105,9 @@ G_LOCK_DEFINE_STATIC(trayicon_popup);
 #endif
 
 static GtkStatusIcon *trayicon;
-static gboolean updating_menu = FALSE;
+static gboolean updating_menu;
 static GtkWidget *traymenu_popup;
-static GtkWidget *focused_widget = NULL;
+static GtkWidget *focused_widget;
 
 static GtkActionEntry trayicon_popup_menu_entries[] = {
 	{"SysTrayiconPopup", NULL, "SysTrayiconPopup", NULL, NULL, NULL},
@@ -224,7 +224,7 @@ void notification_trayicon_destroy(void)
 void notification_update_trayicon()
 {
 	gchar *buf;
-	static GdkPixbuf *old_icon = NULL;
+	static GdkPixbuf *old_icon;
 	GdkPixbuf *new_icon;
 	gint offset;
 	NotificationMsgCount count;
