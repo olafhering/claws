@@ -82,7 +82,7 @@ void refresh_resolvers(void);
 gint sock_init(void);
 gint sock_cleanup(void);
 
-gint sock_set_io_timeout(guint sec);
+void sock_set_io_timeout(guint sec);
 
 gint sock_set_nonblocking_mode(SockInfo *sock, gboolean nonblock);
 gboolean sock_is_nonblocking_mode(SockInfo *sock);

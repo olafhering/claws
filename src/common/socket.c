@@ -180,10 +180,9 @@ gint sock_cleanup(void)
 	return 0;
 }
 
-gint sock_set_io_timeout(guint sec)
+void sock_set_io_timeout(guint sec)
 {
 	io_timeout = sec;
-	return 0;
 }
 
 void refresh_resolvers(void)
