@@ -896,8 +896,8 @@ gchar *get_message_check_signature_shortcut(MessageView *messageview)
 	return cm_menu_item_get_shortcut(ui_manager, "Menu/Message/CheckSignature");
 }
 
-static void check_signature_cb(GtkWidget *widget, gpointer user_data);
-static void display_full_info_cb(GtkWidget *widget, gpointer user_data);
+static void check_signature_cb(NoticeView *noticeview, void *user_data);
+static void display_full_info_cb(NoticeView *noticeview, void *user_data);
 
 static void update_signature_noticeview(MimeView *mimeview, gboolean special, SignatureStatus code)
 {
@@ -988,7 +988,7 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 	g_free(text);
 
 	noticeview_set_button_text(mimeview->siginfoview, NULL);
-	noticeview_set_button_press_callback(mimeview->siginfoview, G_CALLBACK(func), (gpointer)mimeview);
+	noticeview_set_button_press_callback(mimeview->siginfoview, func, mimeview);
 	noticeview_set_icon(mimeview->siginfoview, icon);
 	noticeview_set_tooltip(mimeview->siginfoview, button_text);
 
@@ -1078,9 +1078,9 @@ gboolean mimeview_check_sig_timeout(gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
-static void check_signature_cb(GtkWidget *widget, gpointer user_data)
+static void check_signature_cb(NoticeView *noticeview, void *user_data)
 {
-	MimeView *mimeview = (MimeView *)user_data;
+	MimeView *mimeview = user_data;
 	gint ret;
 
 	if (mimeview->siginfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
@@ -1118,21 +1118,22 @@ void mimeview_check_signature(MimeView *mimeview)
 	check_signature_cb(NULL, mimeview);
 }
 
-static void redisplay_email(GtkWidget *widget, gpointer user_data)
+static void redisplay_email(NoticeView *noticeview, void *user_data)
 {
-	MimeView *mimeview = (MimeView *)user_data;
+	MimeView *mimeview = user_data;
+
 	gtk_tree_path_free(mimeview->opened);
 	mimeview->opened = NULL;
 	mimeview_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(mimeview->ctree)), mimeview);
 }
 
-static void display_full_info_cb(GtkWidget *widget, gpointer user_data)
+static void display_full_info_cb(NoticeView *noticeview, void *user_data)
 {
-	MimeView *mimeview = (MimeView *)user_data;
+	MimeView *mimeview = user_data;
 
 	textview_set_text(mimeview->textview, privacy_mimeinfo_get_sig_info(mimeview->siginfo, TRUE));
 	noticeview_set_button_text(mimeview->siginfoview, NULL);
-	noticeview_set_button_press_callback(mimeview->siginfoview, G_CALLBACK(redisplay_email), (gpointer)mimeview);
+	noticeview_set_button_press_callback(mimeview->siginfoview, redisplay_email, mimeview);
 	noticeview_set_tooltip(mimeview->siginfoview, _("Go back to email"));
 }
 

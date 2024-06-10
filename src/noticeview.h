@@ -33,10 +33,10 @@ struct _NoticeView {
 	GtkWidget *button2;
 	GtkWidget *window;
 	gboolean visible;
-	gpointer user_data;
-	gpointer user_data2;
-	void (*press)(NoticeView *, gpointer user_data);
-	void (*press2)(NoticeView *, gpointer user_data);
+	void *user_data;
+	void *user_data2;
+	void (*press)(NoticeView *, void *user_data);
+	void (*press2)(NoticeView *, void *user_data);
 	gboolean icon_clickable;
 	GtkWidget *evtbox;
 };
@@ -52,8 +52,8 @@ gboolean noticeview_is_visible(NoticeView *noticeview);
 void noticeview_show(NoticeView *noticeview);
 void noticeview_hide(NoticeView *noticeview);
 
-void noticeview_set_button_press_callback(NoticeView *noticeview, void (*callback)(void), gpointer *user_data);
-void noticeview_set_2ndbutton_press_callback(NoticeView *noticeview, void (*callback)(void), gpointer *user_data);
+void noticeview_set_button_press_callback(NoticeView *noticeview, void (*callback)(NoticeView *noticeview, void *), void *user_data);
+void noticeview_set_2ndbutton_press_callback(NoticeView *noticeview, void (*callback)(NoticeView *noticeview, void *), void *user_data);
 void noticeview_set_icon_clickable(NoticeView *noticeview, gboolean setting);
 void noticeview_set_tooltip(NoticeView *noticeview, const gchar *text);
 #endif /* NOTICEVIEW_H__ */

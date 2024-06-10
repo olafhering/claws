@@ -168,9 +168,9 @@ void noticeview_set_button_text(NoticeView *noticeview, const char *text)
 	gtk_widget_hide(noticeview->button2);
 }
 
-void noticeview_set_button_press_callback(NoticeView *noticeview, void (*callback)(void), gpointer *user_data)
+void noticeview_set_button_press_callback(NoticeView *noticeview, void(*callback)(NoticeView *, void *), void *user_data)
 {
-	noticeview->press =(void(*)(NoticeView *, gpointer))callback;
+	noticeview->press =callback;
 	noticeview->user_data = user_data;
 }
 
@@ -220,9 +220,9 @@ void noticeview_set_2ndbutton_text(NoticeView *noticeview, const char *text)
 		gtk_widget_hide(noticeview->button2);
 }
 
-void noticeview_set_2ndbutton_press_callback(NoticeView *noticeview, void (*callback)(void), gpointer *user_data)
+void noticeview_set_2ndbutton_press_callback(NoticeView *noticeview, void(*callback)(NoticeView *, void *), void *user_data)
 {
-	noticeview->press2 =(void(*)(NoticeView *, gpointer))callback;
+	noticeview->press2 =callback;
 	noticeview->user_data2 = user_data;
 }
 
