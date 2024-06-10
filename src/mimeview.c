@@ -897,19 +897,13 @@ gchar *get_message_check_signature_shortcut(MessageView *messageview)
 static void check_signature_cb(NoticeView *noticeview, void *user_data);
 static void display_full_info_cb(NoticeView *noticeview, void *user_data);
 
-static void update_signature_noticeview(MimeView *mimeview, gboolean special, SignatureStatus code)
+static void update_signature_noticeview(MimeView *mimeview, SignatureStatus code)
 {
 	gchar *text = NULL, *button_text = NULL;
 	void *func = NULL;
 	StockPixmap icon = STOCK_PIXMAP_PRIVACY_SIGNED;
-	SignatureStatus mycode = SIGNATURE_UNCHECKED;
 
-	if (special)
-		mycode = code;
-	else
-		mycode = privacy_mimeinfo_get_sig_status(mimeview->siginfo);
-
-	switch (mycode) {
+	switch (code) {
 	case SIGNATURE_UNCHECKED:
 		button_text = _("Check signature");
 		func = check_signature_cb;
@@ -946,7 +940,7 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 		break;
 	}
 
-	if (mycode == SIGNATURE_UNCHECKED) {
+	if (code == SIGNATURE_UNCHECKED) {
 		gchar *tmp = privacy_mimeinfo_get_sig_info(mimeview->siginfo, FALSE);
 		gchar *shortcut = get_message_check_signature_shortcut(mimeview->messageview);
 
@@ -956,7 +950,7 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 			text = g_strdup_printf(_("%s Click the icon or hit '%s' to check it."), tmp, shortcut);
 
 		g_free(shortcut);
-	} else if (mycode == SIGNATURE_CHECK_TIMEOUT) {
+	} else if (code == SIGNATURE_CHECK_TIMEOUT) {
 		gchar *shortcut = get_message_check_signature_shortcut(mimeview->messageview);
 
 		if (*shortcut == '\0')
@@ -965,7 +959,7 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 			text = g_strdup_printf(_("Timeout checking the signature. Click the icon or hit '%s' to try again."), shortcut);
 
 		g_free(shortcut);
-	} else if (mycode == SIGNATURE_CHECK_ERROR) {
+	} else if (code == SIGNATURE_CHECK_ERROR) {
 		gchar *shortcut = get_message_check_signature_shortcut(mimeview->messageview);
 
 		if (*shortcut == '\0')
@@ -1004,7 +998,7 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	cancelled = g_cancellable_set_error_if_cancelled(cancellable, &error);
 	if (cancelled) {
 		debug_print("sig check task was cancelled: task:%p GError: domain:%s code:%d message:\"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
-		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_TIMEOUT);
+		update_signature_noticeview(mimeview, SIGNATURE_CHECK_TIMEOUT);
 		goto out;
 	}
 	cancel_mimeview_siginfo(mimeview, FALSE);
@@ -1017,12 +1011,12 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	}
 
 	if (!result) {
-		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
+		update_signature_noticeview(mimeview, SIGNATURE_CHECK_ERROR);
 		goto out;
 	}
 
 	mimeview->siginfo->sig_data = result->sig_data;
-	update_signature_noticeview(mimeview, FALSE, SIGNATURE_UNCHECKED);
+	update_signature_noticeview(mimeview, privacy_mimeinfo_get_sig_status(mimeview->siginfo));
 
 	if (result->newinfo) {
 		g_warning("Check sig task returned an unexpected new MimeInfo");
@@ -1062,10 +1056,10 @@ static void check_signature_cb(NoticeView *noticeview, void *user_data)
 		mimeview->sig_check_timeout_tag = g_timeout_add_seconds(prefs_common.io_timeout_secs, mimeview_check_sig_timeout, mimeview);
 	} else if (ret < 0) {
 		cancel_mimeview_siginfo(mimeview, TRUE);
-		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
+		update_signature_noticeview(mimeview, SIGNATURE_CHECK_ERROR);
 	} else {
 		cancel_mimeview_siginfo(mimeview, TRUE);
-		update_signature_noticeview(mimeview, FALSE, 0);
+		update_signature_noticeview(mimeview, privacy_mimeinfo_get_sig_status(mimeview->siginfo));
 	}
 }
 
@@ -1129,7 +1123,7 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		return;
 	}
 
-	update_signature_noticeview(mimeview, FALSE, 0);
+	update_signature_noticeview(mimeview, privacy_mimeinfo_get_sig_status(mimeview->siginfo));
 	noticeview_show(mimeview->siginfoview);
 }
 
