@@ -238,8 +238,6 @@ SignatureStatus privacy_mimeinfo_get_sig_status(MimeInfo *mimeinfo)
 {
 	PrivacySystem *system;
 
-	cm_return_val_if_fail(mimeinfo != NULL, -1);
-
 	if (mimeinfo->privacy == NULL) {
 		privacy_mimeinfo_is_signed(mimeinfo);
 
