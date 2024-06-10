@@ -127,21 +127,6 @@ struct _SockSource {
 static unsigned int io_timeout = 60;
 
 static GList *sock_connect_data_list;
-
-#ifdef USE_GNUTLS
-static gboolean ssl_sock_prepare(GSource * source, gint *timeout);
-static gboolean ssl_sock_check(GSource * source);
-static gboolean ssl_sock_dispatch(GSource * source, GSourceFunc callback, gpointer user_data);
-GSourceFuncs ssl_watch_funcs = {
-	ssl_sock_prepare,
-	ssl_sock_check,
-	ssl_sock_dispatch,
-	NULL,
-	NULL,
-	NULL
-};
-#endif
-
 static gint sock_connect_with_timeout(gint sock, const struct sockaddr *serv_addr, gint addrlen, guint timeout_secs);
 
 static gint sock_connect_by_getaddrinfo(const gchar *hostname, gushort port);
@@ -462,6 +447,12 @@ static gboolean ssl_sock_dispatch(GSource *source, GSourceFunc callback, gpointe
 
 	return sock->callback(sock, sock->condition, sock->data);
 }
+
+static GSourceFuncs ssl_watch_funcs = {
+	.prepare = ssl_sock_prepare,
+	.check = ssl_sock_check,
+	.dispatch = ssl_sock_dispatch,
+};
 #endif
 
 static gboolean sock_watch_cb(GIOChannel *source, GIOCondition condition, gpointer data)
