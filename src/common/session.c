@@ -501,7 +501,7 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition, gp
 	session_set_timeout(session, session->timeout_interval);
 
 	if (session->read_buf_len == 0) {
-		gint read_len = -1;
+		ssize_t read_len = -1;
 
 		if (session->sock)
 			read_len = sock_read(session->sock, session->read_buf, SESSION_BUFFSIZE - 1);
@@ -595,7 +595,7 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition, g
 	session_set_timeout(session, session->timeout_interval);
 
 	if (session->read_buf_len == 0) {
-		gint read_len;
+		ssize_t read_len;
 
 		read_len = sock_read(session->sock, session->read_buf, SESSION_BUFFSIZE);
 

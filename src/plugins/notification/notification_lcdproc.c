@@ -43,7 +43,8 @@ static SockInfo *sock;
 
 void notification_lcdproc_connect(void)
 {
-	gint len, count;
+	gint count;
+	ssize_t len;
 	gchar buf[NOTIFICATION_LCDPROC_BUFFER_SIZE];
 
 	if (!notify_config.lcdproc_enabled)

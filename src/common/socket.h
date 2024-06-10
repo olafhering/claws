@@ -94,7 +94,7 @@ gint sock_connect_async(const gchar *hostname, gushort port, SockConnectFunc fun
 gint sock_connect_async_cancel(gint id);
 
 /* Basic I/O functions */
-gint sock_read(SockInfo *sock, gchar *buf, gint len);
+ssize_t sock_read(SockInfo *sock, gchar *buf, gint len);
 gint sock_write(SockInfo *sock, const gchar *buf, gint len);
 gint sock_write_all(SockInfo *sock, const gchar *buf, gint len);
 gint sock_close(SockInfo *sock, gboolean close_fd);

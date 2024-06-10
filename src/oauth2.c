@@ -252,7 +252,7 @@ static gchar *oauth2_get_token_from_response(Oauth2Service provider, const gchar
 static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request)
 {
 	gboolean got_some_error, timeout;
-	gint ret;
+	ssize_t ret;
 	char buf[1024];
 	GString *response = g_string_sized_new(sizeof(buf));
 	time_t end_time = time(NULL);

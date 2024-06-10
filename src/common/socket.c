@@ -1148,7 +1148,7 @@ static SockInfo *sockinfo_from_fd(const gchar *hostname, gushort port, gint sock
 	return sockinfo;
 }
 
-static gint fd_read(gint fd, gchar *buf, gint len)
+static ssize_t fd_read(gint fd, gchar *buf, gint len)
 {
 	if (fd_check_io(fd, G_IO_IN) < 0)
 		return -1;
@@ -1162,9 +1162,9 @@ static gint fd_read(gint fd, gchar *buf, gint len)
 }
 
 #if USE_GNUTLS
-static gint ssl_read(gnutls_session_t ssl, gchar *buf, gint len)
+static ssize_t ssl_read(gnutls_session_t ssl, gchar *buf, gint len)
 {
-	gint r;
+	ssize_t r;
 
 	if (gnutls_record_check_pending(ssl) == 0) {
 		if (fd_check_io(GPOINTER_TO_INT(gnutls_transport_get_ptr(ssl)), G_IO_IN) < 0)
@@ -1195,7 +1195,7 @@ static gint ssl_read(gnutls_session_t ssl, gchar *buf, gint len)
 				return 0;
 			/* fall through */
 		default:
-			debug_print("Unexpected TLS read result %d\n", r);
+			debug_print("Unexpected TLS read result %ld\n", (long)r);
 			errno = EIO;
 			return -1;
 		}
@@ -1204,9 +1204,9 @@ static gint ssl_read(gnutls_session_t ssl, gchar *buf, gint len)
 }
 #endif
 
-gint sock_read(SockInfo *sock, gchar *buf, gint len)
+ssize_t sock_read(SockInfo *sock, gchar *buf, gint len)
 {
-	gint ret;
+	ssize_t ret;
 
 	cm_return_val_if_fail(sock != NULL, -1);
 
@@ -1347,7 +1347,7 @@ gint sock_write_all(SockInfo *sock, const gchar *buf, gint len)
 }
 
 #ifndef G_OS_WIN32
-static gint fd_recv(gint fd, gchar *buf, gint len, gint flags)
+static ssize_t fd_recv(gint fd, gchar *buf, gint len, gint flags)
 {
 	if (fd_check_io(fd, G_IO_IN) < 0)
 		return -1;
@@ -1388,7 +1388,7 @@ Single-byte send() and recv().
 	} while (0 < len);
 #else /*!G_OS_WIN32 */
 	gchar *newline;
-	gint n;
+	ssize_t n;
 	do {
 		if ((n = fd_recv(fd, bp, len, MSG_PEEK)) <= 0)
 			return -1;

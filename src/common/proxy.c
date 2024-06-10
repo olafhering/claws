@@ -152,7 +152,7 @@ gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port, const g
 {
 	guchar socks_req[1024];
 	size_t len;
-	size_t size;
+	ssize_t size;
 
 	g_return_val_if_fail(sock != NULL, -1);
 	g_return_val_if_fail(hostname != NULL, -1);
