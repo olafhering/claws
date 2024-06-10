@@ -444,9 +444,9 @@ static int migrate_common_rc(const gchar *old_rc, const gchar *new_rc)
 	plugin_path = g_strdup(get_plugin_dir());
 	new_plugin_path = g_strdup(plugin_path);
 
-	if (strstr(plugin_path, "/claws-mail/")) {
-		gchar *end = g_strdup(strstr(plugin_path, "/claws-mail/") + strlen("/claws-mail/"));
-		*(strstr(plugin_path, "/claws-mail/")) = '\0';
+	if (strstr(plugin_path, "/" PACKAGE_TARNAME "/")) {
+		gchar *end = g_strdup(strstr(plugin_path, "/" PACKAGE_TARNAME "/") + strlen("/" PACKAGE_TARNAME "/"));
+		*(strstr(plugin_path, "/" PACKAGE_TARNAME "/")) = '\0';
 		old_plugin_path = g_strconcat(plugin_path, "/sylpheed-claws/", end, NULL);
 		g_free(end);
 	} else {
@@ -2102,7 +2102,7 @@ gchar *claws_get_socket_name(void)
 		GStatBuf st;
 		gint stat_ok;
 
-		socket_dir = g_strdup_printf("%s%cclaws-mail", g_get_user_runtime_dir(), G_DIR_SEPARATOR);
+		socket_dir = g_strdup_printf("%s%c" PACKAGE_TARNAME, g_get_user_runtime_dir(), G_DIR_SEPARATOR);
 		stat_ok = g_stat(socket_dir, &st);
 		if (stat_ok < 0 && errno != ENOENT) {
 			g_print("Error stat'ing socket_dir %s: %s\n", socket_dir, g_strerror(errno));

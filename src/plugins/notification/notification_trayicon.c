@@ -558,7 +558,7 @@ static gboolean notification_trayicon_popup_add_msg(MsgInfo *msginfo, Notificati
 		return FALSE;
 	}
 	/* Show the popup */
-	notify_notification_set_hint_string(popup.notification, "desktop-entry", "claws-mail");
+	notify_notification_set_hint_string(popup.notification, "desktop-entry", PACKAGE_TARNAME);
 	if (!notify_notification_show(popup.notification, &(popup.error))) {
 		debug_print("Notification Plugin: Failed to send updated notification: " "%s\n", popup.error->message);
 		g_clear_error(&(popup.error));
@@ -580,7 +580,7 @@ static gboolean notification_trayicon_popup_create(MsgInfo *msginfo, Notificatio
 
 	/* init libnotify if necessary */
 	if (!notify_is_initted()) {
-		if (!notify_init("claws-mail")) {
+		if (!notify_init(PACKAGE_TARNAME)) {
 			debug_print("Notification Plugin: Failed to initialize libnotify. " "No popups will be shown.\n");
 			return FALSE;
 		}
@@ -670,7 +670,7 @@ static gboolean notification_trayicon_popup_create(MsgInfo *msginfo, Notificatio
 	g_signal_connect(G_OBJECT(popup.notification), "closed", G_CALLBACK(popup_timeout_fun), NULL);
 
 	/* Show the popup */
-	notify_notification_set_hint_string(popup.notification, "desktop-entry", "claws-mail");
+	notify_notification_set_hint_string(popup.notification, "desktop-entry", PACKAGE_TARNAME);
 	if (!notify_notification_show(popup.notification, &(popup.error))) {
 		debug_print("Notification Plugin: Failed to send notification: %s\n", popup.error->message);
 		g_clear_error(&(popup.error));

@@ -9,7 +9,7 @@ SUBDIRS = . tests
 endif
 
 PLUGINDIR = $(pkglibdir)/plugins/
-DESKTOPFILEPATH=$(datadir)/applications/claws-mail.desktop
+DESKTOPFILEPATH=$(datadir)/applications/$(PACKAGE_TARNAME).desktop
 
 noinst_LTLIBRARIES = libclawscommon.la
 

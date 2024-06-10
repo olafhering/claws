@@ -32,7 +32,7 @@
 #include <messaging-menu.h>
 #include <unity.h>
 
-#define CLAWS_DESKTOP_FILE "claws-mail.desktop"
+#define CLAWS_DESKTOP_FILE PACKAGE_TARNAME ".desktop"
 
 static MessagingMenuApp *mmapp = NULL;
 static gboolean mmapp_registered = FALSE;

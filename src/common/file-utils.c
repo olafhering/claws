@@ -800,7 +800,7 @@ FILE *my_tmpfile(void)
 	tmplen = strlen(tmpdir);
 	progname = g_get_prgname();
 	if (progname == NULL)
-		progname = "claws-mail";
+		progname = PACKAGE_TARNAME;
 	proglen = strlen(progname);
 	Xalloca(fname, tmplen + 1 + proglen + sizeof(suffix), return tmpfile());
 
