@@ -71,7 +71,7 @@ static MimeInfo *tnef_broken_mimeinfo(const gchar *reason)
 	sub_info->type = MIMETYPE_TEXT;
 	sub_info->subtype = g_strdup("plain");
 
-	fprintf(fp, _("\n" "Claws Mail TNEF parser:\n\n" "%s\n"), reason ? reason : _("Unknown error"));
+	fprintf(fp, _("\n" PACKAGE_NAME " TNEF parser:\n\n" "%s\n"), reason ? reason : _("Unknown error"));
 
 	claws_fclose(fp);
 	if (g_stat(tmpfilename, &statbuf) < 0) {

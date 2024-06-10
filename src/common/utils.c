@@ -1685,7 +1685,7 @@ const gchar *get_home_dir(void)
 	static gchar *home_dir_utf8 = NULL;
 	if (home_dir_utf16[0] == '\0') {
 		if (w32_shgetfolderpath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, home_dir_utf16) < 0)
-			strcpy(home_dir_utf16, "C:\\Claws Mail");
+			strcpy(home_dir_utf16, "C:\\" PACKAGE_NAME "");
 		home_dir_utf8 = g_utf16_to_utf8((const gunichar2 *)home_dir_utf16, -1, NULL, NULL, NULL);
 	}
 	return home_dir_utf8;

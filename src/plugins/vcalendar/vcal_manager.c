@@ -305,7 +305,7 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(is_reply ? ICAL_METHOD_REPLY : event->method), (void *)0);
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(is_reply ? ICAL_METHOD_REPLY : event->method), (void *)0);
 
 	if (!calendar) {
 		g_warning("can't generate calendar");
@@ -602,7 +602,7 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(ICAL_METHOD_PUBLISH), (void *)0);
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(ICAL_METHOD_PUBLISH), (void *)0);
 
 	if (!calendar) {
 		g_warning("can't generate calendar");

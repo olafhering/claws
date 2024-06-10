@@ -450,7 +450,7 @@ static void foldercheck_create_window(SpecificFolderArrayEntry *entry)
 	gtk_window_set_position(GTK_WINDOW(entry->window), GTK_WIN_POS_CENTER);
 	gtk_window_set_modal(GTK_WINDOW(entry->window), TRUE);
 	gtk_window_set_resizable(GTK_WINDOW(entry->window), TRUE);
-	gtk_window_set_wmclass(GTK_WINDOW(entry->window), "folder_selection", "Claws Mail");
+	gtk_window_set_wmclass(GTK_WINDOW(entry->window), "folder_selection", PACKAGE_NAME "");
 	g_signal_connect(G_OBJECT(entry->window), "delete_event", G_CALLBACK(delete_event), entry);
 	g_signal_connect(G_OBJECT(entry->window), "key_press_event", G_CALLBACK(key_pressed), entry);
 	MANAGE_WINDOW_SIGNALS_CONNECT(entry->window);

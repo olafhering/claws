@@ -2018,7 +2018,7 @@ static void textview_show_header(TextView *textview, GPtrArray *headers)
 			procheader_date_parse(hbody, header->body, sizeof(hbody));
 			gtk_text_buffer_get_end_iter(buffer, &iter);
 			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, hbody, -1, "header", NULL);
-		} else if ((procheader_headername_equal(header->name, "X-Mailer") || procheader_headername_equal(header->name, "X-Newsreader")) && (strstr(header->body, "Claws Mail") != NULL || strstr(header->body, "Sylpheed-Claws") != NULL)) {
+		} else if ((procheader_headername_equal(header->name, "X-Mailer") || procheader_headername_equal(header->name, "X-Newsreader")) && (strstr(header->body, PACKAGE_NAME) != NULL || strstr(header->body, "Sylpheed-Claws") != NULL)) {
 			gtk_text_buffer_get_end_iter(buffer, &iter);
 			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, header->body, -1, "header", "emphasis", NULL);
 		} else {

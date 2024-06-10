@@ -611,7 +611,7 @@ claws_mail_LDADD = \
 pixmapdir=$(datadir)/icons/hicolor/48x48/apps
 
 AM_CPPFLAGS = \
-	-DG_LOG_DOMAIN=\"Claws-Mail\" \
+	-DG_LOG_DOMAIN=\""$(PACKAGE_NAME)"\" \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPIXMAP_DIR=\""$(pixmapdir)"\" \
 	-DMANUALDIR=\""$(manualdir)"\" \

@@ -1737,7 +1737,7 @@ void multisync_export(void)
 
 		i++;
 
-		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 		vcal_manager_event_dump(event, FALSE, FALSE, calendar, FALSE);
 		tmp = g_strconcat(path, G_DIR_SEPARATOR_S, file, NULL);
 		str_write_to_file(icalcomponent_as_ical_string(calendar), tmp, TRUE);
@@ -1802,7 +1802,7 @@ gboolean vcal_meeting_export_calendar(const gchar *path, const gchar *user, cons
 		}
 	}
 
-	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
+	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 
 	for (cur = list; cur; cur = cur->next) {
 		VCalEvent *event = (VCalEvent *)cur->data;
@@ -1900,7 +1900,7 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user, cons
 
 	multisync_export();
 
-	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
+	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 
 	timezone = icalcomponent_new(ICAL_VTIMEZONE_COMPONENT);
 
