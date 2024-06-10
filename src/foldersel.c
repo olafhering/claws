@@ -62,10 +62,10 @@ struct _FolderItemSearch {
 	GtkTreeIter iter;
 };
 
-static GdkPixbuf *folder_pixbuf = NULL;
-static GdkPixbuf *folderopen_pixbuf = NULL;
-static GdkPixbuf *foldernoselect_pixbuf = NULL;
-static GdkPixbuf *foldernoselectopen_pixbuf = NULL;
+static GdkPixbuf *folder_pixbuf;
+static GdkPixbuf *folderopen_pixbuf;
+static GdkPixbuf *foldernoselect_pixbuf;
+static GdkPixbuf *foldernoselectopen_pixbuf;
 
 static GtkWidget *window;
 static GtkWidget *treeview;
