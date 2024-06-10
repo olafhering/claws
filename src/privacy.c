@@ -257,8 +257,6 @@ gchar *privacy_mimeinfo_get_sig_info(MimeInfo *mimeinfo, gboolean full)
 	PrivacySystem *system;
 	gchar *info;
 
-	cm_return_val_if_fail(mimeinfo != NULL, NULL);
-
 	if (mimeinfo->privacy == NULL) {
 		privacy_mimeinfo_is_signed(mimeinfo);
 
