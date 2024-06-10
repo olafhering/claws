@@ -144,8 +144,6 @@ static gchar *OAUTH2CodeMarker[6][2] = {
 	{"yahoo_begin_mark", "yahoo_end_mark"} /* Not used since token avalable to user to copy in browser window */
 };
 
-static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body);
-
 static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
 {
 	gint len;
