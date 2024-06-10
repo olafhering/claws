@@ -623,7 +623,7 @@ static void send_put_error(Session *session)
 			err_msg = g_strdup(log_msg);
 		break;
 	default:
-		switch (session->state) {
+		switch (smtp_session->session.state) {
 		case SESSION_ERROR:
 			log_msg = _("Error occurred while sending the message.");
 			err_msg = g_strdup(log_msg);
