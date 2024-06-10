@@ -41,7 +41,7 @@
 #define ALERT_PANEL_BUFSIZE	1024
 
 static AlertValue value;
-static gboolean alertpanel_is_open = FALSE;
+static gboolean alertpanel_is_open;
 static GtkWidget *dialog;
 
 static void alertpanel_show(void);
