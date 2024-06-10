@@ -311,7 +311,7 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 	}
 
 	g_node_unlink(decinfo->node);
-	procmime_mimeinfo_free_all(&parseinfo);
+	procmime_mimeinfo_unref(parseinfo);
 
 	decinfo->tmp = TRUE;
 
@@ -659,7 +659,7 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 
 	/* create encrypted multipart */
 	g_node_unlink(msgcontent->node);
-	procmime_mimeinfo_free_all(&msgcontent);
+	procmime_mimeinfo_unref(msgcontent);
 	g_node_append(mimeinfo->node, encmultipart->node);
 
 	newinfo = procmime_mimeinfo_new();

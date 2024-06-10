@@ -123,7 +123,7 @@ void privacy_free_sig_check_task_result(gpointer data)
 	if (result->sig_data)
 		privacy_free_signature_data(result->sig_data);
 	if (result->newinfo)
-		procmime_mimeinfo_free_all(&result->newinfo);
+		procmime_mimeinfo_unref(result->newinfo);
 	g_free(result);
 }
 
@@ -310,7 +310,7 @@ static gint decrypt(MimeInfo *mimeinfo, PrivacySystem *system)
 		return -1;
 	childnumber = g_node_child_index(parentinfo->node, mimeinfo);
 
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 
 	g_node_insert(parentinfo->node, childnumber, decryptedinfo->node);
 
