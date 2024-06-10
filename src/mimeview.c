@@ -1026,7 +1026,7 @@ out:
 	g_free(result);
 }
 
-gboolean mimeview_check_sig_timeout(gpointer user_data)
+static gboolean mimeview_check_sig_timeout(gpointer user_data)
 {
 	MimeView *mimeview = (MimeView *)user_data;
 	mimeview_sig_check_cancel_and_clear(mimeview);
