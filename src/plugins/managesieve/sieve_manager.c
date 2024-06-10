@@ -68,7 +68,7 @@ static void filter_set_active(SieveManagerPage *page, gchar *filter_name);
 gboolean filter_find_by_name(GtkTreeModel *model, GtkTreeIter *iter, gchar *filter_name);
 static void got_session_error(SieveSession *session, const gchar *msg, SieveManagerPage *page);
 
-static GSList *manager_pages = NULL;
+static GSList *manager_pages;
 
 /*
  * Perform a command on all manager pages for a given session
