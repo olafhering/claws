@@ -139,155 +139,159 @@ each of the following conditions is met:
          AND use dotlock code above
 */
 
-#define LOCKTO_RM	300	/* timeout for stale lockfile removal */
-#define LOCKTO_GLOB	400	/* global timeout for lockfile creation */
+#define LOCKTO_RM	300 /* timeout for stale lockfile removal */
+#define LOCKTO_GLOB	400 /* global timeout for lockfile creation */
 
-static int lock_common(const char * filename, int fd, short locktype)
+static int lock_common(const char *filename, int fd, short locktype)
 {
-  char lockfilename[PATH_MAX];
-  struct flock lock;
-  /* dot lock file */
-  int statfailed = 0;
-  time_t start;
-  int r;
-  int res;
+	char lockfilename[PATH_MAX];
+	struct flock lock;
+	/* dot lock file */
+	int statfailed = 0;
+	time_t start;
+	int r;
+	int res;
 
-  lock.l_start = 0;
-  lock.l_len = 0;
-  lock.l_pid = getpid();
-  lock.l_type = locktype;
-  lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+	lock.l_pid = getpid();
+	lock.l_type = locktype;
+	lock.l_whence = SEEK_SET;
 
-  r = fcntl(fd, F_SETLKW, &lock);
-  if (r < 0) {
-    /* WARNING POSIX lock could not be applied */
-    perror("lock");
-  }
+	r = fcntl(fd, F_SETLKW, &lock);
+	if (r < 0) {
+		/* WARNING POSIX lock could not be applied */
+		perror("lock");
+	}
 
-  /* dot lock file */
+	/* dot lock file */
 
-  if (strlen(filename) + 6 > PATH_MAX) {
-    res = -1;
-    goto unlock;
-  }
+	if (strlen(filename) + 6 > PATH_MAX) {
+		res = -1;
+		goto unlock;
+	}
 
-  snprintf(lockfilename, PATH_MAX, "%s.lock", filename);
+	snprintf(lockfilename, PATH_MAX, "%s.lock", filename);
 
-  time(&start);
-  while (1) {
-    int fd;
-    GStatBuf st;
-    time_t now;
+	time(&start);
+	while (1) {
+		int fd;
+		GStatBuf st;
+		time_t now;
 
-    /* global timeout */
-    time(&now);
-    if (now > start + LOCKTO_GLOB) {
-      res = -1;
-      goto unlock;
-    }
+		/* global timeout */
+		time(&now);
+		if (now > start + LOCKTO_GLOB) {
+			res = -1;
+			goto unlock;
+		}
 
-    fd = open(lockfilename, O_WRONLY|O_EXCL|O_CREAT, 0);
-    if (fd >= 0) {
-      /* defeat lock checking programs which test pid */
-      if (write(fd, "0", 2) < 0)
-          FILE_OP_ERROR(lockfilename, "write");
-      close(fd);
-      break;
-    } else {
-      FILE_OP_ERROR(lockfilename, "open");
-    }
+		fd = open(lockfilename, O_WRONLY | O_EXCL | O_CREAT, 0);
+		if (fd >= 0) {
+			/* defeat lock checking programs which test pid */
+			if (write(fd, "0", 2) < 0)
+				FILE_OP_ERROR(lockfilename, "write");
+			close(fd);
+			break;
+		} else {
+			FILE_OP_ERROR(lockfilename, "open");
+		}
 
-    /* libEtPan! - adds a delay of 5 seconds between each tries */
-    sleep(5);
+		/* libEtPan! - adds a delay of 5 seconds between each tries */
+		sleep(5);
 
-    if (g_stat(lockfilename, &st) < 0) {
-      if (statfailed++ > 5) {
-	res = -1;
-	goto unlock;
-      }
-      continue;
-    }
-    statfailed = 0;
-    time(&now);
+		if (g_stat(lockfilename, &st) < 0) {
+			if (statfailed++ > 5) {
+				res = -1;
+				goto unlock;
+			}
+			continue;
+		}
+		statfailed = 0;
+		time(&now);
 
-    if (now < st.st_ctime + LOCKTO_RM)
-      continue;
+		if (now < st.st_ctime + LOCKTO_RM)
+			continue;
 
-    /* try to remove stale lockfile */
-    if (unlink(lockfilename) < 0) {
-      res = -1;
-      goto unlock;
-    }
+		/* try to remove stale lockfile */
+		if (unlink(lockfilename) < 0) {
+			res = -1;
+			goto unlock;
+		}
 
-    /*
-      libEtPan! - removes this delay of 5 seconds,
-       maybe it was misplaced ?
-    */
+		/*
+		   libEtPan! - removes this delay of 5 seconds,
+		   maybe it was misplaced ?
+		 */
 #if 0
-    sleep(5);
+		sleep(5);
 #endif
-  }
+	}
 
-  return 0;
+	return 0;
 
  unlock:
-  lock.l_start = 0;
-  lock.l_len = 0;
-  lock.l_pid = getpid();
-  lock.l_type = F_UNLCK;
-  lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+	lock.l_pid = getpid();
+	lock.l_type = F_UNLCK;
+	lock.l_whence = SEEK_SET;
 
-  r = fcntl(fd, F_SETLK, &lock);
-  if (r < 0) {
-    /* WARNING POSIX lock could not be applied */
-    perror("lock");
-  }
-  return res;
+	r = fcntl(fd, F_SETLK, &lock);
+	if (r < 0) {
+		/* WARNING POSIX lock could not be applied */
+		perror("lock");
+	}
+	return res;
 }
 
-static int unlock_common(const char * filename, int fd)
+static int unlock_common(const char *filename, int fd)
 {
-  char lockfilename[PATH_MAX];
-  struct flock lock;
-  int r;
+	char lockfilename[PATH_MAX];
+	struct flock lock;
+	int r;
 
-  if (strlen(filename) + 6 > PATH_MAX)
-    return -1;
+	if (strlen(filename) + 6 > PATH_MAX)
+		return -1;
 
-  snprintf(lockfilename, PATH_MAX, "%s.lock", filename);
+	snprintf(lockfilename, PATH_MAX, "%s.lock", filename);
 
-  unlink(lockfilename);
+	unlink(lockfilename);
 
-  lock.l_start = 0;
-  lock.l_len = 0;
-  lock.l_pid = getpid();
-  lock.l_type = F_UNLCK;
-  lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+	lock.l_pid = getpid();
+	lock.l_type = F_UNLCK;
+	lock.l_whence = SEEK_SET;
 
-  r = fcntl(fd, F_SETLK, &lock);
-  if (r < 0) {
-    /* WARNING POSIX lock could not be applied */
-  }
+	r = fcntl(fd, F_SETLK, &lock);
+	if (r < 0) {
+		/* WARNING POSIX lock could not be applied */
+	}
 
-  return 0;
+	return 0;
 }
 
-int maillock_read_lock(const char * filename, int fd)
+int maillock_read_lock(const char *filename, int fd)
 {
-  return lock_common(filename, fd, F_RDLCK);
+	return lock_common(filename, fd, F_RDLCK);
 }
 
-int maillock_read_unlock(const char * filename, int fd)
+int maillock_read_unlock(const char *filename, int fd)
 {
-  return unlock_common(filename, fd);
+	return unlock_common(filename, fd);
 }
 
-int maillock_write_lock(const char * filename, int fd)
+int maillock_write_lock(const char *filename, int fd)
 {
-  return lock_common(filename, fd, F_WRLCK);
+	return lock_common(filename, fd, F_WRLCK);
 }
 
-int maillock_write_unlock(const char * filename, int fd)
+int maillock_write_unlock(const char *filename, int fd)
 {
-  return unlock_common(filename, fd);
+	return unlock_common(filename, fd);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

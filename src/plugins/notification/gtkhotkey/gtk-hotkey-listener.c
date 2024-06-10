@@ -15,7 +15,7 @@
  *   You should have received a copy of the GNU Lesser General Public License
  *   along with GtkHotkey.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "config.h"
 
 #include "gtk-hotkey-listener.h"
@@ -24,22 +24,22 @@
 
 /* FIXME: The default listener is hardcoded to x11, should be compilation target dependent */
 
-enum  {
+enum {
 	ACTIVATED,
-	
+
 	LAST_SIGNAL
 };
 
-enum  {
+enum {
 	GTK_HOTKEY_LISTENER_DUMMY_PROPERTY
 };
 
-guint						listener_signals[LAST_SIGNAL] = { 0 };
+guint listener_signals[LAST_SIGNAL] = { 0 };
 
-static  gpointer			gtk_hotkey_listener_parent_class = NULL;
+static gpointer gtk_hotkey_listener_parent_class = NULL;
 
-static  GtkHotkeyListener	*default_listener = NULL;
-static  GType				default_listener_type = G_TYPE_INVALID;
+static GtkHotkeyListener *default_listener = NULL;
+static GType default_listener_type = G_TYPE_INVALID;
 
 /**
  * SECTION:gtk-hotkey-listener
@@ -57,7 +57,7 @@ static  GType				default_listener_type = G_TYPE_INVALID;
  * This class is part of the advanced API of GtkHotkey. Applications will not
  * normally use a #GtkHotkeyListener directly, since gtk_hotkey_info_bind()
  * will call into gtk_hotkey_listener_bind() on the default listener for you.
- **/											
+ **/
 
 /**
  * gtk_hotkey_listener_get_default
@@ -68,23 +68,22 @@ static  GType				default_listener_type = G_TYPE_INVALID;
  *
  * FIXME: Currently hardcoded to X11
  */
-GtkHotkeyListener*
-gtk_hotkey_listener_get_default ()
+GtkHotkeyListener *gtk_hotkey_listener_get_default()
 {
 	/* FIXME: This method should be changedd to use the same approach as
 	 * gtk_hotkey_registry_get_default() */
-	
+
 	if (default_listener) {
-		g_return_val_if_fail (GTK_HOTKEY_IS_LISTENER(default_listener), NULL);
-		return g_object_ref (default_listener);
+		g_return_val_if_fail(GTK_HOTKEY_IS_LISTENER(default_listener), NULL);
+		return g_object_ref(default_listener);
 	}
-	gtk_hotkey_listener_get_type (); /* This call makes sure the default type ise set */
-	g_debug ("Listener Type: %s", g_type_name (default_listener_type));
-	
-	default_listener = g_object_new (default_listener_type, NULL);
-	g_return_val_if_fail (GTK_HOTKEY_IS_LISTENER(default_listener), NULL);
-	
-	return g_object_ref (default_listener);
+	gtk_hotkey_listener_get_type();	/* This call makes sure the default type ise set */
+	g_debug("Listener Type: %s", g_type_name(default_listener_type));
+
+	default_listener = g_object_new(default_listener_type, NULL);
+	g_return_val_if_fail(GTK_HOTKEY_IS_LISTENER(default_listener), NULL);
+
+	return g_object_ref(default_listener);
 }
 
 /**
@@ -100,14 +99,11 @@ gtk_hotkey_listener_get_default ()
  * Start listening for keypresses matching the signature of @hotkey.
  * This method is notmally accessed indirectly by calling gtk_hotkey_info_bind().
  */
-gboolean
-gtk_hotkey_listener_bind_hotkey (GtkHotkeyListener  *self,
-								 GtkHotkeyInfo		*hotkey,
-								 GError				**error)
+gboolean gtk_hotkey_listener_bind_hotkey(GtkHotkeyListener *self, GtkHotkeyInfo *hotkey, GError **error)
 {
-	g_return_val_if_fail (GTK_HOTKEY_IS_LISTENER(self), FALSE);
-	
-	return GTK_HOTKEY_LISTENER_GET_CLASS (self)->bind_hotkey (self, hotkey, error);
+	g_return_val_if_fail(GTK_HOTKEY_IS_LISTENER(self), FALSE);
+
+	return GTK_HOTKEY_LISTENER_GET_CLASS(self)->bind_hotkey(self, hotkey, error);
 }
 
 /**
@@ -123,14 +119,11 @@ gtk_hotkey_listener_bind_hotkey (GtkHotkeyListener  *self,
  * Stop listening for keypresses matching the signature of @hotkey.  This method
  * is notmally accessed indirectly by calling gtk_hotkey_info_unbind().
  */
-gboolean
-gtk_hotkey_listener_unbind_hotkey (GtkHotkeyListener	*self,
-								   GtkHotkeyInfo		*hotkey,
-								   GError				**error)
+gboolean gtk_hotkey_listener_unbind_hotkey(GtkHotkeyListener *self, GtkHotkeyInfo *hotkey, GError **error)
 {
-	g_return_val_if_fail (GTK_HOTKEY_IS_LISTENER(self), FALSE);
-	
-	return GTK_HOTKEY_LISTENER_GET_CLASS (self)->unbind_hotkey (self, hotkey, error);
+	g_return_val_if_fail(GTK_HOTKEY_IS_LISTENER(self), FALSE);
+
+	return GTK_HOTKEY_LISTENER_GET_CLASS(self)->unbind_hotkey(self, hotkey, error);
 }
 
 /**
@@ -143,22 +136,18 @@ gtk_hotkey_listener_unbind_hotkey (GtkHotkeyListener	*self,
  *
  * Emit the #GtkHotkeyInfo::activated signal on a hotkey listener.
  */
-void
-gtk_hotkey_listener_activated (GtkHotkeyListener	*self,
-							   GtkHotkeyInfo		*hotkey,
-							   guint				event_time)
+void gtk_hotkey_listener_activated(GtkHotkeyListener *self, GtkHotkeyInfo *hotkey, guint event_time)
 {
-	g_return_if_fail (GTK_HOTKEY_IS_LISTENER(self));
-	g_return_if_fail (GTK_HOTKEY_IS_INFO(hotkey));
-	
-	g_signal_emit (self, listener_signals[ACTIVATED], 0, hotkey, event_time);
+	g_return_if_fail(GTK_HOTKEY_IS_LISTENER(self));
+	g_return_if_fail(GTK_HOTKEY_IS_INFO(hotkey));
+
+	g_signal_emit(self, listener_signals[ACTIVATED], 0, hotkey, event_time);
 }
 
-static void
-gtk_hotkey_listener_class_init (GtkHotkeyListenerClass * klass)
+static void gtk_hotkey_listener_class_init(GtkHotkeyListenerClass *klass)
 {
-	gtk_hotkey_listener_parent_class = g_type_class_peek_parent (klass);
-	
+	gtk_hotkey_listener_parent_class = g_type_class_peek_parent(klass);
+
 	/**
 	 * GtkHotkeyListener::activated
 	 * @listener: The object that emitted the signal
@@ -169,53 +158,38 @@ gtk_hotkey_listener_class_init (GtkHotkeyListenerClass * klass)
 	 *
 	 * Emitted when a registered hotkey has been activated.
 	 */
-	listener_signals[ACTIVATED] = \
-	g_signal_new ("activated",
-				  GTK_HOTKEY_TYPE_LISTENER,
-				  G_SIGNAL_RUN_LAST,
-				  0, NULL, NULL,
-				  gtk_hotkey_marshal_VOID__OBJECT_UINT,
-				  G_TYPE_NONE, 2,
-				  GTK_HOTKEY_TYPE_INFO,
-				  G_TYPE_UINT);
+	listener_signals[ACTIVATED] = g_signal_new("activated", GTK_HOTKEY_TYPE_LISTENER, G_SIGNAL_RUN_LAST, 0, NULL, NULL, gtk_hotkey_marshal_VOID__OBJECT_UINT, G_TYPE_NONE, 2, GTK_HOTKEY_TYPE_INFO, G_TYPE_UINT);
 }
 
-
-static void
-gtk_hotkey_listener_init (GtkHotkeyListener * self)
+static void gtk_hotkey_listener_init(GtkHotkeyListener *self)
 {
 }
 
-
-GType
-gtk_hotkey_listener_get_type (void)
+GType gtk_hotkey_listener_get_type(void)
 {
 	static GType gtk_hotkey_listener_type_id = 0;
-	
-	if (G_UNLIKELY (gtk_hotkey_listener_type_id == 0)) {
+
+	if (G_UNLIKELY(gtk_hotkey_listener_type_id == 0)) {
 		static const GTypeInfo g_define_type_info = {
-			sizeof (GtkHotkeyListenerClass),
+			sizeof(GtkHotkeyListenerClass),
 			(GBaseInitFunc) NULL,
 			(GBaseFinalizeFunc) NULL,
 			(GClassInitFunc) gtk_hotkey_listener_class_init,
 			(GClassFinalizeFunc) NULL,
 			NULL,
-			sizeof (GtkHotkeyListener),
+			sizeof(GtkHotkeyListener),
 			0,
 			(GInstanceInitFunc) gtk_hotkey_listener_init,
-			(const GTypeValueTable *) NULL	/* value table */
+			(const GTypeValueTable *)NULL /* value table */
 		};
-		
-		gtk_hotkey_listener_type_id = g_type_register_static (G_TYPE_OBJECT,
-															  "GtkHotkeyListener",
-															  &g_define_type_info,
-															  G_TYPE_FLAG_ABSTRACT);
-		
-		default_listener_type = gtk_hotkey_x11_listener_get_type ();
+
+		gtk_hotkey_listener_type_id = g_type_register_static(G_TYPE_OBJECT, "GtkHotkeyListener", &g_define_type_info, G_TYPE_FLAG_ABSTRACT);
+
+		default_listener_type = gtk_hotkey_x11_listener_get_type();
 	}
 	return gtk_hotkey_listener_type_id;
 }
 
-
-
-
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

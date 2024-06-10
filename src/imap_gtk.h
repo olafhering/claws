@@ -24,7 +24,6 @@
 #include "claws-features.h"
 #endif
 
-
 #include <glib.h>
 #include "folder.h"
 

@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -55,7 +55,7 @@ static void rssyl_gtk_prop_store(RFolderItem *ritem)
 
 	url = (gchar *)gtk_entry_get_text(GTK_ENTRY(ritem->feedprop->url));
 
-	if( strlen(url) && strcmp(ritem->url, url)) {
+	if (strlen(url) && strcmp(ritem->url, url)) {
 		rssyl_passwd_set(ritem, NULL);
 		g_free(ritem->url);
 		ritem->url = g_strdup(url);
@@ -74,78 +74,65 @@ static void rssyl_gtk_prop_store(RFolderItem *ritem)
 	auth_pass = (gchar *)gtk_entry_get_text(GTK_ENTRY(ritem->feedprop->auth_password));
 	rssyl_passwd_set(ritem, auth_pass);
 
-	use_default_ri = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->default_refresh_interval));
+	use_default_ri = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->default_refresh_interval));
 	ritem->default_refresh_interval = use_default_ri;
-	debug_print("store: default refresh interval is %s\n",
-			( use_default_ri ? "ON" : "OFF" ) );
+	debug_print("store: default refresh interval is %s\n", (use_default_ri ? "ON" : "OFF"));
 
 	/* Use default if checkbutton is set */
-	if( use_default_ri )
+	if (use_default_ri)
 		x = rssyl_prefs_get()->refresh;
 	else
-		x = gtk_spin_button_get_value_as_int(
-				GTK_SPIN_BUTTON(ritem->feedprop->refresh_interval) );
+		x = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(ritem->feedprop->refresh_interval));
 
 	old_ri = ritem->refresh_interval;
 	ritem->refresh_interval = x;
 
 	/* Set timer for next automatic refresh, if needed. */
-	if( x > 0 ) {
-		if( old_ri != x || ritem->refresh_id == 0 ) {
-			debug_print("RSSyl: GTK - refresh interval changed to %d , updating "
-					"timeout\n", ritem->refresh_interval);
+	if (x > 0) {
+		if (old_ri != x || ritem->refresh_id == 0) {
+			debug_print("RSSyl: GTK - refresh interval changed to %d , updating " "timeout\n", ritem->refresh_interval);
 			rssyl_feed_start_refresh_timeout(ritem);
 		}
 	} else
 		ritem->refresh_id = 0;
 
 	old_fetch_comments = ritem->fetch_comments;
-	ritem->fetch_comments = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->fetch_comments));
+	ritem->fetch_comments = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->fetch_comments));
 
 	if (!old_fetch_comments && ritem->fetch_comments) {
 		/* reset the RFolderItem's mtime to be sure we get all 
 		 * available comments */
-		 ritem->item.mtime = 0;
+		ritem->item.mtime = 0;
 	}
-	
-	ritem->fetch_comments_max_age = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(ritem->feedprop->fetch_comments_max_age));
 
-	keep_old = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->keep_old));
+	ritem->fetch_comments_max_age = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(ritem->feedprop->fetch_comments_max_age));
+
+	keep_old = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->keep_old));
 	ritem->keep_old = keep_old;
 
-	ritem->silent_update =
-		gtk_combo_box_get_active(GTK_COMBO_BOX(ritem->feedprop->silent_update));
+	ritem->silent_update = gtk_combo_box_get_active(GTK_COMBO_BOX(ritem->feedprop->silent_update));
 
-	ritem->write_heading = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->write_heading));
+	ritem->write_heading = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->write_heading));
 
-	ritem->ignore_title_rename = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->ignore_title_rename));
+	ritem->ignore_title_rename = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->ignore_title_rename));
 
-	ritem->ssl_verify_peer = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(ritem->feedprop->ssl_verify_peer));
+	ritem->ssl_verify_peer = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ritem->feedprop->ssl_verify_peer));
 
 	/* Store updated properties */
 	item = &ritem->item;
 	item->folder->klass->item_get_xml(item->folder, item);
 }
 
-static gboolean
-rssyl_feedprop_togglebutton_toggled_cb(GtkToggleButton *tb,
-		gpointer data)
+static gboolean rssyl_feedprop_togglebutton_toggled_cb(GtkToggleButton *tb, gpointer data)
 {
 	gboolean active = gtk_toggle_button_get_active(tb);
-	RFeedProp *feedprop = (RFeedProp *)data;
+	RFeedProp *feedprop = (RFeedProp *) data;
 	GtkWidget *sb = NULL;
 
-	if( (GtkWidget *)tb == feedprop->default_refresh_interval ) {
+	if ((GtkWidget *)tb == feedprop->default_refresh_interval) {
 		active = !active;
 		sb = feedprop->refresh_interval;
-	} else if( (GtkWidget *)tb == feedprop->fetch_comments ) {
+	} else if ((GtkWidget *)tb == feedprop->fetch_comments) {
 		sb = feedprop->fetch_comments_max_age;
 	}
 
@@ -156,17 +143,15 @@ rssyl_feedprop_togglebutton_toggled_cb(GtkToggleButton *tb,
 	return FALSE;
 }
 
-static void
-rssyl_feedprop_auth_type_changed_cb(GtkComboBox *cb, gpointer data)
+static void rssyl_feedprop_auth_type_changed_cb(GtkComboBox *cb, gpointer data)
 {
-	RFeedProp *feedprop = (RFeedProp *)data;
+	RFeedProp *feedprop = (RFeedProp *) data;
 	gboolean enable = (FEED_AUTH_NONE != gtk_combo_box_get_active(cb));
 	gtk_widget_set_sensitive(GTK_WIDGET(feedprop->auth_username), enable);
 	gtk_widget_set_sensitive(GTK_WIDGET(feedprop->auth_password), enable);
 }
 
-static gboolean
-rssyl_props_cancel_cb(GtkWidget *widget, gpointer data)
+static gboolean rssyl_props_cancel_cb(GtkWidget *widget, gpointer data)
 {
 	RFolderItem *ritem = (RFolderItem *)data;
 
@@ -177,8 +162,7 @@ rssyl_props_cancel_cb(GtkWidget *widget, gpointer data)
 	return FALSE;
 }
 
-static gboolean
-rssyl_props_ok_cb(GtkWidget *widget, gpointer data)
+static gboolean rssyl_props_ok_cb(GtkWidget *widget, gpointer data)
 {
 	RFolderItem *ritem = (RFolderItem *)data;
 
@@ -190,47 +174,39 @@ rssyl_props_ok_cb(GtkWidget *widget, gpointer data)
 	return FALSE;
 }
 
-static gboolean
-rssyl_props_trim_cb(GtkWidget *widget, gpointer data)
+static gboolean rssyl_props_trim_cb(GtkWidget *widget, gpointer data)
 {
 	RFolderItem *ritem = (RFolderItem *)data;
 	gboolean k = ritem->keep_old;
 
-	if( prefs_common_get_prefs()->work_offline &&
-			!inc_offline_should_override(TRUE,
-					ngettext("Claws Mail needs network access in order "
-					"to update the feed.",
-					"Claws Mail needs network access in order "
-					"to update feeds.", 1))) {
+	if (prefs_common_get_prefs()->work_offline && !inc_offline_should_override(TRUE, ngettext("Claws Mail needs network access in order " "to update the feed.", "Claws Mail needs network access in order " "to update feeds.", 1))) {
 		return FALSE;
 	}
 
-	if( k )
+	if (k)
 		ritem->keep_old = FALSE;
 
 	rssyl_update_feed(ritem, FALSE);
 
-	if( k )
+	if (k)
 		ritem->keep_old = TRUE;
 
 	return FALSE;
 }
 
-static gboolean
-rssyl_props_key_press_cb(GtkWidget *widget, GdkEventKey *event,
-		gpointer data)
+static gboolean rssyl_props_key_press_cb(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
 	if (event) {
 		switch (event->keyval) {
-			case GDK_KEY_Escape:
-				rssyl_props_cancel_cb(widget, data);
-				return TRUE;
-			case GDK_KEY_Return:
-			case GDK_KEY_KP_Enter:
-				rssyl_props_ok_cb(widget, data);
-				return TRUE;
-			default:
-				break;
+		case GDK_KEY_Escape:
+			rssyl_props_cancel_cb(widget, data);
+			return TRUE;
+		case GDK_KEY_Return:
+		case GDK_KEY_KP_Enter:
+			rssyl_props_ok_cb(widget, data);
+			return TRUE;
+		default:
+			break;
 		}
 	}
 
@@ -241,11 +217,7 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 {
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 	RFeedProp *feedprop;
-	GtkWidget *vbox, *frame, *label, *hbox,
-		*inner_vbox, *auth_hbox, *auth_user_label, *auth_pass_label,
-		*bbox, *cancel_button, *cancel_align,
-		*cancel_hbox, *cancel_image, *cancel_label, *ok_button, *ok_align,
-		*ok_hbox, *ok_image, *ok_label, *trim_button, *silent_update_label;
+	GtkWidget *vbox, *frame, *label, *hbox, *inner_vbox, *auth_hbox, *auth_user_label, *auth_pass_label, *bbox, *cancel_button, *cancel_align, *cancel_hbox, *cancel_image, *cancel_label, *ok_button, *ok_align, *ok_hbox, *ok_image, *ok_label, *trim_button, *silent_update_label;
 	GtkObject *adj;
 	gint refresh;
 
@@ -264,102 +236,70 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 
 	/* URL auth type combo */
 	feedprop->auth_type = gtk_combo_box_text_new();
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->auth_type),
-			_("No authentication"));
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->auth_type),
-			_("HTTP Basic authentication"));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(feedprop->auth_type),
-			ritem->auth->type);
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->auth_type), _("No authentication"));
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->auth_type), _("HTTP Basic authentication"));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(feedprop->auth_type), ritem->auth->type);
 
 	/* Auth username */
 	feedprop->auth_username = gtk_entry_new();
-	gtk_entry_set_text(GTK_ENTRY(feedprop->auth_username),
-			(ritem->auth->username != NULL ? ritem->auth->username : ""));
+	gtk_entry_set_text(GTK_ENTRY(feedprop->auth_username), (ritem->auth->username != NULL ? ritem->auth->username : ""));
 
 	/* Auth password */
 	feedprop->auth_password = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(feedprop->auth_password), FALSE);
 	gchar *pwd = rssyl_passwd_get(ritem);
-	gtk_entry_set_text(GTK_ENTRY(feedprop->auth_password),
-			(pwd != NULL ? pwd : ""));
+	gtk_entry_set_text(GTK_ENTRY(feedprop->auth_password), (pwd != NULL ? pwd : ""));
 	if (pwd != NULL) {
 		memset(pwd, 0, strlen(pwd));
 		g_free(pwd);
 	}
 
 	/* "Use default refresh interval" checkbutton */
-	feedprop->default_refresh_interval = gtk_check_button_new_with_mnemonic(
-			_("Use default refresh interval"));
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(feedprop->default_refresh_interval),
-			ritem->default_refresh_interval);
+	feedprop->default_refresh_interval = gtk_check_button_new_with_mnemonic(_("Use default refresh interval"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->default_refresh_interval), ritem->default_refresh_interval);
 
-	if( ritem->refresh_interval >= 0 && !ritem->default_refresh_interval )
+	if (ritem->refresh_interval >= 0 && !ritem->default_refresh_interval)
 		refresh = ritem->refresh_interval;
 	else
 		refresh = rssyl_prefs_get()->refresh;
 
 	/* "Keep old items" checkbutton */
-	feedprop->keep_old = gtk_check_button_new_with_mnemonic(
-			_("Keep old items"));
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(feedprop->keep_old),
-			ritem->keep_old);
+	feedprop->keep_old = gtk_check_button_new_with_mnemonic(_("Keep old items"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->keep_old), ritem->keep_old);
 
 	/* "Trim" button */
 	trim_button = gtk_button_new_with_mnemonic(_("_Trim"));
-	gtk_widget_set_tooltip_text(trim_button,
-			_("Update feed, deleting items which are no longer in the source feed"));
+	gtk_widget_set_tooltip_text(trim_button, _("Update feed, deleting items which are no longer in the source feed"));
 
-	feedprop->fetch_comments = gtk_check_button_new_with_mnemonic(
-			_("Fetch comments if possible"));
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(feedprop->fetch_comments),
-			ritem->fetch_comments);
+	feedprop->fetch_comments = gtk_check_button_new_with_mnemonic(_("Fetch comments if possible"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->fetch_comments), ritem->fetch_comments);
 
 	/* Fetch comments max age spinbutton */
-	adj = gtk_adjustment_new(ritem->fetch_comments_max_age,
-			-1, 100000, 1, 10, 0);
-	feedprop->fetch_comments_max_age = gtk_spin_button_new(GTK_ADJUSTMENT(adj),
-			1, 0);
+	adj = gtk_adjustment_new(ritem->fetch_comments_max_age, -1, 100000, 1, 10, 0);
+	feedprop->fetch_comments_max_age = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1, 0);
 
 	/* Refresh interval spinbutton */
-	adj = gtk_adjustment_new(refresh,
-			0, 100000, 10, 100, 0);
-	feedprop->refresh_interval = gtk_spin_button_new(GTK_ADJUSTMENT(adj),
-			1, 0);
+	adj = gtk_adjustment_new(refresh, 0, 100000, 10, 100, 0);
+	feedprop->refresh_interval = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1, 0);
 
 	/* Silent update - combobox */
 	feedprop->silent_update = gtk_combo_box_text_new();
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update),
-			_("Always mark it as new"));
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update),
-			_("Only mark it as new if its text has changed"));
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update),
-			_("Never mark it as new"));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(feedprop->silent_update),
-			ritem->silent_update);
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update), _("Always mark it as new"));
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update), _("Only mark it as new if its text has changed"));
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(feedprop->silent_update), _("Never mark it as new"));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(feedprop->silent_update), ritem->silent_update);
 
-	feedprop->write_heading = gtk_check_button_new_with_mnemonic(
-			_("Add item title to the top of message"));
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(feedprop->write_heading),
-			ritem->write_heading);
+	feedprop->write_heading = gtk_check_button_new_with_mnemonic(_("Add item title to the top of message"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->write_heading), ritem->write_heading);
 
 	/* Ignore title rename - checkbox */
-	feedprop->ignore_title_rename = gtk_check_button_new_with_mnemonic(
-			_("Ignore title rename"));
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(feedprop->ignore_title_rename),
-			ritem->ignore_title_rename);
-	gtk_widget_set_tooltip_text(feedprop->ignore_title_rename,
-			_("Enable this to keep current folder name, even if feed author changes title of the feed."));
+	feedprop->ignore_title_rename = gtk_check_button_new_with_mnemonic(_("Ignore title rename"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->ignore_title_rename), ritem->ignore_title_rename);
+	gtk_widget_set_tooltip_text(feedprop->ignore_title_rename, _("Enable this to keep current folder name, even if feed author changes title of the feed."));
 
 	/* Verify SSL peer certificate */
-	feedprop->ssl_verify_peer = gtk_check_button_new_with_label(
-			_("Verify TLS certificate validity"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->ssl_verify_peer),
-			ritem->ssl_verify_peer);
+	feedprop->ssl_verify_peer = gtk_check_button_new_with_label(_("Verify TLS certificate validity"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feedprop->ssl_verify_peer), ritem->ssl_verify_peer);
 
 	/* === Now pack all the widgets */
 	vbox = gtk_vbox_new(FALSE, 5);
@@ -373,9 +313,7 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	/* Auth combo + user (label + entry) + pass (label + entry) */
 	auth_hbox = gtk_hbox_new(FALSE, 7);
 	gtk_box_pack_start(GTK_BOX(auth_hbox), feedprop->auth_type, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(feedprop->auth_type), "changed",
-			G_CALLBACK(rssyl_feedprop_auth_type_changed_cb),
-			(gpointer) feedprop);
+	g_signal_connect(G_OBJECT(feedprop->auth_type), "changed", G_CALLBACK(rssyl_feedprop_auth_type_changed_cb), (gpointer)feedprop);
 	g_signal_emit_by_name(G_OBJECT(feedprop->auth_type), "changed");
 	auth_user_label = gtk_label_new(_("User name"));
 	gtk_box_pack_start(GTK_BOX(auth_hbox), auth_user_label, FALSE, FALSE, 0);
@@ -390,15 +328,13 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	/* Ignore title rename - checkbutton */
 	gtk_box_pack_start(GTK_BOX(inner_vbox), feedprop->ignore_title_rename, FALSE, FALSE, 0);
 
-	PACK_FRAME (vbox, frame, _("Source URL"));
+	PACK_FRAME(vbox, frame, _("Source URL"));
 	gtk_container_set_border_width(GTK_CONTAINER(inner_vbox), 7);
 	gtk_container_add(GTK_CONTAINER(frame), inner_vbox);
 
 	inner_vbox = gtk_vbox_new(FALSE, 7);
 	/* Fetch comments - checkbutton */
-	g_signal_connect(G_OBJECT(feedprop->fetch_comments), "toggled",
-			G_CALLBACK(rssyl_feedprop_togglebutton_toggled_cb),
-			(gpointer)feedprop);
+	g_signal_connect(G_OBJECT(feedprop->fetch_comments), "toggled", G_CALLBACK(rssyl_feedprop_togglebutton_toggled_cb), (gpointer)feedprop);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), feedprop->fetch_comments, FALSE, FALSE, 0);
 
 	hbox = gtk_hbox_new(FALSE, 7);
@@ -407,18 +343,16 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	/* Fetch comments max age - spinbutton */
-	gtk_widget_set_sensitive(feedprop->fetch_comments_max_age,
-			ritem->fetch_comments);
+	gtk_widget_set_sensitive(feedprop->fetch_comments_max_age, ritem->fetch_comments);
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->fetch_comments_max_age, FALSE, FALSE, 0);
 	/* Fetch comments max age - units label */
-	label = gtk_label_new(g_strconcat(_("days"), "<small>    ",
-				_("Set to -1 to fetch all comments"), "</small>", NULL));
+	label = gtk_label_new(g_strconcat(_("days"), "<small>    ", _("Set to -1 to fetch all comments"), "</small>", NULL));
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), hbox, FALSE, FALSE, 0);
 
-	PACK_FRAME (vbox, frame, _("Comments"));
+	PACK_FRAME(vbox, frame, _("Comments"));
 	gtk_container_set_border_width(GTK_CONTAINER(inner_vbox), 7);
 	gtk_container_add(GTK_CONTAINER(frame), inner_vbox);
 
@@ -430,8 +364,7 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->keep_old, FALSE, FALSE, 0);
 	/* 'Trim' - button */
 	gtk_box_pack_start(GTK_BOX(hbox), trim_button, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(trim_button), "clicked",
-			G_CALLBACK(rssyl_props_trim_cb), ritem);
+	g_signal_connect(G_OBJECT(trim_button), "clicked", G_CALLBACK(rssyl_props_trim_cb), ritem);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), hbox, FALSE, FALSE, 0);
 
 	hbox = gtk_hbox_new(FALSE, 7);
@@ -441,34 +374,29 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->silent_update, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), hbox, FALSE, FALSE, 0);
 
-	PACK_FRAME (vbox, frame, _("Items"));
+	PACK_FRAME(vbox, frame, _("Items"));
 	gtk_container_set_border_width(GTK_CONTAINER(inner_vbox), 7);
 	gtk_container_add(GTK_CONTAINER(frame), inner_vbox);
 
 	inner_vbox = gtk_vbox_new(FALSE, 7);
 	/* Use default refresh interval - checkbutton */
 	gtk_box_pack_start(GTK_BOX(inner_vbox), feedprop->default_refresh_interval, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(feedprop->default_refresh_interval), "toggled",
-			G_CALLBACK(rssyl_feedprop_togglebutton_toggled_cb),
-			(gpointer)feedprop);
+	g_signal_connect(G_OBJECT(feedprop->default_refresh_interval), "toggled", G_CALLBACK(rssyl_feedprop_togglebutton_toggled_cb), (gpointer)feedprop);
 
 	hbox = gtk_hbox_new(FALSE, 7);
 	/* Refresh interval - label */
 	label = gtk_label_new(_("Refresh interval"));
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	/* Refresh interval - spinbutton */
-	gtk_widget_set_sensitive(feedprop->refresh_interval,
-			!ritem->default_refresh_interval);
+	gtk_widget_set_sensitive(feedprop->refresh_interval, !ritem->default_refresh_interval);
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->refresh_interval, FALSE, FALSE, 0);
 	/* Refresh interval - units label */
-	label = gtk_label_new(g_strconcat(_("minutes"), "<small>    ",
-			_("Set to 0 to disable automatic refreshing for this feed"),
-			"</small>", NULL));
+	label = gtk_label_new(g_strconcat(_("minutes"), "<small>    ", _("Set to 0 to disable automatic refreshing for this feed"), "</small>", NULL));
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), hbox, FALSE, FALSE, 0);
 
-	PACK_FRAME (vbox, frame, _("Refresh"));
+	PACK_FRAME(vbox, frame, _("Refresh"));
 	gtk_container_set_border_width(GTK_CONTAINER(inner_vbox), 7);
 	gtk_container_add(GTK_CONTAINER(frame), inner_vbox);
 
@@ -489,15 +417,13 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	cancel_hbox = gtk_hbox_new(FALSE, 2);
 	gtk_container_add(GTK_CONTAINER(cancel_align), cancel_hbox);
 
-	cancel_image = gtk_image_new_from_stock(GTK_STOCK_CANCEL,
-			GTK_ICON_SIZE_BUTTON);
+	cancel_image = gtk_image_new_from_stock(GTK_STOCK_CANCEL, GTK_ICON_SIZE_BUTTON);
 	gtk_box_pack_start(GTK_BOX(cancel_hbox), cancel_image, FALSE, FALSE, 0);
 
 	cancel_label = gtk_label_new_with_mnemonic(_("_Cancel"));
 	gtk_box_pack_end(GTK_BOX(cancel_hbox), cancel_label, FALSE, FALSE, 0);
 
-	g_signal_connect(G_OBJECT(cancel_button), "clicked",
-			G_CALLBACK(rssyl_props_cancel_cb), ritem);
+	g_signal_connect(G_OBJECT(cancel_button), "clicked", G_CALLBACK(rssyl_props_cancel_cb), ritem);
 
 	/* OK button */
 	ok_button = gtk_button_new();
@@ -510,26 +436,21 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 	ok_hbox = gtk_hbox_new(FALSE, 2);
 	gtk_container_add(GTK_CONTAINER(ok_align), ok_hbox);
 
-	ok_image = gtk_image_new_from_stock(GTK_STOCK_OK,
-			GTK_ICON_SIZE_BUTTON);
+	ok_image = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
 	gtk_box_pack_start(GTK_BOX(ok_hbox), ok_image, FALSE, FALSE, 0);
 
 	ok_label = gtk_label_new_with_mnemonic(_("_OK"));
 	gtk_box_pack_end(GTK_BOX(ok_hbox), ok_label, FALSE, FALSE, 0);
 
-	g_signal_connect(G_OBJECT(ok_button), "clicked",
-			G_CALLBACK(rssyl_props_ok_cb), ritem);
+	g_signal_connect(G_OBJECT(ok_button), "clicked", G_CALLBACK(rssyl_props_ok_cb), ritem);
 
 	/* Set some misc. stuff */
-	gtk_window_set_title(GTK_WINDOW(feedprop->window),
-			g_strdup(_("Set feed properties")) );
+	gtk_window_set_title(GTK_WINDOW(feedprop->window), g_strdup(_("Set feed properties")));
 	gtk_window_set_modal(GTK_WINDOW(feedprop->window), TRUE);
-	gtk_window_set_transient_for(GTK_WINDOW(feedprop->window),
-			GTK_WINDOW(mainwin->window) );
+	gtk_window_set_transient_for(GTK_WINDOW(feedprop->window), GTK_WINDOW(mainwin->window));
 
 	/* Attach callbacks to handle Enter and Escape keys */
-	g_signal_connect(G_OBJECT(feedprop->window), "key_press_event",
-			G_CALLBACK(rssyl_props_key_press_cb), ritem);
+	g_signal_connect(G_OBJECT(feedprop->window), "key_press_event", G_CALLBACK(rssyl_props_key_press_cb), ritem);
 
 	/* ...and voila! */
 	gtk_widget_show_all(feedprop->window);
@@ -540,3 +461,7 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 
 	ritem->feedprop = feedprop;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

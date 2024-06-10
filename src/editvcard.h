@@ -24,6 +24,6 @@
 #ifndef __EDITVCARD_H__
 #define __EDITVCARD_H__
 
-AdapterDSource *addressbook_edit_vcard( AddressIndex *addrIndex, AdapterDSource *ads );
+AdapterDSource *addressbook_edit_vcard(AddressIndex *addrIndex, AdapterDSource *ads);
 
 #endif /* __EDITVCARD_H__ */

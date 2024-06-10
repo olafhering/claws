@@ -22,11 +22,11 @@
 
 #include <glib.h>
 
-gboolean claws_init			(int *argc, char ***argv);
-void claws_done				(void);
-const gchar *claws_get_startup_dir	(void);
-guint claws_get_version			(void);
-void claws_register_idle_function	(void (*idle_func)(void));
-void claws_do_idle			(void);
+gboolean claws_init(int *argc, char ***argv);
+void claws_done(void);
+const gchar *claws_get_startup_dir(void);
+guint claws_get_version(void);
+void claws_register_idle_function(void (*idle_func)(void));
+void claws_do_idle(void);
 
 #endif /* CLAWS_H */

@@ -35,11 +35,11 @@ struct _Clamd_Socket {
 	Type type;
 	union {
 		struct {
-			gchar*	path;
+			gchar *path;
 		};
 		struct {
-			gchar*	host;
-			int		port;
+			gchar *host;
+			int port;
 		};
 	} socket;
 };
@@ -48,27 +48,27 @@ typedef struct {
 	enum { AUTOMATIC, MANUAL } ConfigType;
 	union {
 		struct {
-			gchar*	folder;
+			gchar *folder;
 		} automatic;
 		struct {
-			gchar*	host;
-			int		port;
+			gchar *host;
+			int port;
 		} manual;
 	};
 } Config;
-	
+
 typedef struct _response response;
 struct _response {
-	gchar* msg;
+	gchar *msg;
 };
 
-void clamd_create_config_automatic(const gchar* path);
+void clamd_create_config_automatic(const gchar *path);
 
-void clamd_create_config_manual(const gchar* host, int port);
+void clamd_create_config_manual(const gchar *host, int port);
 
-gchar* int2char(int i);
+gchar *int2char(int i);
 
-gchar* long2char(long l);
+gchar *long2char(long l);
 
 /**
  * Function which looks for clamd.conf the default places
@@ -84,14 +84,14 @@ gboolean clamd_find_socket();
  * Function to get current configuration
  * @return the current configuration for clamd or <b>NULL</b>
  */
-Config* clamd_get_config();
+Config *clamd_get_config();
 
 /**
  * Function to retrieve virus name from msg
  * @param msg Message returned from clamd
  * @return virus name or <b>NULL</b> if no virus name found
  */
-gchar* clamd_get_virus_name(gchar* msg);
+gchar *clamd_get_virus_name(gchar *msg);
 
 /**
  * Function to initialize the connection to clamd.
@@ -101,13 +101,13 @@ gchar* clamd_get_virus_name(gchar* msg);
  * information is already present @see clamd_find_socket.
  * @return Clamd_Stat. @see _Clamd_Stat.
  */
-Clamd_Stat clamd_init(Clamd_Socket* config);
+Clamd_Stat clamd_init(Clamd_Socket *config);
 
 /**
  * Function returning the current socket information.
  * @return reference to the current Clamd_Socket. @see _Clamd_Socket.
  */
-Clamd_Socket* clamd_get_socket();
+Clamd_Socket *clamd_get_socket();
 
 /**
  * Function which is checks a specific email for known viruses
@@ -116,7 +116,7 @@ Clamd_Socket* clamd_get_socket();
  * <b>NULL</b> if no virus was found.
  * @return Clamd_Stat. @see _Clamd_Stat.
  */
-Clamd_Stat clamd_verify_email(const gchar* path, response* result);
+Clamd_Stat clamd_verify_email(const gchar *path, response *result);
 
 /**
  * Function which is checks files in a specific directory for
@@ -124,21 +124,21 @@ Clamd_Stat clamd_verify_email(const gchar* path, response* result);
  * @param path Absolut path to directory to check.
  * @return list of list with virus or <b>NULL</b>.
  */
-GSList* clamd_verify_dir(const gchar* path);
+GSList *clamd_verify_dir(const gchar *path);
 
 /**
  * Function to free all memory assigned to a GSList
  * @param list The GSList to free
  */
-void clamd_free_gslist(GSList* list);
+void clamd_free_gslist(GSList *list);
 
 /**
  * Function which frees all memory assigned to clamd_plugin
  */
 void clamd_free();
 
-Config* clamd_config_new();
+Config *clamd_config_new();
 
-void clamd_config_free(Config* c);
+void clamd_config_free(Config *c);
 
 #endif

@@ -31,27 +31,25 @@ typedef enum {
 
 #include "prefs_account.h"
 
-struct GPGConfig
-{
-	gboolean	 auto_check_signatures;
-	gboolean	 autocompletion;
-	gint		 autocompletion_limit;
-	gboolean	 use_gpg_agent;
-	gboolean	 store_passphrase;
-	gint		 store_passphrase_timeout;
-	gboolean	 passphrase_grab;
-	gboolean	 gpg_warning;
-	gboolean	 gpg_ask_create_key;
-	gchar		*skip_encryption_warning;
-	gchar		*gpg_path;
+struct GPGConfig {
+	gboolean auto_check_signatures;
+	gboolean autocompletion;
+	gint autocompletion_limit;
+	gboolean use_gpg_agent;
+	gboolean store_passphrase;
+	gint store_passphrase_timeout;
+	gboolean passphrase_grab;
+	gboolean gpg_warning;
+	gboolean gpg_ask_create_key;
+	gchar *skip_encryption_warning;
+	gchar *gpg_path;
 };
 
-struct GPGAccountConfig
-{
-	SignKeyType	 sign_key;
-	gchar 		*sign_key_id;
-	SignKeyType	 smime_sign_key;
-	gchar 		*smime_sign_key_id;
+struct GPGAccountConfig {
+	SignKeyType sign_key;
+	gchar *sign_key_id;
+	SignKeyType smime_sign_key;
+	gchar *smime_sign_key_id;
 };
 
 void prefs_gpg_init(void);

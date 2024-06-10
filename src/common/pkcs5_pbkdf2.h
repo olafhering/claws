@@ -26,7 +26,6 @@
 
 /* The output will be placed into memory pointed to by key parameter.
  * Memory needs to be pre-allocated with key_len bytes. */
-gint pkcs5_pbkdf2(const gchar *pass, size_t pass_len, const guchar *salt,
-    size_t salt_len, guchar *key, size_t key_len, guint rounds);
+gint pkcs5_pbkdf2(const gchar *pass, size_t pass_len, const guchar *salt, size_t salt_len, guchar *key, size_t key_len, guint rounds);
 
 #endif /* __PKCS_PBKDF2_H */

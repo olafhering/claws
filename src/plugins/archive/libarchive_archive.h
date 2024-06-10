@@ -28,58 +28,57 @@
 
 typedef enum _COMPRESS_METHOD COMPRESS_METHOD;
 enum _COMPRESS_METHOD {
-		GZIP,
-		BZIP2,
-        COMPRESS,
+	GZIP,
+	BZIP2,
+	COMPRESS,
 #if ARCHIVE_VERSION_NUMBER >= 2006990
-		LZMA,
-		XZ,
+	LZMA,
+	XZ,
 #endif
 #if ARCHIVE_VERSION_NUMBER >= 3000000
-		LZIP,
+	LZIP,
 #endif
 #if ARCHIVE_VERSION_NUMBER >= 3001000
-		LRZIP,
-		LZOP,
-		GRZIP,
+	LRZIP,
+	LZOP,
+	GRZIP,
 #endif
 #if ARCHIVE_VERSION_NUMBER >= 3001900
-		LZ4,
+	LZ4,
 #endif
-        NO_COMPRESS
+	NO_COMPRESS
 };
 
 typedef enum _ARCHIVE_FORMAT ARCHIVE_FORMAT;
 enum _ARCHIVE_FORMAT {
-		NO_FORMAT,
-		TAR,
-		SHAR,
-		PAX,
-		CPIO
+	NO_FORMAT,
+	TAR,
+	SHAR,
+	PAX,
+	CPIO
 };
 
 typedef struct _MsgTrash MsgTrash;
 struct _MsgTrash {
-    FolderItem* item;
-    /* List of MsgInfos* */
-    GSList* msgs;
+	FolderItem *item;
+	/* List of MsgInfos* */
+	GSList *msgs;
 };
 
-MsgTrash* new_msg_trash(FolderItem* item);
+MsgTrash *new_msg_trash(FolderItem *item);
 void archive_free_archived_files();
-void archive_add_msg_mark(MsgTrash* trash, MsgInfo* msg);
-void archive_add_file(gchar* path);
-GSList* archive_get_file_list();
+void archive_add_msg_mark(MsgTrash *trash, MsgInfo *msg);
+void archive_add_file(gchar *path);
+GSList *archive_get_file_list();
 void archive_free_file_list(gboolean md5, gboolean rename);
-const gchar* archive_create(const char* archive_name, GSList* files,
-				COMPRESS_METHOD method, ARCHIVE_FORMAT format);
-gboolean before_date(time_t msg_mtime, const gchar* before);
-void archiver_set_tooltip(GtkWidget* widget, gchar* text);
+const gchar *archive_create(const char *archive_name, GSList *files, COMPRESS_METHOD method, ARCHIVE_FORMAT format);
+gboolean before_date(time_t msg_mtime, const gchar *before);
+void archiver_set_tooltip(GtkWidget *widget, gchar *text);
 
 #ifdef DEBUG_ARCHIVE
 void archive_set_permissions(int perm);
-const gchar* archive_extract(const char* archive_name, int flags);
-void archive_scan_folder(const char* dir);
+const gchar *archive_extract(const char *archive_name, int flags);
+void archive_scan_folder(const char *dir);
 #endif
 
 #endif

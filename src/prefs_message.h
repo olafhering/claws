@@ -20,7 +20,7 @@
 #ifndef PREFS_MESSAGE_H
 #define PREFS_MESSAGE_H
 
-void prefs_message_init	(void);
-void prefs_message_done	(void);
+void prefs_message_init(void);
+void prefs_message_done(void);
 
-#endif /* PREFS_MESSAGE_H */ 
+#endif /* PREFS_MESSAGE_H */

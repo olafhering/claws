@@ -25,20 +25,19 @@
 
 typedef struct SieveEditorPage SieveEditorPage;
 
-struct SieveEditorPage
-{
-	GtkWidget*	window;
-	GtkWidget*	status_text;
-	GtkWidget*	status_icon;
-	GtkWidget*	text;
+struct SieveEditorPage {
+	GtkWidget *window;
+	GtkWidget *status_text;
+	GtkWidget *status_icon;
+	GtkWidget *text;
 	GtkUIManager *ui_manager;
-	UndoMain	*undostruct;
+	UndoMain *undostruct;
 	struct SieveSession *session;
 	gchar *script_name;
-	gboolean	first_line;
-	gboolean	modified;
-	gboolean	closing;
-	gboolean	is_new;
+	gboolean first_line;
+	gboolean modified;
+	gboolean closing;
+	gboolean is_new;
 
 	/* callback for failure to load the script */
 	sieve_session_cb_fn on_load_error;
@@ -48,12 +47,10 @@ struct SieveEditorPage
 void sieve_editors_close();
 SieveEditorPage *sieve_editor_new(SieveSession *session, gchar *script_name);
 SieveEditorPage *sieve_editor_get(SieveSession *session, gchar *script_name);
-void sieve_editor_load(SieveEditorPage *page,
-		sieve_session_cb_fn on_load_error, gpointer load_error_data);
+void sieve_editor_load(SieveEditorPage *page, sieve_session_cb_fn on_load_error, gpointer load_error_data);
 void sieve_editor_append_text(SieveEditorPage *page, gchar *text, gint len);
 void sieve_editor_close(SieveEditorPage *page);
 void sieve_editor_show(SieveEditorPage *page);
 void sieve_editor_present(SieveEditorPage *page);
 
 #endif /* SIEVE_EDITOR_H */
-

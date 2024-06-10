@@ -18,10 +18,9 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
-
 
 #include <stdio.h>
 
@@ -68,8 +67,7 @@
 	} \
 }
 
-gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
-	       PrefsAccount *account)
+gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter, PrefsAccount *account)
 /* return values: -1 error, >=0 number of msgs added */
 {
 	FILE *mbox_fp;
@@ -124,24 +122,22 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 		dropfolder = folder_get_default_processing(account->account_id);
 	else
 		dropfolder = dest;
-	
+
 	do {
 		FILE *tmp_fp;
 		gint empty_lines;
 		gint msgnum;
-		
-		if (msgs%10 == 0) {
+
+		if (msgs % 10 == 0) {
 			long cur_offset_mb = ftell(mbox_fp) / (1024 * 1024);
 			if (printed)
 				statusbar_pop_all();
-			statusbar_print_all(
-					ngettext("Importing from mbox... (%ld MB imported)",
-						"Importing from mbox... (%ld MB imported)", cur_offset_mb), cur_offset_mb);
-			statusbar_progress_all(cur_offset_mb, src_stat.st_size / (1024*1024), 1);
-			printed=TRUE;
+			statusbar_print_all(ngettext("Importing from mbox... (%ld MB imported)", "Importing from mbox... (%ld MB imported)", cur_offset_mb), cur_offset_mb);
+			statusbar_progress_all(cur_offset_mb, src_stat.st_size / (1024 * 1024), 1);
+			printed = TRUE;
 			GTK_EVENTS_FLUSH();
 		}
-	
+
 		if ((tmp_fp = claws_fopen(tmp_file, "wb")) == NULL) {
 			FILE_OP_ERROR(tmp_file, "claws_fopen");
 			g_warning("can't open temporary file");
@@ -172,7 +168,7 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 			while (buf[offset] == '>') {
 				offset++;
 			}
-			if (!strncmp(buf+offset, "From ", 5)) {
+			if (!strncmp(buf + offset, "From ", 5)) {
 				/* From separator: */
 				if (offset == 0) {
 					/* expect next mbox item */
@@ -184,7 +180,7 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 				if (empty_lines > 0) {
 					while (empty_lines-- > 0) {
 						FPUTS_TO_TMP_ABORT_IF_FAIL("\n");
-				}
+					}
 					empty_lines = 0;
 				}
 				/* store the unquoted line */
@@ -194,14 +190,14 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 
 			/* other line */
 			/* flush any eaten empty line */
-			if (empty_lines > 0) {			
+			if (empty_lines > 0) {
 				while (empty_lines-- > 0) {
 					FPUTS_TO_TMP_ABORT_IF_FAIL("\n");
-			}
+				}
 				empty_lines = 0;
 			}
 			/* store the line itself */
-					FPUTS_TO_TMP_ABORT_IF_FAIL(buf);
+			FPUTS_TO_TMP_ABORT_IF_FAIL(buf);
 		}
 		/* end of mbox item or end of mbox */
 
@@ -246,10 +242,10 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 		} else {
 			MsgFileInfo *finfo = g_new0(MsgFileInfo, 1);
 			finfo->file = tmp_file;
-			
+
 			to_add = g_slist_prepend(to_add, finfo);
 			tmp_file = get_tmp_file();
-			
+
 			/* flush every 500 */
 			if (msgs > 0 && msgs % 500 == 0) {
 				folder_item_add_msgs(dropfolder, to_add, TRUE);
@@ -268,8 +264,7 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 	if (apply_filter) {
 
 		folder_item_set_batch(dropfolder, FALSE);
-		procmsg_msglist_filter(to_filter, account, 
-				&filtered, &unfiltered, TRUE);
+		procmsg_msglist_filter(to_filter, account, &filtered, &unfiltered, TRUE);
 		folder_item_set_batch(dropfolder, TRUE);
 
 		filtering_move_and_copy_msgs(to_filter);
@@ -297,7 +292,7 @@ gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter,
 	}
 
 	folder_item_update_thaw();
-	
+
 	g_free(tmp_file);
 	claws_fclose(mbox_fp);
 	debug_print("%d messages found.\n", msgs);
@@ -373,7 +368,6 @@ gint lock_mbox(const gchar *base, LockType type)
 			FILE_OP_ERROR(base, "open");
 			return -1;
 		}
-		
 #if HAVE_FCNTL_H && !defined(G_OS_WIN32)
 		if (fcntl(lockfd, F_SETLK, &fl) == -1) {
 			g_warning("can't fnctl %s (%s)", base, g_strerror(errno));
@@ -385,7 +379,7 @@ gint lock_mbox(const gchar *base, LockType type)
 #endif
 
 #if HAVE_FLOCK
-		if (flock(lockfd, LOCK_EX|LOCK_NB) < 0 && !fcntled) {
+		if (flock(lockfd, LOCK_EX | LOCK_NB) < 0 && !fcntled) {
 			perror("flock");
 #else
 #if HAVE_LOCKF
@@ -502,8 +496,7 @@ gint copy_mbox(gint srcfd, const gchar *dest)
 	}
 
 	if (save_errno != 0) {
-		g_warning("error %d reading mbox: %s", save_errno,
-				g_strerror(save_errno));
+		g_warning("error %d reading mbox: %s", save_errno, g_strerror(save_errno));
 		err = TRUE;
 	}
 
@@ -544,11 +537,8 @@ gint export_list_to_mbox(GSList *mlist, const gchar *mbox)
 
 	gint msgs = 1, total = g_slist_length(mlist);
 	if (g_file_test(mbox, G_FILE_TEST_EXISTS) == TRUE) {
-		if (alertpanel_full(_("Overwrite mbox file"),
-					_("This file already exists. Do you want to overwrite it?"),
-					GTK_STOCK_CANCEL, _("Overwrite"), NULL,
-					ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING)
-				!= G_ALERTALTERNATE) {
+		if (alertpanel_full(_("Overwrite mbox file"), _("This file already exists. Do you want to overwrite it?"), GTK_STOCK_CANCEL, _("Overwrite"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING)
+		    != G_ALERTALTERNATE) {
 			return -2;
 		}
 	}
@@ -570,22 +560,17 @@ gint export_list_to_mbox(GSList *mlist, const gchar *mbox)
 			continue;
 		}
 
-		strncpy2(buf,
-			 msginfo->from ? msginfo->from :
-			 cur_account && cur_account->address ?
-			 cur_account->address : "unknown",
-			 sizeof(buf));
+		strncpy2(buf, msginfo->from ? msginfo->from : cur_account && cur_account->address ? cur_account->address : "unknown", sizeof(buf));
 		extract_address(buf);
 
-		if (fprintf(mbox_fp, "From %s %s",
-			buf, ctime_r(&msginfo->date_t, buft)) < 0) {
+		if (fprintf(mbox_fp, "From %s %s", buf, ctime_r(&msginfo->date_t, buft)) < 0) {
 			err = -1;
 			claws_fclose(msg_fp);
 			goto out;
 		}
 
 		buf[0] = '\0';
-		
+
 		/* write email to mboxrc */
 		while (claws_fgets(buf, sizeof(buf), msg_fp) != NULL) {
 			/* quote any From, >From, >>From, etc., according to mbox format specs */
@@ -596,7 +581,7 @@ gint export_list_to_mbox(GSList *mlist, const gchar *mbox)
 			while (buf[offset] == '>') {
 				offset++;
 			}
-			if (!strncmp(buf+offset, "From ", 5)) {
+			if (!strncmp(buf + offset, "From ", 5)) {
 				if (claws_fputc('>', mbox_fp) == EOF) {
 					err = -1;
 					claws_fclose(msg_fp);
@@ -631,13 +616,13 @@ gint export_list_to_mbox(GSList *mlist, const gchar *mbox)
 		}
 
 		claws_safe_fclose(msg_fp);
-		statusbar_progress_all(msgs++,total, 500);
-		if (msgs%500 == 0)
+		statusbar_progress_all(msgs++, total, 500);
+		if (msgs % 500 == 0)
 			GTK_EVENTS_FLUSH();
 	}
 
-out:
-	statusbar_progress_all(0,0,0);
+ out:
+	statusbar_progress_all(0, 0, 0);
 	statusbar_pop_all();
 
 	claws_safe_fclose(mbox_fp);
@@ -651,13 +636,12 @@ gint export_to_mbox(FolderItem *src, const gchar *mbox)
 {
 	GSList *mlist;
 	gint ret;
-	
+
 	cm_return_val_if_fail(src != NULL, -1);
 	cm_return_val_if_fail(src->folder != NULL, -1);
 	cm_return_val_if_fail(mbox != NULL, -1);
 
-	debug_print("Exporting messages from %s into %s...\n",
-		    src->path, mbox);
+	debug_print("Exporting messages from %s into %s...\n", src->path, mbox);
 
 	mlist = folder_item_get_msg_list(src);
 
@@ -669,3 +653,7 @@ gint export_to_mbox(FolderItem *src, const gchar *mbox)
 
 	return ret;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

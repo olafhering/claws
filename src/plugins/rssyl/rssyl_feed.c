@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -41,8 +41,7 @@
 #include "rssyl_update_feed.h"
 #include "strutils.h"
 
-MsgInfo *rssyl_feed_parse_item_to_msginfo(gchar *file, MsgFlags flags,
-		gboolean a, gboolean b, FolderItem *item)
+MsgInfo *rssyl_feed_parse_item_to_msginfo(gchar *file, MsgFlags flags, gboolean a, gboolean b, FolderItem *item)
 {
 	MsgInfo *msginfo;
 
@@ -57,25 +56,24 @@ MsgInfo *rssyl_feed_parse_item_to_msginfo(gchar *file, MsgFlags flags,
 
 gboolean rssyl_refresh_timeout_cb(gpointer data)
 {
-	RRefreshCtx *ctx = (RRefreshCtx *)data;
+	RRefreshCtx *ctx = (RRefreshCtx *) data;
 	time_t tt = time(NULL);
 	gchar *tmpdate = NULL;
 
 	g_return_val_if_fail(ctx != NULL, FALSE);
 
-	if( prefs_common_get_prefs()->work_offline)
+	if (prefs_common_get_prefs()->work_offline)
 		return TRUE;
 
-	if( ctx->ritem == NULL || ctx->ritem->url == NULL ) {
+	if (ctx->ritem == NULL || ctx->ritem->url == NULL) {
 		debug_print("RSSyl: refresh_timeout_cb - ritem or url NULL\n");
 		g_free(ctx);
 		return FALSE;
 	}
 
-	if( ctx->id != ctx->ritem->refresh_id ) {
+	if (ctx->id != ctx->ritem->refresh_id) {
 		tmpdate = createRFC822Date(&tt);
-		debug_print("RSSyl: %s: timeout id changed, stopping: %d != %d\n",
-				tmpdate, ctx->id, ctx->ritem->refresh_id);
+		debug_print("RSSyl: %s: timeout id changed, stopping: %d != %d\n", tmpdate, ctx->id, ctx->ritem->refresh_id);
 		g_free(tmpdate);
 		g_free(ctx);
 		return FALSE;
@@ -84,11 +82,9 @@ gboolean rssyl_refresh_timeout_cb(gpointer data)
 	tmpdate = createRFC822Date(&tt);
 
 	if (prefs_common_get_prefs()->work_offline) {
-		debug_print("RSSyl: %s: skipping update of %s (%d), we are offline\n",
-				tmpdate, ctx->ritem->url, ctx->ritem->refresh_id);
+		debug_print("RSSyl: %s: skipping update of %s (%d), we are offline\n", tmpdate, ctx->ritem->url, ctx->ritem->refresh_id);
 	} else {
-		debug_print("RSSyl: %s: updating %s (%d)\n",
-				tmpdate, ctx->ritem->url, ctx->ritem->refresh_id);
+		debug_print("RSSyl: %s: updating %s (%d)\n", tmpdate, ctx->ritem->url, ctx->ritem->refresh_id);
 		rssyl_update_feed(ctx->ritem, 0);
 	}
 
@@ -105,9 +101,9 @@ void rssyl_feed_start_refresh_timeout(RFolderItem *ritem)
 
 	g_return_if_fail(ritem != NULL);
 
-	if( ritem->default_refresh_interval ) {
+	if (ritem->default_refresh_interval) {
 		rsprefs = rssyl_prefs_get();
-		if( !rsprefs->refresh_enabled )
+		if (!rsprefs->refresh_enabled)
 			return;
 		ritem->refresh_interval = rsprefs->refresh;
 	}
@@ -115,11 +111,13 @@ void rssyl_feed_start_refresh_timeout(RFolderItem *ritem)
 	ctx = g_new0(RRefreshCtx, 1);
 	ctx->ritem = ritem;
 
-	source_id = g_timeout_add(ritem->refresh_interval * 60 * 1000,
-			(GSourceFunc)rssyl_refresh_timeout_cb, ctx );
+	source_id = g_timeout_add(ritem->refresh_interval * 60 * 1000, (GSourceFunc) rssyl_refresh_timeout_cb, ctx);
 	ritem->refresh_id = source_id;
 	ctx->id = source_id;
 
-	debug_print("RSSyl: start_refresh_timeout - %d min (id %d)\n",
-			ritem->refresh_interval, ctx->id);
+	debug_print("RSSyl: start_refresh_timeout - %d min (id %d)\n", ritem->refresh_interval, ctx->id);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

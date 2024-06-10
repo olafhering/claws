@@ -33,9 +33,7 @@
 /*
  * HMAC-SHA-1 (from RFC 2202).
  */
-static void
-hmac_sha1(const guchar *text, size_t text_len, const guchar *key,
-    size_t key_len, guchar *digest)
+static void hmac_sha1(const guchar *text, size_t text_len, const guchar *key, size_t key_len, guchar *digest)
 {
 	GChecksum *cksum;
 	gsize outlen;
@@ -85,9 +83,7 @@ hmac_sha1(const guchar *text, size_t text_len, const guchar *key,
  * Password-Based Key Derivation Function 2 (PKCS #5 v2.0).
  * Code based on IEEE Std 802.11-2007, Annex H.4.2.
  */
-gint
-pkcs5_pbkdf2(const gchar *pass, size_t pass_len, const guchar *salt,
-    size_t salt_len, guchar *key, size_t key_len, guint rounds)
+gint pkcs5_pbkdf2(const gchar *pass, size_t pass_len, const guchar *salt, size_t salt_len, guchar *key, size_t key_len, guint rounds)
 {
 	guchar *asalt, obuf[SHA1_DIGESTLEN];
 	guchar d1[SHA1_DIGESTLEN], d2[SHA1_DIGESTLEN];
@@ -136,3 +132,7 @@ pkcs5_pbkdf2(const gchar *pass, size_t pass_len, const guchar *salt,
 }
 
 #undef SHA1_DIGESTLEN
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -39,26 +39,21 @@ static AttachWarnerMention *aw_matcherlist_string_match(MatcherList *matchers, g
 	int i = 0;
 	gboolean ret = FALSE;
 	gchar **lines = NULL;
-	AttachWarnerMention *awm = NULL; 
+	AttachWarnerMention *awm = NULL;
 
 	if (str == NULL || *str == '\0') {
 		return awm;
 	}
-	
+
 	lines = g_strsplit(str, "\n", -1);
-	if (attwarnerprefs.skip_quotes
-		&& *prefs_common_get_prefs()->quote_chars != '\0') {
+	if (attwarnerprefs.skip_quotes && *prefs_common_get_prefs()->quote_chars != '\0') {
 		debug_print("checking without quotes\n");
 		for (i = 0; lines[i] != NULL && ret == FALSE; i++) {
-			if(attwarnerprefs.skip_signature
-				&& sig_separator != NULL
-				&& *sig_separator != '\0'
-				&& strcmp(lines[i], sig_separator) == 0) {
+			if (attwarnerprefs.skip_signature && sig_separator != NULL && *sig_separator != '\0' && strcmp(lines[i], sig_separator) == 0) {
 				debug_print("reached signature delimiter at line %d\n", i);
 				break;
 			}
-			if (line_has_quote_char(lines[i], 
-				prefs_common_get_prefs()->quote_chars) == NULL) {
+			if (line_has_quote_char(lines[i], prefs_common_get_prefs()->quote_chars) == NULL) {
 				debug_print("testing line %d\n", i);
 				info.subject = lines[i];
 				ret = matcherlist_match(matchers, &info);
@@ -68,10 +63,7 @@ static AttachWarnerMention *aw_matcherlist_string_match(MatcherList *matchers, g
 	} else {
 		debug_print("checking with quotes\n");
 		for (i = 0; lines[i] != NULL && ret == FALSE; i++) {
-			if(attwarnerprefs.skip_signature
-				&& sig_separator != NULL
-				&& *sig_separator != '\0'
-				&& strcmp(lines[i], sig_separator) == 0) {
+			if (attwarnerprefs.skip_signature && sig_separator != NULL && *sig_separator != '\0' && strcmp(lines[i], sig_separator) == 0) {
 				debug_print("reached signature delimiter at line %d\n", i);
 				break;
 			}
@@ -109,13 +101,12 @@ AttachWarnerMention *are_attachments_mentioned(Compose *compose)
 	AttachWarnerMention *mention = NULL;
 	MatcherList *matchers = NULL;
 
-	if (attwarnerprefs.match_strings != NULL
-			&& attwarnerprefs.match_strings[0] != '\0') {
+	if (attwarnerprefs.match_strings != NULL && attwarnerprefs.match_strings[0] != '\0') {
 		matchers = matcherlist_new_from_lines(attwarnerprefs.match_strings, FALSE, attwarnerprefs.case_sensitive);
 
 		if (matchers) {
 			textview = GTK_TEXT_VIEW(compose->text);
-		        textbuffer = gtk_text_view_get_buffer(textview);
+			textbuffer = gtk_text_view_get_buffer(textview);
 			gtk_text_buffer_get_start_iter(textbuffer, &start);
 			gtk_text_buffer_get_end_iter(textbuffer, &end);
 			text = gtk_text_buffer_get_text(textbuffer, &start, &end, FALSE);
@@ -124,7 +115,7 @@ AttachWarnerMention *are_attachments_mentioned(Compose *compose)
 			if (text != NULL) {
 				mention = aw_matcherlist_string_match(matchers, text, compose->account->sig_sep);
 				g_free(text);
-			}	
+			}
 			matcherlist_free(matchers);
 			debug_print("done\n");
 		} else
@@ -194,35 +185,24 @@ static gboolean attwarn_before_send_hook(gpointer source, gpointer data)
 
 	debug_print("AttachWarner invoked\n");
 	if (compose->batch)
-		return FALSE;	/* do not check while queuing */
+		return FALSE; /* do not check while queuing */
 
 	if (do_not_check_redirect_forward(compose->mode))
 		return FALSE;
 
-	mention = are_attachments_mentioned(compose); 
-	if (does_not_have_attachments(compose) && mention != NULL) { 
+	mention = are_attachments_mentioned(compose);
+	if (does_not_have_attachments(compose) && mention != NULL) {
 		AlertValue aval;
 		gchar *message;
 		gchar *bold_text;
-		
-		bold_text = g_strdup_printf("<span weight=\"bold\">%.20s</span>...",
-				mention->context);
-		message = g_strdup_printf(
-				_("An attachment is mentioned in the mail you're sending, "
-				"but no file was attached. Mention appears on line %d, "
-				"which begins with text: %s\n\n%s"),
-				mention->line,
-				bold_text,
-				compose->sending?_("Send it anyway?"):_("Queue it anyway?"));
-		aval = alertpanel(_("Attachment warning"), message,
-				  GTK_STOCK_CANCEL,
-					compose->sending ? _("_Send") : _("Queue"),
-					NULL,
-					ALERTFOCUS_SECOND);
+
+		bold_text = g_strdup_printf("<span weight=\"bold\">%.20s</span>...", mention->context);
+		message = g_strdup_printf(_("An attachment is mentioned in the mail you're sending, " "but no file was attached. Mention appears on line %d, " "which begins with text: %s\n\n%s"), mention->line, bold_text, compose->sending ? _("Send it anyway?") : _("Queue it anyway?"));
+		aval = alertpanel(_("Attachment warning"), message, GTK_STOCK_CANCEL, compose->sending ? _("_Send") : _("Queue"), NULL, ALERTFOCUS_SECOND);
 		g_free(message);
 		g_free(bold_text);
 		if (aval != G_ALERTALTERNATE)
-			ret = TRUE;	
+			ret = TRUE;
 	}
 	if (mention != NULL) {
 		if (mention->context != NULL)
@@ -242,12 +222,10 @@ static gboolean attwarn_before_send_hook(gpointer source, gpointer data)
  */
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-			VERSION_NUMERIC, "AttachWarner", error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, "AttachWarner", error))
 		return -1;
 
-	hook_id = hooks_register_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST,
-			attwarn_before_send_hook, NULL);
+	hook_id = hooks_register_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST, attwarn_before_send_hook, NULL);
 
 	if (hook_id == HOOK_NONE) {
 		*error = g_strdup(_("Failed to register check before send hook"));
@@ -266,7 +244,7 @@ gint plugin_init(gchar **error)
  * Unregister the callback function and frees matcher.
  */
 gboolean plugin_done(void)
-{	
+{
 	hooks_unregister_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST, hook_id);
 	attachwarner_prefs_done();
 	debug_print("AttachWarner plugin unloaded\n");
@@ -290,8 +268,7 @@ const gchar *plugin_name(void)
  */
 const gchar *plugin_desc(void)
 {
-	return _("Warns user if some reference to attachments is found in the "
-	         "message text and no file is attached.");
+	return _("Warns user if some reference to attachments is found in the " "message text and no file is attached.");
 }
 
 /**
@@ -331,10 +308,13 @@ const gchar *plugin_version(void)
  */
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_OTHER, N_("AttachWarner")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_OTHER, N_("AttachWarner")},
+	{PLUGIN_NOTHING, NULL}
+	};
 
 	return features;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

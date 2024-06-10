@@ -33,7 +33,7 @@ VCalMeeting *vcal_meeting_create_hidden(VCalEvent *event);
 VCalMeeting *vcal_meeting_create_with_start(VCalEvent *event, struct tm *sdate);
 gboolean vcal_meeting_send(VCalMeeting *meet);
 gboolean vcal_meeting_alert_check(gpointer data);
-gboolean vcal_meeting_export_calendar(const gchar *path, const gchar *user, const gchar *pass,gboolean automatic);
+gboolean vcal_meeting_export_calendar(const gchar *path, const gchar *user, const gchar *pass, gboolean automatic);
 gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user, const gchar *pass);
 gboolean attendee_available(VCalAttendee *attendee, const gchar *dtstart, const gchar *dtend, const gchar *contents);
 #endif

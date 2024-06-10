@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -30,7 +30,7 @@ gchar *display_header_prop_get_str(DisplayHeaderProp *dp)
 {
 	return g_strconcat(dp->hidden ? "-" : "", dp->name, NULL);
 }
- 
+
 DisplayHeaderProp *display_header_prop_read_str(gchar *buf)
 {
 	DisplayHeaderProp *dp;
@@ -50,11 +50,16 @@ DisplayHeaderProp *display_header_prop_read_str(gchar *buf)
 
 	return dp;
 }
- 
+
 void display_header_prop_free(DisplayHeaderProp *dp)
 {
-	if (!dp) return;
+	if (!dp)
+		return;
 
 	g_free(dp->name);
 	g_free(dp);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

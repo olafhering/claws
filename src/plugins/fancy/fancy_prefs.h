@@ -24,8 +24,7 @@
 #include <webkit/webkitwebsettings.h>
 typedef struct _FancyPrefs FancyPrefs;
 
-struct _FancyPrefs
-	{
+struct _FancyPrefs {
 	WebKitWebSettings *web_settings;
 
 	gboolean enable_images;

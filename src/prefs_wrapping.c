@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -40,8 +40,7 @@
 
 #include "manage_window.h"
 
-typedef struct _WrappingPage
-{
+typedef struct _WrappingPage {
 	PrefsPage page;
 
 	GtkWidget *window;
@@ -53,11 +52,10 @@ typedef struct _WrappingPage
 	GtkWidget *checkbtn_autoindent;
 } WrappingPage;
 
-static void prefs_wrapping_create_widget(PrefsPage *_page, GtkWindow *window, 
-			       	  gpointer data)
+static void prefs_wrapping_create_widget(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
 	WrappingPage *prefs_wrapping = (WrappingPage *) _page;
-	
+
 	GtkWidget *vbox1;
 	GtkWidget *vbox2;
 	GtkWidget *label_linewrap;
@@ -69,55 +67,49 @@ static void prefs_wrapping_create_widget(PrefsPage *_page, GtkWindow *window,
 	GtkWidget *checkbtn_autoindent;
 	GtkWidget *hbox1;
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, FALSE, FALSE, 0);
+	vbox2 = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(vbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), vbox2, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_autowrap, _("Auto wrapping"));
-  	PACK_CHECK_BUTTON (vbox2, checkbtn_wrapquote, _("Wrap quotation"));
-  	PACK_CHECK_BUTTON (vbox2, checkbtn_wrappastes, _("Wrap pasted text"));
-  	PACK_CHECK_BUTTON (vbox2, checkbtn_autoindent, _("Auto indent"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_autowrap, _("Auto wrapping"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_wrapquote, _("Wrap quotation"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_wrappastes, _("Wrap pasted text"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_autoindent, _("Auto indent"));
 
-	hbox1 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox1, FALSE, FALSE, 0);
 
-	label_linewrap = gtk_label_new (_("Wrap text at"));
-	gtk_widget_show (label_linewrap);
-	gtk_box_pack_start (GTK_BOX (hbox1), label_linewrap, FALSE, FALSE, 4);
+	label_linewrap = gtk_label_new(_("Wrap text at"));
+	gtk_widget_show(label_linewrap);
+	gtk_box_pack_start(GTK_BOX(hbox1), label_linewrap, FALSE, FALSE, 4);
 
-	spinbtn_linewrap_adj = GTK_ADJUSTMENT(gtk_adjustment_new (72, 20, 1024, 1, 10, 0));
-	spinbtn_linewrap = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_linewrap_adj), 1, 0);
-	gtk_widget_show (spinbtn_linewrap);
-	gtk_box_pack_start (GTK_BOX (hbox1), spinbtn_linewrap, FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_linewrap), TRUE);
+	spinbtn_linewrap_adj = GTK_ADJUSTMENT(gtk_adjustment_new(72, 20, 1024, 1, 10, 0));
+	spinbtn_linewrap = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_linewrap_adj), 1, 0);
+	gtk_widget_show(spinbtn_linewrap);
+	gtk_box_pack_start(GTK_BOX(hbox1), spinbtn_linewrap, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_linewrap), TRUE);
 
-	label_linewrap = gtk_label_new (_("characters"));
-	gtk_widget_show (label_linewrap);
-  	gtk_box_pack_start (GTK_BOX (hbox1), label_linewrap, FALSE, FALSE, 0);
+	label_linewrap = gtk_label_new(_("characters"));
+	gtk_widget_show(label_linewrap);
+	gtk_box_pack_start(GTK_BOX(hbox1), label_linewrap, FALSE, FALSE, 0);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_autowrap),
-				     prefs_common.autowrap);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_wrapquote),
-				     prefs_common.linewrap_quote);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_wrappastes),
-				     prefs_common.linewrap_pastes);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_autoindent),
-				     prefs_common.auto_indent);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_linewrap),
-				  prefs_common.linewrap_len);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_autowrap), prefs_common.autowrap);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_wrapquote), prefs_common.linewrap_quote);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_wrappastes), prefs_common.linewrap_pastes);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_autoindent), prefs_common.auto_indent);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_linewrap), prefs_common.linewrap_len);
 
-	prefs_wrapping->window			= GTK_WIDGET(window);
-	prefs_wrapping->spinbtn_linewrap	= spinbtn_linewrap;
-	prefs_wrapping->checkbtn_wrapquote	= checkbtn_wrapquote;
-	prefs_wrapping->checkbtn_wrappastes	= checkbtn_wrappastes;
-	prefs_wrapping->checkbtn_autowrap	= checkbtn_autowrap;
-	prefs_wrapping->checkbtn_autoindent	= checkbtn_autoindent;
+	prefs_wrapping->window = GTK_WIDGET(window);
+	prefs_wrapping->spinbtn_linewrap = spinbtn_linewrap;
+	prefs_wrapping->checkbtn_wrapquote = checkbtn_wrapquote;
+	prefs_wrapping->checkbtn_wrappastes = checkbtn_wrappastes;
+	prefs_wrapping->checkbtn_autowrap = checkbtn_autowrap;
+	prefs_wrapping->checkbtn_autoindent = checkbtn_autoindent;
 
 	prefs_wrapping->page.widget = vbox1;
 }
@@ -126,16 +118,11 @@ static void prefs_wrapping_save(PrefsPage *_page)
 {
 	WrappingPage *page = (WrappingPage *) _page;
 
-	prefs_common.linewrap_len = 
-		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_linewrap));
-	prefs_common.linewrap_quote = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_wrapquote));
-	prefs_common.linewrap_pastes = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_wrappastes));
-	prefs_common.autowrap =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autowrap));
-	prefs_common.auto_indent =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autoindent));
+	prefs_common.linewrap_len = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_linewrap));
+	prefs_common.linewrap_quote = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_wrapquote));
+	prefs_common.linewrap_pastes = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_wrappastes));
+	prefs_common.autowrap = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autowrap));
+	prefs_common.auto_indent = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autoindent));
 }
 
 static void prefs_wrapping_destroy_widget(PrefsPage *_page)
@@ -159,12 +146,16 @@ void prefs_wrapping_init(void)
 	page->page.destroy_widget = prefs_wrapping_destroy_widget;
 	page->page.save_page = prefs_wrapping_save;
 	page->page.weight = 182.0;
-	prefs_gtk_register_page((PrefsPage *) page);
+	prefs_gtk_register_page((PrefsPage *)page);
 	prefs_wrapping = page;
 }
 
 void prefs_wrapping_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) prefs_wrapping);
+	prefs_gtk_unregister_page((PrefsPage *)prefs_wrapping);
 	g_free(prefs_wrapping);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

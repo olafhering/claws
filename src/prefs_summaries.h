@@ -20,7 +20,7 @@
 #ifndef PREFS_SUMMARIES_H
 #define PREFS_SUMMARIES_H
 
-void prefs_summaries_init	(void);
-void prefs_summaries_done	(void);
+void prefs_summaries_init(void);
+void prefs_summaries_done(void);
 
-#endif /* PREFS_SUMMARIES_H */ 
+#endif /* PREFS_SUMMARIES_H */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -61,10 +61,9 @@
 #include "oauth2.h"
 #endif
 
-typedef struct _SendProgressDialog	SendProgressDialog;
+typedef struct _SendProgressDialog SendProgressDialog;
 
-struct _SendProgressDialog
-{
+struct _SendProgressDialog {
 	ProgressDialog *dialog;
 	Session *session;
 	gboolean cancelled;
@@ -72,27 +71,17 @@ struct _SendProgressDialog
 
 static SendProgressDialog *send_dialog = NULL;
 
-static gint send_recv_message		(Session		*session,
-					 const gchar		*msg,
-					 gpointer		 data);
-static gint send_send_data_progressive	(Session		*session,
-					 guint			 cur_len,
-					 guint			 total_len,
-					 gpointer		 data);
-static gint send_send_data_finished	(Session		*session,
-					 guint			 len,
-					 gpointer		 data);
+static gint send_recv_message(Session *session, const gchar *msg, gpointer data);
+static gint send_send_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data);
+static gint send_send_data_finished(Session *session, guint len, gpointer data);
 
 static SendProgressDialog *send_progress_dialog_create(void);
 static void send_progress_dialog_destroy(SendProgressDialog *dialog);
 
-static void send_showlog_button_cb	(GtkWidget	*widget,
-					 gpointer	 data);
-static void send_cancel_button_cb	(GtkWidget	*widget,
-					 gpointer	 data);
+static void send_showlog_button_cb(GtkWidget *widget, gpointer data);
+static void send_cancel_button_cb(GtkWidget *widget, gpointer data);
 
-static void send_put_error		(Session	*session);
-
+static void send_put_error(Session *session);
 
 void send_cancel(void)
 {
@@ -120,24 +109,22 @@ gint send_message(const gchar *file, PrefsAccount *ac_prefs, GSList *to_list)
 	}
 
 	inc_lock();
-	if (ac_prefs->use_mail_command && ac_prefs->mail_command &&
-	    (*ac_prefs->mail_command)) {
+	if (ac_prefs->use_mail_command && ac_prefs->mail_command && (*ac_prefs->mail_command)) {
 		val = send_message_local(ac_prefs->mail_command, fp);
 		claws_fclose(fp);
 		inc_unlock();
 		return val;
 	} else {
 		val = send_message_smtp(ac_prefs, to_list, fp);
-		
+
 		claws_fclose(fp);
 		inc_unlock();
 		return val;
 	}
 }
 
-enum
-{
-	Q_SENDER     = 0,
+enum {
+	Q_SENDER = 0,
 	Q_SMTPSERVER = 1,
 	Q_RECIPIENTS = 2,
 	Q_ACCOUNT_ID = 3
@@ -160,15 +147,12 @@ gint send_message_local(const gchar *command, FILE *fp)
 
 	if (g_spawn_async_with_pipes(NULL, argv, NULL,
 #ifdef G_OS_WIN32
-                                     0,
+				     0,
 #else
 				     G_SPAWN_DO_NOT_REAP_CHILD,
 #endif
-                                     NULL, NULL,
-				     &pid, &child_stdin, NULL, NULL,
-				     NULL) == FALSE) {
-		g_snprintf(buf, sizeof(buf),
-			   _("Couldn't execute command: %s"), command);
+				     NULL, NULL, &pid, &child_stdin, NULL, NULL, NULL) == FALSE) {
+		g_snprintf(buf, sizeof(buf), _("Couldn't execute command: %s"), command);
 		log_warning(LOG_PROTOCOL, "%s\n", buf);
 		alertpanel_error("%s", buf);
 		g_strfreev(argv);
@@ -184,8 +168,7 @@ gint send_message_local(const gchar *command, FILE *fp)
 				break;
 			}
 		}
-		if (fd_write_all(child_stdin, buf, strlen(buf)) < 0 ||
-		    fd_write_all(child_stdin, "\n", 1) < 0) {
+		if (fd_write_all(child_stdin, buf, strlen(buf)) < 0 || fd_write_all(child_stdin, "\n", 1) < 0) {
 			err = TRUE;
 			break;
 		}
@@ -203,9 +186,7 @@ gint send_message_local(const gchar *command, FILE *fp)
 	g_spawn_close_pid(pid);
 
 	if (err) {
-		g_snprintf(buf, sizeof(buf),
-			   _("Error occurred while executing command: %s"),
-			   command);
+		g_snprintf(buf, sizeof(buf), _("Error occurred while executing command: %s"), command);
 		log_warning(LOG_PROTOCOL, "%s\n", buf);
 		alertpanel_error("%s", buf);
 		return -1;
@@ -223,7 +204,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	gint ret = 0;
 	gboolean was_inited = FALSE;
 	MsgInfo *tmp_msginfo = NULL;
-	MsgFlags flags = {0, 0};
+	MsgFlags flags = { 0, 0 };
 	long fp_pos = 0;
 	gchar spec_from[BUFFSIZE];
 	ProxyInfo *proxy_info = NULL;
@@ -249,13 +230,13 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	}
 
 	if (tmp_msginfo && tmp_msginfo->extradata && tmp_msginfo->extradata->resent_from) {
-		strncpy2(spec_from, tmp_msginfo->extradata->resent_from, BUFFSIZE-1);
+		strncpy2(spec_from, tmp_msginfo->extradata->resent_from, BUFFSIZE - 1);
 		extract_address(spec_from);
 	} else if (tmp_msginfo && tmp_msginfo->from) {
-		strncpy2(spec_from, tmp_msginfo->from, BUFFSIZE-1);
+		strncpy2(spec_from, tmp_msginfo->from, BUFFSIZE - 1);
 		extract_address(spec_from);
 	} else {
-		strncpy2(spec_from, ac_prefs->address, BUFFSIZE-1);
+		strncpy2(spec_from, ac_prefs->address, BUFFSIZE - 1);
 	}
 	if (tmp_msginfo) {
 		procmsg_msginfo_free(&tmp_msginfo);
@@ -275,30 +256,20 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		}
 
 #ifdef USE_GNUTLS
-		port = ac_prefs->set_smtpport ? ac_prefs->smtpport :
-			ac_prefs->ssl_smtp == SSL_TUNNEL ? SSMTP_PORT : SMTP_PORT;
+		port = ac_prefs->set_smtpport ? ac_prefs->smtpport : ac_prefs->ssl_smtp == SSL_TUNNEL ? SSMTP_PORT : SMTP_PORT;
 		session->ssl_type = ac_prefs->ssl_smtp;
 		if (ac_prefs->ssl_smtp != SSL_NONE)
 			session->nonblocking = ac_prefs->use_nonblocking_ssl;
-		if (ac_prefs->set_gnutls_priority && ac_prefs->gnutls_priority &&
-		    strlen(ac_prefs->gnutls_priority))
+		if (ac_prefs->set_gnutls_priority && ac_prefs->gnutls_priority && strlen(ac_prefs->gnutls_priority))
 			session->gnutls_priority = g_strdup(ac_prefs->gnutls_priority);
 		session->use_tls_sni = ac_prefs->use_tls_sni;
 #ifdef USE_OAUTH2
 		if (ac_prefs->use_smtp_auth && ac_prefs->smtp_auth_type == SMTPAUTH_OAUTH2)
-		        oauth2_check_passwds(ac_prefs);
+			oauth2_check_passwds(ac_prefs);
 #endif
 #else
 		if (ac_prefs->ssl_smtp != SSL_NONE) {
-			if (alertpanel_full(_("Insecure connection"),
-				_("This connection is configured to be secured "
-				  "using TLS, but TLS is not available "
-				  "in this build of Claws Mail. \n\n"
-				  "Do you want to continue connecting to this "
-				  "server? The communication would not be "
-				  "secure."),
-				  GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL,
-					ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE) {
+			if (alertpanel_full(_("Insecure connection"), _("This connection is configured to be secured " "using TLS, but TLS is not available " "in this build of Claws Mail. \n\n" "Do you want to continue connecting to this " "server? The communication would not be " "secure."), GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE) {
 				session_destroy(session);
 				return -1;
 			}
@@ -310,18 +281,10 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 			smtp_session->forced_auth_type = ac_prefs->smtp_auth_type;
 			if (ac_prefs->smtp_userid && strlen(ac_prefs->smtp_userid)) {
 				smtp_session->user = g_strdup(ac_prefs->smtp_userid);
-				if (password_get(smtp_session->user,
-							ac_prefs->smtp_server, "smtp", port,
-							&(smtp_session->pass))) {
-					/* NOP */;
-				} else if ((smtp_session->pass =
-						passwd_store_get_account(ac_prefs->account_id,
-								PWS_ACCOUNT_SEND)) == NULL) {
-					smtp_session->pass =
-						input_dialog_query_password_keep
-							(ac_prefs->smtp_server,
-							 smtp_session->user,
-							 &(ac_prefs->session_smtp_passwd));
+				if (password_get(smtp_session->user, ac_prefs->smtp_server, "smtp", port, &(smtp_session->pass))) {
+					/* NOP */ ;
+				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_SEND)) == NULL) {
+					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
 					if (!smtp_session->pass) {
 						session_destroy(session);
 						return -1;
@@ -329,17 +292,10 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 				}
 			} else {
 				smtp_session->user = g_strdup(ac_prefs->userid);
-				if (password_get(smtp_session->user,
-							ac_prefs->smtp_server, "smtp", port,
-							&(smtp_session->pass))) {
-					/* NOP */;
-				} else if ((smtp_session->pass = passwd_store_get_account(
-							ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
-					smtp_session->pass =
-						input_dialog_query_password_keep
-							(ac_prefs->smtp_server,
-							 smtp_session->user,
-							 &(ac_prefs->session_smtp_passwd));
+				if (password_get(smtp_session->user, ac_prefs->smtp_server, "smtp", port, &(smtp_session->pass))) {
+					/* NOP */ ;
+				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
+					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
 					if (!smtp_session->pass) {
 						session_destroy(session);
 						return -1;
@@ -355,12 +311,9 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		send_dialog->session = session;
 		smtp_session->dialog = send_dialog;
 
-		progress_dialog_list_set(send_dialog->dialog, 0, NULL, 
-					 ac_prefs->smtp_server, 
-					 _("Connecting"));
+		progress_dialog_list_set(send_dialog->dialog, 0, NULL, ac_prefs->smtp_server, _("Connecting"));
 
-		if (ac_prefs->pop_before_smtp
-		    && (ac_prefs->protocol == A_POP3)
+		if (ac_prefs->pop_before_smtp && (ac_prefs->protocol == A_POP3)
 		    && (time(NULL) - ac_prefs->last_pop_login_time) > (60 * ac_prefs->pop_before_smtp_timeout)) {
 			g_snprintf(buf, sizeof(buf), _("Doing POP before SMTP..."));
 			log_message(LOG_PROTOCOL, "%s\n", buf);
@@ -370,14 +323,12 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 			inc_pop_before_smtp(ac_prefs);
 		}
 
-		g_snprintf(buf, sizeof(buf), _("Account '%s': Connecting to SMTP server: %s:%d..."),
-				ac_prefs->account_name, ac_prefs->smtp_server, port);
+		g_snprintf(buf, sizeof(buf), _("Account '%s': Connecting to SMTP server: %s:%d..."), ac_prefs->account_name, ac_prefs->smtp_server, port);
 		progress_dialog_set_label(send_dialog->dialog, buf);
 		log_message(LOG_PROTOCOL, "%s\n", buf);
 
 		session_set_recv_message_notify(session, send_recv_message, send_dialog);
-		session_set_send_data_progressive_notify
-			(session, send_send_data_progressive, send_dialog);
+		session_set_send_data_progressive_notify(session, send_send_data_progressive, send_dialog);
 		session_set_send_data_notify(session, send_send_data_finished, send_dialog);
 
 	} else {
@@ -403,22 +354,18 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		if (ac_prefs->use_default_proxy) {
 			proxy_info = (ProxyInfo *)&(prefs_common.proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY,
-						PWS_CORE_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS);
 		} else {
 			proxy_info = (ProxyInfo *)&(ac_prefs->proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get_account(ac_prefs->account_id,
-						PWS_ACCOUNT_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_PROXY_PASS);
 		}
 	}
 	SESSION(smtp_session)->proxy_info = proxy_info;
 
-	session_set_timeout(session,
-			    prefs_common.io_timeout_secs * 1000);
+	session_set_timeout(session, prefs_common.io_timeout_secs * 1000);
 	/* connect if necessary */
-	if (!was_inited && session_connect(session, ac_prefs->smtp_server,
-				port) < 0) {
+	if (!was_inited && session_connect(session, ac_prefs->smtp_server, port) < 0) {
 		session_destroy(session);
 		send_progress_dialog_destroy(send_dialog);
 		ac_prefs->session = NULL;
@@ -432,8 +379,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		smtp_from(smtp_session);
 	}
 
-	while (session_is_running(session) && send_dialog->cancelled == FALSE
-		&& SMTP_SESSION(session)->state != SMTP_MAIL_SENT_OK)
+	while (session_is_running(session) && send_dialog->cancelled == FALSE && SMTP_SESSION(session)->state != SMTP_MAIL_SENT_OK)
 		gtk_main_iteration();
 
 	if (SMTP_SESSION(session)->error_val == SM_AUTHFAIL) {
@@ -445,16 +391,11 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	} else if (SMTP_SESSION(session)->state == SMTP_MAIL_SENT_OK) {
 		log_message(LOG_PROTOCOL, "%s\n", _("Mail sent successfully."));
 		ret = 0;
-	} else if (session->state == SESSION_EOF &&
-		   SMTP_SESSION(session)->state == SMTP_QUIT) {
+	} else if (session->state == SESSION_EOF && SMTP_SESSION(session)->state == SMTP_QUIT) {
 		/* consider EOF right after QUIT successful */
 		log_warning(LOG_PROTOCOL, "%s\n", _("Connection closed by the remote host."));
 		ret = 0;
-	} else if (session->state == SESSION_ERROR ||
-		   session->state == SESSION_EOF ||
-		   session->state == SESSION_TIMEOUT ||
-		   SMTP_SESSION(session)->state == SMTP_ERROR ||
-		   SMTP_SESSION(session)->error_val != SM_OK)
+	} else if (session->state == SESSION_ERROR || session->state == SESSION_EOF || session->state == SESSION_TIMEOUT || SMTP_SESSION(session)->state == SMTP_ERROR || SMTP_SESSION(session)->error_val != SM_OK)
 		ret = -1;
 	else if (send_dialog->cancelled == TRUE)
 		ret = -1;
@@ -484,7 +425,6 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	}
 	if (keep_session && ret == 0 && ac_prefs->session == NULL)
 		ac_prefs->session = SMTP_SESSION(session);
-
 
 	statusbar_pop_all();
 	statusbar_verbosity_set(FALSE);
@@ -552,31 +492,25 @@ static gint send_recv_message(Session *session, const gchar *msg, gpointer data)
 	return 0;
 }
 
-static gint send_send_data_progressive(Session *session, guint cur_len,
-				       guint total_len, gpointer data)
+static gint send_send_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data)
 {
 	gchar buf[BUFFSIZE];
 	SendProgressDialog *dialog = (SendProgressDialog *)data;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
-	
+
 	cm_return_val_if_fail(dialog != NULL, -1);
 
-	if (SMTP_SESSION(session)->state != SMTP_SEND_DATA &&
-	    SMTP_SESSION(session)->state != SMTP_EOM)
+	if (SMTP_SESSION(session)->state != SMTP_SEND_DATA && SMTP_SESSION(session)->state != SMTP_EOM)
 		return 0;
 
-	g_snprintf(buf, sizeof(buf), _("Sending message (%d / %d bytes)"),
-		   cur_len, total_len);
+	g_snprintf(buf, sizeof(buf), _("Sending message (%d / %d bytes)"), cur_len, total_len);
 	progress_dialog_set_label(dialog->dialog, buf);
-	progress_dialog_set_fraction
-		(dialog->dialog, (total_len == 0) ? 0 : (gfloat)cur_len / (gfloat)total_len);
+	progress_dialog_set_fraction(dialog->dialog, (total_len == 0) ? 0 : (gfloat) cur_len / (gfloat) total_len);
 
 	if (mainwin) {
-		if (!gtk_widget_get_visible(mainwin->progressbar))	
+		if (!gtk_widget_get_visible(mainwin->progressbar))
 			gtk_widget_show(mainwin->progressbar);
-		gtk_progress_bar_set_fraction
-			(GTK_PROGRESS_BAR(mainwin->progressbar),
-			 (total_len == 0) ? 0 : (gfloat)cur_len / (gfloat)total_len);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mainwin->progressbar), (total_len == 0) ? 0 : (gfloat) cur_len / (gfloat) total_len);
 	}
 
 	return 0;
@@ -592,15 +526,13 @@ static gint send_send_data_finished(Session *session, guint len, gpointer data)
 	send_send_data_progressive(session, len, len, dialog);
 	if (mainwin) {
 		gtk_widget_hide(mainwin->progressbar);
-		gtk_progress_bar_set_fraction
-			(GTK_PROGRESS_BAR(mainwin->progressbar),(gfloat)0);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mainwin->progressbar), (gfloat) 0);
 	}
 
 	return 0;
 }
 
-static void send_progress_dialog_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
+static void send_progress_dialog_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
@@ -617,17 +549,12 @@ static SendProgressDialog *send_progress_dialog_create(void)
 	dialog = g_new0(SendProgressDialog, 1);
 
 	progress = progress_dialog_create();
-	gtk_window_set_title(GTK_WINDOW(progress->window),
-			     _("Sending message"));
-	g_signal_connect(G_OBJECT(progress->showlog_btn), "clicked",
-			 G_CALLBACK(send_showlog_button_cb), dialog);
-	g_signal_connect(G_OBJECT(progress->cancel_btn), "clicked",
-			 G_CALLBACK(send_cancel_button_cb), dialog);
-	g_signal_connect(G_OBJECT(progress->window), "delete_event",
-			 G_CALLBACK(gtk_true), NULL);
+	gtk_window_set_title(GTK_WINDOW(progress->window), _("Sending message"));
+	g_signal_connect(G_OBJECT(progress->showlog_btn), "clicked", G_CALLBACK(send_showlog_button_cb), dialog);
+	g_signal_connect(G_OBJECT(progress->cancel_btn), "clicked", G_CALLBACK(send_cancel_button_cb), dialog);
+	g_signal_connect(G_OBJECT(progress->window), "delete_event", G_CALLBACK(gtk_true), NULL);
 	gtk_window_set_modal(GTK_WINDOW(progress->window), TRUE);
-	g_signal_connect(G_OBJECT(progress->window), "size_allocate",
-			 G_CALLBACK(send_progress_dialog_size_allocate_cb), NULL);
+	g_signal_connect(G_OBJECT(progress->window), "size_allocate", G_CALLBACK(send_progress_dialog_size_allocate_cb), NULL);
 	manage_window_set_transient(GTK_WINDOW(progress->window));
 
 	progress_dialog_get_fraction(progress);
@@ -637,15 +564,13 @@ static SendProgressDialog *send_progress_dialog_create(void)
 		geometry.min_height = 250;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(progress->window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(progress->window, prefs_common.sendwin_width,
-				    prefs_common.sendwin_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(progress->window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(progress->window, prefs_common.sendwin_width, prefs_common.sendwin_height);
 
 	if (!prefs_common.send_dialog_invisible) {
 		gtk_widget_show_now(progress->window);
 	}
-	
+
 	dialog->dialog = progress;
 
 	return dialog;
@@ -671,7 +596,7 @@ static void send_showlog_button_cb(GtkWidget *widget, gpointer data)
 static void send_cancel_button_cb(GtkWidget *widget, gpointer data)
 {
 	SendProgressDialog *dialog = (SendProgressDialog *)data;
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 
 	dialog->cancelled = TRUE;
 }
@@ -689,25 +614,21 @@ static void send_put_error(Session *session)
 	case SM_UNRECOVERABLE:
 		log_msg = _("Error occurred while sending the message.");
 		if (msg)
-			err_msg = g_strdup_printf
-				(_("Error occurred while sending the message:\n%s"),
-				 msg);
+			err_msg = g_strdup_printf(_("Error occurred while sending the message:\n%s"), msg);
 		else
 			err_msg = g_strdup(log_msg);
 		break;
 	case SM_AUTHFAIL:
 		log_msg = _("Authentication failed.");
 		if (msg)
-			err_msg = g_strdup_printf
-				(_("Authentication failed:\n%s"), msg);
+			err_msg = g_strdup_printf(_("Authentication failed:\n%s"), msg);
 		else
 			err_msg = g_strdup(log_msg);
 		break;
 	default:
 		switch (session->state) {
 		case SESSION_ERROR:
-			log_msg =
-				_("Error occurred while sending the message.");
+			log_msg = _("Error occurred while sending the message.");
 			err_msg = g_strdup(log_msg);
 			break;
 		case SESSION_EOF:
@@ -715,9 +636,7 @@ static void send_put_error(Session *session)
 			err_msg = g_strdup(log_msg);
 			break;
 		case SESSION_TIMEOUT:
-			log_msg = _("Session timed out. You may be able to "
-				    "recover by increasing the timeout value in "
-				    "Preferences/Other/Miscellaneous.");
+			log_msg = _("Session timed out. You may be able to " "recover by increasing the timeout value in " "Preferences/Other/Miscellaneous.");
 			err_msg = g_strdup(log_msg);
 			break;
 		default:
@@ -735,3 +654,6 @@ static void send_put_error(Session *session)
 	}
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

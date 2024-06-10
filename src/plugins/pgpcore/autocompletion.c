@@ -18,9 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -92,8 +91,7 @@ static gboolean pgp_autocompletion_hook(gpointer source, gpointer data)
 						debug_print("%s <%s>\n", uid->name, uid->email);
 					}
 
-					if (prefs_gpg_get_config()->autocompletion_limit > 0 &&
-							prefs_gpg_get_config()->autocompletion_limit == i)
+					if (prefs_gpg_get_config()->autocompletion_limit > 0 && prefs_gpg_get_config()->autocompletion_limit == i)
 						break;
 
 					uid = uid->next;
@@ -116,8 +114,7 @@ static gboolean pgp_autocompletion_hook(gpointer source, gpointer data)
 
 gboolean autocompletion_done(void)
 {
-	if (autocompletion_hook_id != HOOK_NONE)
-	{
+	if (autocompletion_hook_id != HOOK_NONE) {
 		hooks_unregister_hook(ADDDRESS_COMPLETION_BUILD_ADDRESS_LIST_HOOKLIST, autocompletion_hook_id);
 
 		debug_print("PGP address autocompletion hook unregistered\n");
@@ -126,10 +123,9 @@ gboolean autocompletion_done(void)
 	return TRUE;
 }
 
-gint autocompletion_init(gchar ** error)
+gint autocompletion_init(gchar **error)
 {
-	if ((autocompletion_hook_id = hooks_register_hook(ADDDRESS_COMPLETION_BUILD_ADDRESS_LIST_HOOKLIST, pgp_autocompletion_hook, NULL)) == HOOK_NONE)
-	{
+	if ((autocompletion_hook_id = hooks_register_hook(ADDDRESS_COMPLETION_BUILD_ADDRESS_LIST_HOOKLIST, pgp_autocompletion_hook, NULL)) == HOOK_NONE) {
 		*error = g_strdup(_("Failed to register PGP address autocompletion hook"));
 		return -1;
 	}
@@ -138,3 +134,6 @@ gint autocompletion_init(gchar ** error)
 	return EXIT_SUCCESS;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -33,31 +33,27 @@ typedef struct SieveCommand SieveCommand;
 typedef struct SieveScript SieveScript;
 typedef struct SieveResult SieveResult;
 
-typedef enum
-{
-	SE_OK			= 0,
-	SE_ERROR			= 128,
-	SE_UNRECOVERABLE	= 129,
-	SE_AUTHFAIL		= 130
+typedef enum {
+	SE_OK = 0,
+	SE_ERROR = 128,
+	SE_UNRECOVERABLE = 129,
+	SE_AUTHFAIL = 130
 } SieveErrorValue;
 
-typedef enum
-{
-	SIEVEAUTH_NONE		= 0,
-	SIEVEAUTH_REUSE		= 1,
-	SIEVEAUTH_CUSTOM	= 2
+typedef enum {
+	SIEVEAUTH_NONE = 0,
+	SIEVEAUTH_REUSE = 1,
+	SIEVEAUTH_CUSTOM = 2
 } SieveAuth;
 
-typedef enum
-{
-	SIEVEAUTH_AUTO			= 0,
-	SIEVEAUTH_PLAIN			= 1 << 0,
-	SIEVEAUTH_LOGIN			= 1 << 1,
-	SIEVEAUTH_CRAM_MD5		= 1 << 2,
+typedef enum {
+	SIEVEAUTH_AUTO = 0,
+	SIEVEAUTH_PLAIN = 1 << 0,
+	SIEVEAUTH_LOGIN = 1 << 1,
+	SIEVEAUTH_CRAM_MD5 = 1 << 2,
 } SieveAuthType;
 
-typedef enum
-{
+typedef enum {
 	SIEVE_CAPABILITIES,
 	SIEVE_READY,
 	SIEVE_LISTSCRIPTS,
@@ -81,8 +77,7 @@ typedef enum
 	N_SIEVE_PHASE
 } SieveState;
 
-typedef enum
-{
+typedef enum {
 	SIEVE_CODE_NONE,
 	SIEVE_CODE_WARNINGS,
 	SIEVE_CODE_TRYLATER,
@@ -95,16 +90,12 @@ typedef enum {
 	SIEVE_TLS_YES
 } SieveTLSType;
 
-typedef void (*sieve_session_cb_fn) (SieveSession *session, gpointer data);
-typedef void (*sieve_session_data_cb_fn) (SieveSession *session,
-		gboolean aborted, gpointer cb_data, gpointer user_data);
-typedef void (*sieve_session_error_cb_fn) (SieveSession *session,
-		const gchar *msg, gpointer user_data);
-typedef void (*sieve_session_connected_cb_fn) (SieveSession *session,
-		gboolean connected, gpointer user_data);
+typedef void (*sieve_session_cb_fn)(SieveSession *session, gpointer data);
+typedef void (*sieve_session_data_cb_fn)(SieveSession *session, gboolean aborted, gpointer cb_data, gpointer user_data);
+typedef void (*sieve_session_error_cb_fn)(SieveSession *session, const gchar *msg, gpointer user_data);
+typedef void (*sieve_session_connected_cb_fn)(SieveSession *session, gboolean connected, gpointer user_data);
 
-struct SieveSession
-{
+struct SieveSession {
 	Session session;
 	PrefsAccount *account;
 	struct SieveAccountConfig *config;
@@ -165,28 +156,13 @@ void sieve_sessions_close();
 void sieve_account_prefs_updated(PrefsAccount *account);
 SieveSession *sieve_session_get_for_account(PrefsAccount *account);
 void sieve_sessions_discard_callbacks(gpointer user_data);
-void sieve_session_handle_status(SieveSession *session,
-		sieve_session_error_cb_fn on_error,
-		sieve_session_connected_cb_fn on_connected,
-		gpointer data);
-void sieve_session_list_scripts(SieveSession *session,
-		sieve_session_data_cb_fn got_script_name_cb, gpointer data);
-void sieve_session_set_active_script(SieveSession *session,
-		const gchar *filter_name,
-		sieve_session_data_cb_fn cb, gpointer data);
-void sieve_session_rename_script(SieveSession *session,
-		const gchar *name_old, const char *name_new,
-		sieve_session_data_cb_fn cb, gpointer data);
-void sieve_session_get_script(SieveSession *session, const gchar *filter_name,
-		sieve_session_data_cb_fn cb, gpointer data);
-void sieve_session_put_script(SieveSession *session, const gchar *filter_name,
-		gint len, const gchar *script_contents,
-		sieve_session_data_cb_fn cb, gpointer data);
-void sieve_session_check_script(SieveSession *session,
-		gint len, const gchar *script_contents,
-		sieve_session_data_cb_fn cb, gpointer data);
-void sieve_session_delete_script(SieveSession *session,
-		const gchar *filter_name,
-		sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_handle_status(SieveSession *session, sieve_session_error_cb_fn on_error, sieve_session_connected_cb_fn on_connected, gpointer data);
+void sieve_session_list_scripts(SieveSession *session, sieve_session_data_cb_fn got_script_name_cb, gpointer data);
+void sieve_session_set_active_script(SieveSession *session, const gchar *filter_name, sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_rename_script(SieveSession *session, const gchar *name_old, const char *name_new, sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_get_script(SieveSession *session, const gchar *filter_name, sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_put_script(SieveSession *session, const gchar *filter_name, gint len, const gchar *script_contents, sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_check_script(SieveSession *session, gint len, const gchar *script_contents, sieve_session_data_cb_fn cb, gpointer data);
+void sieve_session_delete_script(SieveSession *session, const gchar *filter_name, sieve_session_data_cb_fn cb, gpointer data);
 
 #endif /* MANAGESIEVE_H */

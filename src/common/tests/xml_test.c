@@ -9,15 +9,13 @@
 
 #define DATADIR "data/"
 
-static void
-test_xml_open_file_missing(void)
+static void test_xml_open_file_missing(void)
 {
 	XMLFile *xf = xml_open_file(DATADIR "missing.xml");
 	g_assert_null(xf);
 }
 
-static void
-test_xml_open_file_empty(void)
+static void test_xml_open_file_empty(void)
 {
 	XMLFile *xf = xml_open_file(DATADIR "empty.xml");
 	g_assert_nonnull(xf);
@@ -30,8 +28,7 @@ test_xml_open_file_empty(void)
 	g_assert_false(xf->is_empty_element);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
@@ -40,3 +37,7 @@ main(int argc, char *argv[])
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

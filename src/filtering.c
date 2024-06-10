@@ -36,11 +36,11 @@
 #include "prefs_common.h"
 #include "addritem.h"
 #ifndef USE_ALT_ADDRBOOK
-	#include "addrbook.h"
-	#include "addressbook.h"
+#include "addrbook.h"
+#include "addressbook.h"
 #else
-	#include "addressbook-dbus.h"
-	#include "addressadd.h"
+#include "addressbook-dbus.h"
+#include "addressadd.h"
 #endif
 #include "addr_compl.h"
 #include "tags.h"
@@ -49,40 +49,38 @@
 #include "addrindex.h"
 #include "folder_item_prefs.h"
 
-GSList * pre_global_processing = NULL;
-GSList * post_global_processing = NULL;
-GSList * filtering_rules = NULL;
+GSList *pre_global_processing = NULL;
+GSList *post_global_processing = NULL;
+GSList *filtering_rules = NULL;
 
 gboolean debug_filtering_session = FALSE;
 
 static gboolean filtering_is_final_action(FilteringAction *filtering_action);
 
-FilteringAction * filteringaction_new(int type, int account_id,
-				      gchar * destination,
-				      gint labelcolor, gint score, gchar * header)
+FilteringAction *filteringaction_new(int type, int account_id, gchar *destination, gint labelcolor, gint score, gchar *header)
 {
-	FilteringAction * action;
+	FilteringAction *action;
 
 	action = g_new0(FilteringAction, 1);
 
 	action->type = type;
 	action->account_id = account_id;
 	if (destination) {
-		action->destination	  = g_strdup(destination);
+		action->destination = g_strdup(destination);
 	} else {
-		action->destination       = NULL;
+		action->destination = NULL;
 	}
 	if (header) {
-		action->header	  = g_strdup(header);
+		action->header = g_strdup(header);
 	} else {
-		action->header       = NULL;
+		action->header = NULL;
 	}
-	action->labelcolor = labelcolor;	
-        action->score = score;
+	action->labelcolor = labelcolor;
+	action->score = score;
 	return action;
 }
 
-void filteringaction_free(FilteringAction * action)
+void filteringaction_free(FilteringAction *action)
 {
 	cm_return_if_fail(action);
 	g_free(action->header);
@@ -92,9 +90,9 @@ void filteringaction_free(FilteringAction * action)
 
 static gint action_list_sort(gconstpointer a, gconstpointer b)
 {
-	int first  = filtering_is_final_action((FilteringAction *) a) ? 1 : 0;
-	int second = filtering_is_final_action((FilteringAction *) b) ? 1 : 0;
-	
+	int first = filtering_is_final_action((FilteringAction *)a) ? 1 : 0;
+	int second = filtering_is_final_action((FilteringAction *)b) ? 1 : 0;
+
 	return (first - second);
 }
 
@@ -103,17 +101,13 @@ GSList *filtering_action_list_sort(GSList *action_list)
 	return g_slist_sort(action_list, action_list_sort);
 }
 
-FilteringProp * filteringprop_new(gboolean enabled,
-				  const gchar *name,
-				  gint account_id,
-				  MatcherList * matchers,
-				  GSList * action_list)
+FilteringProp *filteringprop_new(gboolean enabled, const gchar *name, gint account_id, MatcherList *matchers, GSList *action_list)
 {
-	FilteringProp * filtering;
+	FilteringProp *filtering;
 
 	filtering = g_new0(FilteringProp, 1);
 	filtering->enabled = enabled;
-	filtering->name = name ? g_strdup(name): NULL;
+	filtering->name = name ? g_strdup(name) : NULL;
 	filtering->account_id = account_id;
 	filtering->matchers = matchers;
 	filtering->action_list = filtering_action_list_sort(action_list);
@@ -121,52 +115,50 @@ FilteringProp * filteringprop_new(gboolean enabled,
 	return filtering;
 }
 
-static FilteringAction * filteringaction_copy(FilteringAction * src)
+static FilteringAction *filteringaction_copy(FilteringAction *src)
 {
-        FilteringAction * new;
-        
-        new = g_new0(FilteringAction, 1);
-        
+	FilteringAction *new;
+
+	new = g_new0(FilteringAction, 1);
+
 	new->type = src->type;
 	new->account_id = src->account_id;
 	if (src->destination)
 		new->destination = g_strdup(src->destination);
-	else 
+	else
 		new->destination = NULL;
 	new->labelcolor = src->labelcolor;
 	new->score = src->score;
 
-        return new;
+	return new;
 }
 
-FilteringProp * filteringprop_copy(FilteringProp *src)
+FilteringProp *filteringprop_copy(FilteringProp *src)
 {
-	FilteringProp * new;
+	FilteringProp *new;
 	GSList *tmp;
-	
+
 	new = g_new0(FilteringProp, 1);
 	new->matchers = g_new0(MatcherList, 1);
 
 	for (tmp = src->matchers->matchers; tmp != NULL && tmp->data != NULL;) {
 		MatcherProp *matcher = (MatcherProp *)tmp->data;
-		
-		new->matchers->matchers = g_slist_append(new->matchers->matchers,
-						   matcherprop_copy(matcher));
+
+		new->matchers->matchers = g_slist_append(new->matchers->matchers, matcherprop_copy(matcher));
 		tmp = tmp->next;
 	}
 
 	new->matchers->bool_and = src->matchers->bool_and;
 
-        new->action_list = NULL;
+	new->action_list = NULL;
 
-        for (tmp = src->action_list ; tmp != NULL ; tmp = tmp->next) {
-                FilteringAction *filtering_action;
-                
-                filtering_action = tmp->data;
-                
-                new->action_list = g_slist_append(new->action_list,
-                    filteringaction_copy(filtering_action));
-        }
+	for (tmp = src->action_list; tmp != NULL; tmp = tmp->next) {
+		FilteringAction *filtering_action;
+
+		filtering_action = tmp->data;
+
+		new->action_list = g_slist_append(new->action_list, filteringaction_copy(filtering_action));
+	}
 
 	new->enabled = src->enabled;
 	new->name = g_strdup(src->name);
@@ -174,16 +166,16 @@ FilteringProp * filteringprop_copy(FilteringProp *src)
 	return new;
 }
 
-void filteringprop_free(FilteringProp * prop)
+void filteringprop_free(FilteringProp *prop)
 {
-        GSList * tmp;
+	GSList *tmp;
 
 	cm_return_if_fail(prop);
 	matcherlist_free(prop->matchers);
-        
-        for (tmp = prop->action_list ; tmp != NULL ; tmp = tmp->next) {
-                filteringaction_free(tmp->data);
-        }
+
+	for (tmp = prop->action_list; tmp != NULL; tmp = tmp->next) {
+		filteringaction_free(tmp->data);
+	}
 	g_slist_free(prop->action_list);
 	g_free(prop->name);
 	g_free(prop);
@@ -219,14 +211,12 @@ void filtering_move_and_copy_msgs(GSList *msgs)
 					cur_op = IS_DELE;
 			}
 			if (info->filter_op == IS_COPY || info->filter_op == IS_MOVE) {
-				if (info->to_filter_folder == last_item 
-				&&  cur_op == info->filter_op) {
+				if (info->to_filter_folder == last_item && cur_op == info->filter_op) {
 					found++;
 					batch = g_slist_prepend(batch, info);
 				}
 			} else if (info->filter_op == IS_DELE) {
-				if (info->folder == last_item 
-				&&  cur_op == info->filter_op) {
+				if (info->folder == last_item && cur_op == info->filter_op) {
 					found++;
 					batch = g_slist_prepend(batch, info);
 				}
@@ -236,9 +226,7 @@ void filtering_move_and_copy_msgs(GSList *msgs)
 			debug_print("no more messages to move/copy/del\n");
 			break;
 		} else {
-			debug_print("%d messages to %s in %s\n", found,
-				cur_op==IS_COPY ? "copy":(cur_op==IS_DELE ?"delete":"move"), 
-				last_item->name ? last_item->name:"(noname)");
+			debug_print("%d messages to %s in %s\n", found, cur_op == IS_COPY ? "copy" : (cur_op == IS_DELE ? "delete" : "move"), last_item->name ? last_item->name : "(noname)");
 		}
 		for (cur = batch; cur; cur = cur->next) {
 			MsgInfo *info = (MsgInfo *)cur->data;
@@ -253,9 +241,7 @@ void filtering_move_and_copy_msgs(GSList *msgs)
 				folder_item_copy_msgs(last_item, batch);
 			} else if (cur_op == IS_MOVE && last_item != info->folder) {
 				if (folder_item_move_msgs(last_item, batch) < 0)
-					folder_item_move_msgs(
-						folder_get_default_inbox(), 
-						batch);
+					folder_item_move_msgs(folder_get_default_inbox(), batch);
 			} else if (cur_op == IS_DELE && last_item == info->folder) {
 				folder_item_remove_msgs(last_item, batch);
 			}
@@ -287,45 +273,41 @@ void filtering_move_and_copy_msgs(GSList *msgs)
 	}								\
 }
 
-static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
+static gboolean filteringaction_apply(FilteringAction *action, MsgInfo *info)
 {
-	FolderItem * dest_folder;
+	FolderItem *dest_folder;
 	gint val;
-	Compose * compose;
-	PrefsAccount * account;
-	gchar * cmd;
+	Compose *compose;
+	PrefsAccount *account;
+	gchar *cmd;
 
-	switch(action->type) {
+	switch (action->type) {
 	case MATCHACTION_MOVE:
 		if (MSG_IS_LOCKED(info->flags))
 			return FALSE;
-			
-		dest_folder =
-			folder_find_item_from_identifier(action->destination);
+
+		dest_folder = folder_find_item_from_identifier(action->destination);
 		if (!dest_folder) {
-			debug_print("*** folder not found '%s'\n",
-				action->destination ?action->destination :"(null)");
+			debug_print("*** folder not found '%s'\n", action->destination ? action->destination : "(null)");
 			return FALSE;
 		}
-		
+
 		FLUSH_COPY_IF_NEEDED(info);
-		/* mark message to be moved */		
+		/* mark message to be moved */
 		info->filter_op = IS_MOVE;
 		info->to_filter_folder = dest_folder;
 		return TRUE;
 
 	case MATCHACTION_COPY:
-		dest_folder =
-			folder_find_item_from_identifier(action->destination);
+		dest_folder = folder_find_item_from_identifier(action->destination);
 
 		if (!dest_folder) {
-			debug_print("*** folder not found '%s'\n",
-				action->destination ?action->destination :"(null)");
+			debug_print("*** folder not found '%s'\n", action->destination ? action->destination : "(null)");
 			return FALSE;
 		}
 
 		FLUSH_COPY_IF_NEEDED(info);
-		/* mark message to be copied */		
+		/* mark message to be copied */
 		info->filter_op = IS_COPY;
 		info->to_filter_folder = dest_folder;
 		return TRUE;
@@ -334,8 +316,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 	case MATCHACTION_UNSET_TAG:
 		val = tags_get_id_for_str(action->destination);
 		if (val == -1) {
-			debug_print("*** tag '%s' not found\n",
-				action->destination ?action->destination :"(null)");
+			debug_print("*** tag '%s' not found\n", action->destination ? action->destination : "(null)");
 			return FALSE;
 		}
 		FLUSH_COPY_IF_NEEDED(info);
@@ -369,9 +350,9 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 
 	case MATCHACTION_UNLOCK:
 		FLUSH_COPY_IF_NEEDED(info);
-		procmsg_msginfo_unset_flags(info, MSG_LOCKED, 0);	
+		procmsg_msginfo_unset_flags(info, MSG_LOCKED, 0);
 		return TRUE;
-		
+
 	case MATCHACTION_MARK_AS_READ:
 		FLUSH_COPY_IF_NEEDED(info);
 		procmsg_msginfo_unset_flags(info, MSG_UNREAD | MSG_NEW, 0);
@@ -381,11 +362,11 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 		FLUSH_COPY_IF_NEEDED(info);
 		procmsg_msginfo_change_flags(info, MSG_UNREAD, 0, MSG_NEW, 0);
 		return TRUE;
-	
+
 	case MATCHACTION_MARK_AS_SPAM:
 		FLUSH_COPY_IF_NEEDED(info);
 		procmsg_spam_learner_learn(info, NULL, TRUE);
-		procmsg_msginfo_change_flags(info, MSG_SPAM, 0, MSG_NEW|MSG_UNREAD, 0);
+		procmsg_msginfo_change_flags(info, MSG_SPAM, 0, MSG_NEW | MSG_UNREAD, 0);
 		return TRUE;
 
 	case MATCHACTION_MARK_AS_HAM:
@@ -393,23 +374,18 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 		procmsg_spam_learner_learn(info, NULL, FALSE);
 		procmsg_msginfo_unset_flags(info, MSG_SPAM, 0);
 		return TRUE;
-	
+
 	case MATCHACTION_COLOR:
 		FLUSH_COPY_IF_NEEDED(info);
-		procmsg_msginfo_unset_flags(info, MSG_CLABEL_FLAG_MASK, 0); 
+		procmsg_msginfo_unset_flags(info, MSG_CLABEL_FLAG_MASK, 0);
 		procmsg_msginfo_set_flags(info, MSG_COLORLABEL_TO_FLAGS(action->labelcolor), 0);
 		return TRUE;
 
 	case MATCHACTION_FORWARD:
 	case MATCHACTION_FORWARD_AS_ATTACHMENT:
 		account = account_find_from_id(action->account_id);
-		compose = compose_forward(account, info,
-			action->type == MATCHACTION_FORWARD ? FALSE : TRUE,
-			NULL, TRUE, TRUE);
-		compose_entry_append(compose, action->destination,
-				     compose->account->protocol == A_NNTP
-					    ? COMPOSE_NEWSGROUPS
-					    : COMPOSE_TO, PREF_NONE);
+		compose = compose_forward(account, info, action->type == MATCHACTION_FORWARD ? FALSE : TRUE, NULL, TRUE, TRUE);
+		compose_entry_append(compose, action->destination, compose->account->protocol == A_NNTP ? COMPOSE_NEWSGROUPS : COMPOSE_TO, PREF_NONE);
 
 		val = compose_send(compose);
 
@@ -421,11 +397,10 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 		if (compose->account->protocol == A_NNTP)
 			break;
 		else
-			compose_entry_append(compose, action->destination,
-					     COMPOSE_TO, PREF_NONE);
+			compose_entry_append(compose, action->destination, COMPOSE_TO, PREF_NONE);
 
 		val = compose_send(compose);
-		
+
 		return val == 0 ? TRUE : FALSE;
 
 	case MATCHACTION_EXECUTE:
@@ -450,22 +425,22 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 		return TRUE;
 
 	case MATCHACTION_STOP:
-                return FALSE;
+		return FALSE;
 
 	case MATCHACTION_HIDE:
 		FLUSH_COPY_IF_NEEDED(info);
-                info->hidden = TRUE;
-                return TRUE;
+		info->hidden = TRUE;
+		return TRUE;
 
 	case MATCHACTION_IGNORE:
 		FLUSH_COPY_IF_NEEDED(info);
-                procmsg_msginfo_set_flags(info, MSG_IGNORE_THREAD, 0);
-                return TRUE;
+		procmsg_msginfo_set_flags(info, MSG_IGNORE_THREAD, 0);
+		return TRUE;
 
 	case MATCHACTION_WATCH:
 		FLUSH_COPY_IF_NEEDED(info);
-                procmsg_msginfo_set_flags(info, MSG_WATCH_THREAD, 0);
-                return TRUE;
+		procmsg_msginfo_set_flags(info, MSG_WATCH_THREAD, 0);
+		return TRUE;
 
 	case MATCHACTION_ADD_TO_ADDRESSBOOK:
 		{
@@ -480,7 +455,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 
 #ifndef USE_ALT_ADDRBOOK
 			if (!addressbook_peek_folder_exists(action->destination, &book, &folder)) {
-				g_warning("addressbook folder not found '%s'", action->destination?action->destination:"(null)");
+				g_warning("addressbook folder not found '%s'", action->destination ? action->destination : "(null)");
 				return FALSE;
 			}
 			if (!book) {
@@ -503,9 +478,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 				GSList *walk = NULL;
 				gchar *path = NULL;
 
-				if (action->destination == NULL ||
-						strcasecmp(action->destination, "Any") == 0 ||
-						*(action->destination) == '\0')
+				if (action->destination == NULL || strcasecmp(action->destination, "Any") == 0 || *(action->destination) == '\0')
 					path = NULL;
 				else
 					path = action->destination;
@@ -518,8 +491,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 
 					if (complete_matches_found(walk->data) == 0) {
 						gchar *name = procheader_get_fromname(walk->data);
-						debug_print("adding '%s <%s>' to addressbook '%s'\n",
-								name, stripped_addr, action->destination);
+						debug_print("adding '%s <%s>' to addressbook '%s'\n", name, stripped_addr, action->destination);
 #ifndef USE_ALT_ADDRBOOK
 						if (!addrbook_add_contact(abf, folder, name, stripped_addr, NULL)) {
 #else
@@ -530,8 +502,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 						}
 						g_free(name);
 					} else {
-						debug_print("address '%s' already found in addressbook '%s', skipping\n",
-								stripped_addr, action->destination);
+						debug_print("address '%s' already found in addressbook '%s', skipping\n", stripped_addr, action->destination);
 					}
 					g_free(stripped_addr);
 				}
@@ -539,7 +510,7 @@ static gboolean filteringaction_apply(FilteringAction * action, MsgInfo * info)
 				g_slist_free(address_list);
 				end_address_completion();
 			} else {
-				g_warning("header '%s' not set or empty", action->header?action->header:"(null)");
+				g_warning("header '%s' not set or empty", action->header ? action->header : "(null)");
 			}
 			if (header)
 				procheader_header_free(header);
@@ -557,20 +528,18 @@ gboolean filteringaction_apply_action_list(GSList *action_list, MsgInfo *info)
 	cm_return_val_if_fail(action_list, FALSE);
 	cm_return_val_if_fail(info, FALSE);
 	for (p = action_list; p && p->data; p = g_slist_next(p)) {
-		FilteringAction *a = (FilteringAction *) p->data;
+		FilteringAction *a = (FilteringAction *)p->data;
 		if (filteringaction_apply(a, info)) {
 			if (filtering_is_final_action(a))
 				break;
 		} else
 			return FALSE;
-		
+
 	}
 	return TRUE;
 }
 
-static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *info,
-							PrefsAccount *ac_prefs)
-
+static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *info, PrefsAccount *ac_prefs)
 /* this function returns true if a filtering rule applies regarding to its account
    data and if it does, if the conditions list match.
 
@@ -596,50 +565,38 @@ static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *inf
 
 	if (ac_prefs != NULL) {
 		matches = ((filtering->account_id == 0)
-					|| (filtering->account_id == ac_prefs->account_id));
+			   || (filtering->account_id == ac_prefs->account_id));
 
 		/* debug output */
 		if (debug_filtering_session) {
 			if (matches) {
 				/* either because rule is not account-based */
-    			if (filtering->account_id == 0) {
+				if (filtering->account_id == 0) {
 					if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
-       					log_status_ok(LOG_DEBUG_FILTERING,
-	    						_("rule is not account-based\n"));
-                    }
+						log_status_ok(LOG_DEBUG_FILTERING, _("rule is not account-based\n"));
+					}
 				} else {
 					/* or because it is account-based, and matching current account */
 					if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 						/* with fewer detail when rule is OK */
-						log_status_ok(LOG_DEBUG_FILTERING,
-								_("rule is account-based, "
-								"matching the account currently used to retrieve messages\n"));
+						log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based, " "matching the account currently used to retrieve messages\n"));
 					} else {
 						if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_HIGH) {
 							/* with more detail when rule is OK */
-							log_status_ok(LOG_DEBUG_FILTERING,
-									_("rule is account-based [id=%d, name='%s'], "
-									"matching the account currently used to retrieve messages\n"),
-									ac_prefs->account_id, ac_prefs?ac_prefs->account_name:_("NON_EXISTENT"));
+							log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "matching the account currently used to retrieve messages\n"), ac_prefs->account_id, ac_prefs ? ac_prefs->account_name : _("NON_EXISTENT"));
 						}
 					}
 				}
 			} else {
 				if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 					/* with fewer detail when rule is skipped */
-					log_status_skip(LOG_DEBUG_FILTERING,
-							_("rule is account-based, "
-							"not matching the account currently used to retrieve messages\n"));
+					log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based, " "not matching the account currently used to retrieve messages\n"));
 				} else {
 					if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_HIGH) {
 						/* with more detail when rule is skipped */
 						PrefsAccount *account = account_find_from_id(filtering->account_id);
 
-						log_status_skip(LOG_DEBUG_FILTERING,
-								_("rule is account-based [id=%d, name='%s'], "
-								"not matching the account currently used to retrieve messages [id=%d, name='%s']\n"),
-								filtering->account_id, account?account->account_name:_("NON_EXISTENT"),
-								ac_prefs->account_id, ac_prefs?ac_prefs->account_name:_("NON_EXISTENT"));
+						log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "not matching the account currently used to retrieve messages [id=%d, name='%s']\n"), filtering->account_id, account ? account->account_name : _("NON_EXISTENT"), ac_prefs->account_id, ac_prefs ? ac_prefs->account_name : _("NON_EXISTENT"));
 					}
 				}
 			}
@@ -654,25 +611,18 @@ static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *inf
 			if (debug_filtering_session) {
 				if (filtering->account_id == 0) {
 					if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
-        				log_status_ok(LOG_DEBUG_FILTERING,
-		    					_("rule is not account-based, "
-			    				"but all rules are applied on user request anyway\n"));
-                    }
+						log_status_ok(LOG_DEBUG_FILTERING, _("rule is not account-based, " "but all rules are applied on user request anyway\n"));
+					}
 				} else {
 					if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 						/* with fewer detail when rule is OK */
-						log_status_ok(LOG_DEBUG_FILTERING,
-								_("rule is account-based, "
-								"but all rules are applied on user request anyway\n"));
+						log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based, " "but all rules are applied on user request anyway\n"));
 					} else {
 						if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 							/* with more detail when rule is OK */
 							PrefsAccount *account = account_find_from_id(filtering->account_id);
 
-							log_status_ok(LOG_DEBUG_FILTERING,
-									_("rule is account-based [id=%d, name='%s'], "
-									"but all rules are applied on user request anyway\n"),
-									filtering->account_id, account?account->account_name:_("NON_EXISTENT"));
+							log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "but all rules are applied on user request anyway\n"), filtering->account_id, account ? account->account_name : _("NON_EXISTENT"));
 						}
 					}
 				}
@@ -686,24 +636,18 @@ static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *inf
 			if (debug_filtering_session) {
 				if (matches) {
 					if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
-    					log_status_ok(LOG_DEBUG_FILTERING,
-	    						_("rule is not account-based\n"));
-                    }
+						log_status_ok(LOG_DEBUG_FILTERING, _("rule is not account-based\n"));
+					}
 				} else {
 					if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 						/* with fewer detail when rule is skipped */
-						log_status_skip(LOG_DEBUG_FILTERING,
-								_("rule is account-based, "
-								"skipped on user request\n"));
+						log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based, " "skipped on user request\n"));
 					} else {
 						if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_HIGH) {
 							/* with more detail when rule is skipped */
 							PrefsAccount *account = account_find_from_id(filtering->account_id);
 
-							log_status_skip(LOG_DEBUG_FILTERING,
-									_("rule is account-based [id=%d, name='%s'], "
-									"skipped on user request\n"),
-									filtering->account_id, account?account->account_name:_("NON_EXISTENT"));
+							log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "skipped on user request\n"), filtering->account_id, account ? account->account_name : _("NON_EXISTENT"));
 						}
 					}
 				}
@@ -711,51 +655,38 @@ static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *inf
 			break;
 		case FILTERING_ACCOUNT_RULES_USE_CURRENT:
 			matches = ((filtering->account_id == 0)
-					|| (filtering->account_id == cur_account->account_id));
+				   || (filtering->account_id == cur_account->account_id));
 
 			/* debug output */
 			if (debug_filtering_session) {
 				if (matches) {
 					if (filtering->account_id == 0) {
 						if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
-							log_status_ok(LOG_DEBUG_FILTERING,
-									_("rule is not account-based\n"));
-                        }
+							log_status_ok(LOG_DEBUG_FILTERING, _("rule is not account-based\n"));
+						}
 					} else {
 						if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 							/* with fewer detail when rule is OK */
-							log_status_ok(LOG_DEBUG_FILTERING,
-									_("rule is account-based, "
-									"matching current account\n"));
+							log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based, " "matching current account\n"));
 						} else {
 							if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 								/* with more detail when rule is OK */
 								PrefsAccount *account = account_find_from_id(filtering->account_id);
 
-								log_status_ok(LOG_DEBUG_FILTERING,
-										_("rule is account-based [id=%d, name='%s'], "
-										"matching current account [id=%d, name='%s']\n"),
-										account->account_id, account?account->account_name:_("NON_EXISTENT"),
-										cur_account->account_id, cur_account?cur_account->account_name:_("NON_EXISTENT"));
+								log_status_ok(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "matching current account [id=%d, name='%s']\n"), account->account_id, account ? account->account_name : _("NON_EXISTENT"), cur_account->account_id, cur_account ? cur_account->account_name : _("NON_EXISTENT"));
 							}
 						}
 					}
 				} else {
 					if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_MED) {
 						/* with fewer detail when rule is skipped */
-						log_status_skip(LOG_DEBUG_FILTERING,
-								_("rule is account-based, "
-								"not matching current account\n"));
+						log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based, " "not matching current account\n"));
 					} else {
 						if (prefs_common.filtering_debug_level == FILTERING_DEBUG_LEVEL_HIGH) {
 							/* with more detail when rule is skipped */
 							PrefsAccount *account = account_find_from_id(filtering->account_id);
 
-							log_status_skip(LOG_DEBUG_FILTERING,
-									_("rule is account-based [id=%d, name='%s'], "
-									"not matching current account [id=%d, name='%s']\n"),
-									filtering->account_id, account?account->account_name:_("NON_EXISTENT"),
-									cur_account->account_id, cur_account?cur_account->account_name:_("NON_EXISTENT"));
+							log_status_skip(LOG_DEBUG_FILTERING, _("rule is account-based [id=%d, name='%s'], " "not matching current account [id=%d, name='%s']\n"), filtering->account_id, account ? account->account_name : _("NON_EXISTENT"), cur_account->account_id, cur_account ? cur_account->account_name : _("NON_EXISTENT"));
 						}
 					}
 				}
@@ -778,38 +709,36 @@ static gboolean filtering_match_condition(FilteringProp *filtering, MsgInfo *inf
  *
  *\return	gboolean TRUE to continue applying rules.
  */
-static gboolean filtering_apply_rule(FilteringProp *filtering, MsgInfo *info,
-    gboolean * final)
+static gboolean filtering_apply_rule(FilteringProp *filtering, MsgInfo *info, gboolean *final)
 {
 	gboolean result = TRUE;
-	gchar    *buf;
-        GSList * tmp;
-        
-        * final = FALSE;
-        for (tmp = filtering->action_list ; tmp != NULL ; tmp = tmp->next) {
-                FilteringAction * action;
+	gchar *buf;
+	GSList *tmp;
 
-                action = tmp->data;
+	*final = FALSE;
+	for (tmp = filtering->action_list; tmp != NULL; tmp = tmp->next) {
+		FilteringAction *action;
+
+		action = tmp->data;
 		buf = filteringaction_to_string(action);
 		if (debug_filtering_session)
 			log_print(LOG_DEBUG_FILTERING, _("applying action [ %s ]\n"), buf);
 
-                if (FALSE == (result = filteringaction_apply(action, info))) {
-					if (debug_filtering_session) {
-						if (action->type != MATCHACTION_STOP)
-							log_warning(LOG_DEBUG_FILTERING, _("action could not apply\n"));
-						log_print(LOG_DEBUG_FILTERING,
-								_("no further processing after action [ %s ]\n"), buf);
-					}
- 					debug_print("No further processing after rule %s\n", buf);
-                }
-                g_free(buf);
-                if (filtering_is_final_action(action)) {
-                        * final = TRUE;
-                        break;
-                }
-		
-        }
+		if (FALSE == (result = filteringaction_apply(action, info))) {
+			if (debug_filtering_session) {
+				if (action->type != MATCHACTION_STOP)
+					log_warning(LOG_DEBUG_FILTERING, _("action could not apply\n"));
+				log_print(LOG_DEBUG_FILTERING, _("no further processing after action [ %s ]\n"), buf);
+			}
+			debug_print("No further processing after rule %s\n", buf);
+		}
+		g_free(buf);
+		if (filtering_is_final_action(action)) {
+			*final = TRUE;
+			break;
+		}
+
+	}
 	return result;
 }
 
@@ -823,7 +752,7 @@ static gboolean filtering_apply_rule(FilteringProp *filtering, MsgInfo *info,
  */
 static gboolean filtering_is_final_action(FilteringAction *filtering_action)
 {
-	switch(filtering_action->type) {
+	switch (filtering_action->type) {
 	case MATCHACTION_MOVE:
 	case MATCHACTION_DELETE:
 	case MATCHACTION_STOP:
@@ -835,37 +764,33 @@ static gboolean filtering_is_final_action(FilteringAction *filtering_action)
 
 gboolean processing_enabled(GSList *filtering_list)
 {
-	GSList	*l;
+	GSList *l;
 	for (l = filtering_list; l != NULL; l = g_slist_next(l)) {
-		FilteringProp * filtering = (FilteringProp *) l->data;
+		FilteringProp *filtering = (FilteringProp *)l->data;
 		if (filtering->enabled)
 			return TRUE;
 	}
 	return FALSE;
 }
 
-static gboolean filter_msginfo(GSList * filtering_list, MsgInfo * info, PrefsAccount* ac_prefs)
+static gboolean filter_msginfo(GSList *filtering_list, MsgInfo *info, PrefsAccount *ac_prefs)
 {
-	GSList	*l;
+	GSList *l;
 	gboolean final;
 	gboolean apply_next;
-	
+
 	cm_return_val_if_fail(info != NULL, TRUE);
-	
+
 	for (l = filtering_list, final = FALSE, apply_next = FALSE; l != NULL; l = g_slist_next(l)) {
-		FilteringProp * filtering = (FilteringProp *) l->data;
+		FilteringProp *filtering = (FilteringProp *)l->data;
 
 		if (filtering->enabled) {
 			if (debug_filtering_session) {
 				gchar *buf = filteringprop_to_string(filtering);
 				if (filtering->name && *filtering->name != '\0') {
-					log_print(LOG_DEBUG_FILTERING,
-						_("processing rule '%s' [ %s ]\n"),
-						filtering->name, buf);
+					log_print(LOG_DEBUG_FILTERING, _("processing rule '%s' [ %s ]\n"), filtering->name, buf);
 				} else {
-					log_print(LOG_DEBUG_FILTERING,
-						_("processing rule <unnamed> [ %s ]\n"),
-						buf);
+					log_print(LOG_DEBUG_FILTERING, _("processing rule <unnamed> [ %s ]\n"), buf);
 				}
 				g_free(buf);
 			}
@@ -881,13 +806,9 @@ static gboolean filter_msginfo(GSList * filtering_list, MsgInfo * info, PrefsAcc
 				gchar *buf = filteringprop_to_string(filtering);
 				if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
 					if (filtering->name && *filtering->name != '\0') {
-						log_status_skip(LOG_DEBUG_FILTERING,
-								_("disabled rule '%s' [ %s ]\n"),
-								filtering->name, buf);
+						log_status_skip(LOG_DEBUG_FILTERING, _("disabled rule '%s' [ %s ]\n"), filtering->name, buf);
 					} else {
-						log_status_skip(LOG_DEBUG_FILTERING,
-								_("disabled rule <unnamed> [ %s ]\n"),
-								buf);
+						log_status_skip(LOG_DEBUG_FILTERING, _("disabled rule <unnamed> [ %s ]\n"), buf);
 					}
 				}
 				g_free(buf);
@@ -895,10 +816,10 @@ static gboolean filter_msginfo(GSList * filtering_list, MsgInfo * info, PrefsAcc
 		}
 	}
 
-    /* put in inbox if the last rule was not a final one, or
-     * a final rule could not be applied.
-     * Either of these cases is likely. */
-    if (!final || !apply_next) {
+	/* put in inbox if the last rule was not a final one, or
+	 * a final rule could not be applied.
+	 * Either of these cases is likely. */
+	if (!final || !apply_next) {
 		return FALSE;
 	}
 
@@ -918,8 +839,7 @@ static gboolean filter_msginfo(GSList * filtering_list, MsgInfo * info, PrefsAcc
  *		processing. E.g. \ref inc.c::inc_start moves the 
  *		message to the inbox. 	
  */
-gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount* ac_prefs,
-								   FilteringInvocationType context, gchar *extra_info)
+gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount *ac_prefs, FilteringInvocationType context, gchar *extra_info)
 {
 	gboolean ret;
 
@@ -958,20 +878,9 @@ gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount* a
 
 			/* show context info and essential info about the message */
 			if (prefs_common.filtering_debug_level >= FILTERING_DEBUG_LEVEL_MED) {
-				log_print(LOG_DEBUG_FILTERING,
-						_("filtering message (%s%s%s)\n"
-						"%smessage file: %s\n%s%s %s\n%s%s %s\n%s%s %s\n%s%s %s\n"),
-						tmp, extra_info ? _(": ") : "", extra_info ? extra_info : "",
-						spc, file, spc, prefs_common_translated_header_name("Date:"), info->date,
-						spc, prefs_common_translated_header_name("From:"), info->from,
-						spc, prefs_common_translated_header_name("To:"), info->to,
-						spc, prefs_common_translated_header_name("Subject:"), info->subject);
+				log_print(LOG_DEBUG_FILTERING, _("filtering message (%s%s%s)\n" "%smessage file: %s\n%s%s %s\n%s%s %s\n%s%s %s\n%s%s %s\n"), tmp, extra_info ? _(": ") : "", extra_info ? extra_info : "", spc, file, spc, prefs_common_translated_header_name("Date:"), info->date, spc, prefs_common_translated_header_name("From:"), info->from, spc, prefs_common_translated_header_name("To:"), info->to, spc, prefs_common_translated_header_name("Subject:"), info->subject);
 			} else {
-				log_print(LOG_DEBUG_FILTERING,
-						_("filtering message (%s%s%s)\n"
-						"%smessage file: %s\n"),
-						tmp, extra_info ? _(": ") : "", extra_info ? extra_info : "",
-						spc, file);
+				log_print(LOG_DEBUG_FILTERING, _("filtering message (%s%s%s)\n" "%smessage file: %s\n"), tmp, extra_info ? _(": ") : "", extra_info ? extra_info : "", spc, file);
 			}
 			g_free(file);
 			g_free(spc);
@@ -987,8 +896,8 @@ gboolean filter_message_by_msginfo(GSList *flist, MsgInfo *info, PrefsAccount* a
 gchar *filteringaction_to_string(FilteringAction *action)
 {
 	const gchar *command_str;
-	gchar * quoted_dest;
-	gchar * quoted_header;
+	gchar *quoted_dest;
+	gchar *quoted_header;
 	GString *dest = g_string_new("");
 
 	command_str = get_matchparser_tab_str(action->type);
@@ -997,8 +906,8 @@ gchar *filteringaction_to_string(FilteringAction *action)
 		g_string_free(dest, TRUE);
 		return NULL;
 	}
-    
-	switch(action->type) {
+
+	switch (action->type) {
 	case MATCHACTION_MOVE:
 	case MATCHACTION_COPY:
 	case MATCHACTION_EXECUTE:
@@ -1058,36 +967,35 @@ gchar *filteringaction_to_string(FilteringAction *action)
 	return g_string_free(dest, FALSE);
 }
 
-gchar * filteringaction_list_to_string(GSList * action_list)
+gchar *filteringaction_list_to_string(GSList *action_list)
 {
 	gchar *action_list_str;
-        GSList * tmp;
+	GSList *tmp;
 	gchar *list_str;
 
-        action_list_str = NULL;
-        for (tmp = action_list ; tmp != NULL ; tmp = tmp->next) {
-                gchar *action_str;
-                FilteringAction * action;
-                
-                action = tmp->data;
-                
-                action_str = filteringaction_to_string(action);
-                
-                if (action_list_str != NULL) {
-                        list_str = g_strconcat(action_list_str, " ", action_str, NULL);
-                        g_free(action_list_str);
-                }
-                else {
-                        list_str = g_strdup(action_str);
-                }
-		g_free(action_str);
-                action_list_str = list_str;
-        }
+	action_list_str = NULL;
+	for (tmp = action_list; tmp != NULL; tmp = tmp->next) {
+		gchar *action_str;
+		FilteringAction *action;
 
-        return action_list_str;
+		action = tmp->data;
+
+		action_str = filteringaction_to_string(action);
+
+		if (action_list_str != NULL) {
+			list_str = g_strconcat(action_list_str, " ", action_str, NULL);
+			g_free(action_list_str);
+		} else {
+			list_str = g_strdup(action_str);
+		}
+		g_free(action_str);
+		action_list_str = list_str;
+	}
+
+	return action_list_str;
 }
 
-gchar * filteringprop_to_string(FilteringProp * prop)
+gchar *filteringprop_to_string(FilteringProp *prop)
 {
 	gchar *list_str;
 	gchar *action_list_str;
@@ -1096,7 +1004,7 @@ gchar * filteringprop_to_string(FilteringProp * prop)
 	if (prop == NULL)
 		return NULL;
 
-        action_list_str = filteringaction_list_to_string(prop->action_list);
+	action_list_str = filteringaction_list_to_string(prop->action_list);
 
 	if (action_list_str == NULL)
 		return NULL;
@@ -1104,9 +1012,9 @@ gchar * filteringprop_to_string(FilteringProp * prop)
 	list_str = matcherlist_to_string(prop->matchers);
 
 	if (list_str == NULL) {
-                g_free(action_list_str);
+		g_free(action_list_str);
 		return NULL;
-        }
+	}
 
 	filtering_str = g_strconcat(list_str, " ", action_list_str, NULL);
 	g_free(action_list_str);
@@ -1115,14 +1023,14 @@ gchar * filteringprop_to_string(FilteringProp * prop)
 	return filtering_str;
 }
 
-static void prefs_filtering_free(GSList * prefs_filtering)
+static void prefs_filtering_free(GSList *prefs_filtering)
 {
- 	while (prefs_filtering != NULL) {
- 		FilteringProp * filtering = (FilteringProp *)
-			prefs_filtering->data;
- 		prefs_filtering = g_slist_remove(prefs_filtering, filtering);
- 		filteringprop_free(filtering);
- 	}
+	while (prefs_filtering != NULL) {
+		FilteringProp *filtering = (FilteringProp *)
+		    prefs_filtering->data;
+		prefs_filtering = g_slist_remove(prefs_filtering, filtering);
+		filteringprop_free(filtering);
+	}
 }
 
 static gboolean prefs_filtering_free_func(GNode *node, gpointer data)
@@ -1140,14 +1048,13 @@ static gboolean prefs_filtering_free_func(GNode *node, gpointer data)
 
 void prefs_filtering_clear(void)
 {
-	GList * cur;
+	GList *cur;
 
-	for (cur = folder_get_list() ; cur != NULL ; cur = g_list_next(cur)) {
+	for (cur = folder_get_list(); cur != NULL; cur = g_list_next(cur)) {
 		Folder *folder;
 
-		folder = (Folder *) cur->data;
-		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-				prefs_filtering_free_func, NULL);
+		folder = (Folder *)cur->data;
+		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, prefs_filtering_free_func, NULL);
 	}
 
 	prefs_filtering_free(filtering_rules);
@@ -1163,8 +1070,7 @@ void prefs_filtering_clear_folder(Folder *folder)
 	cm_return_if_fail(folder);
 	cm_return_if_fail(folder->node);
 
-	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-			prefs_filtering_free_func, NULL);
+	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, prefs_filtering_free_func, NULL);
 	/* FIXME: Note folder settings were changed, where the updates? */
 }
 
@@ -1174,18 +1080,17 @@ gboolean filtering_peek_per_account_rules(GSList *filtering_list)
 	GSList *l;
 
 	for (l = filtering_list; l != NULL; l = g_slist_next(l)) {
-		FilteringProp * filtering = (FilteringProp *) l->data;
+		FilteringProp *filtering = (FilteringProp *)l->data;
 
 		if (filtering->enabled && (filtering->account_id != 0)) {
 			return TRUE;
-		}		
+		}
 	}
 
 	return FALSE;
 }
 
-gboolean filtering_action_list_rename_path(GSList *action_list, const gchar *old_path,
-					   const gchar *new_path)
+gboolean filtering_action_list_rename_path(GSList *action_list, const gchar *old_path, const gchar *new_path)
 {
 	gchar *base;
 	gchar *prefix;
@@ -1195,26 +1100,24 @@ gboolean filtering_action_list_rename_path(GSList *action_list, const gchar *old
 	gint destlen;
 	gint prefixlen;
 	gint oldpathlen;
-	GSList * action_cur;
-	const gchar *separator=G_DIR_SEPARATOR_S;
+	GSList *action_cur;
+	const gchar *separator = G_DIR_SEPARATOR_S;
 	gboolean matched = FALSE;
 #ifdef G_OS_WIN32
-again:
+ again:
 #endif
 	oldpathlen = strlen(old_path);
-	old_path_with_sep = g_strconcat(old_path,separator,NULL);
+	old_path_with_sep = g_strconcat(old_path, separator, NULL);
 
-	for(action_cur = action_list ; action_cur != NULL ;
-		action_cur = action_cur->next) {
+	for (action_cur = action_list; action_cur != NULL; action_cur = action_cur->next) {
 
 		FilteringAction *action = action_cur->data;
 
-		if (action->type == MATCHACTION_SET_TAG ||
-		    action->type == MATCHACTION_UNSET_TAG)
+		if (action->type == MATCHACTION_SET_TAG || action->type == MATCHACTION_UNSET_TAG)
 			continue;
-		if (!action->destination) 
+		if (!action->destination)
 			continue;
-		
+
 		destlen = strlen(action->destination);
 
 		if (destlen > oldpathlen) {
@@ -1239,11 +1142,10 @@ again:
 				matched = TRUE;
 			} else { /* for non-leaf folders */
 				/* compare with trailing slash */
-				if (!strncmp(old_path_with_sep, action->destination, oldpathlen+1)) {
+				if (!strncmp(old_path_with_sep, action->destination, oldpathlen + 1)) {
 
 					suffix = action->destination + oldpathlen + 1;
-					dest_path = g_strconcat(new_path, separator,
-								suffix, NULL);
+					dest_path = g_strconcat(new_path, separator, suffix, NULL);
 					g_free(action->destination);
 					action->destination = dest_path;
 					matched = TRUE;
@@ -1259,7 +1161,7 @@ again:
 			}
 		}
 	}
-	
+
 	g_free(old_path_with_sep);
 #ifdef G_OS_WIN32
 	if (!strcmp(separator, G_DIR_SEPARATOR_S) && !matched) {
@@ -1270,3 +1172,7 @@ again:
 
 	return matched;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

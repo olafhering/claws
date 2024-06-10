@@ -24,18 +24,17 @@
 
 typedef struct _FetchinfoConfig FetchinfoConfig;
 
-struct _FetchinfoConfig
-{
-	gboolean	 fetchinfo_enable;
-	gboolean	 fetchinfo_uidl;
-	gboolean	 fetchinfo_account;
-	gboolean	 fetchinfo_server;
-	gboolean	 fetchinfo_userid;
-	gboolean	 fetchinfo_time;
+struct _FetchinfoConfig {
+	gboolean fetchinfo_enable;
+	gboolean fetchinfo_uidl;
+	gboolean fetchinfo_account;
+	gboolean fetchinfo_server;
+	gboolean fetchinfo_userid;
+	gboolean fetchinfo_time;
 };
 
-FetchinfoConfig *fetchinfo_get_config		(void);
-void	      fetchinfo_save_config	(void);
+FetchinfoConfig *fetchinfo_get_config(void);
+void fetchinfo_save_config(void);
 gint fetchinfo_gtk_init(void);
 void fetchinfo_gtk_done(void);
 

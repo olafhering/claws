@@ -34,7 +34,7 @@
          strcmp((tag), "NotJunk") && \
          strcmp((tag), "NoJunk") && \
          strcmp((tag), "Junk") && \
-         strcmp((tag), "$Forwarded")) 
+         strcmp((tag), "$Forwarded"))
 
 void tags_read_tags(void);
 void tags_write_tags(void);
@@ -46,4 +46,4 @@ gint tags_get_id_for_str(const gchar *str);
 GSList *tags_get_list(void);
 guint tags_get_size(void);
 
-#endif 
+#endif

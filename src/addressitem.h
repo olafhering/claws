@@ -47,17 +47,16 @@ typedef enum {
 	ADDR_ITEM_GROUP,
 	ADDR_INTERFACE,
 	ADDR_DATASOURCE,
-	ADDR_BOOK,		/* Sub-type */
-	ADDR_VCARD,		/* Sub-type */
-	ADDR_JPILOT,		/* Sub-type */
-	ADDR_CATEGORY,		/* Sub-type */
-	ADDR_LDAP,		/* Sub-type */
-	ADDR_LDAP_QUERY		/* Sub-type */
+	ADDR_BOOK, /* Sub-type */
+	ADDR_VCARD, /* Sub-type */
+	ADDR_JPILOT, /* Sub-type */
+	ADDR_CATEGORY, /* Sub-type */
+	ADDR_LDAP, /* Sub-type */
+	ADDR_LDAP_QUERY	/* Sub-type */
 } AddressObjectType;
 
-typedef struct _AddressBook_win	AddressBook_win;
-struct _AddressBook_win
-{
+typedef struct _AddressBook_win AddressBook_win;
+struct _AddressBook_win {
 	GtkWidget *window;
 	GtkWidget *hpaned;
 	GtkWidget *vpaned;
@@ -91,7 +90,7 @@ struct _AddressBook_win
 	GtkUIManager *ui_manager;
 };
 
-typedef struct _AddressTypeControlItem	AddressTypeControlItem;
+typedef struct _AddressTypeControlItem AddressTypeControlItem;
 struct _AddressTypeControlItem {
 	AddressObjectType objectType;
 	AddressIfType interfaceType;
@@ -104,7 +103,7 @@ struct _AddressTypeControlItem {
 	GdkPixbuf *iconXpmOpen;
 };
 
-typedef struct _AddressObject	AddressObject;
+typedef struct _AddressObject AddressObject;
 struct _AddressObject {
 	AddressObjectType type;
 	gchar *name;
@@ -146,18 +145,14 @@ struct _AddressFileSelection {
 	gboolean cancelled;
 };
 
-AdapterDSource *addressbook_create_ds_adapter	( AddressDataSource	*ds,
-						  AddressObjectType	otype,
-						  gchar			*name );
+AdapterDSource *addressbook_create_ds_adapter(AddressDataSource *ds, AddressObjectType otype, gchar *name);
 
-void addressbook_ads_set_name		( AdapterDSource *adapter,
-					  gchar          *value );
+void addressbook_ads_set_name(AdapterDSource *adapter, gchar *value);
 
-ItemObjectType addressbook_type2item 	( AddressObjectType abType );
+ItemObjectType addressbook_type2item(AddressObjectType abType);
 
 #endif /* __ADDRESSITEM_H__ */
 
 /*
 * End of Source.
 */
-

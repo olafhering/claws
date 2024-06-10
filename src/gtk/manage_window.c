@@ -27,14 +27,13 @@
 
 GtkWidget *focus_window;
 
-gint manage_window_focus_in(GtkWidget *widget, GdkEventFocus *event,
-			    gpointer data)
+gint manage_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
 /*	const gchar *title = NULL; */
 
 	if (!GTK_IS_WINDOW(widget))
 		return FALSE;
-	
+
 /*	title = gtk_window_get_title(GTK_WINDOW(widget));
 	 debug_print("Focus in event: window: %p - %s\n", widget,
 		    title ? title : "no title"); */
@@ -44,8 +43,7 @@ gint manage_window_focus_in(GtkWidget *widget, GdkEventFocus *event,
 	return FALSE;
 }
 
-gint manage_window_focus_out(GtkWidget *widget, GdkEventFocus *event,
-			     gpointer data)
+gint manage_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
 /*	const gchar *title = NULL; */
 
@@ -80,7 +78,6 @@ void manage_window_destroy(GtkWidget *widget, gpointer data)
 	 debug_print("Destroy event: window: %p - %s\n", widget,
 		    title ? title : "no title"); */
 
-
 	if (focus_window == widget)
 		focus_window = NULL;
 }
@@ -90,3 +87,7 @@ void manage_window_set_transient(GtkWindow *window)
 	if (window && focus_window)
 		gtk_window_set_transient_for(window, GTK_WINDOW(focus_window));
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

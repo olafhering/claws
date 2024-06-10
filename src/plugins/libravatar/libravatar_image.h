@@ -21,17 +21,16 @@
 
 #include <glib.h>
 
-typedef struct _AvatarImageFetch	AvatarImageFetch;
+typedef struct _AvatarImageFetch AvatarImageFetch;
 
 GdkPixbuf *libravatar_image_fetch(AvatarImageFetch *ctx);
 
-struct _AvatarImageFetch
-{
-	const gchar	*url;
-	const gchar	*md5;
-	gchar		*filename;
-	GdkPixbuf	*pixbuf;
-	gboolean	ready;
+struct _AvatarImageFetch {
+	const gchar *url;
+	const gchar *md5;
+	gchar *filename;
+	GdkPixbuf *pixbuf;
+	gboolean ready;
 };
 
 #endif

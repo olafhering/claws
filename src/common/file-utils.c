@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -105,7 +105,7 @@ int claws_fclose(FILE *fp)
 }
 #endif
 
-int claws_unlink(const char *filename) 
+int claws_unlink(const char *filename)
 {
 	GStatBuf s;
 	static int found_shred = -1;
@@ -119,19 +119,17 @@ int claws_unlink(const char *filename)
 			/* init */
 			args[0] = g_find_program_in_path("shred");
 			debug_print("found shred: %s\n", args[0]);
-			found_shred = (args[0] != NULL) ? 1:0;
+			found_shred = (args[0] != NULL) ? 1 : 0;
 			args[1] = "-f";
 			args[3] = NULL;
 		}
 		if (found_shred == 1) {
 			if (g_stat(filename, &s) == 0 && S_ISREG(s.st_mode)) {
 				if (s.st_nlink == 1) {
-					gint status=0;
+					gint status = 0;
 					args[2] = filename;
-					g_spawn_sync(NULL, (gchar **)args, NULL, 0,
-					 NULL, NULL, NULL, NULL, &status, NULL);
-					debug_print("%s %s exited with status %d\n",
-						args[0], filename, WEXITSTATUS(status));
+					g_spawn_sync(NULL, (gchar **)args, NULL, 0, NULL, NULL, NULL, NULL, &status, NULL);
+					debug_print("%s %s exited with status %d\n", args[0], filename, WEXITSTATUS(status));
 					if (truncate(filename, 0) < 0)
 						g_warning("couldn't truncate: %s", filename);
 				}
@@ -159,7 +157,7 @@ gint file_strip_crs(const gchar *file)
 		goto freeout;
 	}
 
-	while (claws_fgets(buf, sizeof (buf), fp) != NULL) {
+	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		strcrchomp(buf);
 		if (claws_fputs(buf, outfp) == EOF) {
 			claws_fclose(fp);
@@ -172,15 +170,15 @@ gint file_strip_crs(const gchar *file)
 	if (claws_safe_fclose(outfp) == EOF) {
 		goto unlinkout;
 	}
-	
+
 	if (move_file(out, file, TRUE) < 0)
 		goto unlinkout;
-	
+
 	g_free(out);
 	return 0;
-unlinkout:
+ unlinkout:
 	claws_unlink(out);
-freeout:
+ freeout:
 	g_free(out);
 	return -1;
 }
@@ -289,7 +287,7 @@ gint copy_file(const gchar *src, const gchar *dest, gboolean keep_backup)
 			claws_fclose(dest_fp);
 			claws_fclose(src_fp);
 			if (claws_unlink(dest) < 0)
-                                FILE_OP_ERROR(dest, "claws_unlink");
+				FILE_OP_ERROR(dest, "claws_unlink");
 			if (dest_bak) {
 				if (rename_force(dest_bak, dest) < 0)
 					FILE_OP_ERROR(dest_bak, "rename");
@@ -311,7 +309,7 @@ gint copy_file(const gchar *src, const gchar *dest, gboolean keep_backup)
 
 	if (err) {
 		if (claws_unlink(dest) < 0)
-                        FILE_OP_ERROR(dest, "claws_unlink");
+			FILE_OP_ERROR(dest, "claws_unlink");
 		if (dest_bak) {
 			if (rename_force(dest_bak, dest) < 0)
 				FILE_OP_ERROR(dest_bak, "rename");
@@ -322,7 +320,7 @@ gint copy_file(const gchar *src, const gchar *dest, gboolean keep_backup)
 
 	if (keep_backup == FALSE && dest_bak)
 		if (claws_unlink(dest_bak) < 0)
-                        FILE_OP_ERROR(dest_bak, "claws_unlink");
+			FILE_OP_ERROR(dest_bak, "claws_unlink");
 
 	g_free(dest_bak);
 
@@ -336,14 +334,16 @@ gint move_file(const gchar *src, const gchar *dest, gboolean overwrite)
 		return -1;
 	}
 
-	if (rename_force(src, dest) == 0) return 0;
+	if (rename_force(src, dest) == 0)
+		return 0;
 
 	if (EXDEV != errno) {
 		FILE_OP_ERROR(src, "rename");
 		return -1;
 	}
 
-	if (copy_file(src, dest, FALSE) < 0) return -1;
+	if (copy_file(src, dest, FALSE) < 0)
+		return -1;
 
 	claws_unlink(src);
 
@@ -447,7 +447,8 @@ gint canonicalize_file(const gchar *src, const gchar *dest)
 		gint r = 0;
 
 		len = strlen(buf);
-		if (len == 0) break;
+		if (len == 0)
+			break;
 		last_linebreak = FALSE;
 
 		if (buf[len - 1] != '\n') {
@@ -458,7 +459,7 @@ gint canonicalize_file(const gchar *src, const gchar *dest)
 		} else {
 			if (len > 1) {
 				r = claws_fwrite(buf, 1, len - 1, dest_fp);
-				if (r != (len -1))
+				if (r != (len - 1))
 					r = EOF;
 			}
 			if (r != EOF)
@@ -518,7 +519,6 @@ gint canonicalize_file_replace(const gchar *file)
 	g_free(tmp_file);
 	return 0;
 }
-
 
 gint str_write_to_file(const gchar *str, const gchar *file, gboolean safe)
 {
@@ -610,7 +610,7 @@ static gchar *file_read_to_str_full(const gchar *file, gboolean recode)
 	GStatBuf s;
 #ifndef G_OS_WIN32
 	gint fd, err;
-	struct timeval timeout = {1, 0};
+	struct timeval timeout = { 1, 0 };
 	fd_set fds;
 	int fflags = 0;
 #endif
@@ -625,14 +625,13 @@ static gchar *file_read_to_str_full(const gchar *file, gboolean recode)
 		g_warning("%s: is a directory", file);
 		return NULL;
 	}
-
 #ifdef G_OS_WIN32
-	fp = claws_fopen (file, "rb");
+	fp = claws_fopen(file, "rb");
 	if (fp == NULL) {
 		FILE_OP_ERROR(file, "open");
 		return NULL;
 	}
-#else	  
+#else
 	/* test whether the file is readable without blocking */
 	fd = g_open(file, O_RDONLY | O_NONBLOCK, 0);
 	if (fd == -1) {
@@ -644,7 +643,7 @@ static gchar *file_read_to_str_full(const gchar *file, gboolean recode)
 	FD_SET(fd, &fds);
 
 	/* allow for one second */
-	err = select(fd+1, &fds, NULL, NULL, &timeout);
+	err = select(fd + 1, &fds, NULL, NULL, &timeout);
 	if (err <= 0 || !FD_ISSET(fd, &fds)) {
 		if (err < 0) {
 			FILE_OP_ERROR(file, "select");
@@ -654,7 +653,7 @@ static gchar *file_read_to_str_full(const gchar *file, gboolean recode)
 		close(fd);
 		return NULL;
 	}
-	
+
 	/* Now clear O_NONBLOCK */
 	if ((fflags = fcntl(fd, F_GETFL)) < 0) {
 		FILE_OP_ERROR(file, "fcntl (F_GETFL)");
@@ -666,7 +665,7 @@ static gchar *file_read_to_str_full(const gchar *file, gboolean recode)
 		close(fd);
 		return NULL;
 	}
-	
+
 	/* get the FILE pointer */
 	fp = claws_fdopen(fd, "rb");
 
@@ -688,6 +687,7 @@ gchar *file_read_to_str(const gchar *file)
 {
 	return file_read_to_str_full(file, TRUE);
 }
+
 gchar *file_read_stream_to_str(FILE *fp)
 {
 	return file_read_stream_to_str_full(fp, TRUE);
@@ -697,6 +697,7 @@ gchar *file_read_to_str_no_recode(const gchar *file)
 {
 	return file_read_to_str_full(file, FALSE);
 }
+
 gchar *file_read_stream_to_str_no_recode(FILE *fp)
 {
 	return file_read_stream_to_str_full(fp, FALSE);
@@ -757,7 +758,7 @@ gint copy_dir(const gchar *src, const gchar *dst)
 				g_free(target);
 			}
 		}
-#endif /*G_OS_WIN32*/
+#endif /*G_OS_WIN32 */
 		else if (g_file_test(old_file, G_FILE_TEST_IS_DIR)) {
 			r = copy_dir(old_file, new_file);
 		}
@@ -775,9 +776,9 @@ gint copy_dir(const gchar *src, const gchar *dst)
 gint change_file_mode_rw(FILE *fp, const gchar *file)
 {
 #if HAVE_FCHMOD
-	return fchmod(fileno(fp), S_IRUSR|S_IWUSR);
+	return fchmod(fileno(fp), S_IRUSR | S_IWUSR);
 #else
-	return g_chmod(file, S_IRUSR|S_IWUSR);
+	return g_chmod(file, S_IRUSR | S_IWUSR);
 #endif
 }
 
@@ -792,7 +793,7 @@ FILE *my_tmpfile(void)
 	gint fd;
 	FILE *fp;
 #ifndef G_OS_WIN32
-	gchar buf[2]="\0";
+	gchar buf[2] = "\0";
 #endif
 
 	tmpdir = get_tmp_dir();
@@ -801,8 +802,7 @@ FILE *my_tmpfile(void)
 	if (progname == NULL)
 		progname = "claws-mail";
 	proglen = strlen(progname);
-	Xalloca(fname, tmplen + 1 + proglen + sizeof(suffix),
-		return tmpfile());
+	Xalloca(fname, tmplen + 1 + proglen + sizeof(suffix), return tmpfile());
 
 	memcpy(fname, tmpdir, tmplen);
 	fname[tmplen] = G_DIR_SEPARATOR;
@@ -815,13 +815,13 @@ FILE *my_tmpfile(void)
 
 #ifndef G_OS_WIN32
 	claws_unlink(fname);
-	
+
 	/* verify that we can write in the file after unlinking */
 	if (write(fd, buf, 1) < 0) {
 		close(fd);
 		return tmpfile();
 	}
-	
+
 #endif
 
 	fp = claws_fdopen(fd, "w+b");
@@ -862,7 +862,8 @@ FILE *str_open_as_stream(const gchar *str)
 	}
 
 	len = strlen(str);
-	if (len == 0) return fp;
+	if (len == 0)
+		return fp;
 
 	if (claws_fwrite(str, 1, len, fp) != len) {
 		FILE_OP_ERROR("str_open_as_stream", "claws_fwrite");
@@ -873,3 +874,7 @@ FILE *str_open_as_stream(const gchar *str)
 	rewind(fp);
 	return fp;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

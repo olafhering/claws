@@ -29,7 +29,6 @@ void feed_parser_set_expat_handlers(FeedParserCtx *ctx);
 size_t feed_writefunc(void *ptr, size_t size, size_t nmemb, void *stream);
 gchar *feed_parser_get_attribute_value(const gchar **attr, const gchar *name);
 
-int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name,
-		XML_Encoding *info);
+int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name, XML_Encoding *info);
 
 #endif /* __PARSER_H */

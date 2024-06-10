@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+#include <config.h>
 #endif
 
 #include <glib.h>
@@ -43,51 +43,42 @@ enum {
 
 static void _handler_set(XML_Parser parser, guint type)
 {
-	if( parser == NULL )
+	if (parser == NULL)
 		return;
 
-	switch(type) {
-		case FEED_TYPE_RSS_20:
-			XML_SetElementHandler(parser,
-					feed_parser_rss20_start,
-					feed_parser_rss20_end);
-			break;
+	switch (type) {
+	case FEED_TYPE_RSS_20:
+		XML_SetElementHandler(parser, feed_parser_rss20_start, feed_parser_rss20_end);
+		break;
 
-		case FEED_TYPE_RDF:
-			XML_SetElementHandler(parser,
-					feed_parser_rdf_start,
-					feed_parser_rdf_end);
-			break;
+	case FEED_TYPE_RDF:
+		XML_SetElementHandler(parser, feed_parser_rdf_start, feed_parser_rdf_end);
+		break;
 
-		case FEED_TYPE_ATOM_10:
-			XML_SetElementHandler(parser,
-					feed_parser_atom10_start,
-					feed_parser_atom10_end);
-			break;
+	case FEED_TYPE_ATOM_10:
+		XML_SetElementHandler(parser, feed_parser_atom10_start, feed_parser_atom10_end);
+		break;
 	}
 }
 
-static void _elparse_start_chooser(void *data,
-		const gchar *el, const gchar **attr)
+static void _elparse_start_chooser(void *data, const gchar *el, const gchar **attr)
 {
 	FeedParserCtx *ctx = (FeedParserCtx *)data;
 	guint feedtype = FEED_TYPE_NONE;
 	gchar *version;
 
-	if( ctx->depth == 0 ) {
+	if (ctx->depth == 0) {
 
 		/* RSS 2.0 detected */
-		if( !strcmp(el, "rss") ) {
+		if (!strcmp(el, "rss")) {
 			feedtype = FEED_TYPE_RSS_20;
-		} else if( !strcmp(el, "rdf:RDF") ) {
+		} else if (!strcmp(el, "rdf:RDF")) {
 			feedtype = FEED_TYPE_RDF;
-		} else if( !strcmp(el, "feed") ) {
+		} else if (!strcmp(el, "feed")) {
 
 			/* ATOM feed detected, let's check version */
 			version = feed_parser_get_attribute_value(attr, "xmlns");
-			if( version != NULL &&
-					(!strcmp(version, "http://www.w3.org/2005/Atom") ||
-					 !strcmp(version, "https://www.w3.org/2005/Atom")) )
+			if (version != NULL && (!strcmp(version, "http://www.w3.org/2005/Atom") || !strcmp(version, "https://www.w3.org/2005/Atom")))
 				feedtype = FEED_TYPE_ATOM_10;
 			else
 				feedtype = FEED_TYPE_ATOM_03;
@@ -106,7 +97,7 @@ static void _elparse_end_dummy(void *data, const gchar *el)
 {
 	FeedParserCtx *ctx = (FeedParserCtx *)data;
 
-	if( ctx->str != NULL ) {
+	if (ctx->str != NULL) {
 		g_string_free(ctx->str, TRUE);
 		ctx->str = NULL;
 	}
@@ -123,17 +114,17 @@ void libfeed_expat_chparse(void *data, const gchar *s, gint len)
 	buf = g_strndup(s, len);
 
 	/* check if the string is blank, ... */
-	for( i = 0; i < strlen(buf); i++ )
-		if( !isspace(buf[i]) )
+	for (i = 0; i < strlen(buf); i++)
+		if (!isspace(buf[i]))
 			xblank = 0;
 
 	/* ...because we do not want the blanks if we're just starting new GString */
-	if( xblank > 0 && ctx->str == NULL ) {
+	if (xblank > 0 && ctx->str == NULL) {
 		g_free(buf);
 		return;
 	}
 
-	if( ctx->str == NULL ) {
+	if (ctx->str == NULL) {
 		ctx->str = g_string_sized_new(len + 1);
 	}
 
@@ -141,20 +132,15 @@ void libfeed_expat_chparse(void *data, const gchar *s, gint len)
 	g_free(buf);
 }
 
-
 void feed_parser_set_expat_handlers(FeedParserCtx *ctx)
 {
 	XML_SetUserData(ctx->parser, (void *)ctx);
 
-	XML_SetElementHandler(ctx->parser,
-			_elparse_start_chooser,
-			_elparse_end_dummy);
+	XML_SetElementHandler(ctx->parser, _elparse_start_chooser, _elparse_end_dummy);
 
-	XML_SetCharacterDataHandler(ctx->parser,
-		libfeed_expat_chparse);
+	XML_SetCharacterDataHandler(ctx->parser, libfeed_expat_chparse);
 
-	XML_SetUnknownEncodingHandler(ctx->parser, feed_parser_unknown_encoding_handler,
-			NULL);
+	XML_SetUnknownEncodingHandler(ctx->parser, feed_parser_unknown_encoding_handler, NULL);
 }
 
 size_t feed_writefunc(void *ptr, size_t size, size_t nmemb, void *data)
@@ -172,7 +158,7 @@ size_t feed_writefunc(void *ptr, size_t size, size_t nmemb, void *data)
 
 	status = XML_Parse(ctx->parser, ptr, len, FALSE);
 
-	if( status == XML_STATUS_ERROR ) {
+	if (status == XML_STATUS_ERROR) {
 		err = XML_GetErrorCode(ctx->parser);
 		printf("\nExpat: --- %s\n\n", XML_ErrorString(err));
 		ctx->feed->is_valid = FALSE;
@@ -185,12 +171,12 @@ gchar *feed_parser_get_attribute_value(const gchar **attr, const gchar *name)
 {
 	guint i;
 
-	if( attr == NULL || name == NULL )
+	if (attr == NULL || name == NULL)
 		return NULL;
 
-	for( i = 0; attr[i] != NULL && attr[i+1] != NULL; i += 2 ) {
-		if( !strcmp( attr[i], name) )
-			return (gchar *)attr[i+1];
+	for (i = 0; attr[i] != NULL && attr[i + 1] != NULL; i += 2) {
+		if (!strcmp(attr[i], name))
+			return (gchar *)attr[i + 1];
 	}
 
 	/* We haven't found anything. */
@@ -207,8 +193,7 @@ enum {
 	LEP_ICONV_UNKNOWN
 };
 
-static gint giconv_utf32_char(GIConv cd, const gchar *inbuf, size_t insize,
-		guint32 *p_value)
+static gint giconv_utf32_char(GIConv cd, const gchar *inbuf, size_t insize, guint32 *p_value)
 {
 #ifdef HAVE_ICONV
 	size_t outsize;
@@ -219,15 +204,13 @@ static gint giconv_utf32_char(GIConv cd, const gchar *inbuf, size_t insize,
 	outsize = sizeof(outbuf);
 	outbufp = (gchar *)outbuf;
 #ifdef HAVE_ICONV_PROTO_CONST
-	r = g_iconv(cd, (const gchar **)&inbuf, &insize,
-			&outbufp, &outsize);
+	r = g_iconv(cd, (const gchar **)&inbuf, &insize, &outbufp, &outsize);
 #else
-	r = g_iconv(cd, (gchar **)&inbuf, &insize,
-			&outbufp, &outsize);
+	r = g_iconv(cd, (gchar **)&inbuf, &insize, &outbufp, &outsize);
 #endif
-	if( r == -1 ) {
+	if (r == -1) {
 		g_iconv(cd, 0, 0, 0, 0);
-		switch(errno) {
+		switch (errno) {
 		case EILSEQ:
 			return LEP_ICONV_ILSEQ;
 		case EINVAL:
@@ -239,11 +222,11 @@ static gint giconv_utf32_char(GIConv cd, const gchar *inbuf, size_t insize,
 		guint32 value;
 		guint i;
 
-		if( (insize > 0) || (outsize > 0) )
+		if ((insize > 0) || (outsize > 0))
 			return LEP_ICONV_FAILED;
 
 		value = 0;
-		for( i = 0; i < sizeof(outbuf); i++ ) {
+		for (i = 0; i < sizeof(outbuf); i++) {
 			value = (value << 8) + outbuf[i];
 		}
 		*p_value = value;
@@ -254,8 +237,7 @@ static gint giconv_utf32_char(GIConv cd, const gchar *inbuf, size_t insize,
 #endif
 }
 
-static gint feed_parser_setup_unknown_encoding(const gchar *charset,
-		XML_Encoding *info)
+static gint feed_parser_setup_unknown_encoding(const gchar *charset, XML_Encoding *info)
 {
 	GIConv cd;
 	gint flag, r;
@@ -264,33 +246,33 @@ static gint feed_parser_setup_unknown_encoding(const gchar *charset,
 	guint32 value;
 
 	cd = g_iconv_open("UTF-32BE", charset);
-	if( cd == (GIConv) -1 )
+	if (cd == (GIConv) - 1)
 		return -1;
 
 	flag = 0;
-	for( i = 0; i < 256; i++ ) {
+	for (i = 0; i < 256; i++) {
 		/* first char */
 		buf[0] = i;
 		info->map[i] = 0;
 		r = giconv_utf32_char(cd, buf, 1, &value);
-		if( r == LEP_ICONV_OK) {
+		if (r == LEP_ICONV_OK) {
 			info->map[i] = value;
-		} else if( r != LEP_ICONV_INVAL ) {
+		} else if (r != LEP_ICONV_INVAL) {
 		} else {
-			for( j = 0; j < 256; j++ ) {
+			for (j = 0; j < 256; j++) {
 				/* second char */
 				buf[1] = j;
 				r = giconv_utf32_char(cd, buf, 2, &value);
-				if( r == LEP_ICONV_OK ) {
+				if (r == LEP_ICONV_OK) {
 					flag = 1;
 					info->map[i] = -2;
-				} else if( r != LEP_ICONV_INVAL ) {
+				} else if (r != LEP_ICONV_INVAL) {
 				} else {
-					for( k = 0; k < 256; k++ ) {
+					for (k = 0; k < 256; k++) {
 						/* third char */
 						buf[2] = k;
 						r = giconv_utf32_char(cd, buf, 3, &value);
-						if( r == LEP_ICONV_OK) {
+						if (r == LEP_ICONV_OK) {
 							info->map[i] = -3;
 						}
 					}
@@ -319,11 +301,11 @@ static gint feed_parser_unknown_encoding_convert(void *data, const gchar *s)
 	enc_data = data;
 	insize = 4;
 
-	if( s == NULL )
+	if (s == NULL)
 		return -1;
 
 	r = giconv_utf32_char(enc_data->cd, s, insize, &value);
-	if( r != LEP_ICONV_OK )
+	if (r != LEP_ICONV_OK)
 		return -1;
 
 	return 0;
@@ -339,15 +321,14 @@ static void feed_parser_unknown_encoding_data_free(void *data)
 	g_free(enc_data);
 }
 
-int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name,
-		XML_Encoding *info)
+int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name, XML_Encoding *info)
 {
 	GIConv cd;
 	struct FeedParserUnknownEncoding *data;
 	int result;
 
 	result = feed_parser_setup_unknown_encoding(name, info);
-	if( result == 0 ) {
+	if (result == 0) {
 		info->data = NULL;
 		info->convert = NULL;
 		info->release = NULL;
@@ -355,17 +336,17 @@ int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name,
 	}
 
 	cd = g_iconv_open("UTF-32BE", name);
-	if( cd == (GIConv)-1 )
+	if (cd == (GIConv) - 1)
 		return XML_STATUS_ERROR;
 
-	data = g_malloc( sizeof(*data) );
-	if( data == NULL ) {
+	data = g_malloc(sizeof(*data));
+	if (data == NULL) {
 		g_iconv_close(cd);
 		return XML_STATUS_ERROR;
 	}
 
 	data->charset = g_strdup(name);
-	if( data->charset == NULL ) {
+	if (data->charset == NULL) {
 		g_free(data);
 		g_iconv_close(cd);
 		return XML_STATUS_ERROR;
@@ -378,3 +359,7 @@ int feed_parser_unknown_encoding_handler(void *encdata, const XML_Char *name,
 
 	return XML_STATUS_OK;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

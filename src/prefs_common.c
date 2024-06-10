@@ -63,7 +63,7 @@
 #include "file-utils.h"
 
 #ifndef USE_ALT_ADDRBOOK
-	#include "addrcustomattr.h"
+#include "addrcustomattr.h"
 #endif
 
 enum {
@@ -85,7 +85,7 @@ GtkWidget *notebook;
  * but saved in prefs_unix.
  */
 
-#  define SPECIFIC_PREFS prefs_unix
+#define SPECIFIC_PREFS prefs_unix
 
 static PrefsCommon prefs_unix;
 
@@ -97,16 +97,16 @@ static PrefParam param_os_specific[] = {
 	 &prefs_common.newmail_notify_cmd, P_STRING, NULL, NULL, NULL},
 
 	/* new fonts */
-	{"message_font_gtk2",	"Monospace 9",
-	 &prefs_common.textfont,		P_STRING, NULL, NULL, NULL},
-        {"print_font_gtk2",     "Monospace 9",
-         &prefs_common.printfont,		P_STRING, NULL, NULL, NULL},
-	{"small_font_gtk2",	"Sans 9",
-	  &prefs_common.smallfont,		P_STRING, NULL, NULL, NULL},
-	{"normal_font_gtk2",	"Sans 9",
-	  &prefs_common.normalfont,		P_STRING, NULL, NULL, NULL},
-	{"bold_font_gtk2",	"Sans 9 Bold",
-	  &prefs_common.boldfont,		P_STRING, NULL, NULL, NULL},
+	{"message_font_gtk2", "Monospace 9",
+	 &prefs_common.textfont, P_STRING, NULL, NULL, NULL},
+	{"print_font_gtk2", "Monospace 9",
+	 &prefs_common.printfont, P_STRING, NULL, NULL, NULL},
+	{"small_font_gtk2", "Sans 9",
+	 &prefs_common.smallfont, P_STRING, NULL, NULL, NULL},
+	{"normal_font_gtk2", "Sans 9",
+	 &prefs_common.normalfont, P_STRING, NULL, NULL, NULL},
+	{"bold_font_gtk2", "Sans 9 Bold",
+	 &prefs_common.boldfont, P_STRING, NULL, NULL, NULL},
 	/* Message */
 	{"attach_save_directory", NULL,
 	 &prefs_common.attach_save_dir, P_STRING, NULL, NULL, NULL},
@@ -115,12 +115,12 @@ static PrefParam param_os_specific[] = {
 
 	/* MIME viewer */
 	{"mime_textviewer", NULL,
-	 &prefs_common.mime_textviewer,   P_STRING, NULL, NULL, NULL},
+	 &prefs_common.mime_textviewer, P_STRING, NULL, NULL, NULL},
 	{"mime_open_command", "notepad '%s'",
-	 &prefs_common.mime_open_cmd,     P_STRING, NULL, NULL, NULL},
+	 &prefs_common.mime_open_cmd, P_STRING, NULL, NULL, NULL},
 
 	/* Interface */
-	{"pixmap_theme_path", DEFAULT_PIXMAP_THEME, 
+	{"pixmap_theme_path", DEFAULT_PIXMAP_THEME,
 	 &prefs_common.pixmap_theme_path, P_STRING, NULL, NULL, NULL},
 #ifdef HAVE_SVG
 	{"enable_alpha_svg", "TRUE",
@@ -140,7 +140,7 @@ static PrefParam param_os_specific[] = {
 	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
 };
 #else
-#  define SPECIFIC_PREFS prefs_common
+#define SPECIFIC_PREFS prefs_common
 #endif
 
 /*
@@ -172,10 +172,10 @@ static PrefParam param[] = {
 	 P_BOOL, NULL, NULL, NULL},
 	{"newmail_notify_manu", "FALSE", &prefs_common.newmail_notify_manu,
 	 P_BOOL, NULL, NULL, NULL},
- 	{"newmail_notify_auto", "FALSE", &prefs_common.newmail_notify_auto,
-	P_BOOL, NULL, NULL, NULL},
- 	{"newmail_notify_cmd", "", &SPECIFIC_PREFS.newmail_notify_cmd, P_STRING,
- 	 NULL, NULL, NULL},
+	{"newmail_notify_auto", "FALSE", &prefs_common.newmail_notify_auto,
+	 P_BOOL, NULL, NULL, NULL},
+	{"newmail_notify_cmd", "", &SPECIFIC_PREFS.newmail_notify_cmd, P_STRING,
+	 NULL, NULL, NULL},
 	{"receive_dialog_mode", "2", &prefs_common.recv_dialog_mode, P_ENUM,
 	 NULL, NULL, NULL},
 	{"receivewin_width", "460", &prefs_common.receivewin_width, P_INT,
@@ -186,7 +186,7 @@ static PrefParam param[] = {
 	 P_BOOL, NULL, NULL, NULL},
 	{"close_receive_dialog", "TRUE", &prefs_common.close_recv_dialog,
 	 P_BOOL, NULL, NULL, NULL},
- 
+
 	/* Send */
 	{"save_message", "TRUE", &prefs_common.savemsg, P_BOOL,
 	 NULL, NULL, NULL},
@@ -210,8 +210,8 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"outgoing_fallback_to_ascii", "TRUE", &prefs_common.outgoing_fallback_to_ascii, P_BOOL,
 	 NULL, NULL, NULL},
-	 {"rewrite_first_from", "TRUE", &prefs_common.rewrite_first_from,
-	  P_BOOL, NULL, NULL, NULL},
+	{"rewrite_first_from", "TRUE", &prefs_common.rewrite_first_from,
+	 P_BOOL, NULL, NULL, NULL},
 	{"warn_empty_subj", "TRUE", &prefs_common.warn_empty_subj,
 	 P_BOOL, NULL, NULL, NULL},
 	{"warn_sending_many_recipients_num", "0", &prefs_common.warn_sending_many_recipients_num, P_INT,
@@ -241,7 +241,6 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"type_any_header", "FALSE", &prefs_common.type_any_header, P_BOOL,
 	 NULL, NULL, NULL},
-	
 
 	{"linewrap_length", "72", &prefs_common.linewrap_len, P_INT,
 	 NULL, NULL, NULL},
@@ -255,22 +254,22 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"auto_indent", "TRUE", &prefs_common.auto_indent, P_BOOL,
 	 NULL, NULL, NULL},
-        {"autosave", "TRUE", &prefs_common.autosave,
+	{"autosave", "TRUE", &prefs_common.autosave,
 	 P_BOOL, NULL, NULL, NULL},
-        {"autosave_length", "50", &prefs_common.autosave_length, P_INT,
+	{"autosave_length", "50", &prefs_common.autosave_length, P_INT,
 	 NULL, NULL, NULL},
-        {"autosave_encrypted", "FALSE", &prefs_common.autosave_encrypted,
+	{"autosave_encrypted", "FALSE", &prefs_common.autosave_encrypted,
 	 P_BOOL, NULL, NULL, NULL},
-        {"warn_large_insert", "TRUE", &prefs_common.warn_large_insert,
+	{"warn_large_insert", "TRUE", &prefs_common.warn_large_insert,
 	 P_BOOL, NULL, NULL, NULL},
-        {"warn_large_insert_size", "500", &prefs_common.warn_large_insert_size,
+	{"warn_large_insert_size", "500", &prefs_common.warn_large_insert_size,
 	 P_INT, NULL, NULL, NULL},
 
 	{"enable_aspell", "TRUE", &prefs_common.enable_aspell, P_BOOL,
 	 NULL, NULL, NULL},
-	{"dictionary",  "", &prefs_common.dictionary, P_STRING,
+	{"dictionary", "", &prefs_common.dictionary, P_STRING,
 	 NULL, NULL, NULL},
-	{"alt_dictionary",  "", &prefs_common.alt_dictionary, P_STRING,
+	{"alt_dictionary", "", &prefs_common.alt_dictionary, P_STRING,
 	 NULL, NULL, NULL},
 	{"use_alternate_dict", "FALSE", &prefs_common.use_alternate, P_BOOL,
 	 NULL, NULL, NULL},
@@ -319,9 +318,7 @@ static PrefParam param[] = {
 	{"forward_quote_mark", "> ", &prefs_common.fw_quotemark, P_STRING,
 	 NULL, NULL, NULL},
 	{"forward_quote_format",
-	 N_("\\n\\nBegin forwarded message:\\n\\n"
- 	 "?d{Date: %d\\n}?f{From: %f\\n}?t{To: %t\\n}?c{Cc: %c\\n}"
- 	 "?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"),
+	 N_("\\n\\nBegin forwarded message:\\n\\n" "?d{Date: %d\\n}?f{From: %f\\n}?t{To: %t\\n}?c{Cc: %c\\n}" "?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"),
 	 &prefs_common.fw_quotefmt, P_STRING,
 	 NULL, NULL, NULL},
 	{"quote_chars", ">", &prefs_common.quote_chars, P_STRING,
@@ -330,27 +327,27 @@ static PrefParam param[] = {
 	/* Display */
 	/* fonts */
 #ifndef GENERIC_UMPC
-	{"message_font_gtk2",	"Monospace 9",
-	 &SPECIFIC_PREFS.textfont,			P_STRING, NULL, NULL, NULL},
-        {"print_font_gtk2",     "Monospace 9",
-         &SPECIFIC_PREFS.printfont,             P_STRING, NULL, NULL, NULL},
-	{"small_font_gtk2",	"Sans 9",
-	  &SPECIFIC_PREFS.smallfont,		P_STRING, NULL, NULL, NULL},
-	{"normal_font_gtk2",	"Sans 9",
-	  &SPECIFIC_PREFS.normalfont,		P_STRING, NULL, NULL, NULL},
-	{"bold_font_gtk2",	"Sans Bold 9",
-	  &SPECIFIC_PREFS.boldfont,		P_STRING, NULL, NULL, NULL},
+	{"message_font_gtk2", "Monospace 9",
+	 &SPECIFIC_PREFS.textfont, P_STRING, NULL, NULL, NULL},
+	{"print_font_gtk2", "Monospace 9",
+	 &SPECIFIC_PREFS.printfont, P_STRING, NULL, NULL, NULL},
+	{"small_font_gtk2", "Sans 9",
+	 &SPECIFIC_PREFS.smallfont, P_STRING, NULL, NULL, NULL},
+	{"normal_font_gtk2", "Sans 9",
+	 &SPECIFIC_PREFS.normalfont, P_STRING, NULL, NULL, NULL},
+	{"bold_font_gtk2", "Sans Bold 9",
+	 &SPECIFIC_PREFS.boldfont, P_STRING, NULL, NULL, NULL},
 #else
-	{"message_font_gtk2",	"Monospace 8",
-	 &SPECIFIC_PREFS.textfont,			P_STRING, NULL, NULL, NULL},
-        {"print_font_gtk2",     "Monospace 8",
-         &SPECIFIC_PREFS.printfont,             P_STRING, NULL, NULL, NULL},
-	{"small_font_gtk2",	"Sans 8",
-	  &SPECIFIC_PREFS.smallfont,		P_STRING, NULL, NULL, NULL},
-	{"normal_font_gtk2",	"Sans 8",
-	  &SPECIFIC_PREFS.normalfont,		P_STRING, NULL, NULL, NULL},
-	{"bold_font_gtk2",	"Sans Bold 8",
-	  &SPECIFIC_PREFS.boldfont,		P_STRING, NULL, NULL, NULL},
+	{"message_font_gtk2", "Monospace 8",
+	 &SPECIFIC_PREFS.textfont, P_STRING, NULL, NULL, NULL},
+	{"print_font_gtk2", "Monospace 8",
+	 &SPECIFIC_PREFS.printfont, P_STRING, NULL, NULL, NULL},
+	{"small_font_gtk2", "Sans 8",
+	 &SPECIFIC_PREFS.smallfont, P_STRING, NULL, NULL, NULL},
+	{"normal_font_gtk2", "Sans 8",
+	 &SPECIFIC_PREFS.normalfont, P_STRING, NULL, NULL, NULL},
+	{"bold_font_gtk2", "Sans Bold 8",
+	 &SPECIFIC_PREFS.boldfont, P_STRING, NULL, NULL, NULL},
 #endif
 
 	{"use_different_print_font", "FALSE", &prefs_common.use_different_print_font, P_BOOL,
@@ -462,9 +459,9 @@ static PrefParam param[] = {
 	{"next_on_delete", "FALSE", &prefs_common.next_on_delete, P_BOOL,
 	 NULL, NULL, NULL},
 
-	 {"bold_unread", "TRUE", &prefs_common.bold_unread, P_BOOL,
+	{"bold_unread", "TRUE", &prefs_common.bold_unread, P_BOOL,
 	 NULL, NULL, NULL},
-	 {"bold_marked", "FALSE", &prefs_common.bold_marked, P_BOOL,
+	{"bold_marked", "FALSE", &prefs_common.bold_marked, P_BOOL,
 	 NULL, NULL, NULL},
 
 #ifndef GENERIC_UMPC
@@ -518,30 +515,30 @@ static PrefParam param[] = {
 	{"summary_col_lock", "FALSE", &prefs_common.summary_col_lock, P_BOOL,
 	 NULL, NULL, NULL},
 
-	 {"summary_col_pos_mark", "0",
-	  &prefs_common.summary_col_pos[S_COL_MARK], P_INT, NULL, NULL, NULL},
+	{"summary_col_pos_mark", "0",
+	 &prefs_common.summary_col_pos[S_COL_MARK], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_unread", "1",
-	  &prefs_common.summary_col_pos[S_COL_STATUS], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_STATUS], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_mime", "2",
-	  &prefs_common.summary_col_pos[S_COL_MIME], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_MIME], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_subject", "3",
-	  &prefs_common.summary_col_pos[S_COL_SUBJECT], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_SUBJECT], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_from", "4",
-	  &prefs_common.summary_col_pos[S_COL_FROM], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_FROM], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_date", "5",
-	  &prefs_common.summary_col_pos[S_COL_DATE], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_DATE], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_size", "6",
-	  &prefs_common.summary_col_pos[S_COL_SIZE], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_SIZE], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_number", "7",
-	  &prefs_common.summary_col_pos[S_COL_NUMBER], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_NUMBER], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_score", "8",
 	 &prefs_common.summary_col_pos[S_COL_SCORE], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_locked", "9",
 	 &prefs_common.summary_col_pos[S_COL_LOCKED], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_to", "10",
-	  &prefs_common.summary_col_pos[S_COL_TO], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_TO], P_INT, NULL, NULL, NULL},
 	{"summary_col_pos_tags", "11",
-	  &prefs_common.summary_col_pos[S_COL_TAGS], P_INT, NULL, NULL, NULL},
+	 &prefs_common.summary_col_pos[S_COL_TAGS], P_INT, NULL, NULL, NULL},
 
 	{"summary_col_size_mark", "10",
 	 &prefs_common.summary_col_size[S_COL_MARK], P_INT, NULL, NULL, NULL},
@@ -683,7 +680,7 @@ static PrefParam param[] = {
 	{"messagewin_height", "540", &prefs_common.msgwin_height, P_INT,
 	 NULL, NULL, NULL},
 	{"mimeview_tree_height", "60", &prefs_common.mimeview_tree_height, P_INT,
-	 NULL, NULL, NULL},	 
+	 NULL, NULL, NULL},
 	{"sourcewin_width", "600", &prefs_common.sourcewin_width, P_INT,
 	 NULL, NULL, NULL},
 	{"sourcewin_height", "500", &prefs_common.sourcewin_height, P_INT,
@@ -807,11 +804,11 @@ static PrefParam param[] = {
 	 &SPECIFIC_PREFS.attach_load_dir, P_STRING, NULL, NULL, NULL},
 
 	/* MIME viewer */
-	{"mime_textviewer",   NULL,
-	 &SPECIFIC_PREFS.mime_textviewer,   P_STRING, NULL, NULL, NULL},
+	{"mime_textviewer", NULL,
+	 &SPECIFIC_PREFS.mime_textviewer, P_STRING, NULL, NULL, NULL},
 	{"mime_open_command", "xdg-open '%s'",
-	 &SPECIFIC_PREFS.mime_open_cmd,     P_STRING, NULL, NULL, NULL},
-	{"show_inline_attachments", "TRUE", 
+	 &SPECIFIC_PREFS.mime_open_cmd, P_STRING, NULL, NULL, NULL},
+	{"show_inline_attachments", "TRUE",
 	 &prefs_common.show_inline_attachments, P_BOOL, NULL, NULL, NULL},
 
 	/* Interface */
@@ -823,7 +820,7 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 #endif
 	/* {"emulate_emacs", "FALSE", &prefs_common.emulate_emacs, P_BOOL,
-	 NULL, NULL, NULL}, */
+	   NULL, NULL, NULL}, */
 	{"open_selected_message_on_folder_open", "FALSE",
 	 &prefs_common.open_selected_on_folder_open,
 	 P_BOOL, NULL, NULL, NULL},
@@ -873,7 +870,7 @@ static PrefParam param[] = {
 	 &prefs_common.mark_as_read_on_new_window,
 	 P_BOOL, NULL, NULL, NULL},
 	{"mark_as_read_delay", "0",
-	 &prefs_common.mark_as_read_delay, P_INT, 
+	 &prefs_common.mark_as_read_delay, P_INT,
 	 NULL, NULL, NULL},
 	{"immediate_execution", "TRUE", &prefs_common.immediate_exec, P_BOOL,
 	 NULL, NULL, NULL},
@@ -882,7 +879,7 @@ static PrefParam param[] = {
 	{"summary_from_show", "0", &prefs_common.summary_from_show, P_ENUM,
 	 NULL, NULL, NULL},
 
-	{"pixmap_theme_path", DEFAULT_PIXMAP_THEME, 
+	{"pixmap_theme_path", DEFAULT_PIXMAP_THEME,
 	 &SPECIFIC_PREFS.pixmap_theme_path, P_STRING,
 	 NULL, NULL, NULL},
 #ifdef HAVE_SVG
@@ -968,27 +965,27 @@ static PrefParam param[] = {
 	{"important_score", "1", &prefs_common.important_score, P_INT,
 	 NULL, NULL, NULL},
 
-    	{"clip_log", "TRUE", &prefs_common.cliplog, P_BOOL,
+	{"clip_log", "TRUE", &prefs_common.cliplog, P_BOOL,
 	 NULL, NULL, NULL},
 	{"log_length", "500", &prefs_common.loglength, P_INT,
 	 NULL, NULL, NULL},
 #ifndef GENERIC_UMPC
-    	{"enable_log_standard", "TRUE", &prefs_common.enable_log_standard, P_BOOL,
+	{"enable_log_standard", "TRUE", &prefs_common.enable_log_standard, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_warning", "TRUE", &prefs_common.enable_log_warning, P_BOOL,
+	{"enable_log_warning", "TRUE", &prefs_common.enable_log_warning, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_error", "TRUE", &prefs_common.enable_log_error, P_BOOL,
+	{"enable_log_error", "TRUE", &prefs_common.enable_log_error, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_status", "TRUE", &prefs_common.enable_log_status, P_BOOL,
+	{"enable_log_status", "TRUE", &prefs_common.enable_log_status, P_BOOL,
 	 NULL, NULL, NULL},
 #else
-    	{"enable_log_standard", "FALSE", &prefs_common.enable_log_standard, P_BOOL,
+	{"enable_log_standard", "FALSE", &prefs_common.enable_log_standard, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_warning", "FALSE", &prefs_common.enable_log_warning, P_BOOL,
+	{"enable_log_warning", "FALSE", &prefs_common.enable_log_warning, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_error", "FALSE", &prefs_common.enable_log_error, P_BOOL,
+	{"enable_log_error", "FALSE", &prefs_common.enable_log_error, P_BOOL,
 	 NULL, NULL, NULL},
-    	{"enable_log_status", "FALSE", &prefs_common.enable_log_status, P_BOOL,
+	{"enable_log_status", "FALSE", &prefs_common.enable_log_status, P_BOOL,
 	 NULL, NULL, NULL},
 #endif
 	{"log_msg_color", "#00af00", &prefs_common.color[COL_LOG_MSG],
@@ -1008,21 +1005,21 @@ static PrefParam param[] = {
 	{"log_status_skip_color", "#aa00aa", &prefs_common.color[COL_LOG_STATUS_SKIP],
 	 P_COLOR, NULL, NULL, NULL},
 
-    {"enable_filtering_debug", "FALSE", &prefs_common.enable_filtering_debug, P_BOOL,
+	{"enable_filtering_debug", "FALSE", &prefs_common.enable_filtering_debug, P_BOOL,
 	 NULL, NULL, NULL},
-    {"filtering_debug_level", "1", &prefs_common.filtering_debug_level, P_INT,
+	{"filtering_debug_level", "1", &prefs_common.filtering_debug_level, P_INT,
 	 NULL, NULL, NULL},
-    {"enable_filtering_debug_inc", "TRUE", &prefs_common.enable_filtering_debug_inc, P_BOOL,
+	{"enable_filtering_debug_inc", "TRUE", &prefs_common.enable_filtering_debug_inc, P_BOOL,
 	 NULL, NULL, NULL},
-    {"enable_filtering_debug_manual", "TRUE", &prefs_common.enable_filtering_debug_manual, P_BOOL,
+	{"enable_filtering_debug_manual", "TRUE", &prefs_common.enable_filtering_debug_manual, P_BOOL,
 	 NULL, NULL, NULL},
-    {"enable_filtering_debug_folder_proc", "FALSE", &prefs_common.enable_filtering_debug_folder_proc, P_BOOL,
+	{"enable_filtering_debug_folder_proc", "FALSE", &prefs_common.enable_filtering_debug_folder_proc, P_BOOL,
 	 NULL, NULL, NULL},
-    {"enable_filtering_debug_pre_proc", "FALSE", &prefs_common.enable_filtering_debug_pre_proc, P_BOOL,
+	{"enable_filtering_debug_pre_proc", "FALSE", &prefs_common.enable_filtering_debug_pre_proc, P_BOOL,
 	 NULL, NULL, NULL},
-    {"enable_filtering_debug_post_proc", "FALSE", &prefs_common.enable_filtering_debug_post_proc, P_BOOL,
+	{"enable_filtering_debug_post_proc", "FALSE", &prefs_common.enable_filtering_debug_post_proc, P_BOOL,
 	 NULL, NULL, NULL},
-    {"filtering_debug_clip_log", "TRUE", &prefs_common.filtering_debug_cliplog, P_BOOL,
+	{"filtering_debug_clip_log", "TRUE", &prefs_common.filtering_debug_cliplog, P_BOOL,
 	 NULL, NULL, NULL},
 	{"filtering_debug_log_length", "500", &prefs_common.filtering_debug_loglength, P_INT,
 	 NULL, NULL, NULL},
@@ -1211,15 +1208,15 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 #endif
 	{"thread_by_subject_max_age", "10", &prefs_common.thread_by_subject_max_age,
-	P_INT, NULL, NULL, NULL },
+	 P_INT, NULL, NULL, NULL},
 	{"last_opened_folder", "", &prefs_common.last_opened_folder,
-	P_STRING, NULL, NULL, NULL },
+	 P_STRING, NULL, NULL, NULL},
 	{"goto_last_folder_on_startup", "FALSE", &prefs_common.goto_last_folder_on_startup,
-	P_BOOL, NULL, NULL, NULL },
+	 P_BOOL, NULL, NULL, NULL},
 	{"startup_folder", "", &prefs_common.startup_folder,
-	P_STRING, NULL, NULL, NULL },
+	 P_STRING, NULL, NULL, NULL},
 	{"goto_folder_on_startup", "FALSE", &prefs_common.goto_folder_on_startup,
-	P_BOOL, NULL, NULL, NULL },
+	 P_BOOL, NULL, NULL, NULL},
 	{"summary_quicksearch_sticky", "1", &prefs_common.summary_quicksearch_sticky, P_INT,
 	 NULL, NULL, NULL},
 	{"summary_quicksearch_dynamic", "0", &prefs_common.summary_quicksearch_dynamic, P_INT,
@@ -1280,7 +1277,7 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 
 	{"two_line_vertical", "TRUE", &prefs_common.two_line_vert,
-	P_BOOL, NULL, NULL, NULL },
+	 P_BOOL, NULL, NULL, NULL},
 
 	{"inherit_folder_properties", "FALSE", &prefs_common.inherit_folder_props, P_BOOL,
 	 NULL, NULL, NULL},
@@ -1304,9 +1301,9 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"enable_avatars", "3", &prefs_common.enable_avatars, P_INT, NULL, NULL, NULL},
 #ifndef PASSWORD_CRYPTO_OLD
-	{"use_master_passphrase", FALSE, &prefs_common.use_primary_passphrase, P_BOOL, NULL, NULL, NULL },
-	{"master_passphrase", "", &prefs_common.primary_passphrase, P_STRING, NULL, NULL, NULL },
-	{"master_passphrase_salt", "", &prefs_common.primary_passphrase_salt, P_STRING, NULL, NULL, NULL },
+	{"use_master_passphrase", FALSE, &prefs_common.use_primary_passphrase, P_BOOL, NULL, NULL, NULL},
+	{"master_passphrase", "", &prefs_common.primary_passphrase, P_STRING, NULL, NULL, NULL},
+	{"master_passphrase_salt", "", &prefs_common.primary_passphrase_salt, P_STRING, NULL, NULL, NULL},
 	{"master_passphrase_pbkdf2_rounds", "50000", &prefs_common.primary_passphrase_pbkdf2_rounds, P_INT, NULL, NULL, NULL},
 #endif
 
@@ -1328,8 +1325,7 @@ static PrefParam param[] = {
  * Read history list from the specified history file in the specified directory (subdir of rc_dir)
  * Fallback to default_list if history file is not found
  */
-GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, const gchar *history,
-															  GList *default_list)
+GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, const gchar *history, GList *default_list)
 {
 	FILE *fp;
 	gchar *path;
@@ -1337,15 +1333,13 @@ GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, co
 	GList *tmp = NULL;
 
 	if (dirname) {
-		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, dirname,
-				   G_DIR_SEPARATOR_S, history,
-				   NULL);
+		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, dirname, G_DIR_SEPARATOR_S, history, NULL);
 	} else {
-	path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, history,
-			   NULL);
+		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, history, NULL);
 	}
 	if ((fp = claws_fopen(path, "rb")) == NULL) {
-		if (ENOENT != errno) FILE_OP_ERROR(path, "claws_fopen");
+		if (ENOENT != errno)
+			FILE_OP_ERROR(path, "claws_fopen");
 		g_free(path);
 		/* returns default list if set, otherwise NULL */
 		return default_list;
@@ -1353,7 +1347,8 @@ GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, co
 	g_free(path);
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		g_strstrip(buf);
-		if (buf[0] == '\0') continue;
+		if (buf[0] == '\0')
+			continue;
 		tmp = add_history(tmp, buf);
 	}
 	claws_fclose(fp);
@@ -1366,7 +1361,7 @@ GList *prefs_common_read_history_from_dir_with_defaults(const gchar *dirname, co
 /*
  * Read history list from the specified history file in the specified directory (subdir of rc_dir)
  */
-static GList *prefs_common_read_history_from_dir(const gchar *dirname, const gchar *history) 
+static GList *prefs_common_read_history_from_dir(const gchar *dirname, const gchar *history)
 {
 	return prefs_common_read_history_from_dir_with_defaults(dirname, history, NULL);
 }
@@ -1374,7 +1369,7 @@ static GList *prefs_common_read_history_from_dir(const gchar *dirname, const gch
 /*
  * Read history list from the specified history file
  */
-static GList *prefs_common_read_history(const gchar *history) 
+static GList *prefs_common_read_history(const gchar *history)
 {
 	return prefs_common_read_history_from_dir(NULL, history);
 }
@@ -1396,24 +1391,15 @@ void prefs_common_read_config(void)
 	g_free(prefs_common.date_format);
 	prefs_common.date_format = tmp;
 
-	prefs_common.mime_open_cmd_history =
-		prefs_common_read_history(COMMAND_HISTORY);
-	prefs_common.summary_quicksearch_history =
-		prefs_common_read_history(QUICKSEARCH_HISTORY);
-	prefs_common.summary_search_from_history =
-		prefs_common_read_history(SUMMARY_SEARCH_FROM_HISTORY);
-	prefs_common.summary_search_to_history =
-		prefs_common_read_history(SUMMARY_SEARCH_TO_HISTORY);
-	prefs_common.summary_search_subject_history =
-		prefs_common_read_history(SUMMARY_SEARCH_SUBJECT_HISTORY);
-	prefs_common.summary_search_body_history =
-		prefs_common_read_history(SUMMARY_SEARCH_BODY_HISTORY);
-	prefs_common.summary_search_adv_condition_history =
-		prefs_common_read_history(SUMMARY_SEARCH_ADV_CONDITION_HISTORY);
-	prefs_common.message_search_history =
-		prefs_common_read_history(MESSAGE_SEARCH_HISTORY);
-	prefs_common.compose_save_to_history =
-		prefs_common_read_history(COMPOSE_SAVE_TO_HISTORY);
+	prefs_common.mime_open_cmd_history = prefs_common_read_history(COMMAND_HISTORY);
+	prefs_common.summary_quicksearch_history = prefs_common_read_history(QUICKSEARCH_HISTORY);
+	prefs_common.summary_search_from_history = prefs_common_read_history(SUMMARY_SEARCH_FROM_HISTORY);
+	prefs_common.summary_search_to_history = prefs_common_read_history(SUMMARY_SEARCH_TO_HISTORY);
+	prefs_common.summary_search_subject_history = prefs_common_read_history(SUMMARY_SEARCH_SUBJECT_HISTORY);
+	prefs_common.summary_search_body_history = prefs_common_read_history(SUMMARY_SEARCH_BODY_HISTORY);
+	prefs_common.summary_search_adv_condition_history = prefs_common_read_history(SUMMARY_SEARCH_ADV_CONDITION_HISTORY);
+	prefs_common.message_search_history = prefs_common_read_history(MESSAGE_SEARCH_HISTORY);
+	prefs_common.compose_save_to_history = prefs_common_read_history(COMPOSE_SAVE_TO_HISTORY);
 #ifndef USE_ALT_ADDRBOOK
 	prefs_common.addressbook_custom_attributes = addressbook_update_custom_attr_from_prefs();
 #endif
@@ -1437,12 +1423,9 @@ static void prefs_common_save_history_to_dir(const gchar *dirname, const gchar *
 	gchar *path, *tmp_path;
 
 	if (dirname) {
-		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, dirname,
-				   G_DIR_SEPARATOR_S, history,
-				   NULL);
+		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, dirname, G_DIR_SEPARATOR_S, history, NULL);
 	} else {
-	path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, history,
-			   NULL);
+		path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, history, NULL);
 	}
 	tmp_path = g_strconcat(path, ".tmp", NULL);
 
@@ -1452,8 +1435,7 @@ static void prefs_common_save_history_to_dir(const gchar *dirname, const gchar *
 	}
 
 	for (cur = list; cur != NULL; cur = cur->next) {
-		TRY(claws_fputs((gchar *)cur->data, fp) != EOF &&
-		    claws_fputc('\n', fp) != EOF);
+		TRY(claws_fputs((gchar *)cur->data, fp) != EOF && claws_fputc('\n', fp) != EOF);
 	}
 
 	if (claws_safe_fclose(fp) == EOF) {
@@ -1470,7 +1452,7 @@ static void prefs_common_save_history_to_dir(const gchar *dirname, const gchar *
 		goto out;
 	}
 
-out:
+ out:
 	if (fp)
 		claws_safe_fclose(fp);
 	g_free(tmp_path);
@@ -1494,29 +1476,18 @@ void prefs_common_write_config(void)
 	prefs_write_config(param_os_specific, "CommonWin32", COMMON_RC);
 #endif
 
-	prefs_common_save_history(COMMAND_HISTORY, 
-		prefs_common.mime_open_cmd_history);
-	prefs_common_save_history(QUICKSEARCH_HISTORY, 
-		prefs_common.summary_quicksearch_history);
-	prefs_common_save_history(SUMMARY_SEARCH_FROM_HISTORY, 
-		prefs_common.summary_search_from_history);
-	prefs_common_save_history(SUMMARY_SEARCH_TO_HISTORY, 
-		prefs_common.summary_search_to_history);
-	prefs_common_save_history(SUMMARY_SEARCH_SUBJECT_HISTORY, 
-		prefs_common.summary_search_subject_history);
-	prefs_common_save_history(SUMMARY_SEARCH_BODY_HISTORY, 
-		prefs_common.summary_search_body_history);
-	prefs_common_save_history(SUMMARY_SEARCH_ADV_CONDITION_HISTORY, 
-		prefs_common.summary_search_adv_condition_history);
-	prefs_common_save_history(MESSAGE_SEARCH_HISTORY, 
-		prefs_common.message_search_history);
-	prefs_common_save_history(COMPOSE_SAVE_TO_HISTORY, 
-		prefs_common.compose_save_to_history);
+	prefs_common_save_history(COMMAND_HISTORY, prefs_common.mime_open_cmd_history);
+	prefs_common_save_history(QUICKSEARCH_HISTORY, prefs_common.summary_quicksearch_history);
+	prefs_common_save_history(SUMMARY_SEARCH_FROM_HISTORY, prefs_common.summary_search_from_history);
+	prefs_common_save_history(SUMMARY_SEARCH_TO_HISTORY, prefs_common.summary_search_to_history);
+	prefs_common_save_history(SUMMARY_SEARCH_SUBJECT_HISTORY, prefs_common.summary_search_subject_history);
+	prefs_common_save_history(SUMMARY_SEARCH_BODY_HISTORY, prefs_common.summary_search_body_history);
+	prefs_common_save_history(SUMMARY_SEARCH_ADV_CONDITION_HISTORY, prefs_common.summary_search_adv_condition_history);
+	prefs_common_save_history(MESSAGE_SEARCH_HISTORY, prefs_common.message_search_history);
+	prefs_common_save_history(COMPOSE_SAVE_TO_HISTORY, prefs_common.compose_save_to_history);
 
 #ifndef USE_ALT_ADDRBOOK
-		prefs_common_save_history_to_dir(ADDRBOOK_DIR,
-		ADDRESSBOOK_CUSTOM_ATTRIBUTES, 
-		prefs_common.addressbook_custom_attributes);
+	prefs_common_save_history_to_dir(ADDRBOOK_DIR, ADDRESSBOOK_CUSTOM_ATTRIBUTES, prefs_common.addressbook_custom_attributes);
 #endif
 }
 
@@ -1532,20 +1503,20 @@ void pref_get_unescaped_pref(gchar *out, const gchar *in)
 
 	*out = '\0';
 
-	cm_return_if_fail( in != NULL );
-	cm_return_if_fail( out != NULL );
+	cm_return_if_fail(in != NULL);
+	cm_return_if_fail(out != NULL);
 
 	i = in;
 	o = out;
-	memset(out, 0, strlen(in)+1);
+	memset(out, 0, strlen(in) + 1);
 	while (*i != '\0') {
-		if (*i == '\\' && *(i+1) == 'n') {
+		if (*i == '\\' && *(i + 1) == 'n') {
 			*o++ = '\n';
 			i++;
-		} else if (*i == '\\' && *(i+1) == 't') {
+		} else if (*i == '\\' && *(i + 1) == 't') {
 			*o++ = '\t';
 			i++;
-		} else if (*i == '\\' && *(i+1) == '\\') {
+		} else if (*i == '\\' && *(i + 1) == '\\') {
 			*o++ = '\\';
 			i++;
 		} else {
@@ -1553,7 +1524,7 @@ void pref_get_unescaped_pref(gchar *out, const gchar *in)
 		}
 		i++;
 	}
-	*o='\0';
+	*o = '\0';
 }
 
 /* make a copy of string 'in' into buffer 'out'. escape \ sequences.
@@ -1568,8 +1539,8 @@ void pref_get_escaped_pref(gchar *out, const gchar *in)
 
 	*out = '\0';
 
-	cm_return_if_fail( in != NULL );
-	cm_return_if_fail( out != NULL );
+	cm_return_if_fail(in != NULL);
+	cm_return_if_fail(out != NULL);
 
 	i = in;
 	o = out;
@@ -1590,7 +1561,7 @@ void pref_get_escaped_pref(gchar *out, const gchar *in)
 	}
 	*o = '\0';
 }
-		
+
 /* set the contents of a textview widget from the internal \-escaped
   representation of a pref string. both txt and textview must be non-NULL. */
 void pref_set_textview_from_pref(GtkTextView *textview, const gchar *txt)
@@ -1598,14 +1569,14 @@ void pref_set_textview_from_pref(GtkTextView *textview, const gchar *txt)
 	GtkTextBuffer *buffer;
 	gchar *out = NULL;
 
-	cm_return_if_fail( textview != NULL );
+	cm_return_if_fail(textview != NULL);
 
 	buffer = gtk_text_view_get_buffer(textview);
 
 	if (!txt) {
 		gtk_text_buffer_set_text(buffer, "", -1);
 	} else {
-		out = g_malloc(strlen(txt)+1);
+		out = g_malloc(strlen(txt) + 1);
 
 		pref_get_unescaped_pref(out, txt);
 
@@ -1620,11 +1591,11 @@ void pref_set_entry_from_pref(GtkEntry *entry, const gchar *txt)
 {
 	gchar *out = NULL;
 
-	cm_return_if_fail( entry != NULL );
+	cm_return_if_fail(entry != NULL);
 	if (!txt) {
 		gtk_entry_set_text(entry, "");
 	} else {
-		out = g_malloc(strlen(txt)+1);
+		out = g_malloc(strlen(txt) + 1);
 
 		pref_get_unescaped_pref(out, txt);
 
@@ -1635,42 +1606,42 @@ void pref_set_entry_from_pref(GtkEntry *entry, const gchar *txt)
 
 /* get the \-escaped internal representation of a pref from the contents of
    a textview widget. textview must be non-NULL. */
-gchar *pref_get_pref_from_textview(GtkTextView *textview) 
+gchar *pref_get_pref_from_textview(GtkTextView *textview)
 {
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 	gchar *out, *tmp;
-	
-	cm_return_val_if_fail( textview != NULL, "" );
+
+	cm_return_val_if_fail(textview != NULL, "");
 
 	buffer = gtk_text_view_get_buffer(textview);
 	gtk_text_buffer_get_start_iter(buffer, &start);
 	gtk_text_buffer_get_iter_at_offset(buffer, &end, -1);
 	tmp = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
-	out = malloc(2*strlen(tmp)+1);
+	out = malloc(2 * strlen(tmp) + 1);
 	if (out)
 		pref_get_escaped_pref(out, tmp);
 	g_free(tmp);
 
-	return out?out:"";
+	return out ? out : "";
 }
 
 /* get the \-escaped internal representation of a pref from the contents of
    a gtkentry widget. entry must be non-NULL. */
-gchar *pref_get_pref_from_entry(GtkEntry *entry) 
+gchar *pref_get_pref_from_entry(GtkEntry *entry)
 {
 	gchar *out, *tmp;
 
-	cm_return_val_if_fail( entry != NULL, "" );
+	cm_return_val_if_fail(entry != NULL, "");
 
 	tmp = gtk_editable_get_chars(GTK_EDITABLE(entry), 0, -1);
-	out = malloc(2*strlen(tmp)+1);
-	
+	out = malloc(2 * strlen(tmp) + 1);
+
 	if (out)
 		pref_get_escaped_pref(out, tmp);
 	g_free(tmp);
 
-	return out?out:"";
+	return out ? out : "";
 }
 
 /* ugly hack to be able to get this pref from ssl_certificate.c */
@@ -1688,10 +1659,12 @@ gboolean prefs_common_enable_log_warning(void)
 {
 	return prefs_common.enable_log_warning;
 }
+
 gboolean prefs_common_enable_log_error(void)
 {
 	return prefs_common.enable_log_error;
 }
+
 gboolean prefs_common_enable_log_status(void)
 {
 	return prefs_common.enable_log_status;
@@ -1720,14 +1693,14 @@ const gchar *prefs_common_get_uri_cmd(void)
 	return NULL;
 #else
 	gchar *tmp = NULL;
-	
+
 	if (!prefs_common.cmds_use_system_default)
 		return prefs_common.uri_cmd;
-	
+
 	tmp = g_find_program_in_path("xdg-open");
-	if (!tmp) 
+	if (!tmp)
 		return prefs_common.uri_cmd;
-	
+
 	g_free(tmp);
 	return "xdg-open %s";
 #endif
@@ -1737,19 +1710,19 @@ const gchar *prefs_common_get_ext_editor_cmd(void)
 {
 	return prefs_common.ext_editor_cmd;
 #if 0 /* we should do that, but it detaches the editor and breaks
-	 compose.c's external composition. */
+         compose.c's external composition. */
 	gchar *tmp = NULL;
-	
+
 	if (!prefs_common.cmds_use_system_default)
 		return prefs_common.ext_editor_cmd;
-	
+
 	tmp = g_find_program_in_path("xdg-open");
-	if (!tmp) 
+	if (!tmp)
 		return prefs_common.ext_editor_cmd;
-	
+
 	g_free(tmp);
 	return "xdg-open %s";
-#endif 
+#endif
 }
 
 gboolean prefs_common_get_use_shred(void)
@@ -1757,7 +1730,7 @@ gboolean prefs_common_get_use_shred(void)
 	return prefs_common.use_shred;
 }
 
-gboolean prefs_common_get_flush_metadata (void)
+gboolean prefs_common_get_flush_metadata(void)
 {
 	return prefs_common.flush_metadata;
 }
@@ -1766,3 +1739,7 @@ PrefsCommon *prefs_common_get_prefs(void)
 {
 	return &prefs_common;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

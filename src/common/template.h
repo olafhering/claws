@@ -23,7 +23,7 @@
 
 #include <glib.h>
 
-typedef struct _Template	Template;
+typedef struct _Template Template;
 
 struct _Template {
 	gchar *load_filename;
@@ -37,11 +37,11 @@ struct _Template {
 	gchar *value;
 };
 
-void template_free		(Template	*tmpl);
+void template_free(Template *tmpl);
 
-GSList *template_read_config	(void);
+GSList *template_read_config(void);
 
-GSList *template_get_config	(void);
-void template_set_config	(GSList		*tmpl_list);
+GSList *template_get_config(void);
+void template_set_config(GSList *tmpl_list);
 
 #endif /* __TEMPLATE_H__ */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -32,8 +32,7 @@
 #include "gtkutils.h"
 #include "defs.h"
 
-GtkActionGroup *cm_menu_create_action_group(const gchar *name, GtkActionEntry *entries,
-					    gint num_entries, gpointer data)
+GtkActionGroup *cm_menu_create_action_group(const gchar *name, GtkActionEntry *entries, gint num_entries, gpointer data)
 {
 	GtkActionGroup *group = gtk_action_group_new(name);
 	gtk_action_group_set_translate_func(group, menu_translate, NULL, NULL);
@@ -42,8 +41,7 @@ GtkActionGroup *cm_menu_create_action_group(const gchar *name, GtkActionEntry *e
 	return group;
 }
 
-GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *manager, const gchar *name, GtkActionEntry *entries,
-					    gint num_entries, gpointer data)
+GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *manager, const gchar *name, GtkActionEntry *entries, gint num_entries, gpointer data)
 {
 	GtkActionGroup *group = gtk_action_group_new(name);
 	gtk_action_group_set_translate_func(group, menu_translate, NULL, NULL);
@@ -85,18 +83,18 @@ void cm_menu_set_sensitive_full(GtkUIManager *gui_manager, const gchar *menu, gb
 	gchar *path = g_strdup_printf("/%s/", menu);
 
 	widget = gtk_ui_manager_get_widget(gui_manager, path);
-	if( !GTK_IS_WIDGET(widget) ) {
+	if (!GTK_IS_WIDGET(widget)) {
 		g_message("Blah, '%s' is not a widget.\n", path);
 	}
 
-	if( !GTK_IS_MENU_ITEM(widget) ) {
+	if (!GTK_IS_MENU_ITEM(widget)) {
 		g_message("Blah, '%s' is not a menu item.\n", path);
 	}
 
 	gtk_widget_set_sensitive(widget, sensitive);
 
 	if (strcmp(menu, "Menus/SummaryViewPopup/Reedit") == 0)
-		(sensitive)? gtk_widget_show(widget) : gtk_widget_hide(widget);
+		(sensitive) ? gtk_widget_show(widget) : gtk_widget_hide(widget);
 
 	g_free(path);
 }
@@ -109,11 +107,11 @@ gchar *cm_menu_item_get_shortcut(GtkUIManager *gui_manager, gchar *menu)
 	GtkAccelKey key;
 
 	widget = gtk_ui_manager_get_widget(gui_manager, path);
-	if( !GTK_IS_WIDGET(widget) ) {
+	if (!GTK_IS_WIDGET(widget)) {
 		g_message("Blah, '%s' is not a widget.\n", path);
 	}
 
-	if( !GTK_IS_MENU_ITEM(widget) ) {
+	if (!GTK_IS_MENU_ITEM(widget)) {
 		g_message("Blah, '%s' is not a menu item.\n", path);
 	}
 
@@ -122,7 +120,7 @@ gchar *cm_menu_item_get_shortcut(GtkUIManager *gui_manager, gchar *menu)
 	accel = gtk_menu_item_get_accel_path(GTK_MENU_ITEM(widget));
 
 	if (accel && gtk_accel_map_lookup_entry(accel, &key))
-		return gtk_accelerator_get_label (key.accel_key, key.accel_mods);
+		return gtk_accelerator_get_label(key.accel_key, key.accel_mods);
 	else
 		return g_strdup(_("None"));
 
@@ -135,15 +133,10 @@ GtkWidget *cm_menu_item_new_label_from_url(gchar *url)
 		g_message("Refusing a %d bytes string as menu label\n", len);
 		url[64] = '\0', url[63] = url[62] = url[61] = '.', url[60] = ' ';
 		GtkWidget *newlabel = gtk_menu_item_new_with_label(url);
-		gtk_widget_set_tooltip_markup(GTK_WIDGET(newlabel),
-			g_strconcat("<span><b>", _("Warning:"), "</b>",
-			_("This URL was too long for displaying and\n"
-			"has been truncated for safety. This message could be\n"
-			"corrupted, malformed or part of some DoS attempt."),
-			"</span>", NULL));
+		gtk_widget_set_tooltip_markup(GTK_WIDGET(newlabel), g_strconcat("<span><b>", _("Warning:"), "</b>", _("This URL was too long for displaying and\n" "has been truncated for safety. This message could be\n" "corrupted, malformed or part of some DoS attempt."), "</span>", NULL));
 		return newlabel;
 	}
-	
+
 	return gtk_menu_item_new_with_label(url);
 }
 
@@ -153,11 +146,11 @@ void cm_toggle_menu_set_active_full(GtkUIManager *gui_manager, gchar *menu, gboo
 	gchar *path = g_strdup_printf("/%s/", menu);
 
 	widget = gtk_ui_manager_get_widget(gui_manager, path);
-	if( !GTK_IS_WIDGET(widget) ) {
+	if (!GTK_IS_WIDGET(widget)) {
 		g_message("Blah, '%s' is not a widget.\n", path);
 	}
 
-	if( !GTK_CHECK_MENU_ITEM(widget) ) {
+	if (!GTK_CHECK_MENU_ITEM(widget)) {
 		g_message("Blah, '%s' is not a check menu item.\n", path);
 	}
 
@@ -176,12 +169,11 @@ void menu_set_sensitive_all(GtkMenuShell *menu_shell, gboolean sensitive)
 	g_list_free(children);
 }
 
-void menu_button_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
-			  gpointer user_data)
+void menu_button_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data)
 {
-        GtkWidget *widget;
-        gint wheight;
-        gint wx, wy;
+	GtkWidget *widget;
+	gint wheight;
+	gint wx, wy;
 	GtkAllocation allocation;
 	GtkRequisition mreq, wreq;
 	GdkScreen *screen;
@@ -189,32 +181,30 @@ void menu_button_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
 	gint monitor_num;
 
 	cm_return_if_fail(x && y);
- 	cm_return_if_fail(GTK_IS_BUTTON(user_data));
+	cm_return_if_fail(GTK_IS_BUTTON(user_data));
 
 	widget = GTK_WIDGET(user_data);
 
-        gdk_window_get_origin(gtk_widget_get_window(widget), x, y);
-        gtk_widget_get_requisition(widget, &wreq);
-        wheight = wreq.height;
-        gtk_widget_get_allocation(widget, &allocation);
-        wx = allocation.x;
-        wy = allocation.y;
-        
-	gtk_widget_size_request(GTK_WIDGET(menu), &mreq);
-	screen = gtk_widget_get_screen (widget);
-	monitor_num = gdk_screen_get_monitor_at_point (screen, *x, *y);
-	gdk_screen_get_monitor_geometry (screen, monitor_num, 
-					 &monitor);
+	gdk_window_get_origin(gtk_widget_get_window(widget), x, y);
+	gtk_widget_get_requisition(widget, &wreq);
+	wheight = wreq.height;
+	gtk_widget_get_allocation(widget, &allocation);
+	wx = allocation.x;
+	wy = allocation.y;
 
-        *x = *x + wx;
-        *y = *y + wy + wheight;
-	
+	gtk_widget_size_request(GTK_WIDGET(menu), &mreq);
+	screen = gtk_widget_get_screen(widget);
+	monitor_num = gdk_screen_get_monitor_at_point(screen, *x, *y);
+	gdk_screen_get_monitor_geometry(screen, monitor_num, &monitor);
+
+	*x = *x + wx;
+	*y = *y + wy + wheight;
+
 	if (*y + mreq.height >= monitor.height)
 		*y -= mreq.height;
 }
 
-gint menu_find_option_menu_index(GtkCMOptionMenu *optmenu, gpointer data,
-				 GCompareFunc func)
+gint menu_find_option_menu_index(GtkCMOptionMenu *optmenu, gpointer data, GCompareFunc func)
 {
 	GtkWidget *menu;
 	GtkWidget *menuitem;
@@ -226,11 +216,9 @@ gint menu_find_option_menu_index(GtkCMOptionMenu *optmenu, gpointer data,
 	menu = gtk_cmoption_menu_get_menu(optmenu);
 	children = gtk_container_get_children(GTK_CONTAINER(GTK_MENU_SHELL(menu)));
 
-	for (cur = children, n = 0;
-	     cur != NULL; cur = cur->next, n++) {
+	for (cur = children, n = 0; cur != NULL; cur = cur->next, n++) {
 		menuitem = GTK_WIDGET(cur->data);
-		menu_data = g_object_get_data(G_OBJECT(menuitem),
-					      MENU_VAL_ID);
+		menu_data = g_object_get_data(G_OBJECT(menuitem), MENU_VAL_ID);
 		if (func) {
 			if (func(menu_data, data) == 0) {
 				found = n;
@@ -246,3 +234,7 @@ gint menu_find_option_menu_index(GtkCMOptionMenu *optmenu, gpointer data,
 
 	return found;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

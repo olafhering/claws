@@ -36,7 +36,7 @@
 #endif
 
 #include "utils.h"
-# define mytimersub(a, b, result)                                             \
+#define mytimersub(a, b, result)                                             \
   do {                                                                        \
     (result)->tv_sec = (a)->tv_sec - (b)->tv_sec;                             \
     (result)->tv_usec = (a)->tv_usec - (b)->tv_usec;                          \
@@ -97,9 +97,9 @@
 	mytimersub(&end, &start, &diff);				\
 	debug_print("TIMING %s: %ds%03dms\n", 				\
 		timing_name, (unsigned int)diff.tv_sec, 		\
-		(unsigned int)diff.tv_usec/1000);			
+		(unsigned int)diff.tv_usec/1000);
 #endif
 
-#endif 
-#endif 
+#endif
+#endif
 #endif

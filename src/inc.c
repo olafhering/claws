@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -70,7 +70,7 @@ extern SessionStats session_stats;
 static GList *inc_dialog_list = NULL;
 
 static time_t inc_offline_overridden_yes = 0;
-static time_t inc_offline_overridden_no  = 0;
+static time_t inc_offline_overridden_no = 0;
 
 guint inc_lock_count = 0;
 
@@ -81,70 +81,43 @@ static GdkPixbuf *okpix;
 #define MESSAGEBUFSIZE	8192
 
 static void inc_update_stats(gint new_msgs);
-static void inc_finished		(MainWindow		*mainwin,
-					 gboolean		 new_messages,
-					 gboolean		 autocheck);
-static gint inc_account_mail_real	(MainWindow		*mainwin,
-					 PrefsAccount		*account);
+static void inc_finished(MainWindow *mainwin, gboolean new_messages, gboolean autocheck);
+static gint inc_account_mail_real(MainWindow *mainwin, PrefsAccount *account);
 
-static IncProgressDialog *inc_progress_dialog_create
-					(gboolean		 autocheck);
-static void inc_progress_dialog_set_list(IncProgressDialog	*inc_dialog);
-static void inc_progress_dialog_destroy	(IncProgressDialog	*inc_dialog);
+static IncProgressDialog *inc_progress_dialog_create(gboolean autocheck);
+static void inc_progress_dialog_set_list(IncProgressDialog *inc_dialog);
+static void inc_progress_dialog_destroy(IncProgressDialog *inc_dialog);
 
-static IncSession *inc_session_new	(PrefsAccount		*account);
-static void inc_session_destroy		(IncSession		*session);
-static gint inc_start			(IncProgressDialog	*inc_dialog);
-static IncState inc_pop3_session_do	(IncSession		*session);
+static IncSession *inc_session_new(PrefsAccount *account);
+static void inc_session_destroy(IncSession *session);
+static gint inc_start(IncProgressDialog *inc_dialog);
+static IncState inc_pop3_session_do(IncSession *session);
 
-static void inc_progress_dialog_update	(IncProgressDialog	*inc_dialog,
-					 IncSession		*inc_session);
+static void inc_progress_dialog_update(IncProgressDialog *inc_dialog, IncSession *inc_session);
 
-static void inc_progress_dialog_set_label
-					(IncProgressDialog	*inc_dialog,
-					 IncSession		*inc_session);
-static void inc_progress_dialog_set_progress
-					(IncProgressDialog	*inc_dialog,
-					 IncSession		*inc_session);
+static void inc_progress_dialog_set_label(IncProgressDialog *inc_dialog, IncSession *inc_session);
+static void inc_progress_dialog_set_progress(IncProgressDialog *inc_dialog, IncSession *inc_session);
 
-static void inc_progress_dialog_update_periodic
-					(IncProgressDialog	*inc_dialog,
-					 IncSession		*inc_session);
+static void inc_progress_dialog_update_periodic(IncProgressDialog *inc_dialog, IncSession *inc_session);
 
-static gint inc_recv_data_progressive	(Session	*session,
-					 guint		 cur_len,
-					 guint		 total_len,
-					 gpointer	 data);
-static gint inc_recv_data_finished	(Session	*session,
-					 guint		 len,
-					 gpointer	 data);
-static gint inc_recv_message		(Session	*session,
-					 const gchar	*msg,
-					 gpointer	 data);
-static gint inc_drop_message		(Pop3Session	*session,
-					 const gchar	*file);
+static gint inc_recv_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data);
+static gint inc_recv_data_finished(Session *session, guint len, gpointer data);
+static gint inc_recv_message(Session *session, const gchar *msg, gpointer data);
+static gint inc_drop_message(Pop3Session *session, const gchar *file);
 
-static void inc_put_error		(IncState	 istate,
-					 Pop3Session 	*session);
+static void inc_put_error(IncState istate, Pop3Session *session);
 
-static void inc_showlog_cb		(GtkWidget	*widget,
-					 gpointer	 data);
-static void inc_cancel_cb		(GtkWidget	*widget,
-					 gpointer	 data);
-static gint inc_dialog_delete_cb	(GtkWidget	*widget,
-					 GdkEventAny	*event,
-					 gpointer	 data);
+static void inc_showlog_cb(GtkWidget *widget, gpointer data);
+static void inc_cancel_cb(GtkWidget *widget, gpointer data);
+static gint inc_dialog_delete_cb(GtkWidget *widget, GdkEventAny *event, gpointer data);
 
-static gint get_spool			(FolderItem	*dest,
-					 const gchar	*mbox,
-					 PrefsAccount	*account);
+static gint get_spool(FolderItem *dest, const gchar *mbox, PrefsAccount *account);
 
 static gint inc_spool_account(PrefsAccount *account);
-static void inc_autocheck_timer_set_interval	(guint		 interval);
-static gint inc_autocheck_func			(gpointer	 data);
+static void inc_autocheck_timer_set_interval(guint interval);
+static gint inc_autocheck_func(gpointer data);
 
-static void inc_notify_cmd		(gint new_msgs, 
- 					 gboolean notify);
+static void inc_notify_cmd(gint new_msgs, gboolean notify);
 
 static void inc_update_stats(gint new_msgs)
 {
@@ -179,7 +152,7 @@ static void inc_finished(MainWindow *mainwin, gboolean new_messages, gboolean au
 		folderview_unselect(mainwin->folderview);
 		folderview_select(mainwin->folderview, item);
 	}
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 }
 
 void inc_mail(MainWindow *mainwin, gboolean notify)
@@ -187,12 +160,10 @@ void inc_mail(MainWindow *mainwin, gboolean notify)
 	gint new_msgs = 0;
 	gint account_new_msgs = 0;
 
-	if (inc_lock_count) return;
+	if (inc_lock_count)
+		return;
 
-	if (prefs_common.work_offline && 
-	    !inc_offline_should_override(TRUE,
-		_("Claws Mail needs network access in order "
-		  "to get mails.")))
+	if (prefs_common.work_offline && !inc_offline_should_override(TRUE, _("Claws Mail needs network access in order " "to get mails.")))
 		return;
 
 	inc_lock();
@@ -216,7 +187,7 @@ void inc_mail(MainWindow *mainwin, gboolean notify)
 	inc_update_stats(new_msgs);
 	inc_finished(mainwin, new_msgs > 0, FALSE);
 	main_window_unlock(mainwin);
- 	inc_notify_cmd(new_msgs, notify);
+	inc_notify_cmd(new_msgs, notify);
 	inc_autocheck_timer_set();
 	inc_unlock();
 }
@@ -229,13 +200,13 @@ void inc_pop_before_smtp(PrefsAccount *acc)
 
 	mainwin = mainwindow_get_mainwindow();
 
-    	session = inc_session_new(acc);
-    	if (!session) return;
+	session = inc_session_new(acc);
+	if (!session)
+		return;
 	POP3_SESSION(session->session)->pop_before_smtp = TRUE;
-		
-    	inc_dialog = inc_progress_dialog_create(FALSE);
-    	inc_dialog->queue_list = g_list_append(inc_dialog->queue_list,
-					       session);
+
+	inc_dialog = inc_progress_dialog_create(FALSE);
+	inc_dialog->queue_list = g_list_append(inc_dialog->queue_list, session);
 	/* FIXME: assumes to attach to first main window */
 	inc_dialog->mainwin = mainwin;
 	inc_progress_dialog_set_list(inc_dialog);
@@ -244,7 +215,7 @@ void inc_pop_before_smtp(PrefsAccount *acc)
 		toolbar_main_set_sensitive(mainwin);
 		main_window_set_menu_sensitive(mainwin);
 	}
-			
+
 	inc_start(inc_dialog);
 }
 
@@ -252,7 +223,7 @@ static gint inc_account_mail_real(MainWindow *mainwin, PrefsAccount *account)
 {
 	IncProgressDialog *inc_dialog;
 	IncSession *session;
-	
+
 	switch (account->protocol) {
 	case A_IMAP4:
 	case A_NNTP:
@@ -265,11 +236,11 @@ static gint inc_account_mail_real(MainWindow *mainwin, PrefsAccount *account)
 		return 0;
 	case A_POP3:
 		session = inc_session_new(account);
-		if (!session) return 0;
-		
+		if (!session)
+			return 0;
+
 		inc_dialog = inc_progress_dialog_create(FALSE);
-		inc_dialog->queue_list = g_list_append(inc_dialog->queue_list,
-						       session);
+		inc_dialog->queue_list = g_list_append(inc_dialog->queue_list, session);
 		inc_dialog->mainwin = mainwin;
 		inc_progress_dialog_set_list(inc_dialog);
 
@@ -277,7 +248,7 @@ static gint inc_account_mail_real(MainWindow *mainwin, PrefsAccount *account)
 			toolbar_main_set_sensitive(mainwin);
 			main_window_set_menu_sensitive(mainwin);
 		}
-			
+
 		return inc_start(inc_dialog);
 
 	case A_LOCAL:
@@ -293,14 +264,13 @@ gint inc_account_mail(MainWindow *mainwin, PrefsAccount *account)
 {
 	gint new_msgs;
 
-	if (inc_lock_count) return 0;
+	if (inc_lock_count)
+		return 0;
 
-	if (account->receive_in_progress) return 0;
+	if (account->receive_in_progress)
+		return 0;
 
-	if (prefs_common.work_offline && 
-	    !inc_offline_should_override(TRUE,
-		_("Claws Mail needs network access in order "
-		  "to get mails.")))
+	if (prefs_common.work_offline && !inc_offline_should_override(TRUE, _("Claws Mail needs network access in order " "to get mails.")))
 		return 0;
 
 	inc_autocheck_timer_remove();
@@ -316,20 +286,17 @@ gint inc_account_mail(MainWindow *mainwin, PrefsAccount *account)
 	return new_msgs;
 }
 
-void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean autocheck,
-			  gboolean notify)
+void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean autocheck, gboolean notify)
 {
 	GList *list, *queue_list = NULL;
 	IncProgressDialog *inc_dialog;
 	gint new_msgs = 0, num;
 
-	if (prefs_common.work_offline && 
-	    !inc_offline_should_override( (autocheck == FALSE),
-		_("Claws Mail needs network access in order "
-		  "to get mails.")))
+	if (prefs_common.work_offline && !inc_offline_should_override((autocheck == FALSE), _("Claws Mail needs network access in order " "to get mails.")))
 		return;
 
-	if (inc_lock_count) return;
+	if (inc_lock_count)
+		return;
 
 	main_window_lock(mainwin);
 
@@ -337,7 +304,7 @@ void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean au
 		inc_update_stats(new_msgs);
 		inc_finished(mainwin, new_msgs > 0, autocheck);
 		main_window_unlock(mainwin);
- 		inc_notify_cmd(new_msgs, notify);
+		inc_notify_cmd(new_msgs, notify);
 		return;
 	}
 
@@ -345,7 +312,7 @@ void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean au
 		/* external incorporating program */
 		if (execute_command_line(prefs_common.extinc_cmd, FALSE, NULL) < 0) {
 			log_error(LOG_PROTOCOL, _("%s failed\n"), prefs_common.extinc_cmd);
-			
+
 			main_window_unlock(mainwin);
 			return;
 		}
@@ -362,41 +329,37 @@ void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean au
 
 		debug_print("INC: checking account %d\n", account->account_id);
 		switch (account->protocol) {
-			case A_POP3:
-				if (!(account->receive_in_progress)) {
-					IncSession *session = inc_session_new(account);
+		case A_POP3:
+			if (!(account->receive_in_progress)) {
+				IncSession *session = inc_session_new(account);
 
-					if (session != NULL) {
-						debug_print("INC: adding POP3 account %d to inc queue\n",
-								account->account_id);
-						queue_list = g_list_append(queue_list, session);
-					}
+				if (session != NULL) {
+					debug_print("INC: adding POP3 account %d to inc queue\n", account->account_id);
+					queue_list = g_list_append(queue_list, session);
 				}
-				break;
+			}
+			break;
 
-			case A_IMAP4:
-			case A_NNTP:
-				new_msgs += folderview_check_new(FOLDER(account->folder));
-				break;
+		case A_IMAP4:
+		case A_NNTP:
+			new_msgs += folderview_check_new(FOLDER(account->folder));
+			break;
 
-			case A_LOCAL:
-				num = inc_spool_account(account);
-				if (num > 0)
-					new_msgs += num;
-				break;
+		case A_LOCAL:
+			num = inc_spool_account(account);
+			if (num > 0)
+				new_msgs += num;
+			break;
 
-			case A_NONE:
-				/* Nothing to do here, it's a SMTP-only account. */
-				break;
+		case A_NONE:
+			/* Nothing to do here, it's a SMTP-only account. */
+			break;
 
-			default:
-				debug_print("INC: encountered account %d with unknown protocol %d, ignoring\n",
-						account->account_id, account->protocol);
-				break;
+		default:
+			debug_print("INC: encountered account %d with unknown protocol %d, ignoring\n", account->account_id, account->protocol);
+			break;
 		}
 	}
-
-
 
 	if (queue_list) {
 		inc_dialog = inc_progress_dialog_create(autocheck);
@@ -412,18 +375,16 @@ void inc_account_list_mail(MainWindow *mainwin, GList *account_list, gboolean au
 	inc_update_stats(new_msgs);
 	inc_finished(mainwin, new_msgs > 0, autocheck);
 	main_window_unlock(mainwin);
- 	inc_notify_cmd(new_msgs, notify);
+	inc_notify_cmd(new_msgs, notify);
 }
 
-void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck,
-			  gboolean check_at_startup, gboolean notify)
+void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck, gboolean check_at_startup, gboolean notify)
 {
 	GList *list, *list2 = NULL;
 	gboolean condition = FALSE;
 	gboolean hide_dialog = FALSE;
 
-	debug_print("INC: inc_all_account_mail(), autocheck: %s\n",
-			autocheck ? "YES" : "NO");
+	debug_print("INC: inc_all_account_mail(), autocheck: %s\n", autocheck ? "YES" : "NO");
 
 	/* Collect list of accounts which use the global autocheck interval. */
 	for (list = account_get_list(); list != NULL; list = list->next) {
@@ -437,8 +398,7 @@ void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck,
 		 * this account, based on whether we're doing global autocheck
 		 * or a check at startup or a manual 'Get all' check. */
 		if (autocheck)
-			condition = prefs_common_get_prefs()->autochk_newmail
-				&& account->autochk_use_default;
+			condition = prefs_common_get_prefs()->autochk_newmail && account->autochk_use_default;
 		else if (check_at_startup || (!check_at_startup && !autocheck))
 			condition = account->recv_at_getall;
 
@@ -457,8 +417,7 @@ void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck,
 	}
 }
 
-static void inc_progress_dialog_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
+static void inc_progress_dialog_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
@@ -475,17 +434,12 @@ static IncProgressDialog *inc_progress_dialog_create(gboolean autocheck)
 	dialog = g_new0(IncProgressDialog, 1);
 
 	progress = progress_dialog_create();
-	gtk_window_set_title(GTK_WINDOW(progress->window),
-			     _("Retrieving new messages"));
-	g_signal_connect(G_OBJECT(progress->showlog_btn), "clicked",
-			 G_CALLBACK(inc_showlog_cb), dialog);
-	g_signal_connect(G_OBJECT(progress->cancel_btn), "clicked",
-			 G_CALLBACK(inc_cancel_cb), dialog);
-	g_signal_connect(G_OBJECT(progress->window), "delete_event",
-			 G_CALLBACK(inc_dialog_delete_cb), dialog);
-	g_signal_connect(G_OBJECT(progress->window), "size_allocate",
-			 G_CALLBACK(inc_progress_dialog_size_allocate_cb), NULL);
- 	/* manage_window_set_transient(GTK_WINDOW(progress->window)); */
+	gtk_window_set_title(GTK_WINDOW(progress->window), _("Retrieving new messages"));
+	g_signal_connect(G_OBJECT(progress->showlog_btn), "clicked", G_CALLBACK(inc_showlog_cb), dialog);
+	g_signal_connect(G_OBJECT(progress->cancel_btn), "clicked", G_CALLBACK(inc_cancel_cb), dialog);
+	g_signal_connect(G_OBJECT(progress->window), "delete_event", G_CALLBACK(inc_dialog_delete_cb), dialog);
+	g_signal_connect(G_OBJECT(progress->window), "size_allocate", G_CALLBACK(inc_progress_dialog_size_allocate_cb), NULL);
+	/* manage_window_set_transient(GTK_WINDOW(progress->window)); */
 
 	progress_dialog_get_fraction(progress);
 
@@ -498,14 +452,10 @@ static IncProgressDialog *inc_progress_dialog_create(gboolean autocheck)
 		geometry.min_height = 250;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(progress->window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(progress->window, prefs_common.receivewin_width,
-				    prefs_common.receivewin_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(progress->window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(progress->window, prefs_common.receivewin_width, prefs_common.receivewin_height);
 
-	if (prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS ||
-	    (prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL &&
-	     !autocheck)) {
+	if (prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS || (prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL && !autocheck)) {
 		dialog->show_dialog = TRUE;
 		gtk_widget_show_now(progress->window);
 	}
@@ -531,10 +481,7 @@ static void inc_progress_dialog_set_list(IncProgressDialog *inc_dialog)
 
 		session->data = inc_dialog;
 
-		progress_dialog_list_set(inc_dialog->dialog,
-					 -1, NULL,
-					 pop3_session->ac_prefs->account_name,
-					 _("Standby"));
+		progress_dialog_list_set(inc_dialog->dialog, -1, NULL, pop3_session->ac_prefs->account_name, _("Standby"));
 	}
 }
 
@@ -578,13 +525,9 @@ static IncSession *inc_session_new(PrefsAccount *account)
 	session->session = pop3_session_new(account);
 	session->session->data = session;
 	POP3_SESSION(session->session)->drop_message = inc_drop_message;
-	session_set_recv_message_notify(session->session,
-					inc_recv_message, session);
-	session_set_recv_data_progressive_notify(session->session,
-						 inc_recv_data_progressive,
-						 session);
-	session_set_recv_data_notify(session->session,
-				     inc_recv_data_finished, session);
+	session_set_recv_message_notify(session->session, inc_recv_message, session);
+	session_set_recv_data_progressive_notify(session->session, inc_recv_data_progressive, session);
+	session_set_recv_data_notify(session->session, inc_recv_data_finished, session);
 
 	return session;
 }
@@ -600,12 +543,9 @@ static void inc_session_destroy(IncSession *session)
 static gint pop3_get_port(Pop3Session *pop3_session)
 {
 #ifdef USE_GNUTLS
-	return pop3_session->ac_prefs->set_popport ?
-		pop3_session->ac_prefs->popport :
-		pop3_session->ac_prefs->ssl_pop == SSL_TUNNEL ? 995 : 110;
+	return pop3_session->ac_prefs->set_popport ? pop3_session->ac_prefs->popport : pop3_session->ac_prefs->ssl_pop == SSL_TUNNEL ? 995 : 110;
 #else
-	return pop3_session->ac_prefs->set_popport ?
-		pop3_session->ac_prefs->popport : 110;
+	return pop3_session->ac_prefs->set_popport ? pop3_session->ac_prefs->popport : 110;
 #endif
 }
 
@@ -628,32 +568,22 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		GList *next = qlist->next;
 
 		session = qlist->data;
-		pop3_session = POP3_SESSION(session->session); 
+		pop3_session = POP3_SESSION(session->session);
 		pop3_session->user = g_strdup(pop3_session->ac_prefs->userid);
 
 		if (inc_dialog->show_dialog)
-			manage_window_focus_in
-				(inc_dialog->dialog->window,
-				 NULL, NULL);
+			manage_window_focus_in(inc_dialog->dialog->window, NULL, NULL);
 #ifdef USE_OAUTH2
-		if(pop3_session->ac_prefs->use_pop_auth && 
-		   pop3_session->ac_prefs->pop_auth_type == POPAUTH_OAUTH2)
-		     oauth2_check_passwds (pop3_session->ac_prefs);
+		if (pop3_session->ac_prefs->use_pop_auth && pop3_session->ac_prefs->pop_auth_type == POPAUTH_OAUTH2)
+			oauth2_check_passwds(pop3_session->ac_prefs);
 #endif
 
-		if (password_get(pop3_session->user,
-					pop3_session->ac_prefs->recv_server,
-					"pop3", pop3_get_port(pop3_session),
-					&(pop3_session->pass))) {
-			/* NOP */;
-		} else if ((pop3_session->pass = passwd_store_get_account(
-						pop3_session->ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
+		if (password_get(pop3_session->user, pop3_session->ac_prefs->recv_server, "pop3", pop3_get_port(pop3_session), &(pop3_session->pass))) {
+			/* NOP */ ;
+		} else if ((pop3_session->pass = passwd_store_get_account(pop3_session->ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
 			gchar *pass;
 
-			pass = input_dialog_query_password_keep
-				(pop3_session->ac_prefs->recv_server,
-				 pop3_session->user,
-				 &(pop3_session->ac_prefs->session_passwd));
+			pass = input_dialog_query_password_keep(pop3_session->ac_prefs->recv_server, pop3_session->user, &(pop3_session->ac_prefs->session_passwd));
 
 			if (pass) {
 				pop3_session->pass = pass;
@@ -661,9 +591,7 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		}
 
 		if (inc_dialog->show_dialog)
-			manage_window_focus_out
-				(inc_dialog->dialog->window,
-				 NULL, NULL);
+			manage_window_focus_out(inc_dialog->dialog->window, NULL, NULL);
 
 		qlist = next;
 	}
@@ -684,15 +612,13 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 
 		if (pop3_session->pass == NULL) {
 			SET_PIXMAP_AND_TEXT(okpix, _("Cancelled"));
-			inc_dialog->queue_list =
-				g_list_remove(inc_dialog->queue_list, session);
+			inc_dialog->queue_list = g_list_remove(inc_dialog->queue_list, session);
 			inc_session_destroy(session);
 			continue;
 		}
 
 		inc_progress_dialog_clear(inc_dialog);
-		progress_dialog_scroll_to_row(inc_dialog->dialog,
-					      inc_dialog->cur_row);
+		progress_dialog_scroll_to_row(inc_dialog->dialog, inc_dialog->cur_row);
 
 		SET_PIXMAP_AND_TEXT(currentpix, _("Retrieving"));
 
@@ -702,12 +628,7 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		switch (inc_state) {
 		case INC_SUCCESS:
 			if (pop3_session->cur_total_num > 0)
-				msg = g_strdup_printf(
-					ngettext("Done (%d message (%s) received)",
-						 "Done (%d messages (%s) received)",
-					 pop3_session->cur_total_num),
-					 pop3_session->cur_total_num,
-					 to_human_readable((goffset)pop3_session->cur_total_recv_bytes));
+				msg = g_strdup_printf(ngettext("Done (%d message (%s) received)", "Done (%d messages (%s) received)", pop3_session->cur_total_num), pop3_session->cur_total_num, to_human_readable((goffset) pop3_session->cur_total_recv_bytes));
 			else
 				msg = g_strdup_printf(_("Done (no new messages)"));
 			SET_PIXMAP_AND_TEXT(okpix, msg);
@@ -744,11 +665,10 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		default:
 			break;
 		}
-		
+
 		if (pop3_session->error_val == PS_AUTHFAIL) {
-			if(!prefs_common.no_recv_err_panel) {
-				if((prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS) ||
-				    ((prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL) && focus_window))
+			if (!prefs_common.no_recv_err_panel) {
+				if ((prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS) || ((prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL) && focus_window))
 					manage_window_focus_in(inc_dialog->dialog->window, NULL, NULL);
 			}
 		}
@@ -770,21 +690,18 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 
 		/* process messages */
 		folder_item_update_freeze();
-		
-		procmsg_msglist_filter(msglist, pop3_session->ac_prefs, 
-				&filtered, &unfiltered, 
-				pop3_session->ac_prefs->filter_on_recv);
+
+		procmsg_msglist_filter(msglist, pop3_session->ac_prefs, &filtered, &unfiltered, pop3_session->ac_prefs->filter_on_recv);
 
 		filtering_move_and_copy_msgs(msglist);
-		if (unfiltered != NULL)		
+		if (unfiltered != NULL)
 			folder_item_move_msgs(inbox, unfiltered);
 
-		for(msglist_element = msglist; msglist_element != NULL; 
-		    msglist_element = msglist_element->next) {
-			procmsg_msginfo_free((MsgInfo**)&(msglist_element->data));
+		for (msglist_element = msglist; msglist_element != NULL; msglist_element = msglist_element->next) {
+			procmsg_msginfo_free((MsgInfo **)&(msglist_element->data));
 		}
 		folder_item_update_thaw();
-		
+
 		g_slist_free(msglist);
 		g_slist_free(filtered);
 		g_slist_free(unfiltered);
@@ -798,31 +715,23 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		if (inc_state != INC_SUCCESS && inc_state != INC_CANCEL) {
 			error_num++;
 			if (inc_dialog->show_dialog)
-				manage_window_focus_in
-					(inc_dialog->dialog->window,
-					 NULL, NULL);
+				manage_window_focus_in(inc_dialog->dialog->window, NULL, NULL);
 			inc_put_error(inc_state, pop3_session);
 			if (inc_dialog->show_dialog)
-				manage_window_focus_out
-					(inc_dialog->dialog->window,
-					 NULL, NULL);
-			if (inc_state == INC_NO_SPACE ||
-			    inc_state == INC_IO_ERROR)
+				manage_window_focus_out(inc_dialog->dialog->window, NULL, NULL);
+			if (inc_state == INC_NO_SPACE || inc_state == INC_IO_ERROR)
 				break;
 		}
 		folder_item_free_cache(processing, TRUE);
 
 		inc_session_destroy(session);
-		inc_dialog->queue_list =
-			g_list_remove(inc_dialog->queue_list, session);
+		inc_dialog->queue_list = g_list_remove(inc_dialog->queue_list, session);
 	}
 
 #undef SET_PIXMAP_AND_TEXT
 
 	if (new_msgs > 0)
-		fin_msg = g_strdup_printf(ngettext("Finished (%d new message)",
-					  	   "Finished (%d new messages)",
-					  	   new_msgs), new_msgs);
+		fin_msg = g_strdup_printf(ngettext("Finished (%d new message)", "Finished (%d new messages)", new_msgs), new_msgs);
 	else
 		fin_msg = g_strdup_printf(_("Finished (no new messages)"));
 
@@ -831,17 +740,14 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 	while (inc_dialog->queue_list != NULL) {
 		session = inc_dialog->queue_list->data;
 		inc_session_destroy(session);
-		inc_dialog->queue_list =
-			g_list_remove(inc_dialog->queue_list, session);
+		inc_dialog->queue_list = g_list_remove(inc_dialog->queue_list, session);
 	}
 
 	if (prefs_common.close_recv_dialog || !inc_dialog->show_dialog)
 		inc_progress_dialog_destroy(inc_dialog);
 	else {
-		gtk_window_set_title(GTK_WINDOW(inc_dialog->dialog->window),
-				     fin_msg);
-		gtk_button_set_label(GTK_BUTTON(inc_dialog->dialog->cancel_btn),
-				     GTK_STOCK_CLOSE);
+		gtk_window_set_title(GTK_WINDOW(inc_dialog->dialog->window), fin_msg);
+		gtk_button_set_label(GTK_BUTTON(inc_dialog->dialog->cancel_btn), GTK_STOCK_CLOSE);
 	}
 
 	g_free(fin_msg);
@@ -860,13 +766,11 @@ static IncState inc_pop3_session_do(IncSession *session)
 	gchar *buf;
 	ProxyInfo *proxy_info = NULL;
 
-	debug_print("getting new messages of account %s...\n",
-		    ac->account_name);
-		    
+	debug_print("getting new messages of account %s...\n", ac->account_name);
+
 	ac->last_pop_login_time = time(NULL);
 
-	buf = g_strdup_printf(_("%s: Retrieving new messages"),
-			      ac->recv_server);
+	buf = g_strdup_printf(_("%s: Retrieving new messages"), ac->recv_server);
 	gtk_window_set_title(GTK_WINDOW(inc_dialog->dialog->window), buf);
 	g_free(buf);
 
@@ -877,25 +781,15 @@ static IncState inc_pop3_session_do(IncSession *session)
 #ifdef USE_GNUTLS
 	SESSION(pop3_session)->ssl_type = ac->ssl_pop;
 	if (ac->ssl_pop != SSL_NONE)
-		SESSION(pop3_session)->nonblocking =
-			ac->use_nonblocking_ssl;
+		SESSION(pop3_session)->nonblocking = ac->use_nonblocking_ssl;
 #else
 	if (ac->ssl_pop != SSL_NONE) {
-		if (alertpanel_full(_("Insecure connection"),
-			_("This connection is configured to be secured "
-			  "using TLS, but TLS is not available "
-			  "in this build of Claws Mail. \n\n"
-			  "Do you want to continue connecting to this "
-			  "server? The communication would not be "
-			  "secure."),
-			  GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL,
-				ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE)
+		if (alertpanel_full(_("Insecure connection"), _("This connection is configured to be secured " "using TLS, but TLS is not available " "in this build of Claws Mail. \n\n" "Do you want to continue connecting to this " "server? The communication would not be " "secure."), GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE)
 			return INC_CANCEL;
 	}
 #endif
 
-	buf = g_strdup_printf(_("Account '%s': Connecting to POP3 server: %s:%d..."),
-				account_name, server, port);
+	buf = g_strdup_printf(_("Account '%s': Connecting to POP3 server: %s:%d..."), account_name, server, port);
 	statusbar_print_all("%s", buf);
 	log_message(LOG_PROTOCOL, "%s\n", buf);
 
@@ -905,13 +799,11 @@ static IncState inc_pop3_session_do(IncSession *session)
 		if (ac->use_default_proxy) {
 			proxy_info = (ProxyInfo *)&(prefs_common.proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY,
-					PWS_CORE_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS);
 		} else {
 			proxy_info = (ProxyInfo *)&(ac->proxy_info);
 			if (proxy_info->use_proxy_auth)
-				proxy_info->proxy_pass = passwd_store_get_account(ac->account_id,
-					PWS_ACCOUNT_PROXY_PASS);
+				proxy_info->proxy_pass = passwd_store_get_account(ac->account_id, PWS_ACCOUNT_PROXY_PASS);
 		}
 	}
 	SESSION(pop3_session)->proxy_info = proxy_info;
@@ -919,29 +811,24 @@ static IncState inc_pop3_session_do(IncSession *session)
 	GTK_EVENTS_FLUSH();
 	g_free(buf);
 
-	session_set_timeout(SESSION(pop3_session),
-			    prefs_common.io_timeout_secs * 1000);
-	
+	session_set_timeout(SESSION(pop3_session), prefs_common.io_timeout_secs * 1000);
+
 	if (session_connect(SESSION(pop3_session), server, port) < 0) {
-		if(!prefs_common.no_recv_err_panel) {
-			if((prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS) ||
-			    ((prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL) && focus_window)) {
+		if (!prefs_common.no_recv_err_panel) {
+			if ((prefs_common.recv_dialog_mode == RECV_DIALOG_ALWAYS) || ((prefs_common.recv_dialog_mode == RECV_DIALOG_MANUAL) && focus_window)) {
 				manage_window_focus_in(inc_dialog->dialog->window, NULL, NULL);
 			}
-			alertpanel_error(_("Can't connect to POP3 server: %s:%d"),
-					 server, port);
+			alertpanel_error(_("Can't connect to POP3 server: %s:%d"), server, port);
 			manage_window_focus_out(inc_dialog->dialog->window, NULL, NULL);
 		} else {
-			log_error(LOG_PROTOCOL, _("Can't connect to POP3 server: %s:%d\n"),
-			    server, port);
+			log_error(LOG_PROTOCOL, _("Can't connect to POP3 server: %s:%d\n"), server, port);
 		}
 		session->inc_state = INC_CONNECT_ERROR;
 		statusbar_pop_all();
 		return INC_CONNECT_ERROR;
 	}
 
-	while (session_is_running(SESSION(pop3_session)) &&
-	       session->inc_state != INC_CANCEL)
+	while (session_is_running(SESSION(pop3_session)) && session->inc_state != INC_CANCEL)
 		gtk_main_iteration();
 
 	if (session->inc_state == INC_SUCCESS) {
@@ -989,15 +876,13 @@ static IncState inc_pop3_session_do(IncSession *session)
 	return session->inc_state;
 }
 
-static void inc_progress_dialog_update(IncProgressDialog *inc_dialog,
-				       IncSession *inc_session)
+static void inc_progress_dialog_update(IncProgressDialog *inc_dialog, IncSession *inc_session)
 {
 	inc_progress_dialog_set_label(inc_dialog, inc_session);
 	inc_progress_dialog_set_progress(inc_dialog, inc_session);
 }
 
-static void inc_progress_dialog_set_label(IncProgressDialog *inc_dialog,
-					  IncSession *inc_session)
+static void inc_progress_dialog_set_label(IncProgressDialog *inc_dialog, IncSession *inc_session)
 {
 	ProgressDialog *dialog = inc_dialog->dialog;
 	Pop3Session *session;
@@ -1014,25 +899,19 @@ static void inc_progress_dialog_set_label(IncProgressDialog *inc_dialog,
 	case POP3_GETAUTH_APOP:
 		progress_dialog_set_label(dialog, _("Authenticating..."));
 		statusbar_pop_all();
-		statusbar_print_all(_("Retrieving messages from %s (%s)..."),
-				    SESSION(session)->server,
-				    session->ac_prefs->account_name);
+		statusbar_print_all(_("Retrieving messages from %s (%s)..."), SESSION(session)->server, session->ac_prefs->account_name);
 		break;
 	case POP3_GETRANGE_STAT:
-		progress_dialog_set_label
-			(dialog, _("Getting the number of new messages (STAT)..."));
+		progress_dialog_set_label(dialog, _("Getting the number of new messages (STAT)..."));
 		break;
 	case POP3_GETRANGE_LAST:
-		progress_dialog_set_label
-			(dialog, _("Getting the number of new messages (LAST)..."));
+		progress_dialog_set_label(dialog, _("Getting the number of new messages (LAST)..."));
 		break;
 	case POP3_GETRANGE_UIDL:
-		progress_dialog_set_label
-			(dialog, _("Getting the number of new messages (UIDL)..."));
+		progress_dialog_set_label(dialog, _("Getting the number of new messages (UIDL)..."));
 		break;
 	case POP3_GETSIZE_LIST:
-		progress_dialog_set_label
-			(dialog, _("Getting the size of messages (LIST)..."));
+		progress_dialog_set_label(dialog, _("Getting the size of messages (LIST)..."));
 		break;
 	case POP3_RETR:
 	case POP3_RETR_RECV:
@@ -1046,8 +925,7 @@ static void inc_progress_dialog_set_label(IncProgressDialog *inc_dialog,
 	}
 }
 
-static void inc_progress_dialog_set_progress(IncProgressDialog *inc_dialog,
-					     IncSession *inc_session)
+static void inc_progress_dialog_set_progress(IncProgressDialog *inc_dialog, IncSession *inc_session)
 {
 	gchar buf[MESSAGEBUFSIZE];
 	Pop3Session *pop3_session = POP3_SESSION(inc_session->session);
@@ -1055,42 +933,28 @@ static void inc_progress_dialog_set_progress(IncProgressDialog *inc_dialog,
 	gint cur_total;
 	gint total;
 
-	if (!pop3_session->new_msg_exist) return;
+	if (!pop3_session->new_msg_exist)
+		return;
 
 	cur_total = inc_session->cur_total_bytes;
 	total = pop3_session->total_bytes;
-	if (pop3_session->state == POP3_RETR ||
-	    pop3_session->state == POP3_RETR_RECV ||
-	    pop3_session->state == POP3_DELETE) {
-		Xstrdup_a(total_size_str, to_human_readable((goffset)total), return);
-		g_snprintf(buf, sizeof(buf),
-			   _("Retrieving message (%d / %d) (%s / %s)"),
-			   pop3_session->cur_msg, pop3_session->count,
-			   to_human_readable((goffset)cur_total), total_size_str);
+	if (pop3_session->state == POP3_RETR || pop3_session->state == POP3_RETR_RECV || pop3_session->state == POP3_DELETE) {
+		Xstrdup_a(total_size_str, to_human_readable((goffset) total), return);
+		g_snprintf(buf, sizeof(buf), _("Retrieving message (%d / %d) (%s / %s)"), pop3_session->cur_msg, pop3_session->count, to_human_readable((goffset) cur_total), total_size_str);
 		progress_dialog_set_label(inc_dialog->dialog, buf);
 	}
 
-	progress_dialog_set_fraction
-		(inc_dialog->dialog, (total == 0) ? 0: (gfloat)cur_total / (gfloat)total);
+	progress_dialog_set_fraction(inc_dialog->dialog, (total == 0) ? 0 : (gfloat) cur_total / (gfloat) total);
 
 	statusbar_progress_all(pop3_session->cur_msg, pop3_session->count, 1);
 
 	if (pop3_session->cur_total_num > 0) {
-		g_snprintf(buf, sizeof(buf),
-			   ngettext("Retrieving (%d message (%s) received)",
-			   	    "Retrieving (%d messages (%s) received)",
-				    pop3_session->cur_total_num),
-			   pop3_session->cur_total_num,
-			   to_human_readable
-			   ((goffset)pop3_session->cur_total_recv_bytes));
-		progress_dialog_list_set_status(inc_dialog->dialog,
-						inc_dialog->cur_row,
-						buf);
+		g_snprintf(buf, sizeof(buf), ngettext("Retrieving (%d message (%s) received)", "Retrieving (%d messages (%s) received)", pop3_session->cur_total_num), pop3_session->cur_total_num, to_human_readable((goffset) pop3_session->cur_total_recv_bytes));
+		progress_dialog_list_set_status(inc_dialog->dialog, inc_dialog->cur_row, buf);
 	}
 }
 
-static void inc_progress_dialog_update_periodic(IncProgressDialog *inc_dialog,
-						IncSession *inc_session)
+static void inc_progress_dialog_update_periodic(IncProgressDialog *inc_dialog, IncSession *inc_session)
 {
 	GDateTime *tv_cur = g_date_time_new_now_local();
 	GTimeSpan tv_result;
@@ -1098,19 +962,18 @@ static void inc_progress_dialog_update_periodic(IncProgressDialog *inc_dialog,
 	tv_result = g_date_time_difference(tv_cur, inc_dialog->progress_tv);
 	g_date_time_unref(tv_cur);
 	if (tv_result < 0) {
-	    tv_result += G_USEC_PER_SEC;
+		tv_result += G_USEC_PER_SEC;
 	}
 
 	if (tv_result > PROGRESS_UPDATE_INTERVAL) {
-                inc_progress_dialog_update(inc_dialog, inc_session);
+		inc_progress_dialog_update(inc_dialog, inc_session);
 		tv_cur = g_date_time_add(inc_dialog->progress_tv, tv_result);
 		g_date_time_unref(inc_dialog->progress_tv);
-                inc_dialog->progress_tv = tv_cur;
+		inc_dialog->progress_tv = tv_cur;
 	}
 }
 
-static gint inc_recv_data_progressive(Session *session, guint cur_len,
-				      guint total_len, gpointer data)
+static gint inc_recv_data_progressive(Session *session, guint cur_len, guint total_len, gpointer data)
 {
 	IncSession *inc_session = (IncSession *)data;
 	Pop3Session *pop3_session = POP3_SESSION(session);
@@ -1119,12 +982,11 @@ static gint inc_recv_data_progressive(Session *session, guint cur_len,
 
 	cm_return_val_if_fail(inc_session != NULL, -1);
 
-	if (pop3_session->state != POP3_RETR &&
-	    pop3_session->state != POP3_RETR_RECV &&
-	    pop3_session->state != POP3_DELETE &&
-	    pop3_session->state != POP3_LOGOUT) return 0;
+	if (pop3_session->state != POP3_RETR && pop3_session->state != POP3_RETR_RECV && pop3_session->state != POP3_DELETE && pop3_session->state != POP3_LOGOUT)
+		return 0;
 
-	if (!pop3_session->new_msg_exist) return 0;
+	if (!pop3_session->new_msg_exist)
+		return 0;
 
 	cur_total = pop3_session->cur_total_bytes + cur_len;
 	if (cur_total > pop3_session->total_bytes)
@@ -1197,8 +1059,7 @@ static gint inc_drop_message(Pop3Session *session, const gchar *file)
 	cm_return_val_if_fail(inc_session != NULL, -1);
 
 	if (session->ac_prefs->inbox) {
-		inbox = folder_find_item_from_identifier
-			(session->ac_prefs->inbox);
+		inbox = folder_find_item_from_identifier(session->ac_prefs->inbox);
 		if (!inbox)
 			inbox = folder_get_default_inbox();
 	} else
@@ -1212,8 +1073,7 @@ static gint inc_drop_message(Pop3Session *session, const gchar *file)
 	dropfolder = folder_get_default_processing(session->ac_prefs->account_id);
 
 	/* add msg file to drop folder */
-	if ((msgnum = folder_item_add_msg(
-			dropfolder, file, NULL, TRUE)) < 0) {
+	if ((msgnum = folder_item_add_msg(dropfolder, file, NULL, TRUE)) < 0) {
 		claws_unlink(file);
 		return -1;
 	}
@@ -1232,9 +1092,7 @@ static void inc_put_error(IncState istate, Pop3Session *session)
 		fatal_error = TRUE;
 		if (prefs_common.no_recv_err_panel)
 			break;
-		err_msg = g_strdup_printf(_("Connection to %s:%d failed."),
-					  SESSION(session)->server, 
-					  SESSION(session)->port);
+		err_msg = g_strdup_printf(_("Connection to %s:%d failed."), SESSION(session)->server, SESSION(session)->port);
 		break;
 	case INC_ERROR:
 		log_msg = _("Error occurred while processing mail.");
@@ -1242,9 +1100,7 @@ static void inc_put_error(IncState istate, Pop3Session *session)
 		if (prefs_common.no_recv_err_panel)
 			break;
 		if (session->error_msg)
-			err_msg = g_strdup_printf
-				(_("Error occurred while processing mail:\n%s"),
-				 session->error_msg);
+			err_msg = g_strdup_printf(_("Error occurred while processing mail:\n%s"), session->error_msg);
 		else
 			err_msg = g_strdup(log_msg);
 		break;
@@ -1262,25 +1118,20 @@ static void inc_put_error(IncState istate, Pop3Session *session)
 		log_msg = _("Socket error.");
 		if (prefs_common.no_recv_err_panel)
 			break;
-		err_msg = g_strdup_printf(_("Socket error on connection to %s:%d."),
-					  SESSION(session)->server, 
-					  SESSION(session)->port);
+		err_msg = g_strdup_printf(_("Socket error on connection to %s:%d."), SESSION(session)->server, SESSION(session)->port);
 		break;
 	case INC_EOF:
 		log_msg = _("Connection closed by the remote host.");
 		if (prefs_common.no_recv_err_panel)
 			break;
-		err_msg = g_strdup_printf(_("Connection to %s:%d closed by the remote host."), 
-					  SESSION(session)->server, 
-					  SESSION(session)->port);
+		err_msg = g_strdup_printf(_("Connection to %s:%d closed by the remote host."), SESSION(session)->server, SESSION(session)->port);
 		break;
 	case INC_LOCKED:
 		log_msg = _("Mailbox is locked.");
 		if (prefs_common.no_recv_err_panel)
 			break;
 		if (session->error_msg)
-			err_msg = g_strdup_printf(_("Mailbox is locked:\n%s"),
-						  session->error_msg);
+			err_msg = g_strdup_printf(_("Mailbox is locked:\n%s"), session->error_msg);
 		else
 			err_msg = g_strdup(log_msg);
 		break;
@@ -1290,20 +1141,15 @@ static void inc_put_error(IncState istate, Pop3Session *session)
 		if (prefs_common.no_recv_err_panel)
 			break;
 		if (session->error_msg)
-			err_msg = g_strdup_printf
-				(_("Authentication failed:\n%s"), session->error_msg);
+			err_msg = g_strdup_printf(_("Authentication failed:\n%s"), session->error_msg);
 		else
 			err_msg = g_strdup(log_msg);
 		break;
 	case INC_TIMEOUT:
-		log_msg = _("Session timed out. You may be able to "
-			    "recover by increasing the timeout value in "
-			    "Preferences/Other/Miscellaneous.");
+		log_msg = _("Session timed out. You may be able to " "recover by increasing the timeout value in " "Preferences/Other/Miscellaneous.");
 		if (prefs_common.no_recv_err_panel)
 			break;
-		err_msg = g_strdup_printf(_("Connection to %s:%d timed out."), 
-					  SESSION(session)->server, 
-					  SESSION(session)->port);
+		err_msg = g_strdup_printf(_("Connection to %s:%d timed out."), SESSION(session)->server, SESSION(session)->port);
 		break;
 	default:
 		break;
@@ -1367,8 +1213,7 @@ static void inc_cancel_cb(GtkWidget *widget, gpointer data)
 	inc_cancel((IncProgressDialog *)data);
 }
 
-static gint inc_dialog_delete_cb(GtkWidget *widget, GdkEventAny *event,
-				 gpointer data)
+static gint inc_dialog_delete_cb(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	IncProgressDialog *dialog = (IncProgressDialog *)data;
 
@@ -1394,24 +1239,22 @@ static gint inc_spool_account(PrefsAccount *account)
 	if (account->local_mbox) {
 		if (is_file_exist(account->local_mbox))
 			mbox = g_strdup(account->local_mbox);
-		else if (is_dir_exist(account->local_mbox)) 
-			mbox = g_strconcat(account->local_mbox, G_DIR_SEPARATOR_S,
-					   g_get_user_name(), NULL);
+		else if (is_dir_exist(account->local_mbox))
+			mbox = g_strconcat(account->local_mbox, G_DIR_SEPARATOR_S, g_get_user_name(), NULL);
 		else {
-			debug_print("%s: local mailbox not found.\n", 
-				    account->local_mbox);
+			debug_print("%s: local mailbox not found.\n", account->local_mbox);
 			return -1;
 		}
 	} else {
 		debug_print("local mailbox not set in account info.\n");
 		return -1;
-	}	
+	}
 
 	result = get_spool(inbox, mbox, account);
 	g_free(mbox);
-	
+
 	statusbar_pop_all();
-	
+
 	return result;
 }
 
@@ -1434,21 +1277,20 @@ static gint get_spool(FolderItem *dest, const gchar *mbox, PrefsAccount *account
 	if ((lockfd = lock_mbox(mbox, LOCK_FLOCK)) < 0)
 		return -1;
 
-	g_snprintf(tmp_mbox, sizeof(tmp_mbox), "%s%ctmpmbox.%p",
-		   get_tmp_dir(), G_DIR_SEPARATOR, mbox);
+	g_snprintf(tmp_mbox, sizeof(tmp_mbox), "%s%ctmpmbox.%p", get_tmp_dir(), G_DIR_SEPARATOR, mbox);
 
 	if (copy_mbox(lockfd, tmp_mbox) < 0) {
 		unlock_mbox(mbox, lockfd, LOCK_FLOCK);
 		return -1;
 	}
 
-	debug_print("Getting new messages from %s into %s...\n",
-		    mbox, dest->path);
+	debug_print("Getting new messages from %s into %s...\n", mbox, dest->path);
 
 	msgs = proc_mbox(dest, tmp_mbox, account->filter_on_recv, account);
 
 	claws_unlink(tmp_mbox);
-	if (msgs >= 0) empty_mbox(mbox);
+	if (msgs >= 0)
+		empty_mbox(mbox);
 	unlock_mbox(mbox, lockfd, LOCK_FLOCK);
 
 	return msgs;
@@ -1473,9 +1315,8 @@ static void inc_notify_cmd(gint new_msgs, gboolean notify)
 	gchar *buf, *numpos, *ret_str;
 	gssize by_read = 0, by_written = 0;
 
-	if (!(new_msgs && notify && prefs_common.newmail_notify_cmd &&
-	    *prefs_common.newmail_notify_cmd))
-		     return;
+	if (!(new_msgs && notify && prefs_common.newmail_notify_cmd && *prefs_common.newmail_notify_cmd))
+		return;
 
 	buf = g_strdup(prefs_common.newmail_notify_cmd);
 	if ((numpos = strstr(buf, "%d")) != NULL) {
@@ -1487,8 +1328,7 @@ static void inc_notify_cmd(gint new_msgs, gboolean notify)
 		buf = buf2;
 	}
 
-	ret_str = g_locale_from_utf8(buf, strlen(buf), &by_read, &by_written,
-				     NULL);
+	ret_str = g_locale_from_utf8(buf, strlen(buf), &by_read, &by_written, NULL);
 	if (ret_str) {
 		if (by_written) {
 			g_free(buf);
@@ -1519,12 +1359,9 @@ static void inc_autocheck_timer_set_interval(guint _interval)
 	inc_autocheck_timer_remove();
 	/* last test is to avoid re-enabling auto_check after modifying 
 	   the common preferences */
-	if (prefs_common.autochk_newmail && autocheck_data
-	    && prefs_common.work_offline == FALSE) {
-			autocheck_timer =
-				g_timeout_add_seconds(interval, inc_autocheck_func, autocheck_data);
-		debug_print("added global inc timer %d at %u seconds\n",
-				autocheck_timer, interval);
+	if (prefs_common.autochk_newmail && autocheck_data && prefs_common.work_offline == FALSE) {
+		autocheck_timer = g_timeout_add_seconds(interval, inc_autocheck_func, autocheck_data);
+		debug_print("added global inc timer %d at %u seconds\n", autocheck_timer, interval);
 	}
 }
 
@@ -1552,7 +1389,7 @@ static gint inc_autocheck_func(gpointer data)
 		return FALSE;
 	}
 
- 	inc_all_account_mail(mainwin, TRUE, FALSE, prefs_common.newmail_notify_auto);
+	inc_all_account_mail(mainwin, TRUE, FALSE, prefs_common.newmail_notify_auto);
 	inc_autocheck_timer_set();
 
 	return FALSE;
@@ -1565,12 +1402,10 @@ static gboolean inc_account_autocheck_func(gpointer data)
 
 	cm_return_val_if_fail(account != NULL, FALSE);
 
-	debug_print("account %d: inc_account_autocheck_func\n",
-			account->account_id);
+	debug_print("account %d: inc_account_autocheck_func\n", account->account_id);
 
 	list = g_list_append(list, account);
-	inc_account_list_mail(mainwindow_get_mainwindow(),
-			list, TRUE, prefs_common.newmail_notify_auto);
+	inc_account_list_mail(mainwindow_get_mainwindow(), list, TRUE, prefs_common.newmail_notify_auto);
 	g_list_free(list);
 
 	inc_account_autocheck_timer_set_interval(account);
@@ -1584,8 +1419,7 @@ void inc_account_autocheck_timer_remove(PrefsAccount *account)
 
 	if (account->autocheck_timer != 0) {
 		g_source_remove(account->autocheck_timer);
-		debug_print("INC: account %d: removed inc timer %d\n", account->account_id,
-				account->autocheck_timer);
+		debug_print("INC: account %d: removed inc timer %d\n", account->account_id, account->autocheck_timer);
 		account->autocheck_timer = 0;
 	}
 }
@@ -1596,15 +1430,11 @@ void inc_account_autocheck_timer_set_interval(PrefsAccount *account)
 
 	inc_account_autocheck_timer_remove(account);
 
-	if (account->autochk_use_default
-			|| !account->autochk_use_custom
-			|| account->autochk_itv == 0)
+	if (account->autochk_use_default || !account->autochk_use_custom || account->autochk_itv == 0)
 		return;
 
-	account->autocheck_timer = g_timeout_add_seconds(
-			account->autochk_itv, inc_account_autocheck_func, account);
-	debug_print("INC: account %d: added inc timer %d at %u seconds\n",
-			account->account_id, account->autocheck_timer, account->autochk_itv);
+	account->autocheck_timer = g_timeout_add_seconds(account->autochk_itv, inc_account_autocheck_func, account);
+	debug_print("INC: account %d: added inc timer %d at %u seconds\n", account->account_id, account->autocheck_timer, account->autochk_itv);
 }
 
 gboolean inc_offline_should_override(gboolean force_ask, const gchar *msg)
@@ -1614,7 +1444,7 @@ gboolean inc_offline_should_override(gboolean force_ask, const gchar *msg)
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
 	/* If no network connection is available, override is not possible */
-	if(!networkmanager_is_online(NULL))
+	if (!networkmanager_is_online(NULL))
 		return FALSE;
 #endif
 
@@ -1627,11 +1457,11 @@ gboolean inc_offline_should_override(gboolean force_ask, const gchar *msg)
 
 	if (prefs_common.work_offline) {
 		gchar *tmp = NULL;
-		
+
 		if (time(NULL) - inc_offline_overridden_yes < length * 60) /* seconds */
-			 return TRUE;
+			return TRUE;
 		else if (time(NULL) - inc_offline_overridden_no < length * 60) /* seconds */
-			 return FALSE;
+			return FALSE;
 
 		if (!force_ask) {
 			gchar *unit = _("seconds");
@@ -1658,28 +1488,18 @@ gboolean inc_offline_should_override(gboolean force_ask, const gchar *msg)
 					}
 				} /* else: seconds */
 			}
-			tmp = g_strdup_printf(
-				_("%s%sYou're working offline. Override for %d %s?"),
-				msg?msg:"", 
-				msg?"\n\n":"",
-				length, unit);
+			tmp = g_strdup_printf(_("%s%sYou're working offline. Override for %d %s?"), msg ? msg : "", msg ? "\n\n" : "", length, unit);
 		} else
-			tmp = g_strdup_printf(
-				_("%s%sYou're working offline. Override?"),
-				msg?msg:"", 
-				msg?"\n\n":"");
+			tmp = g_strdup_printf(_("%s%sYou're working offline. Override?"), msg ? msg : "", msg ? "\n\n" : "");
 
-		answer = alertpanel(_("Offline warning"), 
-			       tmp,
-			       GTK_STOCK_NO, GTK_STOCK_YES,
-				!force_ask? _("On_ly once"):NULL, ALERTFOCUS_SECOND);
+		answer = alertpanel(_("Offline warning"), tmp, GTK_STOCK_NO, GTK_STOCK_YES, !force_ask ? _("On_ly once") : NULL, ALERTFOCUS_SECOND);
 		g_free(tmp);
 		if (answer == G_ALERTALTERNATE) {
 			inc_offline_overridden_yes = time(NULL);
 			return TRUE;
 		} else if (answer == G_ALERTDEFAULT) {
 			if (!force_ask)
-				inc_offline_overridden_no  = time(NULL);
+				inc_offline_overridden_no = time(NULL);
 			return FALSE;
 		} else {
 			inc_reset_offline_override_timers();
@@ -1693,5 +1513,9 @@ void inc_reset_offline_override_timers()
 {
 	debug_print("resetting offline override timers\n");
 	inc_offline_overridden_yes = (time_t)0;
-	inc_offline_overridden_no  = (time_t)0;
+	inc_offline_overridden_no = (time_t)0;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

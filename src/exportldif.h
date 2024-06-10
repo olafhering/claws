@@ -39,40 +39,32 @@
 /* Export LDIF control data */
 typedef struct _ExportLdifCtl ExportLdifCtl;
 struct _ExportLdifCtl {
-	gchar    *path;
-	gchar    *dirOutput;
-	gchar    *fileLdif;
-	gchar    *settingsFile;
-	gchar    *suffix;
-	gint     rdnIndex;
+	gchar *path;
+	gchar *dirOutput;
+	gchar *fileLdif;
+	gchar *settingsFile;
+	gchar *suffix;
+	gint rdnIndex;
 	gboolean useDN;
 	gboolean excludeEMail;
-	gint     retVal;
-	gint     rcCreate;
+	gint retVal;
+	gint rcCreate;
 };
 
 /* Function prototypes */
-ExportLdifCtl *exportldif_create	( void );
-void exportldif_free			( ExportLdifCtl *ctl );
-void exportldif_set_file_html		( ExportLdifCtl *ctl,
-					  const gchar *value );
-void exportldif_set_suffix		( ExportLdifCtl *ctl,
-					  const gchar *value );
-void exportldif_set_rdn			( ExportLdifCtl *ctl,
-					  const gint value );
-void exportldif_set_use_dn		( ExportLdifCtl *ctl,
-					  const gboolean value );
-void exportldif_set_exclude_email	( ExportLdifCtl *ctl,
-					  const gboolean value );
-void exportldif_process			( ExportLdifCtl *ctl,
-					  AddressCache *cache );
-gboolean exportldif_create_dir		( ExportLdifCtl *ctl );
-gchar *exportldif_get_create_msg	( ExportLdifCtl *ctl );
+ExportLdifCtl *exportldif_create(void);
+void exportldif_free(ExportLdifCtl *ctl);
+void exportldif_set_file_html(ExportLdifCtl *ctl, const gchar *value);
+void exportldif_set_suffix(ExportLdifCtl *ctl, const gchar *value);
+void exportldif_set_rdn(ExportLdifCtl *ctl, const gint value);
+void exportldif_set_use_dn(ExportLdifCtl *ctl, const gboolean value);
+void exportldif_set_exclude_email(ExportLdifCtl *ctl, const gboolean value);
+void exportldif_process(ExportLdifCtl *ctl, AddressCache *cache);
+gboolean exportldif_create_dir(ExportLdifCtl *ctl);
+gchar *exportldif_get_create_msg(ExportLdifCtl *ctl);
 
-void exportldif_parse_filespec		( ExportLdifCtl *ctl,
-					  gchar *fileSpec );
-void exportldif_load_settings		( ExportLdifCtl *ctl );
-void exportldif_save_settings		( ExportLdifCtl *ctl );
+void exportldif_parse_filespec(ExportLdifCtl *ctl, gchar *fileSpec);
+void exportldif_load_settings(ExportLdifCtl *ctl);
+void exportldif_save_settings(ExportLdifCtl *ctl);
 
 #endif /* __EXPORT_LDIF_H__ */
-

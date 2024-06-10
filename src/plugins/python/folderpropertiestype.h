@@ -23,10 +23,8 @@
 
 #include "folder_item_prefs.h"
 
-
 gboolean cmpy_add_folderproperties(PyObject *module);
 
-PyObject* clawsmail_folderproperties_new(FolderItemPrefs *folderitem_prefs);
-
+PyObject *clawsmail_folderproperties_new(FolderItemPrefs *folderitem_prefs);
 
 #endif /* FOLDERPROPERTIESTYPE_H */

@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -28,13 +28,13 @@
 #include <glib/gi18n.h>
 #include <sys/types.h>
 #ifndef G_OS_WIN32
-#  include <sys/wait.h>
+#include <sys/wait.h>
 #else
-#  include <pthread.h>
-#  include <windows.h>
+#include <pthread.h>
+#include <windows.h>
 #endif
 #if (defined(__DragonFly__) || defined(SOLARIS) || defined (__NetBSD__) || defined (__FreeBSD__) || defined (__OpenBSD__))
-#  include <sys/signal.h>
+#include <sys/signal.h>
 #endif
 
 #include "version.h"
@@ -52,14 +52,12 @@ typedef struct _PgpViewer PgpViewer;
 
 static MimeViewerFactory pgp_viewer_factory;
 
-struct _PgpViewer
-{
-	MimeViewer	 mimeviewer;
-	TextView	*textview;	
+struct _PgpViewer {
+	MimeViewer mimeviewer;
+	TextView *textview;
 };
 
-static gchar *content_types[] = 
-	{"application/pgp-signature", NULL};
+static gchar *content_types[] = { "application/pgp-signature", NULL };
 
 static GtkWidget *pgp_get_widget(MimeViewer *_viewer)
 {
@@ -82,12 +80,10 @@ static void *_import_threaded(void *arg)
 	struct _ImportCtx *ctx = (struct _ImportCtx *)arg;
 	gboolean result;
 
-	PROCESS_INFORMATION pi = {0};
-	STARTUPINFO si = {0};
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO si = { 0 };
 
-	result = CreateProcess(NULL, ctx->cmd, NULL, NULL, FALSE,
-			NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW,
-			NULL, NULL, &si, &pi);
+	result = CreateProcess(NULL, ctx->cmd, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
 
 	if (!result) {
 		debug_print("Couldn't execute '%s'\n", ctx->cmd);
@@ -126,8 +122,9 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 	gboolean imported = FALSE;
 	MsgInfo *msginfo = textview->messageview->msginfo;
 
-	if (!partinfo) return;
-	
+	if (!partinfo)
+		return;
+
 	textview_set_font(textview, NULL);
 	textview_clear(textview);
 
@@ -135,13 +132,13 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 	buffer = gtk_text_view_get_buffer(text);
 	gtk_text_buffer_get_start_iter(buffer, &iter);
 
-	err = gpgme_new (&ctx);
+	err = gpgme_new(&ctx);
 	if (err) {
 		debug_print("err : %s\n", gpgme_strerror(err));
 		textview_show_mime_part(textview, partinfo);
 		return;
 	}
-	
+
 	sigdata = sgpgme_data_from_mimeinfo(partinfo);
 	if (!sigdata) {
 		g_warning("no sigdata");
@@ -170,17 +167,13 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 		gchar *from_addr = g_strdup(msginfo->from);
 		extract_address(from_addr);
 		gchar *cmd_ks = g_strdup_printf("\"%s\" --batch --no-tty --recv-keys %s",
-				(gpgbin ? gpgbin : "gpg2"), sig->fpr);
+						(gpgbin ? gpgbin : "gpg2"), sig->fpr);
 		gchar *cmd_wkd = g_strdup_printf("\"%s\" --batch --no-tty --locate-keys \"%s\"",
-				(gpgbin ? gpgbin : "gpg2"), from_addr);
+						 (gpgbin ? gpgbin : "gpg2"), from_addr);
 
 		AlertValue val = G_ALERTDEFAULT;
 		if (!prefs_common_get_prefs()->work_offline) {
-			val = alertpanel(_("Key import"),
-				_("This key is not in your keyring. Do you want "
-				  "Claws Mail to try to import it?"),
-				  _("_No"), _("from keyserver"), _("from Web Key Directory"),
-				  ALERTFOCUS_SECOND);
+			val = alertpanel(_("Key import"), _("This key is not in your keyring. Do you want " "Claws Mail to try to import it?"), _("_No"), _("from keyserver"), _("from Web Key Directory"), ALERTFOCUS_SECOND);
 			GTK_EVENTS_FLUSH();
 		}
 		if (val == G_ALERTDEFAULT) {
@@ -241,7 +234,7 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 						kill(pid, SIGKILL);
 						break;
 					}
-				} while(1);
+				} while (1);
 			}
 			debug_print("res %d\n", res);
 			if (res == 0)
@@ -254,10 +247,9 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 
 			ctx->done = FALSE;
 			ctx->exitcode = STILL_ACTIVE;
-			ctx->cmd = (val == G_ALERTOTHER)? cmd_wkd : cmd_ks;
+			ctx->cmd = (val == G_ALERTOTHER) ? cmd_wkd : cmd_ks;
 
-			if (pthread_create(&pt, NULL,
-						_import_threaded, (void *)ctx) != 0) {
+			if (pthread_create(&pt, NULL, _import_threaded, (void *)ctx) != 0) {
 				debug_print("Couldn't create thread, continuing unthreaded.\n");
 				_import_threaded(ctx);
 			} else {
@@ -284,7 +276,7 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 				TEXTVIEW_INSERT(_("   You can try to import it manually with the command:"));
 				TEXTVIEW_INSERT("\n\n     ");
 				TEXTVIEW_INSERT(cmd_ks);
-				TEXTVIEW_INSERT("\n\n     ");    
+				TEXTVIEW_INSERT("\n\n     ");
 				TEXTVIEW_INSERT(_("or"));
 				TEXTVIEW_INSERT("\n\n     ");
 				TEXTVIEW_INSERT(cmd_wkd);
@@ -311,12 +303,9 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 	textview_show_icon(textview, GTK_STOCK_DIALOG_AUTHENTICATION);
 }
 
-
-static void pgp_show_mimepart(MimeViewer *_viewer,
-				const gchar *infile,
-				MimeInfo *partinfo)
+static void pgp_show_mimepart(MimeViewer *_viewer, const gchar *infile, MimeInfo *partinfo)
 {
-	PgpViewer *viewer = (PgpViewer *)_viewer;
+	PgpViewer *viewer = (PgpViewer *) _viewer;
 	debug_print("pgp_show_mimepart\n");
 	viewer->textview->messageview = _viewer->mimeview->messageview;
 	pgpview_show_mime_part(viewer->textview, partinfo);
@@ -324,14 +313,14 @@ static void pgp_show_mimepart(MimeViewer *_viewer,
 
 static void pgp_clear_viewer(MimeViewer *_viewer)
 {
-	PgpViewer *viewer = (PgpViewer *)_viewer;
+	PgpViewer *viewer = (PgpViewer *) _viewer;
 	debug_print("pgp_clear_viewer\n");
 	textview_clear(viewer->textview);
 }
 
 static void pgp_destroy_viewer(MimeViewer *_viewer)
 {
-	PgpViewer *viewer = (PgpViewer *)_viewer;
+	PgpViewer *viewer = (PgpViewer *) _viewer;
 	debug_print("pgp_destroy_viewer\n");
 	textview_destroy(viewer->textview);
 }
@@ -341,25 +330,24 @@ static MimeViewer *pgp_viewer_create(void)
 	PgpViewer *viewer;
 
 	debug_print("pgp_viewer_create\n");
-	
+
 	viewer = g_new0(PgpViewer, 1);
 	viewer->mimeviewer.factory = &pgp_viewer_factory;
 	viewer->mimeviewer.get_widget = pgp_get_widget;
 	viewer->mimeviewer.show_mimepart = pgp_show_mimepart;
 	viewer->mimeviewer.clear_viewer = pgp_clear_viewer;
-	viewer->mimeviewer.destroy_viewer = pgp_destroy_viewer;	
+	viewer->mimeviewer.destroy_viewer = pgp_destroy_viewer;
 	viewer->mimeviewer.get_selection = NULL;
 	viewer->textview = textview_create();
 	textview_init(viewer->textview);
 
 	gtk_widget_show_all(viewer->textview->vbox);
 
-	return (MimeViewer *) viewer;
+	return (MimeViewer *)viewer;
 }
 
-static MimeViewerFactory pgp_viewer_factory =
-{
-	content_types,	
+static MimeViewerFactory pgp_viewer_factory = {
+	content_types,
 	0,
 
 	pgp_viewer_create,
@@ -375,3 +363,7 @@ void pgp_viewer_done(void)
 	mimeview_unregister_viewer_factory(&pgp_viewer_factory);
 
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

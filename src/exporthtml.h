@@ -43,43 +43,35 @@
 /* Export HTML control data */
 typedef struct _ExportHtmlCtl ExportHtmlCtl;
 struct _ExportHtmlCtl {
-	gchar    *path;
-	gchar    *dirOutput;
-	gchar    *fileHtml;
-	gchar    *encoding;
-	gchar    *settingsFile;
-	gint     stylesheet;
-	gint     nameFormat;
+	gchar *path;
+	gchar *dirOutput;
+	gchar *fileHtml;
+	gchar *encoding;
+	gchar *settingsFile;
+	gint stylesheet;
+	gint nameFormat;
 	gboolean banding;
 	gboolean linkEMail;
 	gboolean showAttribs;
-	gint     retVal;
-	gint     rcCreate;
-	GList    *listStyle;
+	gint retVal;
+	gint rcCreate;
+	GList *listStyle;
 };
 
 /* Function prototypes */
-ExportHtmlCtl *exporthtml_create( void );
-void exporthtml_free		( ExportHtmlCtl *ctl );
-void exporthtml_set_stylesheet	( ExportHtmlCtl *ctl,
-				  const gint value );
-void exporthtml_set_name_format	( ExportHtmlCtl *ctl,
-				  const gint value );
-void exporthtml_set_banding	( ExportHtmlCtl *ctl,
-				  const gboolean value );
-void exporthtml_set_link_email	( ExportHtmlCtl *ctl,
-				  const gboolean value );
-void exporthtml_set_attributes	( ExportHtmlCtl *ctl,
-				  const gboolean value );
-void exporthtml_process		( ExportHtmlCtl *ctl,
-				  AddressCache *cache );
-gboolean exporthtml_create_dir	( ExportHtmlCtl *ctl );
-gchar *exporthtml_get_create_msg( ExportHtmlCtl *ctl );
+ExportHtmlCtl *exporthtml_create(void);
+void exporthtml_free(ExportHtmlCtl *ctl);
+void exporthtml_set_stylesheet(ExportHtmlCtl *ctl, const gint value);
+void exporthtml_set_name_format(ExportHtmlCtl *ctl, const gint value);
+void exporthtml_set_banding(ExportHtmlCtl *ctl, const gboolean value);
+void exporthtml_set_link_email(ExportHtmlCtl *ctl, const gboolean value);
+void exporthtml_set_attributes(ExportHtmlCtl *ctl, const gboolean value);
+void exporthtml_process(ExportHtmlCtl *ctl, AddressCache *cache);
+gboolean exporthtml_create_dir(ExportHtmlCtl *ctl);
+gchar *exporthtml_get_create_msg(ExportHtmlCtl *ctl);
 
-void exporthtml_parse_filespec	( ExportHtmlCtl *ctl,
-				  gchar *fileSpec );
-void exporthtml_load_settings	( ExportHtmlCtl *ctl );
-void exporthtml_save_settings	( ExportHtmlCtl *ctl );
+void exporthtml_parse_filespec(ExportHtmlCtl *ctl, gchar *fileSpec);
+void exporthtml_load_settings(ExportHtmlCtl *ctl);
+void exporthtml_save_settings(ExportHtmlCtl *ctl);
 
 #endif /* __EXPORT_HTML_H__ */
-

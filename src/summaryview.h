@@ -27,12 +27,11 @@
 #include <gtk/gtk.h>
 
 #include "viewtypes.h"
-typedef struct _SummaryColumnState	SummaryColumnState;
+typedef struct _SummaryColumnState SummaryColumnState;
 
 #define MAIL_MANUAL_FILTERING_HOOKLIST "mail_manual_filtering_hooklist"
 
-typedef enum
-{
+typedef enum {
 	S_COL_MARK,
 	S_COL_STATUS,
 	S_COL_MIME,
@@ -49,16 +48,14 @@ typedef enum
 
 #define N_SUMMARY_COLS	12
 
-typedef enum
-{
+typedef enum {
 	SUMMARY_NONE,
 	SUMMARY_SELECTED_NONE,
 	SUMMARY_SELECTED_SINGLE,
 	SUMMARY_SELECTED_MULTIPLE
 } SummarySelection;
 
-typedef enum
-{
+typedef enum {
 	TARGET_MAIL_URI_LIST,
 	TARGET_DUMMY,
 	TARGET_MAIL_CM_PATH_LIST,
@@ -73,14 +70,12 @@ typedef enum
 
 extern GtkTargetEntry summary_drag_types[3];
 
-struct _SummaryColumnState
-{
+struct _SummaryColumnState {
 	SummaryColumnType type;
 	gboolean visible;
 };
 
-struct _SummaryView
-{
+struct _SummaryView {
 	GtkWidget *vbox;
 	GtkWidget *mainwidget_book;
 	GtkWidget *scrolledwin;
@@ -122,12 +117,12 @@ struct _SummaryView
 
 	guint lock_count;
 
-	MainWindow   *mainwin;
-	FolderView   *folderview;
-	HeaderView   *headerview;
-	MessageView  *messageview;
-	MessageView  *ext_messageview;
-	QuickSearch  *quicksearch;
+	MainWindow *mainwin;
+	FolderView *folderview;
+	HeaderView *headerview;
+	MessageView *messageview;
+	MessageView *ext_messageview;
+	QuickSearch *quicksearch;
 
 	FolderItem *folder_item;
 
@@ -142,11 +137,11 @@ struct _SummaryView
 	regex_t *simplify_subject_preg;
 
 	/* current message status */
-	gint   unreadmarked;
+	gint unreadmarked;
 	goffset total_size;
-	gint   deleted;
-	gint   moved;
-	gint   copied;
+	gint deleted;
+	gint moved;
+	gint copied;
 
 /*
 private:
@@ -180,158 +175,126 @@ private:
 	GtkUIManager *ui_manager;
 };
 
-SummaryView	*summary_create(MainWindow *mainwin);
+SummaryView *summary_create(MainWindow *mainwin);
 void summaryview_destroy(SummaryView *summaryview);
-void summary_init		  (SummaryView		*summaryview);
-gboolean summary_show		  (SummaryView		*summaryview,
-				   FolderItem		*fitem,
-				   gboolean		 avoid_refresh);
-void summary_clear_list		  (SummaryView		*summaryview);
-void summary_clear_all		  (SummaryView		*summaryview);
+void summary_init(SummaryView *summaryview);
+gboolean summary_show(SummaryView *summaryview, FolderItem *fitem, gboolean avoid_refresh);
+void summary_clear_list(SummaryView *summaryview);
+void summary_clear_all(SummaryView *summaryview);
 
-void summary_lock		  (SummaryView		*summaryview);
-void summary_unlock		  (SummaryView		*summaryview);
-void summary_freeze		  (SummaryView		*summaryview);
-void summary_thaw		  (SummaryView		*summaryview);
-void summary_thaw_with_status	  (SummaryView		*summaryview);
-void summary_grab_focus		  (SummaryView		*summaryview);
-GtkWidget *summary_get_main_widget(SummaryView 		*summaryview);
-gboolean summary_is_locked	  (SummaryView		*summaryview);
+void summary_lock(SummaryView *summaryview);
+void summary_unlock(SummaryView *summaryview);
+void summary_freeze(SummaryView *summaryview);
+void summary_thaw(SummaryView *summaryview);
+void summary_thaw_with_status(SummaryView *summaryview);
+void summary_grab_focus(SummaryView *summaryview);
+GtkWidget *summary_get_main_widget(SummaryView *summaryview);
+gboolean summary_is_locked(SummaryView *summaryview);
 
-SummarySelection summary_get_selection_type	(SummaryView	*summaryview);
-MsgInfo *summary_get_selected_msg		(SummaryView *summaryview);
-GSList *summary_get_selected_msg_list		(SummaryView	*summaryview);
+SummarySelection summary_get_selection_type(SummaryView *summaryview);
+MsgInfo *summary_get_selected_msg(SummaryView *summaryview);
+GSList *summary_get_selected_msg_list(SummaryView *summaryview);
 
-void summary_select_prev	  (SummaryView		*summaryview);
-void summary_select_next	  (SummaryView		*summaryview);
-void summary_select_prev_unread	  (SummaryView		*summaryview);
-void summary_select_next_unread	  (SummaryView		*summaryview);
-void summary_select_prev_new	  (SummaryView		*summaryview);
-void summary_select_next_new	  (SummaryView		*summaryview);
-void summary_select_prev_marked	  (SummaryView		*summaryview);
-void summary_select_next_marked	  (SummaryView		*summaryview);
-void summary_select_prev_labeled  (SummaryView		*summaryview);
-void summary_select_next_labeled  (SummaryView		*summaryview);
-void summary_select_parent        (SummaryView		*summaryview);
-void summary_select_by_msgnum	  (SummaryView		*summaryview,
-				   guint		 msgnum,
-				   gboolean		 show);
-void summary_select_by_msg_list   (SummaryView		*summaryview, GSList *msginfos);
-guint summary_get_current_msgnum  (SummaryView		*summaryview);
-void summary_select_node	  (SummaryView		*summaryview,
-				   GtkCMCTreeNode	*node,
-				   gboolean	 	 display_msg);
+void summary_select_prev(SummaryView *summaryview);
+void summary_select_next(SummaryView *summaryview);
+void summary_select_prev_unread(SummaryView *summaryview);
+void summary_select_next_unread(SummaryView *summaryview);
+void summary_select_prev_new(SummaryView *summaryview);
+void summary_select_next_new(SummaryView *summaryview);
+void summary_select_prev_marked(SummaryView *summaryview);
+void summary_select_next_marked(SummaryView *summaryview);
+void summary_select_prev_labeled(SummaryView *summaryview);
+void summary_select_next_labeled(SummaryView *summaryview);
+void summary_select_parent(SummaryView *summaryview);
+void summary_select_by_msgnum(SummaryView *summaryview, guint msgnum, gboolean show);
+void summary_select_by_msg_list(SummaryView *summaryview, GSList *msginfos);
+guint summary_get_current_msgnum(SummaryView *summaryview);
+void summary_select_node(SummaryView *summaryview, GtkCMCTreeNode *node, gboolean display_msg);
 
-void summary_expand_threads	  (SummaryView		*summaryview);
-void summary_collapse_threads	  (SummaryView		*summaryview);
-void summary_toggle_ignore_thread (SummaryView		*summaryview);
-void summary_toggle_watch_thread  (SummaryView		*summaryview);
+void summary_expand_threads(SummaryView *summaryview);
+void summary_collapse_threads(SummaryView *summaryview);
+void summary_toggle_ignore_thread(SummaryView *summaryview);
+void summary_toggle_watch_thread(SummaryView *summaryview);
 
-void summary_filter		  (SummaryView		*summaryview,
-				   gboolean		 selected_only);
-void summary_filter_open          (SummaryView *summaryview,
-				   PrefsFilterType type,
-				   gint processing_rule);
-void summary_msginfo_filter_open  (FolderItem * item, MsgInfo *msginfo,
-				   PrefsFilterType type, gint processing_rule);
+void summary_filter(SummaryView *summaryview, gboolean selected_only);
+void summary_filter_open(SummaryView *summaryview, PrefsFilterType type, gint processing_rule);
+void summary_msginfo_filter_open(FolderItem *item, MsgInfo *msginfo, PrefsFilterType type, gint processing_rule);
 
-void summary_sort		  (SummaryView		*summaryview,
-				   FolderSortKey	 sort_key,
-				   FolderSortType	 sort_type);
+void summary_sort(SummaryView *summaryview, FolderSortKey sort_key, FolderSortType sort_type);
 
-void summary_delete		  (SummaryView		*summaryview);
-void summary_delete_trash	  (SummaryView		*summaryview);
+void summary_delete(SummaryView *summaryview);
+void summary_delete_trash(SummaryView *summaryview);
 
-void summary_cancel               (SummaryView          *summaryview);
+void summary_cancel(SummaryView *summaryview);
 
-gboolean summary_execute	  (SummaryView		*summaryview);
-gboolean summary_expunge	  (SummaryView		*summaryview);
+gboolean summary_execute(SummaryView *summaryview);
+gboolean summary_expunge(SummaryView *summaryview);
 
-void summary_attract_by_subject	  (SummaryView		*summaryview);
+void summary_attract_by_subject(SummaryView *summaryview);
 
-gint summary_write_cache	  (SummaryView		*summaryview);
+gint summary_write_cache(SummaryView *summaryview);
 
-gboolean summary_pass_key_press_event (SummaryView		*summaryview,
-				   GdkEventKey		*event);
+gboolean summary_pass_key_press_event(SummaryView *summaryview, GdkEventKey *event);
 
-void summary_display_msg_selected (SummaryView		*summaryview,
-				   gboolean		 all_headers);
-void summary_redisplay_msg	  (SummaryView		*summaryview);
-void summary_open_msg		  (SummaryView		*summaryview);
-void summary_open_row		  (GtkSCTree *sctree, SummaryView *summaryview);
-void summary_view_source	  (SummaryView		*summaryview);
-void summary_reedit		  (SummaryView		*summaryview);
-gboolean summary_step		  (SummaryView		*summaryview,
-				   GtkScrollType	 type);
-void summary_toggle_view	  (SummaryView		*summaryview);
-void summary_set_marks_selected	  (SummaryView		*summaryview);
-guint summary_get_msgnum	  (SummaryView		*summaryview,
-				   GtkCMCTreeNode		*node);
+void summary_display_msg_selected(SummaryView *summaryview, gboolean all_headers);
+void summary_redisplay_msg(SummaryView *summaryview);
+void summary_open_msg(SummaryView *summaryview);
+void summary_open_row(GtkSCTree * sctree, SummaryView *summaryview);
+void summary_view_source(SummaryView *summaryview);
+void summary_reedit(SummaryView *summaryview);
+gboolean summary_step(SummaryView *summaryview, GtkScrollType type);
+void summary_toggle_view(SummaryView *summaryview);
+void summary_set_marks_selected(SummaryView *summaryview);
+guint summary_get_msgnum(SummaryView *summaryview, GtkCMCTreeNode *node);
 
-void summary_move_selected_to	  (SummaryView		*summaryview,
-				   FolderItem		*to_folder);
-void summary_move_to		  (SummaryView		*summaryview);
-void summary_copy_selected_to	  (SummaryView		*summaryview,
-				   FolderItem		*to_folder);
-GSList *summary_get_selection	  (SummaryView 		*summaryview);
-guint summary_get_selection_count (SummaryView		*summaryview);
-void summary_copy_to		  (SummaryView		*summaryview);
-void summary_save_as		  (SummaryView		*summaryview);
-void summary_print		  (SummaryView		*summaryview);
-void summary_mark		  (SummaryView		*summaryview);
-void summary_unmark		  (SummaryView		*summaryview);
-void summary_mark_as_read	  (SummaryView		*summaryview);
-void summary_mark_as_unread	  (SummaryView		*summaryview);
-void summary_msgs_lock		  (SummaryView		*summaryview);
-void summary_msgs_unlock	  (SummaryView		*summaryview);
-void summary_mark_all_read	  (SummaryView		*summaryview, gboolean ask_if_needed);
-void summary_mark_all_unread	  (SummaryView		*summaryview, gboolean ask_if_needed);
-void summary_mark_as_spam	  (SummaryView 		*summaryview, 
-				   guint 		 action, 
-				   GtkWidget 		*widget);
-void summary_ignore_thread	  (SummaryView 		*summaryview);
-void summary_unignore_thread	  (SummaryView 		*summaryview);
-void summary_watch_thread	  (SummaryView 		*summaryview);
-void summary_unwatch_thread	  (SummaryView 		*summaryview);
+void summary_move_selected_to(SummaryView *summaryview, FolderItem *to_folder);
+void summary_move_to(SummaryView *summaryview);
+void summary_copy_selected_to(SummaryView *summaryview, FolderItem *to_folder);
+GSList *summary_get_selection(SummaryView *summaryview);
+guint summary_get_selection_count(SummaryView *summaryview);
+void summary_copy_to(SummaryView *summaryview);
+void summary_save_as(SummaryView *summaryview);
+void summary_print(SummaryView *summaryview);
+void summary_mark(SummaryView *summaryview);
+void summary_unmark(SummaryView *summaryview);
+void summary_mark_as_read(SummaryView *summaryview);
+void summary_mark_as_unread(SummaryView *summaryview);
+void summary_msgs_lock(SummaryView *summaryview);
+void summary_msgs_unlock(SummaryView *summaryview);
+void summary_mark_all_read(SummaryView *summaryview, gboolean ask_if_needed);
+void summary_mark_all_unread(SummaryView *summaryview, gboolean ask_if_needed);
+void summary_mark_as_spam(SummaryView *summaryview, guint action, GtkWidget *widget);
+void summary_ignore_thread(SummaryView *summaryview);
+void summary_unignore_thread(SummaryView *summaryview);
+void summary_watch_thread(SummaryView *summaryview);
+void summary_unwatch_thread(SummaryView *summaryview);
 
-void summary_add_address	  (SummaryView		*summaryview);
-void summary_select_all		  (SummaryView		*summaryview);
-void summary_unselect_all	  (SummaryView		*summaryview);
-void summary_select_thread	  (SummaryView		*summaryview,
-				   gboolean		 delete_thread,
-				   gboolean		 trash_thread);
+void summary_add_address(SummaryView *summaryview);
+void summary_select_all(SummaryView *summaryview);
+void summary_unselect_all(SummaryView *summaryview);
+void summary_select_thread(SummaryView *summaryview, gboolean delete_thread, gboolean trash_thread);
 
-void summary_set_colorlabel	  (SummaryView		*summaryview,
-				   guint		 labelcolor,
-				   GtkWidget		*widget);
-void summary_set_tag		  (SummaryView		*summaryview,
-				   gint			 tag_id,
-				   GtkWidget		*widget);
+void summary_set_colorlabel(SummaryView *summaryview, guint labelcolor, GtkWidget *widget);
+void summary_set_tag(SummaryView *summaryview, gint tag_id, GtkWidget *widget);
 
-void summary_set_column_order	  (SummaryView		*summaryview);
+void summary_set_column_order(SummaryView *summaryview);
 
-void summary_toggle_show_read_messages
-				  (SummaryView *summaryview);
-void summary_toggle_show_read_threads
-				  (SummaryView *summaryview);
-void summary_toggle_show_del_messages
-				  (SummaryView *summaryview);
+void summary_toggle_show_read_messages(SummaryView *summaryview);
+void summary_toggle_show_read_threads(SummaryView *summaryview);
+void summary_toggle_show_del_messages(SummaryView *summaryview);
 
-void summary_toggle_view_real	  (SummaryView	*summaryview);
+void summary_toggle_view_real(SummaryView *summaryview);
 
-void summary_reflect_prefs_pixmap_theme
-                                  (SummaryView *summaryview);
+void summary_reflect_prefs_pixmap_theme(SummaryView *summaryview);
 void summary_reflect_prefs_custom_colors(SummaryView *summaryview);
 void summary_reflect_tags_changes(SummaryView *summaryview);
-void summary_harvest_address      (SummaryView *summaryview);
-void summary_set_prefs_from_folderitem
-                                  (SummaryView *summaryview, FolderItem *item);
-void summary_save_prefs_to_folderitem
-                                  (SummaryView *summaryview, FolderItem *item);
-gint summaryview_export_mbox_list (SummaryView *summaryview);
+void summary_harvest_address(SummaryView *summaryview);
+void summary_set_prefs_from_folderitem(SummaryView *summaryview, FolderItem *item);
+void summary_save_prefs_to_folderitem(SummaryView *summaryview, FolderItem *item);
+gint summaryview_export_mbox_list(SummaryView *summaryview);
 void summary_reflect_prefs(void);
 void summaryview_activate_quicksearch(SummaryView *summaryview, gboolean show);
-void summary_set_menu_sensitive	(SummaryView		*summaryview);
+void summary_set_menu_sensitive(SummaryView *summaryview);
 void summary_relayout(SummaryView *summaryview);
 void summary_update_unread(SummaryView *summaryview, FolderItem *removed_item);
 gboolean summary_is_list(SummaryView *summaryview);

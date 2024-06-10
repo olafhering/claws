@@ -20,7 +20,7 @@
  * Export address book to LDIF file.
  */
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -38,7 +38,6 @@
 #include "ldif.h"
 #include "file-utils.h"
 
-
 #define DFL_DIR_CLAWS_OUT  "claws-mail-out"
 #define DFL_FILE_CLAWS_OUT "addressbook.ldif"
 
@@ -54,7 +53,7 @@
 #define EXMLPROP_USE_DN       "use-dn"
 #define EXMLPROP_EXCL_EMAIL   "exclude-mail"
 
-static gchar *_attrName_UID_   = "uid";
+static gchar *_attrName_UID_ = "uid";
 static gchar *_attrName_DName_ = "cn";
 static gchar *_attrName_EMail_ = "mail";
 
@@ -62,8 +61,9 @@ static gchar *_attrName_EMail_ = "mail";
  * Create initialized LDIF export control object.
  * \return Initialized export control data.
  */
-ExportLdifCtl *exportldif_create( void ) {
-	ExportLdifCtl *ctl = g_new0( ExportLdifCtl, 1 );
+ExportLdifCtl *exportldif_create(void)
+{
+	ExportLdifCtl *ctl = g_new0(ExportLdifCtl, 1);
 
 	ctl->path = NULL;
 	ctl->dirOutput = NULL;
@@ -74,8 +74,7 @@ ExportLdifCtl *exportldif_create( void ) {
 	ctl->excludeEMail = TRUE;
 	ctl->retVal = MGU_SUCCESS;
 	ctl->rcCreate = 0;
-	ctl->settingsFile = g_strconcat(
-		get_rc_dir(), G_DIR_SEPARATOR_S, EXML_PROPFILE_NAME, NULL );
+	ctl->settingsFile = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, EXML_PROPFILE_NAME, NULL);
 
 	return ctl;
 }
@@ -84,14 +83,15 @@ ExportLdifCtl *exportldif_create( void ) {
  * Free up object by releasing internal memory.
  * \return ctl Export control data.
  */
-void exportldif_free( ExportLdifCtl *ctl ) {
-	cm_return_if_fail( ctl != NULL );
+void exportldif_free(ExportLdifCtl *ctl)
+{
+	cm_return_if_fail(ctl != NULL);
 
-	g_free( ctl->path );
-	g_free( ctl->fileLdif );
-	g_free( ctl->dirOutput );
-	g_free( ctl->suffix );
-	g_free( ctl->settingsFile );
+	g_free(ctl->path);
+	g_free(ctl->fileLdif);
+	g_free(ctl->dirOutput);
+	g_free(ctl->suffix);
+	g_free(ctl->settingsFile);
 
 	/* Clear pointers */
 	ctl->path = NULL;
@@ -105,7 +105,7 @@ void exportldif_free( ExportLdifCtl *ctl ) {
 	ctl->rcCreate = 0;
 
 	/* Now release object */
-	g_free( ctl );
+	g_free(ctl);
 }
 
 /**
@@ -113,10 +113,11 @@ void exportldif_free( ExportLdifCtl *ctl ) {
  * \param ctl   Export control data.
  * \param value Suffix.
  */
-void exportldif_set_suffix( ExportLdifCtl *ctl, const char *value ) {
-	cm_return_if_fail( ctl != NULL );
-	ctl->suffix = mgu_replace_string( ctl->suffix, value );
-	g_strstrip( ctl->suffix );
+void exportldif_set_suffix(ExportLdifCtl *ctl, const char *value)
+{
+	cm_return_if_fail(ctl != NULL);
+	ctl->suffix = mgu_replace_string(ctl->suffix, value);
+	g_strstrip(ctl->suffix);
 }
 
 /**
@@ -129,8 +130,9 @@ void exportldif_set_suffix( ExportLdifCtl *ctl, const char *value ) {
  * <li><code>EXPORT_LDIF_ID_EMAIL</code> - Use first Email address.</li>
  * </ul>
  */
-void exportldif_set_rdn( ExportLdifCtl *ctl, const gint value ) {
-	cm_return_if_fail( ctl != NULL );
+void exportldif_set_rdn(ExportLdifCtl *ctl, const gint value)
+{
+	cm_return_if_fail(ctl != NULL);
 	ctl->rdnIndex = value;
 }
 
@@ -140,8 +142,9 @@ void exportldif_set_rdn( ExportLdifCtl *ctl, const gint value ) {
  * \param ctl   Export control data.
  * \param value <i>TRUE</i> if DN should be used.
  */
-void exportldif_set_use_dn( ExportLdifCtl *ctl, const gboolean value ) {
-	cm_return_if_fail( ctl != NULL );
+void exportldif_set_use_dn(ExportLdifCtl *ctl, const gboolean value)
+{
+	cm_return_if_fail(ctl != NULL);
 	ctl->useDN = value;
 }
 
@@ -150,8 +153,9 @@ void exportldif_set_use_dn( ExportLdifCtl *ctl, const gboolean value ) {
  * \param ctl   Export control data.
  * \param value <i>TRUE</i> if records without E-Mail should be excluded.
  */
-void exportldif_set_exclude_email( ExportLdifCtl *ctl, const gboolean value ) {
-	cm_return_if_fail( ctl != NULL );
+void exportldif_set_exclude_email(ExportLdifCtl *ctl, const gboolean value)
+{
+	cm_return_if_fail(ctl != NULL);
 	ctl->excludeEMail = value;
 }
 
@@ -160,20 +164,21 @@ void exportldif_set_exclude_email( ExportLdifCtl *ctl, const gboolean value ) {
  * \param  value Data value to format.
  * \return Formatted string, should be freed after use.
  */
-static gchar *exportldif_fmt_value( gchar *value ) {
+static gchar *exportldif_fmt_value(gchar *value)
+{
 	gchar *dupval;
 	gchar *src;
 	gchar *dest;
 	gchar ch;
 
 	/* Duplicate incoming value */
-	dest = dupval = g_strdup( value );
+	dest = dupval = g_strdup(value);
 
 	/* Copy characters, ignoring commas */
 	src = value;
-	while( *src ) {
+	while (*src) {
 		ch = *src;
-		if( ch != ',' ) {
+		if (ch != ',') {
 			*dest = ch;
 			dest++;
 		}
@@ -189,10 +194,9 @@ static gchar *exportldif_fmt_value( gchar *value ) {
  * \param  person Person to format.
  * \return Formatted DN entry.
  */
-static gchar *exportldif_fmt_dn(
-		ExportLdifCtl *ctl, const ItemPerson *person )
+static gchar *exportldif_fmt_dn(ExportLdifCtl *ctl, const ItemPerson *person)
 {
-	gchar buf[ FMT_BUFSIZE + 1 ];
+	gchar buf[FMT_BUFSIZE + 1];
 	gchar *retVal = NULL;
 	gchar *attr = NULL;
 	gchar *value = NULL;
@@ -200,53 +204,50 @@ static gchar *exportldif_fmt_dn(
 
 	/* Process RDN */
 	*buf = '\0';
-	if( ctl->rdnIndex == EXPORT_LDIF_ID_UID ) {
+	if (ctl->rdnIndex == EXPORT_LDIF_ID_UID) {
 		attr = _attrName_UID_;
-		value = ADDRITEM_ID( person );
-	}
-	else if( ctl->rdnIndex == EXPORT_LDIF_ID_DNAME ) {
+		value = ADDRITEM_ID(person);
+	} else if (ctl->rdnIndex == EXPORT_LDIF_ID_DNAME) {
 		attr = _attrName_DName_;
-		value = ADDRITEM_NAME( person );
-		dupval = exportldif_fmt_value( value );
-	}
-	else if( ctl->rdnIndex == EXPORT_LDIF_ID_EMAIL ) {
+		value = ADDRITEM_NAME(person);
+		dupval = exportldif_fmt_value(value);
+	} else if (ctl->rdnIndex == EXPORT_LDIF_ID_EMAIL) {
 		GList *node;
 
 		node = person->listEMail;
-		if( node ) {
+		if (node) {
 			ItemEMail *email = node->data;
 
 			attr = _attrName_EMail_;
 			value = email->address;
-			dupval = exportldif_fmt_value( value );
+			dupval = exportldif_fmt_value(value);
 		}
 	}
 
 	/* Format DN */
-	if( attr ) {
-		if( value ) {
-			if( strlen( value ) > 0 ) {
-				strncat( buf, attr, FMT_BUFSIZE - strlen(buf) );
-				strncat( buf, "=", FMT_BUFSIZE - strlen(buf) );
-				if( dupval ) {
+	if (attr) {
+		if (value) {
+			if (strlen(value) > 0) {
+				strncat(buf, attr, FMT_BUFSIZE - strlen(buf));
+				strncat(buf, "=", FMT_BUFSIZE - strlen(buf));
+				if (dupval) {
 					/* Format and free duplicated value */
-					strncat( buf, dupval, FMT_BUFSIZE - strlen(buf) );
-					g_free( dupval );
-				}
-				else {
+					strncat(buf, dupval, FMT_BUFSIZE - strlen(buf));
+					g_free(dupval);
+				} else {
 					/* Use original value */
-					strncat( buf, value, FMT_BUFSIZE - strlen(buf) );
+					strncat(buf, value, FMT_BUFSIZE - strlen(buf));
 				}
 
 				/* Append suffix */
-				if( ctl->suffix ) {
-					if( strlen( ctl->suffix ) > 0 ) {
-						strncat( buf, ",", FMT_BUFSIZE - strlen(buf) );
-						strncat( buf, ctl->suffix, FMT_BUFSIZE - strlen(buf) );
+				if (ctl->suffix) {
+					if (strlen(ctl->suffix) > 0) {
+						strncat(buf, ",", FMT_BUFSIZE - strlen(buf));
+						strncat(buf, ctl->suffix, FMT_BUFSIZE - strlen(buf));
 					}
 				}
 
-				retVal = g_strdup( buf );
+				retVal = g_strdup(buf);
 			}
 		}
 	}
@@ -259,19 +260,18 @@ static gchar *exportldif_fmt_dn(
  * \param  person Person to format.
  * \return Formatted DN entry, should be freed after use.
  */
-static gchar *exportldif_find_dn(
-			ExportLdifCtl *ctl, const ItemPerson *person )
+static gchar *exportldif_find_dn(ExportLdifCtl *ctl, const ItemPerson *person)
 {
 	gchar *retVal = NULL;
 	const GList *node;
 
 	node = person->listAttrib;
-	while( node ) {
+	while (node) {
 		UserAttribute *attrib = node->data;
 
-		node = g_list_next( node );
-		if( g_utf8_collate( attrib->name, LDIF_TAG_DN ) == 0 ) {
-			retVal = g_strdup( attrib->value );
+		node = g_list_next(node);
+		if (g_utf8_collate(attrib->name, LDIF_TAG_DN) == 0) {
+			retVal = g_strdup(attrib->value);
 			break;
 		}
 	}
@@ -284,16 +284,17 @@ static gchar *exportldif_find_dn(
  * \param  stream Output stream.
  * \return <i>TRUE</i> if entry formatted.
  */
-static gboolean exportldif_fmt_email( const ItemPerson *person, FILE *stream ) {
+static gboolean exportldif_fmt_email(const ItemPerson *person, FILE *stream)
+{
 	gboolean retVal = FALSE;
 	const GList *node;
 
 	node = person->listEMail;
-	while( node ) {
+	while (node) {
 		ItemEMail *email = node->data;
 
-		node = g_list_next( node );
-		ldif_write_value( stream, LDIF_TAG_EMAIL, email->address );
+		node = g_list_next(node);
+		ldif_write_value(stream, LDIF_TAG_EMAIL, email->address);
 		retVal = TRUE;
 	}
 	return retVal;
@@ -304,18 +305,18 @@ static gboolean exportldif_fmt_email( const ItemPerson *person, FILE *stream ) {
  * \param  person Person to test.
  * \return <i>TRUE</i> if person has E-Mail address.
  */
-static gboolean exportldif_test_email( const ItemPerson *person )
+static gboolean exportldif_test_email(const ItemPerson *person)
 {
 	gboolean retVal = FALSE;
 	const GList *node;
 
 	node = person->listEMail;
-	while( node ) {
+	while (node) {
 		ItemEMail *email = node->data;
 
-		node = g_list_next( node );
-		if( email->address ) {
-			if( strlen( email->address ) > 0 ) {
+		node = g_list_next(node);
+		if (email->address) {
+			if (strlen(email->address) > 0) {
 				retVal = TRUE;
 				break;
 			}
@@ -330,32 +331,32 @@ static gboolean exportldif_test_email( const ItemPerson *person )
  * \param person ItemPerson.
  * \param stream Output stream.
  */
-static void exportldif_fmt_other_attributes(ItemPerson* person, FILE* stream) {
-    UserAttribute* attr;
-    GList* attrList = NULL;
-    gchar* attrib;
+static void exportldif_fmt_other_attributes(ItemPerson *person, FILE *stream)
+{
+	UserAttribute *attr;
+	GList *attrList = NULL;
+	gchar *attrib;
 
-    if (! person)
-        return;
-    debug_print("cn: %s\n-----------------------------\n", ADDRITEM_NAME(person));
-    attrList = person->listAttrib;
-    while (attrList) {
-        attr = (UserAttribute *) attrList->data;
-        if (attr->uid) {
-            /* Native address book which does not conform to
-             * the LDAP schemas
-             */
-            attrib = g_strdup_printf("# %s", attr->name);
-        }
-        else {
-            attrib = g_strdup(attr->name);
-        }
-        debug_print("name: %s\nvalue: %s\n", attrib, attr->value);
-        ldif_write_value(stream, attrib, attr->value);
-        g_free(attrib);
-        attrList = g_list_next(attrList);
-    }
-    debug_print("-------------------------------\n");
+	if (!person)
+		return;
+	debug_print("cn: %s\n-----------------------------\n", ADDRITEM_NAME(person));
+	attrList = person->listAttrib;
+	while (attrList) {
+		attr = (UserAttribute *)attrList->data;
+		if (attr->uid) {
+			/* Native address book which does not conform to
+			 * the LDAP schemas
+			 */
+			attrib = g_strdup_printf("# %s", attr->name);
+		} else {
+			attrib = g_strdup(attr->name);
+		}
+		debug_print("name: %s\nvalue: %s\n", attrib, attr->value);
+		ldif_write_value(stream, attrib, attr->value);
+		g_free(attrib);
+		attrList = g_list_next(attrList);
+	}
+	debug_print("-------------------------------\n");
 }
 
 /**
@@ -363,12 +364,13 @@ static void exportldif_fmt_other_attributes(ItemPerson* person, FILE* stream) {
  * \param person ItemPerson.
  * \return displayName.
  */
-static gchar* exportldif_find_displayName(ItemPerson* person) {
-	gchar* displayName;
+static gchar *exportldif_find_displayName(ItemPerson *person)
+{
+	gchar *displayName;
 
-	if (! person)
-	    return NULL;
-	
+	if (!person)
+		return NULL;
+
 	if (person->nickName && strlen(person->nickName) > 0)
 		displayName = g_strdup(person->nickName);
 	else
@@ -383,46 +385,47 @@ static gchar* exportldif_find_displayName(ItemPerson* person) {
  * \param  folder Folder to format.
  * \return <i>TRUE</i> if no persons were formatted.
  */
-static gboolean exportldif_fmt_person(
-		ExportLdifCtl *ctl, FILE *stream, const ItemFolder *folder )
+static gboolean exportldif_fmt_person(ExportLdifCtl *ctl, FILE *stream, const ItemFolder *folder)
 {
 	gboolean retVal = TRUE;
 	const GList *node;
-	gchar* sn = NULL;
-	gchar* displayName = NULL;
+	gchar *sn = NULL;
+	gchar *displayName = NULL;
 
-	if( folder->listPerson == NULL ) return retVal;
+	if (folder->listPerson == NULL)
+		return retVal;
 
 	node = folder->listPerson;
-	while( node ) {
+	while (node) {
 		AddrItemObject *aio = node->data;
-		node = g_list_next( node );
+		node = g_list_next(node);
 
-		if( aio && aio->type == ITEMTYPE_PERSON ) {
-			ItemPerson *person = ( ItemPerson * ) aio;
+		if (aio && aio->type == ITEMTYPE_PERSON) {
+			ItemPerson *person = (ItemPerson *)aio;
 			gboolean classPerson = FALSE;
 			gboolean classInetP = FALSE;
 			gchar *dn = NULL;
 
 			/* Check for E-Mail */
-			if( exportldif_test_email( person ) ) {
+			if (exportldif_test_email(person)) {
 				classInetP = TRUE;
-			}
-			else {
+			} else {
 				/* Bail if no E-Mail address */
-				if( ctl->excludeEMail ) continue;
+				if (ctl->excludeEMail)
+					continue;
 			}
 
 			/* Format DN */
-			if( ctl->useDN ) {
-				dn = exportldif_find_dn( ctl, person );
+			if (ctl->useDN) {
+				dn = exportldif_find_dn(ctl, person);
 			}
-			if( dn == NULL ) {
-				dn = exportldif_fmt_dn( ctl, person );
+			if (dn == NULL) {
+				dn = exportldif_fmt_dn(ctl, person);
 			}
-			if( dn == NULL ) continue;
-			ldif_write_value( stream, LDIF_TAG_DN, dn );
-			g_free( dn );
+			if (dn == NULL)
+				continue;
+			ldif_write_value(stream, LDIF_TAG_DN, dn);
+			g_free(dn);
 
 			/*
 			 * Test for schema requirements. This is a simple
@@ -430,39 +433,34 @@ static gboolean exportldif_fmt_person(
 			 * These can be detected when the LDIF file is
 			 * loaded into an LDAP server.
 			 */
-			if( person->lastName ) {
-				if( strlen( person->lastName ) > 0 ) {
+			if (person->lastName) {
+				if (strlen(person->lastName) > 0) {
 					classPerson = TRUE;
 					classInetP = TRUE;
 				}
 			}
 
-			if( classPerson ) {
-				ldif_write_value( stream,
-					LDIF_TAG_OBJECTCLASS, LDIF_CLASS_PERSON );
+			if (classPerson) {
+				ldif_write_value(stream, LDIF_TAG_OBJECTCLASS, LDIF_CLASS_PERSON);
 			}
-			if( classInetP ) {
-				ldif_write_value( stream,
-					LDIF_TAG_OBJECTCLASS, LDIF_CLASS_INET_PERSON );
+			if (classInetP) {
+				ldif_write_value(stream, LDIF_TAG_OBJECTCLASS, LDIF_CLASS_INET_PERSON);
 			}
 
 			/* Format person attributes */
-			ldif_write_value(
-				stream, LDIF_TAG_COMMONNAME, ADDRITEM_NAME( person ) );
+			ldif_write_value(stream, LDIF_TAG_COMMONNAME, ADDRITEM_NAME(person));
 			sn = g_strdup(person->lastName);
 			if (classPerson || classInetP) {
-				if(! sn || strcmp("", sn) == 0 || strcmp(" ", sn) == 0) {
+				if (!sn || strcmp("", sn) == 0 || strcmp(" ", sn) == 0) {
 					g_free(sn);
 					sn = g_strdup("Some SN");
 				}
 			}
-			ldif_write_value(
-				stream, LDIF_TAG_LASTNAME, sn );
+			ldif_write_value(stream, LDIF_TAG_LASTNAME, sn);
 			g_free(sn);
-			ldif_write_value(
-				stream, LDIF_TAG_FIRSTNAME, person->firstName );
+			ldif_write_value(stream, LDIF_TAG_FIRSTNAME, person->firstName);
 
-			if (! person->externalID)
+			if (!person->externalID)
 				displayName = exportldif_find_displayName(person);
 			else
 				displayName = g_strdup(person->nickName);
@@ -470,13 +468,13 @@ static gboolean exportldif_fmt_person(
 			g_free(displayName);
 
 			/* Format E-Mail */
-			exportldif_fmt_email( person, stream );
-			
+			exportldif_fmt_email(person, stream);
+
 			/* Handle other attributes */
 			exportldif_fmt_other_attributes(person, stream);
 
 			/* End record */
-			ldif_write_eor( stream );
+			ldif_write_eor(stream);
 
 			retVal = FALSE;
 		}
@@ -492,23 +490,22 @@ static gboolean exportldif_fmt_person(
  * \param  folder Folder to format.
  * \return <i>TRUE</i> if no persons were formatted.
  */
-static void exportldif_fmt_folder(
-		ExportLdifCtl *ctl, FILE *stream, const ItemFolder *folder )
+static void exportldif_fmt_folder(ExportLdifCtl *ctl, FILE *stream, const ItemFolder *folder)
 {
 	const GList *node;
 
 	/* Export entries in this folder */
-	exportldif_fmt_person( ctl, stream, folder );
+	exportldif_fmt_person(ctl, stream, folder);
 
 	/* Export entries in subfolders */
 	node = folder->listFolder;
-	while( node ) {
+	while (node) {
 		AddrItemObject *aio = node->data;
 
-		node = g_list_next( node );
-		if( aio && aio->type == ITEMTYPE_FOLDER ) {
-			ItemFolder *subFolder = ( ItemFolder * ) aio;
-			exportldif_fmt_folder( ctl, stream, subFolder );
+		node = g_list_next(node);
+		if (aio && aio->type == ITEMTYPE_FOLDER) {
+			ItemFolder *subFolder = (ItemFolder *)aio;
+			exportldif_fmt_folder(ctl, stream, subFolder);
 		}
 	}
 }
@@ -519,21 +516,21 @@ static void exportldif_fmt_folder(
  * \param  cache Address book/data source cache.
  * \return Status.
  */
-void exportldif_process( ExportLdifCtl *ctl, AddressCache *cache )
+void exportldif_process(ExportLdifCtl *ctl, AddressCache *cache)
 {
 	ItemFolder *rootFolder;
 	FILE *ldifFile;
 
-	ldifFile = claws_fopen( ctl->path, "wb" );
-	if( ! ldifFile ) {
+	ldifFile = claws_fopen(ctl->path, "wb");
+	if (!ldifFile) {
 		/* Cannot open file */
 		ctl->retVal = MGU_OPEN_FILE;
 		return;
 	}
 
 	rootFolder = cache->rootFolder;
-	exportldif_fmt_folder( ctl, ldifFile, rootFolder );
-	claws_safe_fclose( ldifFile );
+	exportldif_fmt_folder(ctl, ldifFile, rootFolder);
+	claws_safe_fclose(ldifFile);
 	ctl->retVal = MGU_SUCCESS;
 }
 
@@ -541,13 +538,13 @@ void exportldif_process( ExportLdifCtl *ctl, AddressCache *cache )
  * Build full export file specification.
  * \param ctl  Export control data.
  */
-static void exportldif_build_filespec( ExportLdifCtl *ctl ) {
+static void exportldif_build_filespec(ExportLdifCtl *ctl)
+{
 	gchar *fileSpec;
 
-	fileSpec = g_strconcat(
-		ctl->dirOutput, G_DIR_SEPARATOR_S, ctl->fileLdif, NULL );
-	ctl->path = mgu_replace_string( ctl->path, fileSpec );
-	g_free( fileSpec );
+	fileSpec = g_strconcat(ctl->dirOutput, G_DIR_SEPARATOR_S, ctl->fileLdif, NULL);
+	ctl->path = mgu_replace_string(ctl->path, fileSpec);
+	g_free(fileSpec);
 }
 
 /**
@@ -555,17 +552,17 @@ static void exportldif_build_filespec( ExportLdifCtl *ctl ) {
  * \param ctl      Export control data.
  * \param fileSpec File spec.
  */
-void exportldif_parse_filespec( ExportLdifCtl *ctl, gchar *fileSpec ) {
+void exportldif_parse_filespec(ExportLdifCtl *ctl, gchar *fileSpec)
+{
 	gchar *t;
 	gchar *base = g_path_get_basename(fileSpec);
 
-	ctl->fileLdif =
-		mgu_replace_string( ctl->fileLdif, base );
+	ctl->fileLdif = mgu_replace_string(ctl->fileLdif, base);
 	g_free(base);
-	t = g_path_get_dirname( fileSpec );
-	ctl->dirOutput = mgu_replace_string( ctl->dirOutput, t );
-	g_free( t );
-	ctl->path = mgu_replace_string( ctl->path, fileSpec );
+	t = g_path_get_dirname(fileSpec);
+	ctl->dirOutput = mgu_replace_string(ctl->dirOutput, t);
+	g_free(t);
+	ctl->path = mgu_replace_string(ctl->path, fileSpec);
 }
 
 /**
@@ -573,14 +570,14 @@ void exportldif_parse_filespec( ExportLdifCtl *ctl, gchar *fileSpec ) {
  * \param  ctl Export control data.
  * \return TRUE if directory created.
  */
-gboolean exportldif_create_dir( ExportLdifCtl *ctl ) {
+gboolean exportldif_create_dir(ExportLdifCtl *ctl)
+{
 	gboolean retVal = FALSE;
 
 	ctl->rcCreate = 0;
-	if( g_mkdir( ctl->dirOutput, S_IRWXU ) == 0 ) {
+	if (g_mkdir(ctl->dirOutput, S_IRWXU) == 0) {
 		retVal = TRUE;
-	}
-	else {
+	} else {
 		ctl->rcCreate = errno;
 	}
 	return retVal;
@@ -591,20 +588,18 @@ gboolean exportldif_create_dir( ExportLdifCtl *ctl ) {
  * \param  ctl Export control data.
  * \return Message.
  */
-gchar *exportldif_get_create_msg( ExportLdifCtl *ctl ) {
+gchar *exportldif_get_create_msg(ExportLdifCtl *ctl)
+{
 	gchar *msg;
 
-	if( ctl->rcCreate == EEXIST ) {
-		msg = _( "Name already exists but is not a directory." );
-	}
-	else if( ctl->rcCreate == EACCES ) {
-		msg = _( "No permissions to create directory." );
-	}
-	else if( ctl->rcCreate == ENAMETOOLONG ) {
-		msg = _( "Name is too long." );
-	}
-	else {
-		msg = _( "Not specified." );
+	if (ctl->rcCreate == EEXIST) {
+		msg = _("Name already exists but is not a directory.");
+	} else if (ctl->rcCreate == EACCES) {
+		msg = _("No permissions to create directory.");
+	} else if (ctl->rcCreate == ENAMETOOLONG) {
+		msg = _("Name is too long.");
+	} else {
+		msg = _("Not specified.");
 	}
 	return msg;
 }
@@ -613,19 +608,17 @@ gchar *exportldif_get_create_msg( ExportLdifCtl *ctl ) {
  * Set default values.
  * \param  ctl Export control data.
  */
-static void exportldif_default_values( ExportLdifCtl *ctl ) {
+static void exportldif_default_values(ExportLdifCtl *ctl)
+{
 	gchar *str;
 
-	str = g_strconcat(
-		get_home_dir(), G_DIR_SEPARATOR_S,
-		DFL_DIR_CLAWS_OUT, NULL );
+	str = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S, DFL_DIR_CLAWS_OUT, NULL);
 
-	ctl->dirOutput = mgu_replace_string( ctl->dirOutput, str );
-	g_free( str );
+	ctl->dirOutput = mgu_replace_string(ctl->dirOutput, str);
+	g_free(str);
 
-	ctl->fileLdif =
-		mgu_replace_string( ctl->fileLdif, DFL_FILE_CLAWS_OUT );
-	ctl->suffix = mgu_replace_string( ctl->suffix, "" );
+	ctl->fileLdif = mgu_replace_string(ctl->fileLdif, DFL_FILE_CLAWS_OUT);
+	ctl->suffix = mgu_replace_string(ctl->suffix, "");
 
 	ctl->rdnIndex = EXPORT_LDIF_ID_UID;
 	ctl->useDN = FALSE;
@@ -636,64 +629,62 @@ static void exportldif_default_values( ExportLdifCtl *ctl ) {
  * Load settings from XML properties file.
  * \param  ctl Export control data.
  */
-void exportldif_load_settings( ExportLdifCtl *ctl ) {
+void exportldif_load_settings(ExportLdifCtl *ctl)
+{
 	XmlProperty *props;
 	gint rc;
-	gchar buf[ XML_BUFSIZE ];
+	gchar buf[XML_BUFSIZE];
 
 	props = xmlprops_create();
-	xmlprops_set_path( props, ctl->settingsFile );
-	rc = xmlprops_load_file( props );
-	if( rc == 0 ) {
+	xmlprops_set_path(props, ctl->settingsFile);
+	rc = xmlprops_load_file(props);
+	if (rc == 0) {
 		/* Read settings */
 		*buf = '\0';
-		xmlprops_get_property_s( props, EXMLPROP_DIRECTORY, buf );
-		ctl->dirOutput = mgu_replace_string( ctl->dirOutput, buf );
+		xmlprops_get_property_s(props, EXMLPROP_DIRECTORY, buf);
+		ctl->dirOutput = mgu_replace_string(ctl->dirOutput, buf);
 
 		*buf = '\0';
-		xmlprops_get_property_s( props, EXMLPROP_FILE, buf );
-		ctl->fileLdif = mgu_replace_string( ctl->fileLdif, buf );
+		xmlprops_get_property_s(props, EXMLPROP_FILE, buf);
+		ctl->fileLdif = mgu_replace_string(ctl->fileLdif, buf);
 
 		*buf = '\0';
-		xmlprops_get_property_s( props, EXMLPROP_SUFFIX, buf );
-		ctl->suffix = mgu_replace_string( ctl->suffix, buf );
+		xmlprops_get_property_s(props, EXMLPROP_SUFFIX, buf);
+		ctl->suffix = mgu_replace_string(ctl->suffix, buf);
 
-		ctl->rdnIndex =
-			xmlprops_get_property_i( props, EXMLPROP_RDN_INDEX );
-		ctl->useDN =
-			xmlprops_get_property_b( props, EXMLPROP_USE_DN );
-		ctl->excludeEMail =
-			xmlprops_get_property_b( props, EXMLPROP_EXCL_EMAIL );
-	}
-	else {
+		ctl->rdnIndex = xmlprops_get_property_i(props, EXMLPROP_RDN_INDEX);
+		ctl->useDN = xmlprops_get_property_b(props, EXMLPROP_USE_DN);
+		ctl->excludeEMail = xmlprops_get_property_b(props, EXMLPROP_EXCL_EMAIL);
+	} else {
 		/* Set default values */
-		exportldif_default_values( ctl );
+		exportldif_default_values(ctl);
 	}
-	exportldif_build_filespec( ctl );
+	exportldif_build_filespec(ctl);
 	/* exportldif_print( ctl, stdout ); */
 
-	xmlprops_free( props );
+	xmlprops_free(props);
 }
 
 /**
  * Save settings to XML properties file.
  * \param  ctl Export control data.
  */
-void exportldif_save_settings( ExportLdifCtl *ctl ) {
+void exportldif_save_settings(ExportLdifCtl *ctl)
+{
 	XmlProperty *props;
 
 	props = xmlprops_create();
-	xmlprops_set_path( props, ctl->settingsFile );
+	xmlprops_set_path(props, ctl->settingsFile);
 
-	xmlprops_set_property( props, EXMLPROP_DIRECTORY, ctl->dirOutput );
-	xmlprops_set_property( props, EXMLPROP_FILE, ctl->fileLdif );
-	xmlprops_set_property( props, EXMLPROP_SUFFIX, ctl->suffix );
-	xmlprops_set_property_i( props, EXMLPROP_RDN_INDEX, ctl->rdnIndex );
-	xmlprops_set_property_b( props, EXMLPROP_USE_DN, ctl->useDN );
-	xmlprops_set_property_b( props, EXMLPROP_EXCL_EMAIL, ctl->excludeEMail );
-	if (xmlprops_save_file( props ) != MGU_SUCCESS)
+	xmlprops_set_property(props, EXMLPROP_DIRECTORY, ctl->dirOutput);
+	xmlprops_set_property(props, EXMLPROP_FILE, ctl->fileLdif);
+	xmlprops_set_property(props, EXMLPROP_SUFFIX, ctl->suffix);
+	xmlprops_set_property_i(props, EXMLPROP_RDN_INDEX, ctl->rdnIndex);
+	xmlprops_set_property_b(props, EXMLPROP_USE_DN, ctl->useDN);
+	xmlprops_set_property_b(props, EXMLPROP_EXCL_EMAIL, ctl->excludeEMail);
+	if (xmlprops_save_file(props) != MGU_SUCCESS)
 		g_warning("can't save settings");
-	xmlprops_free( props );
+	xmlprops_free(props);
 }
 
 /*
@@ -702,4 +693,6 @@ void exportldif_save_settings( ExportLdifCtl *ctl ) {
  * ============================================================================
  */
 
-
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

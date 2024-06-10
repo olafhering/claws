@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -42,20 +42,21 @@
  * Create new LDAP control block object.
  * \return Initialized control object.
  */
-LdapControl *ldapctl_create( void ) {
+LdapControl *ldapctl_create(void)
+{
 	LdapControl *ctl;
 
-	ctl = g_new0( LdapControl, 1 );
+	ctl = g_new0(LdapControl, 1);
 	ctl->hostName = NULL;
 	ctl->port = LDAPCTL_DFL_PORT;
 	ctl->baseDN = NULL;
 	ctl->bindDN = NULL;
 	ctl->listCriteria = NULL;
-	ctl->attribEMail = g_strdup( LDAPCTL_ATTR_EMAIL );
-	ctl->attribCName = g_strdup( LDAPCTL_ATTR_COMMONNAME );
-	ctl->attribFName = g_strdup( LDAPCTL_ATTR_GIVENNAME );
-	ctl->attribLName = g_strdup( LDAPCTL_ATTR_SURNAME );
-	ctl->attribDName = g_strdup( LDAPCTL_ATTR_DISPLAYNAME );
+	ctl->attribEMail = g_strdup(LDAPCTL_ATTR_EMAIL);
+	ctl->attribCName = g_strdup(LDAPCTL_ATTR_COMMONNAME);
+	ctl->attribFName = g_strdup(LDAPCTL_ATTR_GIVENNAME);
+	ctl->attribLName = g_strdup(LDAPCTL_ATTR_SURNAME);
+	ctl->attribDName = g_strdup(LDAPCTL_ATTR_DISPLAYNAME);
 	ctl->maxEntries = LDAPCTL_MAX_ENTRIES;
 	ctl->timeOut = LDAPCTL_DFL_TIMEOUT;
 	ctl->maxQueryAge = LDAPCTL_DFL_QUERY_AGE;
@@ -65,8 +66,8 @@ LdapControl *ldapctl_create( void ) {
 	ctl->enableSSL = FALSE;
 
 	/* Mutex to protect control block */
-	ctl->mutexCtl = g_malloc0( sizeof( pthread_mutex_t ) );
-	pthread_mutex_init( ctl->mutexCtl, NULL );
+	ctl->mutexCtl = g_malloc0(sizeof(pthread_mutex_t));
+	pthread_mutex_init(ctl->mutexCtl, NULL);
 
 	return ctl;
 }
@@ -76,13 +77,14 @@ LdapControl *ldapctl_create( void ) {
  * \param ctl   Control object to process.
  * \param value Host name.
  */
-void ldapctl_set_host( LdapControl* ctl, const gchar *value ) {
-	ctl->hostName = mgu_replace_string( ctl->hostName, value );
+void ldapctl_set_host(LdapControl *ctl, const gchar *value)
+{
+	ctl->hostName = mgu_replace_string(ctl->hostName, value);
 
-	if ( ctl->hostName == NULL )
+	if (ctl->hostName == NULL)
 		return;
 
-	g_strstrip( ctl->hostName );
+	g_strstrip(ctl->hostName);
 	debug_print("setting hostname: %s\n", ctl->hostName);
 }
 
@@ -91,11 +93,11 @@ void ldapctl_set_host( LdapControl* ctl, const gchar *value ) {
  * \param ctl  Control object to process.
  * \param value Port.
  */
-void ldapctl_set_port( LdapControl* ctl, const gint value ) {
-	if( value > 0 ) {
+void ldapctl_set_port(LdapControl *ctl, const gint value)
+{
+	if (value > 0) {
 		ctl->port = value;
-	}
-	else {
+	} else {
 		ctl->port = LDAPCTL_DFL_PORT;
 	}
 	debug_print("setting port: %d\n", ctl->port);
@@ -106,13 +108,14 @@ void ldapctl_set_port( LdapControl* ctl, const gint value ) {
  * \param ctl  Control object to process.
  * \param value Base DN.
  */
-void ldapctl_set_base_dn( LdapControl* ctl, const gchar *value ) {
-	ctl->baseDN = mgu_replace_string( ctl->baseDN, value );
+void ldapctl_set_base_dn(LdapControl *ctl, const gchar *value)
+{
+	ctl->baseDN = mgu_replace_string(ctl->baseDN, value);
 
-	if ( ctl->baseDN == NULL )
+	if (ctl->baseDN == NULL)
 		return;
 
-	g_strstrip( ctl->baseDN );
+	g_strstrip(ctl->baseDN);
 	debug_print("setting baseDN: %s\n", ctl->baseDN);
 }
 
@@ -121,13 +124,14 @@ void ldapctl_set_base_dn( LdapControl* ctl, const gchar *value ) {
  * \param ctl  Control object to process.
  * \param value Bind DN.
  */
-void ldapctl_set_bind_dn( LdapControl* ctl, const gchar *value ) {
-	ctl->bindDN = mgu_replace_string( ctl->bindDN, value );
+void ldapctl_set_bind_dn(LdapControl *ctl, const gchar *value)
+{
+	ctl->bindDN = mgu_replace_string(ctl->bindDN, value);
 
-	if ( ctl->bindDN == NULL )
+	if (ctl->bindDN == NULL)
 		return;
 
-	g_strstrip( ctl->bindDN );
+	g_strstrip(ctl->bindDN);
 	debug_print("setting bindDN: %s\n", ctl->bindDN);
 }
 
@@ -136,11 +140,11 @@ void ldapctl_set_bind_dn( LdapControl* ctl, const gchar *value ) {
  * \param ctl  Control object to process.
  * \param value Maximum entries.
  */
-void ldapctl_set_max_entries( LdapControl* ctl, const gint value ) {
-	if( value > 0 ) {
+void ldapctl_set_max_entries(LdapControl *ctl, const gint value)
+{
+	if (value > 0) {
 		ctl->maxEntries = value;
-	}
-	else {
+	} else {
 		ctl->maxEntries = LDAPCTL_MAX_ENTRIES;
 	}
 	debug_print("setting maxEntries: %d\n", ctl->maxEntries);
@@ -151,11 +155,11 @@ void ldapctl_set_max_entries( LdapControl* ctl, const gint value ) {
  * \param ctl  Control object to process.
  * \param value Timeout.
  */
-void ldapctl_set_timeout( LdapControl* ctl, const gint value ) {
-	if( value > 0 ) {
+void ldapctl_set_timeout(LdapControl *ctl, const gint value)
+{
+	if (value > 0) {
 		ctl->timeOut = value;
-	}
-	else {
+	} else {
 		ctl->timeOut = LDAPCTL_DFL_TIMEOUT;
 	}
 	debug_print("setting timeOut: %d\n", ctl->timeOut);
@@ -166,14 +170,13 @@ void ldapctl_set_timeout( LdapControl* ctl, const gint value ) {
  * \param ctl  Control object to process.
  * \param value Maximum age.
  */
-void ldapctl_set_max_query_age( LdapControl* ctl, const gint value ) {
-	if( value > LDAPCTL_MAX_QUERY_AGE ) {
+void ldapctl_set_max_query_age(LdapControl *ctl, const gint value)
+{
+	if (value > LDAPCTL_MAX_QUERY_AGE) {
 		ctl->maxQueryAge = LDAPCTL_MAX_QUERY_AGE;
-	}
-	else if( value < 1 ) {
+	} else if (value < 1) {
 		ctl->maxQueryAge = LDAPCTL_DFL_QUERY_AGE;
-	}
-	else {
+	} else {
 		ctl->maxQueryAge = value;
 	}
 	debug_print("setting maxAge: %d\n", ctl->maxQueryAge);
@@ -188,14 +191,13 @@ void ldapctl_set_max_query_age( LdapControl* ctl, const gint value ) {
  * <li><code>LDAPCTL_MATCH_CONTAINS</code> for "contains" search</li>
  * </ul>
  */
-void ldapctl_set_matching_option( LdapControl* ctl, const gint value ) {
-	if( value < LDAPCTL_MATCH_BEGINWITH ) {
+void ldapctl_set_matching_option(LdapControl *ctl, const gint value)
+{
+	if (value < LDAPCTL_MATCH_BEGINWITH) {
 		ctl->matchingOption = LDAPCTL_MATCH_BEGINWITH;
-	}
-	else if( value > LDAPCTL_MATCH_CONTAINS ) {
+	} else if (value > LDAPCTL_MATCH_CONTAINS) {
 		ctl->matchingOption = LDAPCTL_MATCH_BEGINWITH;
-	}
-	else {
+	} else {
 		ctl->matchingOption = value;
 	}
 	debug_print("setting matchingOption: %d\n", ctl->matchingOption);
@@ -206,14 +208,16 @@ void ldapctl_set_matching_option( LdapControl* ctl, const gint value ) {
  * \param ctl   Control object to process.
  * \param value <i>TRUE</i> to enable TLS.
  */
-void ldapctl_set_tls( LdapControl* ctl, const gboolean value ) {
+void ldapctl_set_tls(LdapControl *ctl, const gboolean value)
+{
 #if (defined USE_LDAP_TLS || defined G_OS_WIN32)
 	ctl->enableTLS = value;
 	debug_print("setting STARTTLS: %d\n", ctl->enableTLS);
 #endif
 }
 
-void ldapctl_set_ssl( LdapControl* ctl, const gboolean value ) {
+void ldapctl_set_ssl(LdapControl *ctl, const gboolean value)
+{
 #if (defined USE_LDAP_TLS || defined G_OS_WIN32)
 	ctl->enableSSL = value;
 	debug_print("setting TLS: %d\n", ctl->enableSSL);
@@ -229,8 +233,9 @@ void ldapctl_set_ssl( LdapControl* ctl, const gboolean value ) {
  *         <code>ldapctl_criteria_list_clear()</code> and
  *         <code>ldapctl_criteria_list_add()</code> functions for this purpose.
  */
-GList *ldapctl_get_criteria_list( const LdapControl* ctl ) {
-	cm_return_val_if_fail( ctl != NULL, NULL );
+GList *ldapctl_get_criteria_list(const LdapControl *ctl)
+{
+	cm_return_val_if_fail(ctl != NULL, NULL);
 	return ctl->listCriteria;
 }
 
@@ -238,9 +243,10 @@ GList *ldapctl_get_criteria_list( const LdapControl* ctl ) {
  * Clear list of LDAP search attributes.
  * \param  ctl  Control data object.
  */
-void ldapctl_criteria_list_clear( LdapControl *ctl ) {
-	cm_return_if_fail( ctl != NULL );
-	g_list_free_full( ctl->listCriteria, g_free );
+void ldapctl_criteria_list_clear(LdapControl *ctl)
+{
+	cm_return_if_fail(ctl != NULL);
+	g_list_free_full(ctl->listCriteria, g_free);
 	ctl->listCriteria = NULL;
 }
 
@@ -250,14 +256,13 @@ void ldapctl_criteria_list_clear( LdapControl *ctl ) {
  * \param attr Attribute name to append. If not NULL and unique, a copy will
  *             be appended to the list.
  */
-void ldapctl_criteria_list_add( LdapControl *ctl, gchar *attr ) {
-	cm_return_if_fail( ctl != NULL );
-	if( attr != NULL ) {
-		if( !g_list_find_custom( ctl->listCriteria, attr,
-					(GCompareFunc)g_utf8_collate ) ) {
+void ldapctl_criteria_list_add(LdapControl *ctl, gchar *attr)
+{
+	cm_return_if_fail(ctl != NULL);
+	if (attr != NULL) {
+		if (!g_list_find_custom(ctl->listCriteria, attr, (GCompareFunc) g_utf8_collate)) {
 			debug_print("adding to criteria list: %s\n", attr);
-			ctl->listCriteria = g_list_append(
-				ctl->listCriteria, g_strdup( attr ) );
+			ctl->listCriteria = g_list_append(ctl->listCriteria, g_strdup(attr));
 		}
 	}
 }
@@ -266,21 +271,22 @@ void ldapctl_criteria_list_add( LdapControl *ctl, gchar *attr ) {
  * Clear LDAP server member variables.
  * \param ctl Control object to clear.
  */
-static void ldapctl_clear( LdapControl *ctl ) {
-	cm_return_if_fail( ctl != NULL );
+static void ldapctl_clear(LdapControl *ctl)
+{
+	cm_return_if_fail(ctl != NULL);
 
 	debug_print("clearing ldap controller members\n");
 	/* Free internal stuff */
-	g_free( ctl->hostName );
-	g_free( ctl->baseDN );
-	g_free( ctl->bindDN );
-	g_free( ctl->attribEMail );
-	g_free( ctl->attribCName );
-	g_free( ctl->attribFName );
-	g_free( ctl->attribLName );
-	g_free( ctl->attribDName );
+	g_free(ctl->hostName);
+	g_free(ctl->baseDN);
+	g_free(ctl->bindDN);
+	g_free(ctl->attribEMail);
+	g_free(ctl->attribCName);
+	g_free(ctl->attribFName);
+	g_free(ctl->attribLName);
+	g_free(ctl->attribDName);
 
-	ldapctl_criteria_list_clear( ctl );
+	ldapctl_criteria_list_clear(ctl);
 
 	/* Clear pointers */
 	ctl->hostName = NULL;
@@ -305,20 +311,21 @@ static void ldapctl_clear( LdapControl *ctl ) {
  * Free up LDAP server interface object by releasing internal memory.
  * \param ctl Control object to free.
  */
-void ldapctl_free( LdapControl *ctl ) {
-	cm_return_if_fail( ctl != NULL );
+void ldapctl_free(LdapControl *ctl)
+{
+	cm_return_if_fail(ctl != NULL);
 
 	debug_print("releasing requested memory for ldap controller\n");
 	/* Free internal stuff */
-	ldapctl_clear( ctl );
+	ldapctl_clear(ctl);
 
 	/* Free the mutex */
-	pthread_mutex_destroy( ctl->mutexCtl );
-	g_free( ctl->mutexCtl );
+	pthread_mutex_destroy(ctl->mutexCtl);
+	g_free(ctl->mutexCtl);
 	ctl->mutexCtl = NULL;
 
 	/* Now release LDAP control object */
-	g_free( ctl );
+	g_free(ctl);
 }
 
 #ifdef DEBUG_LDAP
@@ -327,41 +334,41 @@ void ldapctl_free( LdapControl *ctl ) {
  * \param ctl    Control object to process.
  * \param stream Output stream.
  */
-void ldapctl_print( const LdapControl *ctl, FILE *stream ) {
-	cm_return_if_fail( ctl != NULL );
+void ldapctl_print(const LdapControl *ctl, FILE *stream)
+{
+	cm_return_if_fail(ctl != NULL);
 	gchar *pwd;
 
-	pthread_mutex_lock( ctl->mutexCtl );
-	fprintf( stream, "LdapControl:\n" );
-	fprintf( stream, "host name: '%s'\n", ctl->hostName?ctl->hostName:"null" );
-	fprintf( stream, "     port: %d\n",   ctl->port );
-	fprintf( stream, "  base dn: '%s'\n", ctl->baseDN?ctl->baseDN:"null" );
-	fprintf( stream, "  bind dn: '%s'\n", ctl->bindDN?ctl->bindDN:"null" );
+	pthread_mutex_lock(ctl->mutexCtl);
+	fprintf(stream, "LdapControl:\n");
+	fprintf(stream, "host name: '%s'\n", ctl->hostName ? ctl->hostName : "null");
+	fprintf(stream, "     port: %d\n", ctl->port);
+	fprintf(stream, "  base dn: '%s'\n", ctl->baseDN ? ctl->baseDN : "null");
+	fprintf(stream, "  bind dn: '%s'\n", ctl->bindDN ? ctl->bindDN : "null");
 	pwd = passwd_store_get(PWS_CORE, "LDAP", ctl->hostName);
-	fprintf( stream, "bind pass: '%s'\n", pwd?pwd:"null" );
+	fprintf(stream, "bind pass: '%s'\n", pwd ? pwd : "null");
 	if (pwd != NULL && strlen(pwd) > 0)
 		memset(pwd, 0, strlen(pwd));
 	g_free(pwd);
-	fprintf( stream, "attr mail: '%s'\n", ctl->attribEMail?ctl->attribEMail:"null" );
-	fprintf( stream, "attr comn: '%s'\n", ctl->attribCName?ctl->attribCName:"null" );
-	fprintf( stream, "attr frst: '%s'\n", ctl->attribFName?ctl->attribFName:"null" );
-	fprintf( stream, "attr last: '%s'\n", ctl->attribLName?ctl->attribLName:"null" );
-	fprintf( stream, "attr disn: '%s'\n", ctl->attribDName?ctl->attribDName:"null" );
-	fprintf( stream, "max entry: %d\n",   ctl->maxEntries );
-	fprintf( stream, "  timeout: %d\n",   ctl->timeOut );
-	fprintf( stream, "  max age: %d\n",   ctl->maxQueryAge );
-	fprintf( stream, "match opt: %d\n",   ctl->matchingOption );
-	fprintf( stream, "  version: %d\n",   ctl->version );
-	fprintf( stream, " STARTTLS: %s\n",   ctl->enableTLS ? "yes" : "no" );
-	fprintf( stream, "  TLS: %s\n",   ctl->enableSSL ? "yes" : "no" );
-	fprintf( stream, "crit list:\n" );
-	if( ctl->listCriteria ) {
-		mgu_print_dlist( ctl->listCriteria, stream );
+	fprintf(stream, "attr mail: '%s'\n", ctl->attribEMail ? ctl->attribEMail : "null");
+	fprintf(stream, "attr comn: '%s'\n", ctl->attribCName ? ctl->attribCName : "null");
+	fprintf(stream, "attr frst: '%s'\n", ctl->attribFName ? ctl->attribFName : "null");
+	fprintf(stream, "attr last: '%s'\n", ctl->attribLName ? ctl->attribLName : "null");
+	fprintf(stream, "attr disn: '%s'\n", ctl->attribDName ? ctl->attribDName : "null");
+	fprintf(stream, "max entry: %d\n", ctl->maxEntries);
+	fprintf(stream, "  timeout: %d\n", ctl->timeOut);
+	fprintf(stream, "  max age: %d\n", ctl->maxQueryAge);
+	fprintf(stream, "match opt: %d\n", ctl->matchingOption);
+	fprintf(stream, "  version: %d\n", ctl->version);
+	fprintf(stream, " STARTTLS: %s\n", ctl->enableTLS ? "yes" : "no");
+	fprintf(stream, "  TLS: %s\n", ctl->enableSSL ? "yes" : "no");
+	fprintf(stream, "crit list:\n");
+	if (ctl->listCriteria) {
+		mgu_print_dlist(ctl->listCriteria, stream);
+	} else {
+		fprintf(stream, "\t!!!none!!!\n");
 	}
-	else {
-		fprintf( stream, "\t!!!none!!!\n" );
-	}
-	pthread_mutex_unlock( ctl->mutexCtl );
+	pthread_mutex_unlock(ctl->mutexCtl);
 }
 #endif
 
@@ -371,36 +378,36 @@ void ldapctl_print( const LdapControl *ctl, FILE *stream ) {
  * \param ctlFrom Object to copy from.
  * \param ctlTo   Destination object.
  */
-void ldapctl_copy( const LdapControl *ctlFrom, LdapControl *ctlTo ) {
+void ldapctl_copy(const LdapControl *ctlFrom, LdapControl *ctlTo)
+{
 	GList *node;
 
-	cm_return_if_fail( ctlFrom != NULL );
-	cm_return_if_fail( ctlTo != NULL );
+	cm_return_if_fail(ctlFrom != NULL);
+	cm_return_if_fail(ctlTo != NULL);
 
 	debug_print("ldap controller copy\n");
 	/* Lock both objects */
-	pthread_mutex_lock( ctlFrom->mutexCtl );
-	pthread_mutex_lock( ctlTo->mutexCtl );
+	pthread_mutex_lock(ctlFrom->mutexCtl);
+	pthread_mutex_lock(ctlTo->mutexCtl);
 
 	/* Clear our destination */
-	ldapctl_clear( ctlTo );
+	ldapctl_clear(ctlTo);
 
 	/* Copy strings */
-	ctlTo->hostName = g_strdup( ctlFrom->hostName );
-	ctlTo->baseDN = g_strdup( ctlFrom->baseDN );
-	ctlTo->bindDN = g_strdup( ctlFrom->bindDN );
-	ctlTo->attribEMail = g_strdup( ctlFrom->attribEMail );
-	ctlTo->attribCName = g_strdup( ctlFrom->attribCName );
-	ctlTo->attribFName = g_strdup( ctlFrom->attribFName );
-	ctlTo->attribLName = g_strdup( ctlFrom->attribLName );
-	ctlTo->attribDName = g_strdup( ctlFrom->attribDName );
+	ctlTo->hostName = g_strdup(ctlFrom->hostName);
+	ctlTo->baseDN = g_strdup(ctlFrom->baseDN);
+	ctlTo->bindDN = g_strdup(ctlFrom->bindDN);
+	ctlTo->attribEMail = g_strdup(ctlFrom->attribEMail);
+	ctlTo->attribCName = g_strdup(ctlFrom->attribCName);
+	ctlTo->attribFName = g_strdup(ctlFrom->attribFName);
+	ctlTo->attribLName = g_strdup(ctlFrom->attribLName);
+	ctlTo->attribDName = g_strdup(ctlFrom->attribDName);
 
 	/* Copy search criteria */
 	node = ctlFrom->listCriteria;
-	while( node ) {
-		ctlTo->listCriteria = g_list_append(
-			ctlTo->listCriteria, g_strdup( node->data ) );
-		node = g_list_next( node );
+	while (node) {
+		ctlTo->listCriteria = g_list_append(ctlTo->listCriteria, g_strdup(node->data));
+		node = g_list_next(node);
 	}
 
 	/* Copy other members */
@@ -414,8 +421,8 @@ void ldapctl_copy( const LdapControl *ctlFrom, LdapControl *ctlTo ) {
 	ctlTo->enableSSL = ctlFrom->enableSSL;
 
 	/* Unlock */
-	pthread_mutex_unlock( ctlTo->mutexCtl );
-	pthread_mutex_unlock( ctlFrom->mutexCtl );
+	pthread_mutex_unlock(ctlTo->mutexCtl);
+	pthread_mutex_unlock(ctlFrom->mutexCtl);
 }
 
 /**
@@ -426,7 +433,7 @@ static gchar *_criteria2BeginWith = "(&(givenName=%s*)(sn=%s*))";
 /**
  * Search criteria fragment - two terms - contains.
  */
-static gchar *_criteria2Contains  = "(&(givenName=*%s*)(sn=*%s*))";
+static gchar *_criteria2Contains = "(&(givenName=*%s*)(sn=*%s*))";
 
 /**
  * Create an LDAP search criteria by parsing specified search term. The search
@@ -445,8 +452,7 @@ static gchar *_criteria2Contains  = "(&(givenName=*%s*)(sn=*%s*))";
  *         embedded spaces. The search term should be g_free() when no
  *         longer required.
  */
-static gchar *ldapctl_build_ldap_criteria(
-		const gchar *searchTerm, const gint matchOption )
+static gchar *ldapctl_build_ldap_criteria(const gchar *searchTerm, const gint matchOption)
 {
 	gchar *p;
 	gchar *t1;
@@ -455,45 +461,43 @@ static gchar *ldapctl_build_ldap_criteria(
 	gchar *crit = NULL;
 	gchar *criteriaFmt;
 
-	if( matchOption == LDAPCTL_MATCH_CONTAINS ) {
+	if (matchOption == LDAPCTL_MATCH_CONTAINS) {
 		criteriaFmt = _criteria2Contains;
-	}
-	else {
+	} else {
 		criteriaFmt = _criteria2BeginWith;
 	}
 
-	term = g_strdup( searchTerm );
-	g_strstrip( term );
+	term = g_strdup(searchTerm);
+	g_strstrip(term);
 
-	/* Find first space character */	
+	/* Find first space character */
 	t1 = p = term;
-	while( *p ) {
-		if( *p == ' ' ) {
+	while (*p) {
+		if (*p == ' ') {
 			*p = '\0';
-			t2 = g_strdup( 1 + p );
+			t2 = g_strdup(1 + p);
 			break;
 		}
 		p++;
 	}
 
-	if( t2 ) {
+	if (t2) {
 		/* Format search criteria */
 		gchar *p1, *p2;
 
-		g_strstrip( t2 );
-		p1 = g_strdup_printf( criteriaFmt, t1, t2 );
-		p2 = g_strdup_printf( criteriaFmt, t2, t1 );
-		crit = g_strdup_printf( "(&(|%s%s)(mail=*))", p1, p2 );
+		g_strstrip(t2);
+		p1 = g_strdup_printf(criteriaFmt, t1, t2);
+		p2 = g_strdup_printf(criteriaFmt, t2, t1);
+		crit = g_strdup_printf("(&(|%s%s)(mail=*))", p1, p2);
 
-		g_free( t2 );
-		g_free( p1 );
-		g_free( p2 );
+		g_free(t2);
+		g_free(p1);
+		g_free(p2);
 	}
-	g_free( term );
-	debug_print("search criteria: %s\n", crit?crit:"null");
+	g_free(term);
+	debug_print("search criteria: %s\n", crit ? crit : "null");
 	return crit;
 }
-
 
 /**
  * Search criteria fragment - single term - begin with (default).
@@ -503,7 +507,7 @@ static gchar *_criteriaBeginWith = "(%s=%s*)";
 /**
  * Search criteria fragment - single term - contains.
  */
-static gchar *_criteriaContains  = "(%s=*%s*)";
+static gchar *_criteriaContains = "(%s=*%s*)";
 
 /**
  * Build a formatted LDAP search criteria string from criteria list.
@@ -511,22 +515,23 @@ static gchar *_criteriaContains  = "(%s=*%s*)";
  * \param searchVal Value to search for.
  * \return Formatted string. Should be g_free() when done.
  */
-gchar *ldapctl_format_criteria( LdapControl *ctl, const gchar *searchVal ) {
+gchar *ldapctl_format_criteria(LdapControl *ctl, const gchar *searchVal)
+{
 	GList *node;
 	gchar *p1, *p2, *retVal;
 	gchar *criteriaFmt;
 
-	cm_return_val_if_fail( ctl != NULL, NULL );
-	cm_return_val_if_fail( searchVal != NULL, NULL );
+	cm_return_val_if_fail(ctl != NULL, NULL);
+	cm_return_val_if_fail(searchVal != NULL, NULL);
 
 	/* Test whether there are more that one search terms */
-	retVal = ldapctl_build_ldap_criteria( searchVal, ctl->matchingOption );
-	if( retVal ) return retVal;
+	retVal = ldapctl_build_ldap_criteria(searchVal, ctl->matchingOption);
+	if (retVal)
+		return retVal;
 
-	if( ctl->matchingOption ==  LDAPCTL_MATCH_CONTAINS ) {
+	if (ctl->matchingOption == LDAPCTL_MATCH_CONTAINS) {
 		criteriaFmt = _criteriaContains;
-	}
-	else {
+	} else {
 		criteriaFmt = _criteriaBeginWith;
 	}
 
@@ -535,56 +540,54 @@ gchar *ldapctl_format_criteria( LdapControl *ctl, const gchar *searchVal ) {
 	/* p2 contains next formatted criteria */
 	retVal = p1 = p2 = NULL;
 	node = ctl->listCriteria;
-	while( node ) {
+	while (node) {
 		gchar *attr, *tmp;
 		attr = node->data;
-		node = g_list_next( node );
+		node = g_list_next(node);
 
 		/* Switch pointers */
-		tmp = p1; p1 = p2; p2 = tmp;
+		tmp = p1;
+		p1 = p2;
+		p2 = tmp;
 
-		if( p1 ) {
+		if (p1) {
 			/* Subsequent time through */
 			gchar *crit;
 
 			debug_print("crit: %s\n", searchVal);
 			/* fix bug when doing a search any */
 			if (strcmp("*@", searchVal) == 0) {
-			    crit = g_strdup_printf( "(%s=*)", attr );
-			}
-			else {
-			    /* Format query criteria */
-			    crit = g_strdup_printf( criteriaFmt, attr, searchVal );
+				crit = g_strdup_printf("(%s=*)", attr);
+			} else {
+				/* Format query criteria */
+				crit = g_strdup_printf(criteriaFmt, attr, searchVal);
 			}
 
-			/* Append to existing criteria */			
-			g_free( p2 );
-			p2 = g_strdup_printf( "(|%s%s)", p1, crit );
+			/* Append to existing criteria */
+			g_free(p2);
+			p2 = g_strdup_printf("(|%s%s)", p1, crit);
 
-			g_free( crit );
-		}
-		else {
+			g_free(crit);
+		} else {
 			/* First time through - Format query criteria */
-                        /* fix bug when doing a search any */
+			/* fix bug when doing a search any */
 			if (strcmp("*@", searchVal) == 0) {
-			    p2 = g_strdup_printf( "(%s=*)", attr );
-			}
-			else {
-			    p2 = g_strdup_printf( criteriaFmt, attr, searchVal );
+				p2 = g_strdup_printf("(%s=*)", attr);
+			} else {
+				p2 = g_strdup_printf(criteriaFmt, attr, searchVal);
 			}
 		}
 	}
 
-	if( p2 == NULL ) {
+	if (p2 == NULL) {
 		/* Nothing processed - format a default attribute */
-		retVal = g_strdup_printf( "(%s=*)", LDAPCTL_ATTR_EMAIL );
-	}
-	else {
+		retVal = g_strdup_printf("(%s=*)", LDAPCTL_ATTR_EMAIL);
+	} else {
 		/* We have something - free up previous result */
 		retVal = p2;
 	}
 	if (p1)
-		g_free( p1 );
+		g_free(p1);
 	debug_print("current search string: %s\n", retVal);
 	return retVal;
 }
@@ -594,22 +597,23 @@ gchar *ldapctl_format_criteria( LdapControl *ctl, const gchar *searchVal ) {
  * \param  ctl  Control object to process.
  * \return NULL terminated list.
  */
-char **ldapctl_attribute_array( LdapControl *ctl ) {
+char **ldapctl_attribute_array(LdapControl *ctl)
+{
 	char **ptrArray;
 	GList *node;
 	guint cnt, i;
-	cm_return_val_if_fail( ctl != NULL, NULL );
+	cm_return_val_if_fail(ctl != NULL, NULL);
 
 	node = ctl->listCriteria;
-	cnt = g_list_length( ctl->listCriteria );
-	ptrArray = g_new0( char *, 1 + cnt );
+	cnt = g_list_length(ctl->listCriteria);
+	ptrArray = g_new0(char *, 1 + cnt);
 	i = 0;
-	while( node ) {
-		ptrArray[ i++ ] = node->data;
-		/*debug_print("adding search attribute: %s\n", (gchar *) node->data);*/
-		node = g_list_next( node );
+	while (node) {
+		ptrArray[i++] = node->data;
+		/*debug_print("adding search attribute: %s\n", (gchar *) node->data); */
+		node = g_list_next(node);
 	}
-	ptrArray[ i ] = NULL;
+	ptrArray[i] = NULL;
 	return ptrArray;
 }
 
@@ -618,12 +622,13 @@ char **ldapctl_attribute_array( LdapControl *ctl ) {
  * \param  ctl  Control object to process.
  * \return NULL terminated list.
  */
-char **ldapctl_full_attribute_array( LdapControl *ctl ) {
+char **ldapctl_full_attribute_array(LdapControl *ctl)
+{
 	char **ptrArray;
 	GList *node, *def;
 	GList *tmp = NULL;
 	guint cnt, i;
-	cm_return_val_if_fail( ctl != NULL, NULL );
+	cm_return_val_if_fail(ctl != NULL, NULL);
 
 	def = ctl->listCriteria;
 	while (def) {
@@ -633,10 +638,9 @@ char **ldapctl_full_attribute_array( LdapControl *ctl ) {
 
 	def = ldapctl_get_default_criteria_list();
 	node = def;
-	
+
 	while (node) {
-		if( g_list_find_custom(tmp, (gpointer)def->data, 
-				(GCompareFunc)g_strcmp0) == NULL) {
+		if (g_list_find_custom(tmp, (gpointer)def->data, (GCompareFunc) g_strcmp0) == NULL) {
 			tmp = g_list_append(tmp, g_strdup(node->data));
 		}
 		node = node->next;
@@ -645,16 +649,16 @@ char **ldapctl_full_attribute_array( LdapControl *ctl ) {
 	g_list_free_full(def, g_free);
 
 	node = tmp;
-	cnt = g_list_length( tmp );
-	ptrArray = g_new0( char *, 1 + cnt);
+	cnt = g_list_length(tmp);
+	ptrArray = g_new0(char *, 1 + cnt);
 	i = 0;
-	while( node ) {
-		ptrArray[ i++ ] = node->data;
-		/*debug_print("adding search attribute: %s\n", (gchar *) node->data);*/
-		node = g_list_next( node );
+	while (node) {
+		ptrArray[i++] = node->data;
+		/*debug_print("adding search attribute: %s\n", (gchar *) node->data); */
+		node = g_list_next(node);
 	}
 	g_list_free(tmp);
-	ptrArray[ i ] = NULL;
+	ptrArray[i] = NULL;
 	return ptrArray;
 }
 
@@ -662,16 +666,17 @@ char **ldapctl_full_attribute_array( LdapControl *ctl ) {
  * Free array of pointers allocated by ldapctl_criteria_array().
  * param ptrArray Array to clear.
  */
-void ldapctl_free_attribute_array( char **ptrArray ) {
+void ldapctl_free_attribute_array(char **ptrArray)
+{
 	gint i;
 
 	/* Clear array to NULL's */
-	for( i = 0; ptrArray[i] != NULL; i++ ) {
+	for (i = 0; ptrArray[i] != NULL; i++) {
 		g_free(ptrArray[i]);
 		ptrArray[i] = NULL;
 	}
-	g_free( ptrArray );
-}	
+	g_free(ptrArray);
+}
 
 /**
  * Parse LDAP search string, building list of LDAP criteria attributes. This
@@ -686,30 +691,32 @@ void ldapctl_free_attribute_array( char **ptrArray ) {
  * \param ctl Control object to process.
  * \param criteria LDAP search criteria string.
  */
-void ldapctl_parse_ldap_search( LdapControl *ctl, gchar *criteria ) {
+void ldapctl_parse_ldap_search(LdapControl *ctl, gchar *criteria)
+{
 	gchar *ptr;
 	gchar *pFrom;
 	gchar *attrib;
 	gint iLen;
 
-	cm_return_if_fail( ctl != NULL );
+	cm_return_if_fail(ctl != NULL);
 
-	ldapctl_criteria_list_clear( ctl );
-  	if( criteria == NULL ) return;
+	ldapctl_criteria_list_clear(ctl);
+	if (criteria == NULL)
+		return;
 
 	pFrom = NULL;
 	ptr = criteria;
-	while( *ptr ) {
-		if( *ptr == '(' ) {
+	while (*ptr) {
+		if (*ptr == '(') {
 			pFrom = 1 + ptr;
 		}
-		if( *ptr == '=' ) {
-			if( pFrom ) {
+		if (*ptr == '=') {
+			if (pFrom) {
 				iLen = ptr - pFrom;
-				attrib = g_strndup( pFrom, iLen );
-				g_strstrip( attrib );
-				ldapctl_criteria_list_add( ctl, attrib );
-				g_free( attrib );
+				attrib = g_strndup(pFrom, iLen);
+				g_strstrip(attrib);
+				ldapctl_criteria_list_add(ctl, attrib);
+				g_free(attrib);
 			}
 			pFrom = NULL;
 		}
@@ -721,9 +728,10 @@ void ldapctl_parse_ldap_search( LdapControl *ctl, gchar *criteria ) {
  * Return the default LDAP search criteria string.
  * \return Formatted string or <i>""</i>. Should be g_free() when done.
  */
-gchar *ldapctl_get_default_criteria() {
+gchar *ldapctl_get_default_criteria()
+{
 	gchar *retVal = g_strdup(LDAPCTL_DFL_ATTR_LIST);
-	const gchar **attrs = ATTRIBUTE; 
+	const gchar **attrs = ATTRIBUTE;
 
 	while (*attrs) {
 		gchar *tmp = g_strdup_printf("%s, %s", retVal, *attrs++);
@@ -738,7 +746,8 @@ gchar *ldapctl_get_default_criteria() {
  * Return the default LDAP search criteria list.
  * \return GList or <i>NULL</i>.
  */
-GList *ldapctl_get_default_criteria_list() {
+GList *ldapctl_get_default_criteria_list()
+{
 	gchar *criteria, *item;
 	gchar **c_list, **w_list;
 	GList *attr_list = NULL;
@@ -767,17 +776,18 @@ GList *ldapctl_get_default_criteria_list() {
  * \param l2 Second GList
  * \Return TRUE or FALSE
  */
-gboolean ldapctl_compare_list(GList *l1, GList *l2) {
+gboolean ldapctl_compare_list(GList *l1, GList *l2)
+{
 	gchar *first, *second;
-	if (! l1 && ! l2)
+	if (!l1 && !l2)
 		return TRUE;
-	if ((! l1 && l2) || (l1 && ! l2))
+	if ((!l1 && l2) || (l1 && !l2))
 		return FALSE;
 	while (l1 && l2) {
-		first = (gchar *) l1->data;
-		second = (gchar *) l2->data;
-		/*debug_print("comparing: %s = %s\n", first, second);*/
-		if ( ! (first && second) || strcmp(first, second) != 0) {
+		first = (gchar *)l1->data;
+		second = (gchar *)l2->data;
+		/*debug_print("comparing: %s = %s\n", first, second); */
+		if (!(first && second) || strcmp(first, second) != 0) {
 			return FALSE;
 		}
 		l1 = g_list_next(l1);
@@ -786,9 +796,12 @@ gboolean ldapctl_compare_list(GList *l1, GList *l2) {
 	return TRUE;
 }
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 /*
  * End of Source.
  */
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

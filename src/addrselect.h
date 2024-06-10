@@ -33,10 +33,10 @@
 */
 typedef struct _AddrSelectItem_ AddrSelectItem;
 struct _AddrSelectItem_ {
-	ItemObjectType    objectType;
-	AddrItemObject    *addressItem;
-	gchar             *uid;
-	gchar             *cacheID;
+	ItemObjectType objectType;
+	AddrItemObject *addressItem;
+	gchar *uid;
+	gchar *cacheID;
 };
 
 /*
@@ -47,25 +47,18 @@ struct _AddrSelectList_ {
 	GList *listSelect;
 };
 
-AddrSelectItem *addrselect_create_node	( AddressObject *obj );
-AddrSelectItem *addrselect_item_copy	( AddrSelectItem *item );
-void addrselect_item_free		( AddrSelectItem *item );
-void addrselect_item_print		( AddrSelectItem *item,
-					  FILE *stream );
-AddrSelectList *addrselect_list_create	( void );
-void addrselect_list_free		( AddrSelectList *asl );
-GList *addrselect_get_list		( AddrSelectList *asl );
-void addrselect_list_clear		( AddrSelectList *asl );
-gboolean addrselect_test_empty		( AddrSelectList *asl );
-void addrselect_list_add_obj		( AddrSelectList *asl,
-					  AddrItemObject *aio,
-					  gchar *cacheID );
-void addrselect_list_add		( AddrSelectList *asl,
-					  AddrSelectItem *item,
-					  gchar *cacheID );
-void addrselect_list_remove		( AddrSelectList *asl,
-					  AddrItemObject *aio );
-GList *addrselect_build_list		( AddrSelectList *asl );
+AddrSelectItem *addrselect_create_node(AddressObject *obj);
+AddrSelectItem *addrselect_item_copy(AddrSelectItem *item);
+void addrselect_item_free(AddrSelectItem *item);
+void addrselect_item_print(AddrSelectItem *item, FILE *stream);
+AddrSelectList *addrselect_list_create(void);
+void addrselect_list_free(AddrSelectList *asl);
+GList *addrselect_get_list(AddrSelectList *asl);
+void addrselect_list_clear(AddrSelectList *asl);
+gboolean addrselect_test_empty(AddrSelectList *asl);
+void addrselect_list_add_obj(AddrSelectList *asl, AddrItemObject *aio, gchar *cacheID);
+void addrselect_list_add(AddrSelectList *asl, AddrSelectItem *item, gchar *cacheID);
+void addrselect_list_remove(AddrSelectList *asl, AddrItemObject *aio);
+GList *addrselect_build_list(AddrSelectList *asl);
 
 #endif /* __ADDR_SELECT_H__ */
-

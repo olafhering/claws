@@ -22,8 +22,8 @@
 #endif
 
 #ifdef PASSWORD_CRYPTO_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/crypto.h>
+#include <gnutls/gnutls.h>
+#include <gnutls/crypto.h>
 #endif
 
 #include <glib.h>
@@ -72,14 +72,12 @@ static void _generate_salt()
 		return;
 	}
 
-	prefs_common_get_prefs()->primary_passphrase_salt =
-		g_base64_encode(salt, KD_SALT_LENGTH);
+	prefs_common_get_prefs()->primary_passphrase_salt = g_base64_encode(salt, KD_SALT_LENGTH);
 }
 
 #undef KD_SALT_LENGTH
 
-static guchar *_make_key_deriv(const gchar *passphrase, guint rounds,
-		guint length)
+static guchar *_make_key_deriv(const gchar *passphrase, guint rounds, guint length)
 {
 	guchar *kd, *salt;
 	gchar *saltpref = prefs_common_get_prefs()->primary_passphrase_salt;
@@ -95,8 +93,7 @@ static guchar *_make_key_deriv(const gchar *passphrase, guint rounds,
 	kd = g_malloc0(length);
 
 	START_TIMING("PBKDF2");
-	ret = pkcs5_pbkdf2(passphrase, strlen(passphrase), salt, saltlen,
-			kd, length, rounds);
+	ret = pkcs5_pbkdf2(passphrase, strlen(passphrase), salt, saltlen, kd, length, rounds);
 	END_TIMING();
 
 	g_free(salt);
@@ -124,8 +121,7 @@ const gchar *primary_passphrase()
 	}
 
 	while (!end) {
-		input = input_dialog_with_invisible(_("Input primary passphrase"),
-				_("Input primary passphrase"), NULL);
+		input = input_dialog_with_invisible(_("Input primary passphrase"), _("Input primary passphrase"), NULL);
 
 		if (input == NULL) {
 			debug_print("Cancel pressed at primary passphrase dialog.\n");
@@ -146,8 +142,7 @@ const gchar *primary_passphrase()
 
 gboolean primary_passphrase_is_set()
 {
-	if (prefs_common_get_prefs()->primary_passphrase == NULL
-			|| strlen(prefs_common_get_prefs()->primary_passphrase) == 0)
+	if (prefs_common_get_prefs()->primary_passphrase == NULL || strlen(prefs_common_get_prefs()->primary_passphrase) == 0)
 		return FALSE;
 
 	return TRUE;
@@ -166,14 +161,11 @@ gboolean primary_passphrase_is_correct(const gchar *input)
 	g_return_val_if_fail(input != NULL, FALSE);
 
 	tokens = g_strsplit_set(stored_kd, "{}", 3);
-	if (tokens[0] == NULL ||
-			strlen(tokens[0]) != 0 || /* nothing before { */
-			tokens[1] == NULL ||
-			strncmp(tokens[1], "PBKDF2-HMAC-SHA1,", 17) || /* correct tag */
-			strlen(tokens[1]) <= 17 || /* something after , */
-			(rounds = atoi(tokens[1] + 17)) <= 0 || /* valid rounds # */
-			tokens[2] == NULL ||
-			strlen(tokens[2]) == 0) { /* string continues after } */
+	if (tokens[0] == NULL || strlen(tokens[0]) != 0 || /* nothing before { */
+	    tokens[1] == NULL || strncmp(tokens[1], "PBKDF2-HMAC-SHA1,", 17) ||	/* correct tag */
+	    strlen(tokens[1]) <= 17 || /* something after , */
+	    (rounds = atoi(tokens[1] + 17)) <= 0 || /* valid rounds # */
+	    tokens[2] == NULL || strlen(tokens[2]) == 0) { /* string continues after } */
 		debug_print("Mangled primary_passphrase format in config, can not use it.\n");
 		g_strfreev(tokens);
 		return FALSE;
@@ -184,8 +176,7 @@ gboolean primary_passphrase_is_correct(const gchar *input)
 	g_strfreev(tokens);
 
 	if (kd_len != KD_LENGTH) {
-		debug_print("primary_passphrase is %"G_GSIZE_FORMAT" bytes long, should be %d.\n",
-				kd_len, KD_LENGTH);
+		debug_print("primary_passphrase is %" G_GSIZE_FORMAT " bytes long, should be %d.\n", kd_len, KD_LENGTH);
 		g_free(kd);
 		return FALSE;
 	}
@@ -242,8 +233,7 @@ void primary_passphrase_change(const gchar *oldp, const gchar *newp)
 		debug_print("Storing key derivation of new primary passphrase\n");
 		kd = _make_key_deriv(newp, rounds, KD_LENGTH);
 		base64_kd = g_base64_encode(kd, 64);
-		prefs_common_get_prefs()->primary_passphrase =
-			g_strdup_printf("{PBKDF2-HMAC-SHA1,%d}%s", rounds, base64_kd);
+		prefs_common_get_prefs()->primary_passphrase = g_strdup_printf("{PBKDF2-HMAC-SHA1,%d}%s", rounds, base64_kd);
 		g_free(kd);
 		g_free(base64_kd);
 	} else {
@@ -313,8 +303,7 @@ gchar *password_decrypt_old(const gchar *password)
  * gnutls_cipher_get_iv_size(), we hardcode the IV length for now. */
 #define IVLEN 16
 
-gchar *password_encrypt_gnutls(const gchar *password,
-		const gchar *encryption_passphrase)
+gchar *password_encrypt_gnutls(const gchar *password, const gchar *encryption_passphrase)
 {
 	gnutls_cipher_algorithm_t algo = GNUTLS_CIPHER_AES_256_CBC;
 	gnutls_cipher_hd_t handle;
@@ -357,7 +346,7 @@ gchar *password_encrypt_gnutls(const gchar *password,
 	 * we need to store the password. */
 	i = 1;
 	len = strlen(password);
-	while(len >= i * BUFSIZE)
+	while (len >= i * BUFSIZE)
 		i++;
 	len = i * BUFSIZE;
 
@@ -378,8 +367,7 @@ gchar *password_encrypt_gnutls(const gchar *password,
 	/* Encrypt into encbuf */
 	encbuf = malloc(len + blocklen);
 	memset(encbuf, 0, len + blocklen);
-	ret = gnutls_cipher_encrypt2(handle, buf, len + blocklen,
-			encbuf, len + blocklen);
+	ret = gnutls_cipher_encrypt2(handle, buf, len + blocklen, encbuf, len + blocklen);
 	if (ret < 0) {
 		g_free(key.data);
 		g_free(iv.data);
@@ -399,15 +387,13 @@ gchar *password_encrypt_gnutls(const gchar *password,
 	 * "{algorithm,rounds}base64encodedciphertext" */
 	base = g_base64_encode(encbuf, len + blocklen);
 	g_free(encbuf);
-	output = g_strdup_printf("{%s,%d}%s",
-			gnutls_cipher_get_name(algo), rounds, base);
+	output = g_strdup_printf("{%s,%d}%s", gnutls_cipher_get_name(algo), rounds, base);
 	g_free(base);
 
 	return output;
 }
 
-gchar *password_decrypt_gnutls(const gchar *password,
-		const gchar *decryption_passphrase)
+gchar *password_decrypt_gnutls(const gchar *password, const gchar *decryption_passphrase)
 {
 	gchar **tokens, *tmp;
 	gnutls_cipher_algorithm_t algo;
@@ -427,9 +413,7 @@ gchar *password_decrypt_gnutls(const gchar *password,
 
 	/* Parse the string, retrieving algorithm and encrypted data.
 	 * We expect "{algorithm,rounds}base64encodedciphertext". */
-	if (tokens[0] == NULL || strlen(tokens[0]) != 0 ||
-			tokens[1] == NULL || strlen(tokens[1]) == 0 ||
-			tokens[2] == NULL || strlen(tokens[2]) == 0) {
+	if (tokens[0] == NULL || strlen(tokens[0]) != 0 || tokens[1] == NULL || strlen(tokens[1]) == 0 || tokens[2] == NULL || strlen(tokens[2]) == 0) {
 		debug_print("Garbled password string.\n");
 		g_strfreev(tokens);
 		return NULL;
@@ -488,7 +472,7 @@ gchar *password_decrypt_gnutls(const gchar *password,
 			g_free(tmp);
 		return NULL;
 	}
-	debug_print("Encrypted password string length: %"G_GSIZE_FORMAT"\n", len);
+	debug_print("Encrypted password string length: %" G_GSIZE_FORMAT "\n", len);
 
 	/* Initialize the decryption */
 	ret = gnutls_cipher_init(&handle, algo, &key, &iv);
@@ -505,8 +489,7 @@ gchar *password_decrypt_gnutls(const gchar *password,
 	memset(buf, 0, len);
 
 	/* Decrypt! */
-	ret = gnutls_cipher_decrypt2(handle, tmp, len,
-			buf, len);
+	ret = gnutls_cipher_decrypt2(handle, tmp, len, buf, len);
 	g_free(tmp);
 	if (ret < 0) {
 		debug_print("Decryption failed: %s\n", gnutls_strerror(ret));
@@ -557,13 +540,11 @@ gchar *password_decrypt_gnutls(const gchar *password,
 
 #endif
 
-gchar *password_encrypt(const gchar *password,
-		const gchar *encryption_passphrase)
+gchar *password_encrypt(const gchar *password, const gchar *encryption_passphrase)
 {
 	if (password == NULL || strlen(password) == 0) {
 		return NULL;
 	}
-
 #ifndef PASSWORD_CRYPTO_OLD
 	if (encryption_passphrase == NULL)
 		encryption_passphrase = primary_passphrase();
@@ -574,8 +555,7 @@ gchar *password_encrypt(const gchar *password,
 #endif
 }
 
-gchar *password_decrypt(const gchar *password,
-		const gchar *decryption_passphrase)
+gchar *password_decrypt(const gchar *password, const gchar *decryption_passphrase)
 {
 	if (password == NULL || strlen(password) == 0) {
 		return NULL;
@@ -604,3 +584,7 @@ gchar *password_decrypt(const gchar *password,
 	debug_print("Assuming password was stored plaintext, returning it unchanged\n");
 	return g_strdup(password);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

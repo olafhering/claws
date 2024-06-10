@@ -7,8 +7,7 @@
 
 #include "entity.h"
 
-static void
-test_entity_invalid(void)
+static void test_entity_invalid(void)
 {
 	gchar *result;
 
@@ -35,8 +34,7 @@ test_entity_invalid(void)
 	g_assert_null(result);
 }
 
-static void
-test_entity_toolong(void)
+static void test_entity_toolong(void)
 {
 	gchar *result;
 
@@ -56,8 +54,7 @@ test_entity_toolong(void)
 	g_assert_null(result);
 }
 
-static void
-test_entity_unprintable(void)
+static void test_entity_unprintable(void)
 {
 	gchar *result, numstr[6]; /* "&#XX;" */
 	gint i;
@@ -71,8 +68,7 @@ test_entity_unprintable(void)
 	}
 }
 
-static void
-test_entity_valid(void)
+static void test_entity_valid(void)
 {
 	gchar *result;
 
@@ -92,8 +88,7 @@ test_entity_valid(void)
 
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
@@ -104,3 +99,7 @@ main(int argc, char *argv[])
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -38,8 +38,7 @@
 gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 {
 	const gchar *p = encoded_str;
-	const gchar *eword_begin_p, *encoding_begin_p, *text_begin_p,
-		    *eword_end_p;
+	const gchar *eword_begin_p, *encoding_begin_p, *text_begin_p, *eword_end_p;
 	gchar charset[32];
 	gchar encoding;
 	gchar *conv_str;
@@ -62,7 +61,7 @@ gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 			g_string_append(outbuf, p);
 			break;
 		}
-		
+
 		quote_p = p;
 		while ((quote_p = strchr(quote_p, '"')) != NULL) {
 			if (quote_p && quote_p < eword_begin_p) {
@@ -99,16 +98,14 @@ gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 
 			for (sp = p; sp < eword_begin_p; sp++) {
 				if (!g_ascii_isspace(*sp)) {
-					g_string_append_len
-						(outbuf, p, eword_begin_p - p);
+					g_string_append_len(outbuf, p, eword_begin_p - p);
 					p = eword_begin_p;
 					break;
 				}
 			}
 		}
 
-		len = MIN(sizeof(charset) - 1,
-			  encoding_begin_p - (eword_begin_p + 2));
+		len = MIN(sizeof(charset) - 1, encoding_begin_p - (eword_begin_p + 2));
 		memcpy(charset, eword_begin_p + 2, len);
 		charset[len] = '\0';
 		encoding = g_ascii_toupper(*(encoding_begin_p + 1));
@@ -119,11 +116,8 @@ gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 			decoded_text = g_base64_decode(tmp, &out_len);
 			g_free(tmp);
 		} else if (encoding == 'Q') {
-			decoded_text = g_malloc
-				(eword_end_p - (text_begin_p + 1) + 1);
-			len = qp_decode_q_encoding
-				(decoded_text, text_begin_p + 1,
-				 eword_end_p - (text_begin_p + 1));
+			decoded_text = g_malloc(eword_end_p - (text_begin_p + 1) + 1);
+			len = qp_decode_q_encoding(decoded_text, text_begin_p + 1, eword_end_p - (text_begin_p + 1));
 		} else {
 			g_string_append_len(outbuf, p, eword_end_p + 2 - p);
 			p = eword_end_p + 2;
@@ -135,8 +129,7 @@ gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 		 * We check there are no quotes just to be sure. If there
 		 * are, well, the comma won't pose a problem, probably.
 		 */
-		if (addr_field && strchr(decoded_text, ',') && !in_quote &&
-		    !strchr(decoded_text, '"')) {
+		if (addr_field && strchr(decoded_text, ',') && !in_quote && !strchr(decoded_text, '"')) {
 			gchar *tmp = g_strdup_printf("\"%s\"", decoded_text);
 			g_free(decoded_text);
 			decoded_text = tmp;
@@ -156,9 +149,13 @@ gchar *unmime_header(const gchar *encoded_str, gboolean addr_field)
 
 		p = eword_end_p + 2;
 	}
-	
+
 	out_len = outbuf->len;
 	out_str = g_string_free(outbuf, FALSE);
 
 	return g_realloc(out_str, out_len + 1);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

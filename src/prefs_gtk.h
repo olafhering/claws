@@ -24,16 +24,15 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
-typedef struct _PrefParam	PrefParam;
-typedef struct _PrefsDialog	PrefsDialog;
+typedef struct _PrefParam PrefParam;
+typedef struct _PrefsDialog PrefsDialog;
 
 #include "prefs.h"
 #include "gtk/prefswindow.h"
 
 #define PREFSBUFSIZE		32768
 
-typedef enum
-{
+typedef enum {
 	P_STRING,
 	P_INT,
 	P_BOOL,
@@ -44,21 +43,20 @@ typedef enum
 	P_OTHER
 } PrefType;
 
-typedef void (*DataSetFunc)   (PrefParam *pparam);
-typedef void (*WidgetSetFunc) (PrefParam *pparam);
+typedef void (*DataSetFunc)(PrefParam *pparam);
+typedef void (*WidgetSetFunc)(PrefParam *pparam);
 
 struct _PrefParam {
-	gchar	      *name;
-	gchar	      *defval;
-	gpointer       data;
-	PrefType       type;
-	GtkWidget    **widget;
-	DataSetFunc    data_set_func;
-	WidgetSetFunc  widget_set_func;
+	gchar *name;
+	gchar *defval;
+	gpointer data;
+	PrefType type;
+	GtkWidget **widget;
+	DataSetFunc data_set_func;
+	WidgetSetFunc widget_set_func;
 };
 
-struct _PrefsDialog 
-{
+struct _PrefsDialog {
 	GtkWidget *window;
 	GtkWidget *notebook;
 
@@ -130,46 +128,38 @@ struct _PrefsDialog
 			 G_CALLBACK(prefs_button_toggled_reverse), targetwid); \
 }
 
-void prefs_read_config		(PrefParam	*param,
-				 const gchar	*label,
-				 const gchar	*rcfile,
-				 const gchar	*encoding);
-void prefs_write_config		(PrefParam	*param,
-				 const gchar	*label,
-				 const gchar	*rcfile);
-gint prefs_write_param		(PrefParam	*param,
-				 FILE		*fp);
+void prefs_read_config(PrefParam *param, const gchar *label, const gchar *rcfile, const gchar *encoding);
+void prefs_write_config(PrefParam *param, const gchar *label, const gchar *rcfile);
+gint prefs_write_param(PrefParam *param, FILE *fp);
 
-PrefFile *prefs_write_open	(const gchar	*path);
+PrefFile *prefs_write_open(const gchar *path);
 
-void prefs_set_default		(PrefParam	*param);
-void prefs_free			(PrefParam	*param);
+void prefs_set_default(PrefParam *param);
+void prefs_free(PrefParam *param);
 
-void prefs_button_toggled	(GtkToggleButton	*toggle_btn,
-				 GtkWidget		*widget);
-void prefs_button_toggled_reverse	(GtkToggleButton	*toggle_btn,
-				 GtkWidget		*widget);
+void prefs_button_toggled(GtkToggleButton *toggle_btn, GtkWidget *widget);
+void prefs_button_toggled_reverse(GtkToggleButton *toggle_btn, GtkWidget *widget);
 
-void prefs_set_dialog		(PrefParam	*param);
-void prefs_set_data_from_dialog	(PrefParam	*param);
-void prefs_set_dialog_to_default(PrefParam	*param);
+void prefs_set_dialog(PrefParam *param);
+void prefs_set_data_from_dialog(PrefParam *param);
+void prefs_set_dialog_to_default(PrefParam *param);
 
-void prefs_set_data_from_entry	(PrefParam	*pparam);
-void prefs_set_escaped_data_from_entry	(PrefParam	*pparam);
-void prefs_set_entry		(PrefParam	*pparam);
-void prefs_set_entry_from_escaped	(PrefParam	*pparam);
-void prefs_set_data_from_text	(PrefParam	*pparam);
-void prefs_set_escaped_data_from_text	(PrefParam	*pparam);
-void prefs_set_text		(PrefParam	*pparam);
+void prefs_set_data_from_entry(PrefParam *pparam);
+void prefs_set_escaped_data_from_entry(PrefParam *pparam);
+void prefs_set_entry(PrefParam *pparam);
+void prefs_set_entry_from_escaped(PrefParam *pparam);
+void prefs_set_data_from_text(PrefParam *pparam);
+void prefs_set_escaped_data_from_text(PrefParam *pparam);
+void prefs_set_text(PrefParam *pparam);
 void prefs_set_text_from_escaped(PrefParam *pparam);
-void prefs_set_data_from_toggle	(PrefParam	*pparam);
-void prefs_set_toggle		(PrefParam	*pparam);
-void prefs_set_data_from_spinbtn(PrefParam	*pparam);
-void prefs_set_spinbtn		(PrefParam	*pparam);
+void prefs_set_data_from_toggle(PrefParam *pparam);
+void prefs_set_toggle(PrefParam *pparam);
+void prefs_set_data_from_spinbtn(PrefParam *pparam);
+void prefs_set_spinbtn(PrefParam *pparam);
 
-void prefs_gtk_open		(void);
-void prefs_gtk_register_page	(PrefsPage 	*page);
-void prefs_gtk_unregister_page	(PrefsPage 	*page);
+void prefs_gtk_open(void);
+void prefs_gtk_register_page(PrefsPage *page);
+void prefs_gtk_unregister_page(PrefsPage *page);
 
 void prefs_prepare_cache(void);
 void prefs_destroy_cache(void);

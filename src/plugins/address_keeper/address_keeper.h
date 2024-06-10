@@ -31,14 +31,13 @@
 
 #define PLUGIN_NAME	(_("Address Keeper"))
 
-gint 		plugin_init	  	  (gchar **error);
-gboolean	plugin_done		  (void);
-const gchar *	plugin_name		  (void);
-const gchar *	plugin_desc		  (void);
-const gchar *	plugin_type		  (void);
-const gchar *	plugin_licence		  (void);
-const gchar *	plugin_version		  (void);
-struct PluginFeature *plugin_provides	  (void);
+gint plugin_init(gchar **error);
+gboolean plugin_done(void);
+const gchar *plugin_name(void);
+const gchar *plugin_desc(void);
+const gchar *plugin_type(void);
+const gchar *plugin_licence(void);
+const gchar *plugin_version(void);
+struct PluginFeature *plugin_provides(void);
 
 #endif
-

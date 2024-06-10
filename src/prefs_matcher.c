@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -54,7 +54,7 @@
 #include "colorlabel.h"
 #include "tags.h"
 #ifndef USE_ALT_ADDRBOOK
-	#include "addressbook.h"
+#include "addressbook.h"
 #endif
 
 #ifndef USE_ALT_ADDRBOOK
@@ -121,10 +121,10 @@ static struct Matcher {
 	GtkTreeModel *model_tags;
 	GtkTreeModel *model_test;
 	GtkTreeModel *model_thread;
-	
+
 	GtkWidget *cond_list_view;
 
-	gint selected_criteria; /*!< selected criteria in combobox */ 
+	gint selected_criteria;	/*!< selected criteria in combobox */
 } matcher;
 
 /*!
@@ -132,7 +132,7 @@ static struct Matcher {
  *		have the same CRITERIA_XXX id). I.e. both unread and ~unread
  *		have criteria id CRITERIA_UNREAD. This id is passed as the
  *		first parameter to #matcherprop_new and #matcherprop_unquote_new.
- */		
+ */
 enum {
 	CRITERIA_ALL = 0,
 
@@ -171,12 +171,12 @@ enum {
 
 	CRITERIA_SIZE_GREATER = 30,
 	CRITERIA_SIZE_SMALLER = 31,
-	CRITERIA_SIZE_EQUAL   = 32,
-	
+	CRITERIA_SIZE_EQUAL = 32,
+
 	CRITERIA_PARTIAL = 33,
 
 	CRITERIA_FOUND_IN_ADDRESSBOOK = 34,
-	
+
 	CRITERIA_TAG = 35,
 	CRITERIA_TAGGED = 36,
 
@@ -194,30 +194,30 @@ enum {
 };
 
 enum {
-	MATCH_ALL	= 0,
-	MATCH_HEADER	= 1,
-	MATCH_AGE	= 2,
-	MATCH_PHRASE	= 3,
-	MATCH_FLAG	= 4,
-	MATCH_LABEL	= 5,
-	MATCH_THREAD	= 6,
-	MATCH_SCORE	= 7,
-	MATCH_SIZE	= 8,
-	MATCH_PARTIAL	= 9,
-	MATCH_ABOOK	= 10,
-	MATCH_TAGS	= 11,
-	MATCH_TEST	= 12,
-	MATCH_DATE	= 13
+	MATCH_ALL = 0,
+	MATCH_HEADER = 1,
+	MATCH_AGE = 2,
+	MATCH_PHRASE = 3,
+	MATCH_FLAG = 4,
+	MATCH_LABEL = 5,
+	MATCH_THREAD = 6,
+	MATCH_SCORE = 7,
+	MATCH_SIZE = 8,
+	MATCH_PARTIAL = 9,
+	MATCH_ABOOK = 10,
+	MATCH_TAGS = 11,
+	MATCH_TEST = 12,
+	MATCH_DATE = 13
 };
 
 enum {
 	AGE_HOURS = 0,
-	AGE_DAYS  = 1,
+	AGE_DAYS = 1,
 	AGE_WEEKS = 2
 };
 
 enum {
-	SIZE_UNIT_BYTES  = 0,
+	SIZE_UNIT_BYTES = 0,
 	SIZE_UNIT_KBYTES = 1,
 	SIZE_UNIT_MBYTES = 2
 };
@@ -254,50 +254,36 @@ enum {
 static PrefsMatcherSignal *matchers_callback;
 
 /* widget creating functions */
-static void prefs_matcher_create	(void);
+static void prefs_matcher_create(void);
 
-static void prefs_matcher_set_dialog	(MatcherList *matchers);
-static void prefs_matcher_list_view_set_row	(GtkTreeIter *row, 
-						 MatcherProp *prop);
+static void prefs_matcher_set_dialog(MatcherList *matchers);
+static void prefs_matcher_list_view_set_row(GtkTreeIter *row, MatcherProp *prop);
 
 /* callback functions */
 
-static void prefs_matcher_register_cb	(void);
-static void prefs_matcher_substitute_cb	(void);
-static void prefs_matcher_delete_cb	(void);
-static void prefs_matcher_up		(void);
-static void prefs_matcher_down		(void);
-static gboolean prefs_matcher_key_pressed(GtkWidget	*widget,
-					 GdkEventKey	*event,
-					 gpointer	 data);
-static void prefs_matcher_ok		(void);
-static void prefs_matcher_cancel	(void);
-static gint prefs_matcher_deleted	(GtkWidget *widget, GdkEventAny *event,
-					 gpointer data);
-static void prefs_matcher_criteria_select	(GtkWidget *widget,
-						 gpointer   user_data);
-static void prefs_matcher_second_criteria_sel	(GtkWidget *widget,
-						 gpointer   user_data);
-static void prefs_matcher_set_model		(GtkWidget *wiget,
-						 GtkTreeModel *model);
-static MatcherList *prefs_matcher_get_list	(void);
+static void prefs_matcher_register_cb(void);
+static void prefs_matcher_substitute_cb(void);
+static void prefs_matcher_delete_cb(void);
+static void prefs_matcher_up(void);
+static void prefs_matcher_down(void);
+static gboolean prefs_matcher_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data);
+static void prefs_matcher_ok(void);
+static void prefs_matcher_cancel(void);
+static gint prefs_matcher_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data);
+static void prefs_matcher_criteria_select(GtkWidget *widget, gpointer user_data);
+static void prefs_matcher_second_criteria_sel(GtkWidget *widget, gpointer user_data);
+static void prefs_matcher_set_model(GtkWidget *wiget, GtkTreeModel *model);
+static MatcherList *prefs_matcher_get_list(void);
 
-static GtkListStore* prefs_matcher_create_data_store	(void);
+static GtkListStore *prefs_matcher_create_data_store(void);
 
-static void prefs_matcher_list_view_insert_matcher	(GtkWidget *list_view,
-							 GtkTreeIter *row_iter,
-							 const gchar *matcher,
-							 gboolean is_valid);
+static void prefs_matcher_list_view_insert_matcher(GtkWidget *list_view, GtkTreeIter *row_iter, const gchar *matcher, gboolean is_valid);
 
-static GtkWidget *prefs_matcher_list_view_create	(void);
+static GtkWidget *prefs_matcher_list_view_create(void);
 
-static void prefs_matcher_create_list_view_columns	(GtkWidget *list_view);
+static void prefs_matcher_create_list_view_columns(GtkWidget *list_view);
 
-static gboolean prefs_matcher_selected			(GtkTreeSelection *selector,
-							 GtkTreeModel *model, 
-							 GtkTreePath *path,
-							 gboolean currently_selected,
-							 gpointer data);
+static gboolean prefs_matcher_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data);
 
 static int header_name_to_crit(const gchar *header)
 {
@@ -330,7 +316,7 @@ static void prefs_matcher_models_create(void)
 {
 	GtkListStore *store;
 	GtkTreeIter iter;
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("more than"), CRITERIA_AGE_GREATER);
 	COMBOBOX_ADD(store, _("less than"), CRITERIA_AGE_LOWER);
@@ -352,7 +338,7 @@ static void prefs_matcher_models_create(void)
 	COMBOBOX_ADD(store, _("lower than"), CRITERIA_SCORE_LOWER);
 	COMBOBOX_ADD(store, _("exactly"), CRITERIA_SCORE_EQUAL);
 	matcher.model_score = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("greater than"), CRITERIA_SIZE_GREATER);
 	COMBOBOX_ADD(store, _("smaller than"), CRITERIA_SIZE_SMALLER);
@@ -364,12 +350,12 @@ static void prefs_matcher_models_create(void)
 	COMBOBOX_ADD(store, _("kibibytes"), SIZE_UNIT_KBYTES);
 	COMBOBOX_ADD(store, _("mebibytes"), SIZE_UNIT_MBYTES);
 	matcher.model_size_units = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("contains"), 0);
 	COMBOBOX_ADD(store, _("doesn't contain"), 0);
 	matcher.model_contain = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, "Subject", CRITERIA_SUBJECT);
 	COMBOBOX_ADD(store, "From", CRITERIA_FROM);
@@ -389,14 +375,14 @@ static void prefs_matcher_models_create(void)
 	COMBOBOX_ADD(store, "List-Post", CRITERIA_HEADER);
 	COMBOBOX_ADD(store, "List-Id", CRITERIA_HEADER);
 	matcher.model_headers = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("headers part"), CRITERIA_HEADERS_PART);
 	COMBOBOX_ADD(store, _("headers values"), CRITERIA_HEADERS_CONT);
 	COMBOBOX_ADD(store, _("body part"), CRITERIA_BODY_PART);
 	COMBOBOX_ADD(store, _("whole message"), CRITERIA_MESSAGE);
 	matcher.model_phrase = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("Unread"), CRITERIA_UNREAD);
 	COMBOBOX_ADD(store, _("New"), CRITERIA_NEW);
@@ -409,7 +395,7 @@ static void prefs_matcher_models_create(void)
 	COMBOBOX_ADD(store, _("Has attachment"), CRITERIA_HAS_ATTACHMENT);
 	COMBOBOX_ADD(store, _("Signed"), CRITERIA_SIGNED);
 	matcher.model_flags = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("set"), 0);
 	COMBOBOX_ADD(store, _("not set"), 1);
@@ -431,7 +417,7 @@ static void prefs_matcher_models_create(void)
 	COMBOBOX_ADD(store, _("watched"), CRITERIA_WATCH_THREAD);
 	COMBOBOX_ADD(store, _("not watched"), CRITERIA_WATCH_THREAD);
 	matcher.model_thread = GTK_TREE_MODEL(store);
-	
+
 	store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
 	COMBOBOX_ADD(store, _("found"), 0);
 	COMBOBOX_ADD(store, _("not found"), 1);
@@ -459,8 +445,7 @@ void prefs_matcher_open(MatcherList *matchers, PrefsMatcherSignal *cb)
 		prefs_matcher_create();
 	} else {
 		/* update color label menu */
-		gtk_cmoption_menu_set_menu(GTK_CMOPTION_MENU(matcher.color_optmenu),
-				colorlabel_create_color_menu());
+		gtk_cmoption_menu_set_menu(GTK_CMOPTION_MENU(matcher.color_optmenu), colorlabel_create_color_menu());
 	}
 
 	manage_window_set_transient(GTK_WINDOW(matcher.window));
@@ -477,8 +462,7 @@ void prefs_matcher_open(MatcherList *matchers, PrefsMatcherSignal *cb)
 /*!
  *\brief	Save Gtk object size to prefs dataset
  */
-static void prefs_matcher_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
+static void prefs_matcher_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
@@ -514,7 +498,7 @@ static void prefs_matcher_create(void)
 	GtkWidget *hbox;
 	GtkWidget *upper_filler;
 	GtkWidget *lower_filler;
-	
+
 	GtkWidget *criteria_combo2;
 	GtkWidget *header_entry;
 	GtkWidget *header_addr_combo;
@@ -528,7 +512,7 @@ static void prefs_matcher_create(void)
 	GtkWidget *numeric_hbox;
 	GtkWidget *numeric_entry;
 	GtkWidget *numeric_label;
-	
+
 	GtkWidget *regexp_checkbtn;
 	GtkWidget *case_checkbtn;
 
@@ -571,65 +555,54 @@ static void prefs_matcher_create(void)
 	vbox = gtk_vbox_new(FALSE, 6);
 	gtk_container_add(GTK_CONTAINER(window), vbox);
 
-	gtkut_stock_button_set_create(&confirm_area, &cancel_btn, GTK_STOCK_CANCEL,
-				      &ok_btn, GTK_STOCK_OK, NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &cancel_btn, GTK_STOCK_CANCEL, &ok_btn, GTK_STOCK_OK, NULL, NULL);
 	gtk_box_pack_end(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 0);
 	gtk_widget_grab_default(ok_btn);
 
-	gtk_window_set_title(GTK_WINDOW(window),
-			     _("Condition configuration"));
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(prefs_matcher_deleted), NULL);
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(prefs_matcher_size_allocate_cb), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(prefs_matcher_key_pressed), NULL);
+	gtk_window_set_title(GTK_WINDOW(window), _("Condition configuration"));
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(prefs_matcher_deleted), NULL);
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(prefs_matcher_size_allocate_cb), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(prefs_matcher_key_pressed), NULL);
 	MANAGE_WINDOW_SIGNALS_CONNECT(window);
-	g_signal_connect(G_OBJECT(ok_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_ok), NULL);
-	g_signal_connect(G_OBJECT(cancel_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_cancel), NULL);
+	g_signal_connect(G_OBJECT(ok_btn), "clicked", G_CALLBACK(prefs_matcher_ok), NULL);
+	g_signal_connect(G_OBJECT(cancel_btn), "clicked", G_CALLBACK(prefs_matcher_cancel), NULL);
 
 	vbox1 = gtk_vbox_new(FALSE, VSPACING);
 	gtk_box_pack_start(GTK_BOX(vbox), vbox1, TRUE, TRUE, 0);
-	gtk_container_set_border_width(GTK_CONTAINER (vbox1), 2);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), 2);
 
 	frame = gtk_frame_new(_("Rule"));
 	gtk_frame_set_label_align(GTK_FRAME(frame), 0.01, 0.5);
 	gtk_box_pack_start(GTK_BOX(vbox1), frame, FALSE, FALSE, 0);
-	
+
 	table = gtk_table_new(3, 3, FALSE);
 	gtk_container_add(GTK_CONTAINER(frame), table);
 	gtk_widget_set_size_request(frame, -1, -1);
-	
+
 	upper_hbox = gtk_hbox_new(FALSE, HSPACING_NARROW);
 	hbox = gtk_hbox_new(FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), upper_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), gtk_label_new(""), TRUE, TRUE, 0);
-	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 0, 1, 
-			GTK_FILL, GTK_SHRINK, 2, 2);
-	
+	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 0, 1, GTK_FILL, GTK_SHRINK, 2, 2);
+
 	lower_hbox = gtk_hbox_new(FALSE, HSPACING_NARROW);
 	hbox = gtk_hbox_new(FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), lower_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), gtk_label_new(""), TRUE, TRUE, 0);
-	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 1, 2, 
-			 GTK_FILL, GTK_SHRINK, 2, 2);
-	
+	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 1, 2, GTK_FILL, GTK_SHRINK, 2, 2);
+
 	size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	gtk_size_group_add_widget(size_group, upper_hbox);
 	gtk_size_group_add_widget(size_group, lower_hbox);
-	
+
 	/* criteria combo box */
 	criteria_label = gtk_label_new(_("Match criteria"));
 	gtk_misc_set_alignment(GTK_MISC(criteria_label), 1, 0.5);
 	gtk_widget_set_size_request(criteria_label, -1, -1);
-	gtk_table_attach(GTK_TABLE(table), criteria_label, 0, 1, 0, 1, 
-			 GTK_FILL, GTK_SHRINK, 2, 2);
+	gtk_table_attach(GTK_TABLE(table), criteria_label, 0, 1, 0, 1, GTK_FILL, GTK_SHRINK, 2, 2);
 
 	criteria_combo = gtkut_sc_combobox_create(NULL, FALSE);
-	store = GTK_LIST_STORE(gtk_combo_box_get_model(
-				GTK_COMBO_BOX(criteria_combo)));
+	store = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(criteria_combo)));
 	COMBOBOX_ADD(store, _("All messages"), MATCH_ALL);
 	COMBOBOX_ADD(store, _("Header"), MATCH_HEADER);
 	COMBOBOX_ADD(store, _("Age"), MATCH_AGE);
@@ -647,18 +620,15 @@ static void prefs_matcher_create(void)
 
 	gtk_widget_set_size_request(criteria_combo, 150, -1);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(criteria_combo), MATCH_ALL);
-	gtk_table_attach(GTK_TABLE(table), criteria_combo, 1, 2, 0, 1,
-			 GTK_FILL, GTK_SHRINK, 2, 2);
-	g_signal_connect(G_OBJECT(criteria_combo), "changed",
-			 G_CALLBACK(prefs_matcher_criteria_select),
-			 NULL);
-	
+	gtk_table_attach(GTK_TABLE(table), criteria_combo, 1, 2, 0, 1, GTK_FILL, GTK_SHRINK, 2, 2);
+	g_signal_connect(G_OBJECT(criteria_combo), "changed", G_CALLBACK(prefs_matcher_criteria_select), NULL);
+
 	upper_filler = gtk_label_new("");
-	gtk_box_pack_start(GTK_BOX(upper_hbox), upper_filler, TRUE, TRUE, 0); 
-	
+	gtk_box_pack_start(GTK_BOX(upper_hbox), upper_filler, TRUE, TRUE, 0);
+
 	lower_filler = gtk_label_new("");
 	gtk_box_pack_start(GTK_BOX(lower_hbox), lower_filler, TRUE, TRUE, 0);
-			 
+
 	criteria_label2 = gtk_label_new("");
 	gtk_box_pack_start(GTK_BOX(upper_hbox), criteria_label2, FALSE, FALSE, 0);
 
@@ -671,57 +641,46 @@ static void prefs_matcher_create(void)
 	gtk_widget_set_size_request(headers_combo, 100, -1);
 	gtk_box_pack_start(GTK_BOX(upper_hbox), headers_combo, TRUE, TRUE, 0);
 	header_entry = gtk_bin_get_child(GTK_BIN((headers_combo)));
-	CLAWS_SET_TIP(header_entry, _("Use selector on the right to pick "
-		"the header name. Type the name of the header if not "
-		"available in the list."));
+	CLAWS_SET_TIP(header_entry, _("Use selector on the right to pick " "the header name. Type the name of the header if not " "available in the list."));
 
 	criteria_combo2 = gtkut_sc_combobox_create(NULL, TRUE);
 	prefs_matcher_set_model(criteria_combo2, matcher.model_phrase);
 	gtk_box_pack_start(GTK_BOX(upper_hbox), criteria_combo2, TRUE, TRUE, 0);
-	g_signal_connect(G_OBJECT(criteria_combo2), "changed",
-			 G_CALLBACK(prefs_matcher_second_criteria_sel),
-			 NULL);
+	g_signal_connect(G_OBJECT(criteria_combo2), "changed", G_CALLBACK(prefs_matcher_second_criteria_sel), NULL);
 
 	/* book/folder value */
 	addressbook_folder_combo = combobox_text_new(TRUE, _("Any"), NULL);
 	gtk_widget_set_size_request(addressbook_folder_combo, 250, -1);
-	gtk_box_pack_start(GTK_BOX(upper_hbox), addressbook_folder_combo, TRUE, TRUE, 0);			 
+	gtk_box_pack_start(GTK_BOX(upper_hbox), addressbook_folder_combo, TRUE, TRUE, 0);
 
 	addressbook_select_btn = gtk_button_new_with_label(_("Select..."));
 	gtk_box_pack_start(GTK_BOX(upper_hbox), addressbook_select_btn, FALSE, FALSE, 0);
 #ifndef USE_ALT_ADDRBOOK
-	g_signal_connect(G_OBJECT (addressbook_select_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_addressbook_select),
-			 NULL);
+	g_signal_connect(G_OBJECT(addressbook_select_btn), "clicked", G_CALLBACK(prefs_matcher_addressbook_select), NULL);
 #else
 	gtk_widget_set_sensitive(GTK_WIDGET(addressbook_select_btn), FALSE);
 #endif
 	match_label = gtk_label_new("");
 	gtk_misc_set_alignment(GTK_MISC(match_label), 1, 0.5);
-	gtk_table_attach(GTK_TABLE(table), match_label, 0, 1, 1, 2,
-			 GTK_FILL, GTK_SHRINK, 2, 2);
+	gtk_table_attach(GTK_TABLE(table), match_label, 0, 1, 1, 2, GTK_FILL, GTK_SHRINK, 2, 2);
 
 	match_hbox = gtk_hbox_new(FALSE, 0);
-	gtk_table_attach(GTK_TABLE(table), match_hbox, 1, 2, 1, 2,
-			 GTK_FILL, GTK_SHRINK, 2, 2); 
+	gtk_table_attach(GTK_TABLE(table), match_hbox, 1, 2, 1, 2, GTK_FILL, GTK_SHRINK, 2, 2);
 
 	match_combo = gtkut_sc_combobox_create(NULL, TRUE);
 	gtk_box_pack_start(GTK_BOX(match_hbox), match_combo, TRUE, TRUE, 0);
-	
+
 	/* color labels combo */
 	color_optmenu = gtk_cmoption_menu_new();
-	gtk_cmoption_menu_set_menu(GTK_CMOPTION_MENU(color_optmenu),
-				 colorlabel_create_color_menu());
+	gtk_cmoption_menu_set_menu(GTK_CMOPTION_MENU(color_optmenu), colorlabel_create_color_menu());
 	gtk_box_pack_start(GTK_BOX(match_hbox), color_optmenu, FALSE, FALSE, 0);
-	
+
 	/* address header name */
-	header_addr_combo = combobox_text_new(TRUE,
-			      C_("Filtering Matcher Menu", "All"), _("Any"),
-			      "From", "To", "Cc", "Reply-To", "Sender", "Resent-From", "Resent-To", NULL);
+	header_addr_combo = combobox_text_new(TRUE, C_("Filtering Matcher Menu", "All"), _("Any"), "From", "To", "Cc", "Reply-To", "Sender", "Resent-From", "Resent-To", NULL);
 	gtk_box_pack_start(GTK_BOX(match_hbox), header_addr_combo, FALSE, FALSE, 0);
 	header_addr_entry = gtk_bin_get_child(GTK_BIN((header_addr_combo)));
 	gtk_widget_set_size_request(header_addr_combo, 150, -1);
-	
+
 	match_label2 = gtk_label_new("");
 	gtk_box_pack_start(GTK_BOX(lower_hbox), match_label2, FALSE, FALSE, 0);
 
@@ -732,14 +691,14 @@ static void prefs_matcher_create(void)
 	numeric_entry = gtk_spin_button_new_with_range(0, 1000, 1);
 	gtk_spin_button_set_digits(GTK_SPIN_BUTTON(numeric_entry), 0);
 	gtk_box_pack_start(GTK_BOX(numeric_hbox), numeric_entry, FALSE, FALSE, 0);
-	
+
 	numeric_label = gtk_label_new("");
 	gtk_box_pack_start(GTK_BOX(numeric_hbox), numeric_label, FALSE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(numeric_hbox), gtk_label_new(""), TRUE, TRUE, 0);
 
 	match_combo2 = gtkut_sc_combobox_create(NULL, TRUE);
 	gtk_box_pack_start(GTK_BOX(lower_hbox), match_combo2, TRUE, TRUE, 0);
-	
+
 	/* string value */
 	string_entry = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(lower_hbox), string_entry, TRUE, TRUE, 0);
@@ -754,8 +713,7 @@ static void prefs_matcher_create(void)
 	gtk_box_pack_start(GTK_BOX(hbox), vbox, TRUE, TRUE, 0);
 
 	gtk_box_pack_end(GTK_BOX(hbox), gtk_label_new(""), TRUE, TRUE, 0);
-	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 2, 3,
-			 GTK_FILL, GTK_SHRINK, 4, 0);
+	gtk_table_attach(GTK_TABLE(table), hbox, 2, 3, 2, 3, GTK_FILL, GTK_SHRINK, 4, 0);
 
 	/* Date widgets */
 	date_vbox = gtk_vbox_new(FALSE, VSPACING_NARROW);
@@ -771,13 +729,11 @@ static void prefs_matcher_create(void)
 	time_label = gtk_label_new(_("on:"));
 	gtk_misc_set_alignment(GTK_MISC(time_label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(date_hbox), time_label, FALSE, FALSE, 0);
-	
+
 	/* test info button */
 	test_btn = gtk_button_new_from_stock(GTK_STOCK_INFO);
 	gtk_box_pack_start(GTK_BOX(lower_hbox), test_btn, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT (test_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_test_info),
-			 window);
+	g_signal_connect(G_OBJECT(test_btn), "clicked", G_CALLBACK(prefs_matcher_test_info), window);
 
 	/* register / substitute / delete */
 	reg_hbox = gtk_hbox_new(FALSE, HSPACING_NARROW);
@@ -792,36 +748,27 @@ static void prefs_matcher_create(void)
 
 	reg_btn = gtk_button_new_from_stock(GTK_STOCK_ADD);
 	gtk_box_pack_start(GTK_BOX(btn_hbox), reg_btn, FALSE, TRUE, 0);
-	g_signal_connect(G_OBJECT(reg_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_register_cb), NULL);
+	g_signal_connect(G_OBJECT(reg_btn), "clicked", G_CALLBACK(prefs_matcher_register_cb), NULL);
 
 	subst_btn = gtkut_get_replace_btn(_("_Replace"));
 	gtk_box_pack_start(GTK_BOX(btn_hbox), subst_btn, FALSE, TRUE, 0);
-	g_signal_connect(G_OBJECT(subst_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_substitute_cb),
-			 NULL);
+	g_signal_connect(G_OBJECT(subst_btn), "clicked", G_CALLBACK(prefs_matcher_substitute_cb), NULL);
 
-	del_btn = gtk_button_new_with_mnemonic (_("D_elete"));
-	gtk_button_set_image(GTK_BUTTON(del_btn),
-			gtk_image_new_from_stock(GTK_STOCK_REMOVE,GTK_ICON_SIZE_BUTTON));
+	del_btn = gtk_button_new_with_mnemonic(_("D_elete"));
+	gtk_button_set_image(GTK_BUTTON(del_btn), gtk_image_new_from_stock(GTK_STOCK_REMOVE, GTK_ICON_SIZE_BUTTON));
 	gtk_box_pack_start(GTK_BOX(btn_hbox), del_btn, FALSE, TRUE, 0);
-	g_signal_connect(G_OBJECT(del_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_delete_cb), NULL);
+	g_signal_connect(G_OBJECT(del_btn), "clicked", G_CALLBACK(prefs_matcher_delete_cb), NULL);
 
 	cond_hbox = gtk_hbox_new(FALSE, VBOX_BORDER);
 	gtk_box_pack_start(GTK_BOX(vbox1), cond_hbox, TRUE, TRUE, 0);
 
 	cond_scrolledwin = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_size_request(cond_scrolledwin, -1, 150);
-	gtk_box_pack_start(GTK_BOX(cond_hbox), cond_scrolledwin,
-			   TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(cond_scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start(GTK_BOX(cond_hbox), cond_scrolledwin, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(cond_scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-	cond_list_view = prefs_matcher_list_view_create(); 				       
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(cond_scrolledwin),
-					    GTK_SHADOW_ETCHED_IN);
+	cond_list_view = prefs_matcher_list_view_create();
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(cond_scrolledwin), GTK_SHADOW_ETCHED_IN);
 	gtk_container_add(GTK_CONTAINER(cond_scrolledwin), cond_list_view);
 
 	btn_vbox = gtk_vbox_new(FALSE, VBOX_BORDER);
@@ -829,44 +776,35 @@ static void prefs_matcher_create(void)
 
 	up_btn = gtk_button_new_from_stock(GTK_STOCK_GO_UP);
 	gtk_box_pack_start(GTK_BOX(btn_vbox), up_btn, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(up_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_up), NULL);
+	g_signal_connect(G_OBJECT(up_btn), "clicked", G_CALLBACK(prefs_matcher_up), NULL);
 
 	down_btn = gtk_button_new_from_stock(GTK_STOCK_GO_DOWN);
 	gtk_box_pack_start(GTK_BOX(btn_vbox), down_btn, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(down_btn), "clicked",
-			 G_CALLBACK(prefs_matcher_down), NULL);
+	g_signal_connect(G_OBJECT(down_btn), "clicked", G_CALLBACK(prefs_matcher_down), NULL);
 
 	/* boolean operation */
 	GtkWidget *hbox_bool = gtk_hbox_new(FALSE, HSPACING_NARROW);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox_bool, FALSE, FALSE, 0);
 
 	bool_op_label = gtk_label_new(_("Message must match"));
-	gtk_box_pack_start(GTK_BOX(hbox_bool), bool_op_label,
-			   FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_bool), bool_op_label, FALSE, FALSE, 0);
 
-	bool_op_combo = combobox_text_new(FALSE, _("at least one"), 
-					  _("all"), NULL);
-	gtk_box_pack_start(GTK_BOX(hbox_bool), bool_op_combo,
-			   FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox_bool), gtk_label_new(_("of above rules")),
-			   FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox_bool), gtk_label_new(""),
-			   TRUE, TRUE, 0);
-	
+	bool_op_combo = combobox_text_new(FALSE, _("at least one"), _("all"), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox_bool), bool_op_combo, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_bool), gtk_label_new(_("of above rules")), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_bool), gtk_label_new(""), TRUE, TRUE, 0);
+
 	if (!geometry.min_height) {
 		geometry.min_width = 630;
 		geometry.min_height = 368;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(window, prefs_common.matcherwin_width,
-				    prefs_common.matcherwin_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(window, prefs_common.matcherwin_width, prefs_common.matcherwin_height);
 
 	gtk_widget_show_all(window);
 
-	matcher.window    = window;
+	matcher.window = window;
 
 	matcher.ok_btn = ok_btn;
 
@@ -898,7 +836,7 @@ static void prefs_matcher_create(void)
 	matcher.match_label2 = match_label2;
 	matcher.upper_filler = upper_filler;
 	matcher.lower_filler = lower_filler;
-	
+
 	matcher.cond_list_view = cond_list_view;
 
 	matcher.selected_criteria = -1;
@@ -918,34 +856,22 @@ static void prefs_matcher_list_view_set_row(GtkTreeIter *row, MatcherProp *prop)
 	gchar *matcher_str;
 
 	if (prop == NULL) {
-		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view,
-						       NULL, _("(New)"), FALSE);
-		return;						       
+		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view, NULL, _("(New)"), FALSE);
+		return;
 	}
 
 	matcher_str = matcherprop_to_string(prop);
 	if (!row)
-		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view,
-						       NULL, matcher_str,
-						       TRUE);
+		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view, NULL, matcher_str, TRUE);
 	else
-		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view,
-						       row, matcher_str, 
-						       TRUE);
+		prefs_matcher_list_view_insert_matcher(matcher.cond_list_view, row, matcher_str, TRUE);
 	g_free(matcher_str);
 }
 
 static gboolean match_combo2_model_set(void)
 {
 	GtkTreeModel *model = gtk_combo_box_get_model(GTK_COMBO_BOX(matcher.match_combo2));
-	if (model == matcher.model_age_units ||
-	    model == matcher.model_found ||
-	    model == matcher.model_partial ||
-	    model == matcher.model_phrase ||
-	    model == matcher.model_set ||
-	    model == matcher.model_size_units ||
-	    model == matcher.model_tags ||
-	    model == matcher.model_thread)
+	if (model == matcher.model_age_units || model == matcher.model_found || model == matcher.model_partial || model == matcher.model_phrase || model == matcher.model_set || model == matcher.model_size_units || model == matcher.model_tags || model == matcher.model_thread)
 		return TRUE;
 	else
 		debug_print("match_combo2 model unset.\n");
@@ -956,12 +882,7 @@ static gboolean match_combo2_model_set(void)
 static gboolean match_combo_model_set(void)
 {
 	GtkTreeModel *model = gtk_combo_box_get_model(GTK_COMBO_BOX(matcher.match_combo));
-	if (model == matcher.model_age ||
-	    model == matcher.model_contain ||
-	    model == matcher.model_flags ||
-	    model == matcher.model_score ||
-	    model == matcher.model_size ||
-	    model == matcher.model_test)
+	if (model == matcher.model_age || model == matcher.model_contain || model == matcher.model_flags || model == matcher.model_score || model == matcher.model_size || model == matcher.model_test)
 		return TRUE;
 	else
 		debug_print("match_combo model unset.\n");
@@ -1002,29 +923,26 @@ static void prefs_matcher_set_dialog(MatcherList *matchers)
 {
 	GSList *cur;
 	gboolean bool_op = 1;
-	GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model
-				(GTK_TREE_VIEW(matcher.cond_list_view)));
+	GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(matcher.cond_list_view)));
 
-	gtk_list_store_clear(store);				
+	gtk_list_store_clear(store);
 
 	prefs_matcher_list_view_set_row(NULL, NULL);
 	if (matchers != NULL) {
-		for (cur = matchers->matchers; cur != NULL;
-		     cur = g_slist_next(cur)) {
+		for (cur = matchers->matchers; cur != NULL; cur = g_slist_next(cur)) {
 			MatcherProp *prop;
-			prop = (MatcherProp *) cur->data;
+			prop = (MatcherProp *)cur->data;
 			prefs_matcher_list_view_set_row(NULL, prop);
 		}
 
 		bool_op = matchers->bool_and;
 	}
-	
+
 	gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.bool_op_combo), bool_op);
 
 	prefs_matcher_reset_condition();
-	
-	combobox_set_sensitive(GTK_COMBO_BOX(matcher.criteria_combo), MATCH_TAGS,
-			(tags_get_size() > 0) ? TRUE : FALSE);
+
+	combobox_set_sensitive(GTK_COMBO_BOX(matcher.criteria_combo), MATCH_TAGS, (tags_get_size() > 0) ? TRUE : FALSE);
 }
 
 /*!
@@ -1051,12 +969,9 @@ static MatcherList *prefs_matcher_get_list(void)
 
 	do {
 		gboolean is_valid;
-	
-		gtk_tree_model_get(model, &iter,
-				   PREFS_MATCHER_COND, &matcher_str,
-				   PREFS_MATCHER_COND_VALID, &is_valid,
-				   -1);
-		
+
+		gtk_tree_model_get(model, &iter, PREFS_MATCHER_COND, &matcher_str, PREFS_MATCHER_COND_VALID, &is_valid, -1);
+
 		if (is_valid) {
 			/* tmp = matcher_str; */
 			prop = matcher_parser_get_prop(matcher_str);
@@ -1064,7 +979,7 @@ static MatcherList *prefs_matcher_get_list(void)
 				g_free(matcher_str);
 				break;
 			}
-			
+
 			matcher_list = g_slist_append(matcher_list, prop);
 		}
 		g_free(matcher_str);
@@ -1088,7 +1003,7 @@ static MatcherList *prefs_matcher_get_list(void)
  */
 static gint prefs_matcher_get_criteria_from_matching(gint matching_id)
 {
-	switch(matching_id) {
+	switch (matching_id) {
 	case MATCHCRITERIA_ALL:
 		return CRITERIA_ALL;
 	case MATCHCRITERIA_NOT_UNREAD:
@@ -1332,7 +1247,7 @@ static gint prefs_matcher_get_matching_from_criteria(gint criteria_id)
  */
 static gint prefs_matcher_not_criteria(gint matcher_criteria)
 {
-	switch(matcher_criteria) {
+	switch (matcher_criteria) {
 	case MATCHCRITERIA_UNREAD:
 		return MATCHCRITERIA_NOT_UNREAD;
 	case MATCHCRITERIA_NEW:
@@ -1404,13 +1319,12 @@ static gint prefs_matcher_not_criteria(gint matcher_criteria)
 
 static gint prefs_matcher_get_criteria(void)
 {
-	gint match_criteria = gtk_combo_box_get_active(GTK_COMBO_BOX(
-					matcher.criteria_combo));
+	gint match_criteria = gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.criteria_combo));
 	const gchar *header = NULL;
-	  
+
 	switch (match_criteria) {
 	case MATCH_ABOOK:
-		return CRITERIA_FOUND_IN_ADDRESSBOOK;	
+		return CRITERIA_FOUND_IN_ADDRESSBOOK;
 	case MATCH_ALL:
 		return CRITERIA_ALL;
 	case MATCH_AGE:
@@ -1418,8 +1332,7 @@ static gint prefs_matcher_get_criteria(void)
 	case MATCH_SCORE:
 	case MATCH_SIZE:
 	case MATCH_FLAG:
-		return combobox_get_active_data(GTK_COMBO_BOX(
-					matcher.match_combo));
+		return combobox_get_active_data(GTK_COMBO_BOX(matcher.match_combo));
 	case MATCH_HEADER:
 		header = gtk_entry_get_text(GTK_ENTRY(matcher.header_entry));
 		return header_name_to_crit(header);
@@ -1432,16 +1345,15 @@ static gint prefs_matcher_get_criteria(void)
 	case MATCH_PHRASE:
 	case MATCH_TAGS:
 	case MATCH_THREAD:
-		return combobox_get_active_data(GTK_COMBO_BOX(
-					matcher.criteria_combo2));
+		return combobox_get_active_data(GTK_COMBO_BOX(matcher.criteria_combo2));
 	}
-	
+
 	return -1;
 }
 
 static gint prefs_matcher_get_pred(const gint criteria)
 {
-	switch(criteria) {
+	switch (criteria) {
 	case CRITERIA_SUBJECT:
 	case CRITERIA_FROM:
 	case CRITERIA_TO:
@@ -1479,7 +1391,7 @@ static gint prefs_matcher_get_pred(const gint criteria)
 	case CRITERIA_PARTIAL:
 		return gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.criteria_combo2));
 	}
-	
+
 	return 0;
 }
 
@@ -1500,7 +1412,7 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 	gboolean case_sensitive;
 	const gchar *header;
 	const gchar *expr;
-    	gboolean expr_to_free = FALSE;
+	gboolean expr_to_free = FALSE;
 	gint value, sel;
 	gint year, month, day, hour, minute;
 
@@ -1515,8 +1427,7 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 			matchtype = MATCHTYPE_REGEXP;
 		else
 			matchtype = MATCHTYPE_REGEXPCASE;
-	}
-	else {
+	} else {
 		if (case_sensitive)
 			matchtype = MATCHTYPE_MATCH;
 		else
@@ -1560,8 +1471,8 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 	case CRITERIA_BODY_PART:
 	case CRITERIA_MESSAGE:
 		expr = gtk_entry_get_text(GTK_ENTRY(matcher.string_entry));
-		
-		if(*expr == '\0') {
+
+		if (*expr == '\0') {
 			alertpanel_error(_("Search pattern is not set."));
 			return NULL;
 		}
@@ -1572,8 +1483,7 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 		expr = NULL;
 		gtk_calendar_get_date(GTK_CALENDAR(matcher.calendar), &year, &month, &day);
 		if (gtkut_time_select_get_time(GTK_COMBO_BOX(matcher.time_entry), &hour, &minute))
-			expr = g_strdup_printf("%4d-%02d-%02d %02d:%02d:00",
-				year, month + 1, day, hour, minute);
+			expr = g_strdup_printf("%4d-%02d-%02d %02d:%02d:00", year, month + 1, day, hour, minute);
 
 		if (expr == NULL) {
 			alertpanel_error(_("Invalid hour."));
@@ -1584,8 +1494,8 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 
 	case CRITERIA_TEST:
 		expr = gtk_entry_get_text(GTK_ENTRY(matcher.string_entry));
-		
-		if(*expr == '\0') {
+
+		if (*expr == '\0') {
 			alertpanel_error(_("Test command is not set."));
 			return NULL;
 		}
@@ -1593,42 +1503,37 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 
 	case CRITERIA_AGE_GREATER:
 	case CRITERIA_AGE_LOWER:
-		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(
-							 matcher.numeric_entry));
+		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(matcher.numeric_entry));
 		sel = gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.match_combo2));
-		if(sel == AGE_WEEKS)
+		if (sel == AGE_WEEKS)
 			value *= 7;
 		else if (sel == AGE_HOURS) {
 			if (value_criteria == CRITERIA_AGE_GREATER)
 				value_criteria = CRITERIA_AGE_GREATER_HOURS;
-			else 
+			else
 				value_criteria = CRITERIA_AGE_LOWER_HOURS;
 		}
 		break;
-			
+
 	case CRITERIA_SCORE_GREATER:
 	case CRITERIA_SCORE_LOWER:
 	case CRITERIA_SCORE_EQUAL:
-		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(
-							 matcher.numeric_entry));
+		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(matcher.numeric_entry));
 		break;
-							 
+
 	case CRITERIA_SIZE_GREATER:
 	case CRITERIA_SIZE_SMALLER:
 	case CRITERIA_SIZE_EQUAL:
-		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(
-							 matcher.numeric_entry));
+		value = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(matcher.numeric_entry));
 		sel = gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.match_combo2));
-		if(sel == SIZE_UNIT_MBYTES)
+		if (sel == SIZE_UNIT_MBYTES)
 			value *= MB_SIZE;
-		if(sel == SIZE_UNIT_KBYTES)
+		if (sel == SIZE_UNIT_KBYTES)
 			value *= KB_SIZE;
 		break;
-		
+
 	case CRITERIA_COLORLABEL:
-		value = colorlabel_get_color_menu_active_item
-			(gtk_cmoption_menu_get_menu(GTK_CMOPTION_MENU
-				(matcher.color_optmenu))); 
+		value = colorlabel_get_color_menu_active_item(gtk_cmoption_menu_get_menu(GTK_CMOPTION_MENU(matcher.color_optmenu)));
 		break;
 
 	case CRITERIA_HEADER:
@@ -1636,14 +1541,14 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 		expr = gtk_entry_get_text(GTK_ENTRY(matcher.string_entry));
 
 		if (*header == '\0') {
-		    alertpanel_error(_("Header name is not set."));
-		    return NULL;
+			alertpanel_error(_("Header name is not set."));
+			return NULL;
 		}
-		
-		if(*expr == '\0') {
+
+		if (*expr == '\0') {
 			alertpanel_error(_("Search pattern is not set."));
 			return NULL;
-		} 
+		}
 		break;
 
 	case CRITERIA_FOUND_IN_ADDRESSBOOK:
@@ -1651,32 +1556,27 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 		expr = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((matcher.addressbook_folder_combo)))));
 
 		if (*header == '\0') {
-		    alertpanel_error(_("Header name is not set."));
-		    return NULL;
+			alertpanel_error(_("Header name is not set."));
+			return NULL;
 		}
 		if (*expr == '\0') {
 			gchar *tmp;
 
 			if (g_utf8_collate(header, C_("Filtering Matcher Menu", "All")) == 0)
 				tmp = g_strdup(_("all addresses in all headers"));
-			else
-			if (g_utf8_collate(header, _("Any")) == 0)
+			else if (g_utf8_collate(header, _("Any")) == 0)
 				tmp = g_strdup(_("any address in any header"));
 			else
 				tmp = g_strdup_printf(_("the address(es) in header '%s'"), header);
-			alertpanel_error(_("Book/folder path is not set.\n\n"
-						"If you want to match %s against the whole address book, "
-						"you have to select '%s' from the book/folder drop-down list."),
-						tmp, _("Any"));
+			alertpanel_error(_("Book/folder path is not set.\n\n" "If you want to match %s against the whole address book, " "you have to select '%s' from the book/folder drop-down list."), tmp, _("Any"));
 			g_free(tmp);
-		    return NULL;
+			return NULL;
 		}
 		/* store UNtranslated "Any"/"All" in matcher expressions */
 		if (g_utf8_collate(header, C_("Filtering Matcher Menu", "All")) == 0)
 			header = "All";
-		else
-			if (g_utf8_collate(header, _("Any")) == 0)
-				header = "Any";
+		else if (g_utf8_collate(header, _("Any")) == 0)
+			header = "Any";
 		if (g_utf8_collate(expr, _("Any")) == 0)
 			expr = "Any";
 		break;
@@ -1685,11 +1585,10 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 	criteria = prefs_matcher_get_matching_from_criteria(value_criteria);
 
 	value_pred = prefs_matcher_get_pred(value_criteria);
-	if(value_pred)
+	if (value_pred)
 		criteria = prefs_matcher_not_criteria(criteria);
 
-	matcherprop = matcherprop_new(criteria, header, matchtype,
-				      expr, value);
+	matcherprop = matcherprop_new(criteria, header, matchtype, expr, value);
 
 	if (expr_to_free)
 		g_free((gchar *)expr);
@@ -1703,7 +1602,7 @@ static MatcherProp *prefs_matcher_dialog_to_matcher(void)
 static void prefs_matcher_register_cb(void)
 {
 	MatcherProp *matcherprop;
-	
+
 	matcherprop = prefs_matcher_dialog_to_matcher();
 	if (matcherprop == NULL)
 		return;
@@ -1711,7 +1610,7 @@ static void prefs_matcher_register_cb(void)
 	prefs_matcher_list_view_set_row(NULL, matcherprop);
 
 	matcherprop_free(matcherprop);
-	
+
 	prefs_matcher_reset_condition();
 }
 
@@ -1726,15 +1625,12 @@ static void prefs_matcher_substitute_cb(void)
 	GtkTreeModel *model;
 	gboolean is_valid;
 
-	selection = gtk_tree_view_get_selection
-			(GTK_TREE_VIEW(matcher.cond_list_view));
-	
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(matcher.cond_list_view));
+
 	if (!gtk_tree_selection_get_selected(selection, &model, &row))
 		return;
-	
-	gtk_tree_model_get(model, &row, 
-			   PREFS_MATCHER_COND_VALID, &is_valid,
-			   -1);
+
+	gtk_tree_model_get(model, &row, PREFS_MATCHER_COND_VALID, &is_valid, -1);
 	if (!is_valid)
 		return;
 
@@ -1757,20 +1653,17 @@ static void prefs_matcher_delete_cb(void)
 	GtkTreeModel *model;
 	gboolean is_valid;
 
-	selection = gtk_tree_view_get_selection
-			(GTK_TREE_VIEW(matcher.cond_list_view));
-	
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(matcher.cond_list_view));
+
 	if (!gtk_tree_selection_get_selected(selection, &model, &row))
 		return;
-		
-	gtk_tree_model_get(model, &row, 
-			   PREFS_MATCHER_COND_VALID, &is_valid,
-			   -1);
+
+	gtk_tree_model_get(model, &row, PREFS_MATCHER_COND_VALID, &is_valid, -1);
 
 	if (!is_valid)
 		return;
 
-	gtk_list_store_remove(GTK_LIST_STORE(model), &row);		
+	gtk_list_store_remove(GTK_LIST_STORE(model), &row);
 
 	prefs_matcher_reset_condition();
 }
@@ -1785,18 +1678,14 @@ static void prefs_matcher_up(void)
 	GtkListStore *store = NULL;
 	GtkTreeModel *model = NULL;
 	GtkTreeIter iprev;
-	
-	if (!gtk_tree_selection_get_selected
-		(gtk_tree_view_get_selection
-			(GTK_TREE_VIEW(matcher.cond_list_view)),
-		 &model,	
-		 &isel))
+
+	if (!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(matcher.cond_list_view)), &model, &isel))
 		return;
 	store = (GtkListStore *)model;
 	sel = gtk_tree_model_get_path(GTK_TREE_MODEL(store), &isel);
 	if (!sel)
 		return;
-	
+
 	/* no move if we're at row 0 or 1, looks phony, but other
 	 * solutions are more convoluted... */
 	try = gtk_tree_path_copy(sel);
@@ -1807,10 +1696,9 @@ static void prefs_matcher_up(void)
 	}
 	gtk_tree_path_free(try);
 
-	prev = gtk_tree_path_copy(sel);		
+	prev = gtk_tree_path_copy(sel);
 	if (gtk_tree_path_prev(prev)) {
-		gtk_tree_model_get_iter(GTK_TREE_MODEL(store),
-					&iprev, prev);
+		gtk_tree_model_get_iter(GTK_TREE_MODEL(store), &iprev, prev);
 		gtk_list_store_swap(store, &iprev, &isel);
 		/* XXX: GTK2 select row?? */
 	}
@@ -1828,35 +1716,31 @@ static void prefs_matcher_down(void)
 	GtkTreeModel *model = NULL;
 	GtkTreeIter next, sel;
 	GtkTreePath *try;
-	
-	if (!gtk_tree_selection_get_selected
-		(gtk_tree_view_get_selection
-			(GTK_TREE_VIEW(matcher.cond_list_view)),
-		 &model,
-		 &sel))
+
+	if (!gtk_tree_selection_get_selected(gtk_tree_view_get_selection(GTK_TREE_VIEW(matcher.cond_list_view)), &model, &sel))
 		return;
 	store = (GtkListStore *)model;
 	try = gtk_tree_model_get_path(GTK_TREE_MODEL(store), &sel);
-	if (!try) 
+	if (!try)
 		return;
-	
+
 	/* move when not at row 0 ... */
 	if (gtk_tree_path_prev(try)) {
 		next = sel;
 		if (gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &next))
 			gtk_list_store_swap(store, &next, &sel);
 	}
-		
+
 	gtk_tree_path_free(try);
 }
 
-static void prefs_matcher_enable_widget(GtkWidget* widget, const gboolean enable)
+static void prefs_matcher_enable_widget(GtkWidget *widget, const gboolean enable)
 {
 	cm_return_if_fail(widget != NULL);
 
-	if(enable == TRUE) {
+	if (enable == TRUE) {
 		gtk_widget_set_sensitive(widget, TRUE);
-		gtk_widget_show(widget);	
+		gtk_widget_show(widget);
 	} else {
 		gtk_widget_set_sensitive(widget, FALSE);
 		gtk_widget_hide(widget);
@@ -1867,44 +1751,38 @@ static void prefs_matcher_set_model(GtkWidget *widget, GtkTreeModel *model)
 {
 	cm_return_if_fail(widget != NULL);
 	cm_return_if_fail(model != NULL);
-	
+
 	gtk_combo_box_set_model(GTK_COMBO_BOX(widget), model);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
 }
 
-static void prefs_matcher_second_criteria_sel(GtkWidget *widget,
-					      gpointer user_data)
+static void prefs_matcher_second_criteria_sel(GtkWidget *widget, gpointer user_data)
 {
-	gint criteria = gtk_combo_box_get_active(GTK_COMBO_BOX(
-						matcher.criteria_combo));
-	gint criteria2 = combobox_get_active_data(GTK_COMBO_BOX(
-						matcher.criteria_combo2));
-	
-	if(criteria != MATCH_PHRASE && criteria != MATCH_TAGS) return;
-	
-	if(criteria == MATCH_PHRASE) {
-		switch(criteria2) {
+	gint criteria = gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.criteria_combo));
+	gint criteria2 = combobox_get_active_data(GTK_COMBO_BOX(matcher.criteria_combo2));
+
+	if (criteria != MATCH_PHRASE && criteria != MATCH_TAGS)
+		return;
+
+	if (criteria == MATCH_PHRASE) {
+		switch (criteria2) {
 		case CRITERIA_HEADERS_PART:
-			gtk_label_set_text(GTK_LABEL(matcher.match_label),
-					_("Headers part"));
+			gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Headers part"));
 			break;
 		case CRITERIA_HEADERS_CONT:
-			gtk_label_set_text(GTK_LABEL(matcher.match_label),
-					_("Headers values"));
+			gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Headers values"));
 			break;
 		case CRITERIA_BODY_PART:
-			gtk_label_set_text(GTK_LABEL(matcher.match_label),
-					_("Body part"));
-			break;	
+			gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Body part"));
+			break;
 		case CRITERIA_MESSAGE:
-			gtk_label_set_text(GTK_LABEL(matcher.match_label),
-					_("Whole message"));
+			gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Whole message"));
 			break;
 		}
 	}
-	
-	if(criteria == MATCH_TAGS) {
-		if(criteria2 == CRITERIA_TAGGED) {
+
+	if (criteria == MATCH_TAGS) {
+		if (criteria2 == CRITERIA_TAGGED) {
 			prefs_matcher_enable_widget(matcher.upper_filler, FALSE);
 			prefs_matcher_enable_widget(matcher.match_label2, TRUE);
 			prefs_matcher_enable_widget(matcher.string_entry, FALSE);
@@ -1916,17 +1794,15 @@ static void prefs_matcher_second_criteria_sel(GtkWidget *widget,
 			prefs_matcher_enable_widget(matcher.string_entry, TRUE);
 			prefs_matcher_enable_widget(matcher.case_checkbtn, TRUE);
 			prefs_matcher_enable_widget(matcher.regexp_checkbtn, TRUE);
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-						matcher.regexp_checkbtn), FALSE);
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-						matcher.case_checkbtn), FALSE);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.regexp_checkbtn), FALSE);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.case_checkbtn), FALSE);
 		}
 	}
 }
 
 #define MATCH_COMBO_IS_ENABLED(x) (x != MATCH_ALL && x != MATCH_ABOOK && \
 		x != MATCH_PARTIAL && x != MATCH_THREAD && x != MATCH_LABEL) ? TRUE : FALSE
-#define MATCH_CASE_REGEXP(x) (x == MATCH_HEADER || x == MATCH_PHRASE) ? TRUE : FALSE 
+#define MATCH_CASE_REGEXP(x) (x == MATCH_HEADER || x == MATCH_PHRASE) ? TRUE : FALSE
 #define MATCH_NUMERIC(x) (x == MATCH_AGE || x == MATCH_SCORE || \
 			  x == MATCH_SIZE) ? TRUE : FALSE
 
@@ -1936,83 +1812,44 @@ static void prefs_matcher_second_criteria_sel(GtkWidget *widget,
  *\param	criteria combo widget
  *\param	user_data Not used	
  */
-static void prefs_matcher_criteria_select(GtkWidget *widget,
-					  gpointer user_data)
+static void prefs_matcher_criteria_select(GtkWidget *widget, gpointer user_data)
 {
 	gint value, old_value;
 
 	old_value = matcher.selected_criteria;
-	matcher.selected_criteria = value = gtk_combo_box_get_active
-		(GTK_COMBO_BOX(matcher.criteria_combo));
+	matcher.selected_criteria = value = gtk_combo_box_get_active(GTK_COMBO_BOX(matcher.criteria_combo));
 
 	if (old_value == matcher.selected_criteria)
 		return;
 
-	prefs_matcher_enable_widget(matcher.criteria_label2,
-				    (value == MATCH_ABOOK   ||
-				     value == MATCH_PHRASE  ||
-				     value == MATCH_HEADER  ||
-				     value == MATCH_PARTIAL ||
-				     value == MATCH_TAGS    ||
-				     value == MATCH_THREAD));
-	prefs_matcher_enable_widget(matcher.headers_combo,
-				    (value == MATCH_HEADER));
-	prefs_matcher_enable_widget(matcher.criteria_combo2,
-				    (value == MATCH_PHRASE  ||
-				     value == MATCH_PARTIAL ||
-				     value == MATCH_TAGS    ||
-				     value == MATCH_THREAD));
-	prefs_matcher_enable_widget(matcher.match_combo2,
-				    (value == MATCH_ABOOK ||
-				     value == MATCH_AGE   ||
-				     value == MATCH_FLAG  ||
-				     value == MATCH_LABEL ||
-				     value == MATCH_SIZE));
-	prefs_matcher_enable_widget(matcher.match_label2,
-				    (value == MATCH_ABOOK ||
-				     value == MATCH_FLAG  ||
-				     value == MATCH_LABEL ||
-				     value == MATCH_TAGS));
-	prefs_matcher_enable_widget(matcher.header_addr_combo,
-				    (value == MATCH_ABOOK));
-	prefs_matcher_enable_widget(matcher.string_entry,
-				    (MATCH_CASE_REGEXP(value) ||
-				     value == MATCH_TEST));
-	prefs_matcher_enable_widget(matcher.calendar,
-				    (value == MATCH_DATE));
-	prefs_matcher_enable_widget(matcher.time_label,
-				    (value == MATCH_DATE));
-	prefs_matcher_enable_widget(matcher.time_entry,
-				    (value == MATCH_DATE));
-	prefs_matcher_enable_widget(matcher.numeric_entry,
-				    MATCH_NUMERIC(value));
-	prefs_matcher_enable_widget(matcher.numeric_label,
-				    (value == MATCH_SCORE));
-	prefs_matcher_enable_widget(matcher.addressbook_folder_combo,
-				    (value == MATCH_ABOOK));
-	prefs_matcher_enable_widget(matcher.match_combo,
-				    MATCH_COMBO_IS_ENABLED(value));
-	prefs_matcher_enable_widget(matcher.case_checkbtn,
-				    MATCH_CASE_REGEXP(value));
-	prefs_matcher_enable_widget(matcher.regexp_checkbtn,
-				    MATCH_CASE_REGEXP(value));
-	prefs_matcher_enable_widget(matcher.test_btn,
-				    (value == MATCH_TEST));
-	prefs_matcher_enable_widget(matcher.addressbook_select_btn,
-				    (value == MATCH_ABOOK));
-	prefs_matcher_enable_widget(matcher.color_optmenu,
-				    (value == MATCH_LABEL));
-	prefs_matcher_enable_widget(matcher.upper_filler,
-				    MATCH_CASE_REGEXP(value));
-	prefs_matcher_enable_widget(matcher.lower_filler,
-				    (value == MATCH_ABOOK));
-				
+	prefs_matcher_enable_widget(matcher.criteria_label2, (value == MATCH_ABOOK || value == MATCH_PHRASE || value == MATCH_HEADER || value == MATCH_PARTIAL || value == MATCH_TAGS || value == MATCH_THREAD));
+	prefs_matcher_enable_widget(matcher.headers_combo, (value == MATCH_HEADER));
+	prefs_matcher_enable_widget(matcher.criteria_combo2, (value == MATCH_PHRASE || value == MATCH_PARTIAL || value == MATCH_TAGS || value == MATCH_THREAD));
+	prefs_matcher_enable_widget(matcher.match_combo2, (value == MATCH_ABOOK || value == MATCH_AGE || value == MATCH_FLAG || value == MATCH_LABEL || value == MATCH_SIZE));
+	prefs_matcher_enable_widget(matcher.match_label2, (value == MATCH_ABOOK || value == MATCH_FLAG || value == MATCH_LABEL || value == MATCH_TAGS));
+	prefs_matcher_enable_widget(matcher.header_addr_combo, (value == MATCH_ABOOK));
+	prefs_matcher_enable_widget(matcher.string_entry, (MATCH_CASE_REGEXP(value) || value == MATCH_TEST));
+	prefs_matcher_enable_widget(matcher.calendar, (value == MATCH_DATE));
+	prefs_matcher_enable_widget(matcher.time_label, (value == MATCH_DATE));
+	prefs_matcher_enable_widget(matcher.time_entry, (value == MATCH_DATE));
+	prefs_matcher_enable_widget(matcher.numeric_entry, MATCH_NUMERIC(value));
+	prefs_matcher_enable_widget(matcher.numeric_label, (value == MATCH_SCORE));
+	prefs_matcher_enable_widget(matcher.addressbook_folder_combo, (value == MATCH_ABOOK));
+	prefs_matcher_enable_widget(matcher.match_combo, MATCH_COMBO_IS_ENABLED(value));
+	prefs_matcher_enable_widget(matcher.case_checkbtn, MATCH_CASE_REGEXP(value));
+	prefs_matcher_enable_widget(matcher.regexp_checkbtn, MATCH_CASE_REGEXP(value));
+	prefs_matcher_enable_widget(matcher.test_btn, (value == MATCH_TEST));
+	prefs_matcher_enable_widget(matcher.addressbook_select_btn, (value == MATCH_ABOOK));
+	prefs_matcher_enable_widget(matcher.color_optmenu, (value == MATCH_LABEL));
+	prefs_matcher_enable_widget(matcher.upper_filler, MATCH_CASE_REGEXP(value));
+	prefs_matcher_enable_widget(matcher.lower_filler, (value == MATCH_ABOOK));
+
 	gtk_label_set_text(GTK_LABEL(matcher.match_label), "");
 	gtk_entry_set_text(GTK_ENTRY(matcher.string_entry), "");
 
-	switch(value) {
+	switch (value) {
 	case MATCH_ABOOK:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.header_addr_combo), 0);	
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.header_addr_combo), 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.addressbook_folder_combo), 0);
 		prefs_matcher_set_model(matcher.match_combo2, matcher.model_found);
 		gtk_label_set_text(GTK_LABEL(matcher.criteria_label2), _("in"));
@@ -2028,8 +1865,7 @@ static void prefs_matcher_criteria_select(GtkWidget *widget,
 	case MATCH_AGE:
 		prefs_matcher_set_model(matcher.match_combo, matcher.model_age);
 		prefs_matcher_set_model(matcher.match_combo2, matcher.model_age_units);
-		gtk_spin_button_set_range(GTK_SPIN_BUTTON(
-				  matcher.numeric_entry), 0, 10000);
+		gtk_spin_button_set_range(GTK_SPIN_BUTTON(matcher.numeric_entry), 0, 10000);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), AGE_DAYS);
 		gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Age is"));
@@ -2065,22 +1901,19 @@ static void prefs_matcher_criteria_select(GtkWidget *widget,
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.regexp_checkbtn), FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.case_checkbtn), FALSE);
 		prefs_matcher_second_criteria_sel(NULL, NULL);
-		break;	
+		break;
 	case MATCH_SCORE:
 		prefs_matcher_set_model(matcher.match_combo, matcher.model_score);
-		gtk_spin_button_set_range(GTK_SPIN_BUTTON(
-				  	  matcher.numeric_entry), -1000, 1000);
+		gtk_spin_button_set_range(GTK_SPIN_BUTTON(matcher.numeric_entry), -1000, 1000);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), 0);
 		gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Score is"));
 		gtk_label_set_text(GTK_LABEL(matcher.numeric_label), _("points"));
-		break;	
+		break;
 	case MATCH_SIZE:
 		prefs_matcher_set_model(matcher.match_combo, matcher.model_size);
 		prefs_matcher_set_model(matcher.match_combo2, matcher.model_size_units);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-					 SIZE_UNIT_KBYTES);
-		gtk_spin_button_set_range(GTK_SPIN_BUTTON(
-				  	  matcher.numeric_entry), 0, 100000);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), SIZE_UNIT_KBYTES);
+		gtk_spin_button_set_range(GTK_SPIN_BUTTON(matcher.numeric_entry), 0, 100000);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), 0);
 		gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Size is"));
 		break;
@@ -2100,7 +1933,7 @@ static void prefs_matcher_criteria_select(GtkWidget *widget,
 		prefs_matcher_set_model(matcher.match_combo, matcher.model_test);
 		gtk_label_set_text(GTK_LABEL(matcher.match_label), _("Program returns"));
 		break;
-	}	
+	}
 }
 
 /*!
@@ -2110,12 +1943,11 @@ static void prefs_matcher_criteria_select(GtkWidget *widget,
  *\param	event Key event
  *\param	data User data
  */
-static gboolean prefs_matcher_key_pressed(GtkWidget *widget, GdkEventKey *event,
-				     gpointer data)
+static gboolean prefs_matcher_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
 	if (event && event->keyval == GDK_KEY_Escape) {
 		prefs_matcher_cancel();
-		return TRUE;		
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -2152,14 +1984,11 @@ static void prefs_matcher_ok(void)
 			str = matcherprop_to_string(matcherprop);
 			matcherprop_free(matcherprop);
 			if (strcmp(str, "all") != 0) {
-				model = gtk_tree_view_get_model(GTK_TREE_VIEW
-						(matcher.cond_list_view));
+				model = gtk_tree_view_get_model(GTK_TREE_VIEW(matcher.cond_list_view));
 
 				while (gtk_tree_model_iter_nth_child(model, &iter, NULL, row)) {
-					gtk_tree_model_get(model, &iter,
-							   PREFS_MATCHER_COND, &matcher_str,
-							   -1);
-					if (matcher_str && strcmp(matcher_str, str) == 0) 
+					gtk_tree_model_get(model, &iter, PREFS_MATCHER_COND, &matcher_str, -1);
+					if (matcher_str && strcmp(matcher_str, str) == 0)
 						break;
 					row++;
 					g_free(matcher_str);
@@ -2167,14 +1996,9 @@ static void prefs_matcher_ok(void)
 				}
 
 				if (!matcher_str || strcmp(matcher_str, str) != 0) {
-	                        	val = alertpanel(_("Entry not saved"),
-       		                        	 _("The entry was not saved. Close anyway?"),
-               		                	 GTK_STOCK_CLOSE,
-						 _("_Continue editing"),
-						 NULL,
-						 ALERTFOCUS_SECOND);
+					val = alertpanel(_("Entry not saved"), _("The entry was not saved. Close anyway?"), GTK_STOCK_CLOSE, _("_Continue editing"), NULL, ALERTFOCUS_SECOND);
 					if (G_ALERTDEFAULT != val) {
-						g_free(matcher_str);						 
+						g_free(matcher_str);
 						g_free(str);
 						matcherlist_free(matchers);
 						return;
@@ -2202,8 +2026,7 @@ static void prefs_matcher_ok(void)
  *
  *\return	gint TRUE
  */
-static gint prefs_matcher_deleted(GtkWidget *widget, GdkEventAny *event,
-				  gpointer data)
+static gint prefs_matcher_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	prefs_matcher_cancel();
 	return TRUE;
@@ -2215,36 +2038,31 @@ static gint prefs_matcher_deleted(GtkWidget *widget, GdkEventAny *event,
  * When adding new lines, remember to put 2 strings for each line
  */
 static gchar *test_desc_strings[] = {
-	"%%",	N_("literal %"),
-	"%s",	N_("Subject"),
-	"%f",	N_("From"),
-	"%t",	N_("To"),
-	"%c",	N_("Cc"),
-	"%d",	N_("Date"),
-	"%i",	N_("Message-ID"),
-	"%n",	N_("Newsgroups"),
-	"%r",	N_("References"),
-	"%F",	N_("filename (should not be modified)"),
-	"\\n",	N_("new line"),
-	"\\",	N_("escape character for quotes"),
+	"%%", N_("literal %"),
+	"%s", N_("Subject"),
+	"%f", N_("From"),
+	"%t", N_("To"),
+	"%c", N_("Cc"),
+	"%d", N_("Date"),
+	"%i", N_("Message-ID"),
+	"%n", N_("Newsgroups"),
+	"%r", N_("References"),
+	"%F", N_("filename (should not be modified)"),
+	"\\n", N_("new line"),
+	"\\", N_("escape character for quotes"),
 	"\\\"", N_("quote character"),
-	NULL,   NULL
+	NULL, NULL
 };
 
-static DescriptionWindow test_desc_win = { 
+static DescriptionWindow test_desc_win = {
 	NULL,
-        NULL, 
+	NULL,
 	TRUE,
-        2,
-        N_("Match Type: 'Test'"),
-	N_("'Test' allows you to test a message or message element "
-	   "using an external program or script. The program will "
-	   "return either 0 or 1.\n\n"
-	   "The following symbols can be used:"),
-        test_desc_strings
+	2,
+	N_("Match Type: 'Test'"),
+	N_("'Test' allows you to test a message or message element " "using an external program or script. The program will " "return either 0 or 1.\n\n" "The following symbols can be used:"),
+	test_desc_strings
 };
-
-
 
 /*!
  *\brief	Show Test action's info
@@ -2266,7 +2084,7 @@ static void prefs_matcher_addressbook_select(void)
 	if (new_path) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((matcher.addressbook_folder_combo)))), new_path);
 		g_free(new_path);
-	} 
+	}
 }
 #endif
 
@@ -2274,22 +2092,15 @@ static void prefs_matcher_addressbook_select(void)
  * list view
  */
 
-static GtkListStore* prefs_matcher_create_data_store(void)
+static GtkListStore *prefs_matcher_create_data_store(void)
 {
-	return gtk_list_store_new(N_PREFS_MATCHER_COLUMNS,
-				  G_TYPE_STRING,	
-				  G_TYPE_BOOLEAN,
-				  -1);
+	return gtk_list_store_new(N_PREFS_MATCHER_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, -1);
 }
 
-static void prefs_matcher_list_view_insert_matcher(GtkWidget *list_view,
-						   GtkTreeIter *row_iter,
-						   const gchar *matcher,
-						   gboolean is_valid) 
+static void prefs_matcher_list_view_insert_matcher(GtkWidget *list_view, GtkTreeIter *row_iter, const gchar *matcher, gboolean is_valid)
 {
 	GtkTreeIter iter;
-	GtkListStore *list_store = GTK_LIST_STORE(gtk_tree_view_get_model
-					(GTK_TREE_VIEW(list_view)));
+	GtkListStore *list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(list_view)));
 
 	if (row_iter == NULL) {
 		/* append new */
@@ -2299,10 +2110,7 @@ static void prefs_matcher_list_view_insert_matcher(GtkWidget *list_view,
 		iter = *row_iter;
 	}
 
-	gtk_list_store_set(list_store, &iter,
-			   PREFS_MATCHER_COND, matcher,
-			   PREFS_MATCHER_COND_VALID, is_valid,
-			   -1);
+	gtk_list_store_set(list_store, &iter, PREFS_MATCHER_COND, matcher, PREFS_MATCHER_COND_VALID, is_valid, -1);
 }
 
 static GtkWidget *prefs_matcher_list_view_create(void)
@@ -2313,15 +2121,14 @@ static GtkWidget *prefs_matcher_list_view_create(void)
 
 	model = GTK_TREE_MODEL(prefs_matcher_create_data_store());
 	list_view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
-	g_object_unref(model);	
-	
+	g_object_unref(model);
+
 	gtk_tree_view_set_rules_hint(list_view, prefs_common.use_stripes_everywhere);
 	gtk_tree_view_set_reorderable(list_view, TRUE);
-	
+
 	selector = gtk_tree_view_get_selection(list_view);
 	gtk_tree_selection_set_mode(selector, GTK_SELECTION_BROWSE);
-	gtk_tree_selection_set_select_function(selector, prefs_matcher_selected,
-					       NULL, NULL);
+	gtk_tree_selection_set_select_function(selector, prefs_matcher_selected, NULL, NULL);
 
 	/* create the columns */
 	prefs_matcher_create_list_view_columns(GTK_WIDGET(list_view));
@@ -2335,22 +2142,18 @@ static void prefs_matcher_create_list_view_columns(GtkWidget *list_view)
 	GtkCellRenderer *renderer;
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-		(_("Current condition rules"),
-		 renderer,
-		 "text", PREFS_MATCHER_COND,
-		 NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);		
+	column = gtk_tree_view_column_new_with_attributes(_("Current condition rules"), renderer, "text", PREFS_MATCHER_COND, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
 }
 
 static void prefs_matcher_set_criteria(const gint criteria)
 {
 	gint match_criteria = 0;
-	
+
 	switch (criteria) {
 	case CRITERIA_FOUND_IN_ADDRESSBOOK:
 		match_criteria = MATCH_ABOOK;
-		break;	
+		break;
 	case CRITERIA_ALL:
 		match_criteria = MATCH_ALL;
 		break;
@@ -2422,38 +2225,29 @@ static void prefs_matcher_set_criteria(const gint criteria)
 		match_criteria = MATCH_THREAD;
 		break;
 	}
-	
-	gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo),
-				 match_criteria);
-	
-	switch(match_criteria) {
+
+	gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo), match_criteria);
+
+	switch (match_criteria) {
 	case MATCH_HEADER:
-		if(criteria != CRITERIA_HEADER)
-			combobox_select_by_data(GTK_COMBO_BOX(
-						matcher.headers_combo),
-						criteria);
+		if (criteria != CRITERIA_HEADER)
+			combobox_select_by_data(GTK_COMBO_BOX(matcher.headers_combo), criteria);
 		break;
 	case MATCH_AGE:
 	case MATCH_DATE:
 	case MATCH_SCORE:
 	case MATCH_SIZE:
 	case MATCH_FLAG:
-		combobox_select_by_data(GTK_COMBO_BOX(
-					matcher.match_combo), criteria);
+		combobox_select_by_data(GTK_COMBO_BOX(matcher.match_combo), criteria);
 		break;
 	case MATCH_PHRASE:
 	case MATCH_TAGS:
-		combobox_select_by_data(GTK_COMBO_BOX(
-					matcher.criteria_combo2), criteria);
+		combobox_select_by_data(GTK_COMBO_BOX(matcher.criteria_combo2), criteria);
 		break;
 	}
 }
 
-static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
-				       GtkTreeModel *model, 
-				       GtkTreePath *path,
-				       gboolean currently_selected,
-				       gpointer data)
+static gboolean prefs_matcher_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data)
 {
 	gchar *matcher_str;
 	MatcherProp *prop;
@@ -2463,7 +2257,7 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	GtkTreeIter iter;
 	gboolean is_valid;
 	struct tm lt;
-	char  zone[6];
+	char zone[6];
 
 	if (currently_selected)
 		return TRUE;
@@ -2471,11 +2265,8 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	if (!gtk_tree_model_get_iter(model, &iter, path))
 		return TRUE;
 
-	gtk_tree_model_get(model, &iter, 
-			   PREFS_MATCHER_COND_VALID,  &is_valid,
-			   PREFS_MATCHER_COND, &matcher_str,
-			   -1);
-	
+	gtk_tree_model_get(model, &iter, PREFS_MATCHER_COND_VALID, &is_valid, PREFS_MATCHER_COND, &matcher_str, -1);
+
 	if (!is_valid) {
 		g_free(matcher_str);
 		prefs_matcher_reset_condition();
@@ -2488,12 +2279,12 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	if (prop == NULL) {
 		g_free(matcher_str);
 		return TRUE;
-	}		
+	}
 
 	criteria = prefs_matcher_get_criteria_from_matching(prop->criteria);
 	prefs_matcher_set_criteria(criteria);
 
-	switch(prop->criteria) {
+	switch (prop->criteria) {
 	case MATCHCRITERIA_NOT_UNREAD:
 	case MATCHCRITERIA_NOT_NEW:
 	case MATCHCRITERIA_NOT_MARKED:
@@ -2529,8 +2320,8 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 		negative_cond = TRUE;
 		break;
 	}
-	
-	switch(prop->criteria) {
+
+	switch (prop->criteria) {
 	case MATCHCRITERIA_ALL:
 		break;
 
@@ -2579,84 +2370,69 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 
 	case MATCHCRITERIA_FOUND_IN_ADDRESSBOOK:
 	case MATCHCRITERIA_NOT_FOUND_IN_ADDRESSBOOK:
-	{
-		gchar *header;
-		gchar *expr;
+		{
+			gchar *header;
+			gchar *expr;
 
-		/* matcher expressions contain UNtranslated "Any"/"All",
-		  select the relevant translated combo item */
-		if (strcasecmp(prop->header, "All") == 0)
-			header = (gchar*)C_("Filtering Matcher Menu", "All");
-		else
-			if (strcasecmp(prop->header, "Any") == 0)
+			/* matcher expressions contain UNtranslated "Any"/"All",
+			   select the relevant translated combo item */
+			if (strcasecmp(prop->header, "All") == 0)
+				header = (gchar *)C_("Filtering Matcher Menu", "All");
+			else if (strcasecmp(prop->header, "Any") == 0)
 				header = _("Any");
 			else
 				header = prop->header;
-		if (strcasecmp(prop->expr, "Any") == 0)
-			expr = _("Any");
-		else
-			expr = prop->expr;
+			if (strcasecmp(prop->expr, "Any") == 0)
+				expr = _("Any");
+			else
+				expr = prop->expr;
 
-		gtk_entry_set_text(GTK_ENTRY(matcher.header_addr_entry), header);
-		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((matcher.addressbook_folder_combo)))), expr);
-		break;
-	}
+			gtk_entry_set_text(GTK_ENTRY(matcher.header_addr_entry), header);
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((matcher.addressbook_folder_combo)))), expr);
+			break;
+		}
 
 	case MATCHCRITERIA_AGE_GREATER:
 	case MATCHCRITERIA_AGE_LOWER:
-		if(prop->value >= 7 && !(prop->value % 7)) {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-						 AGE_WEEKS);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-					matcher.numeric_entry), prop->value/7);
+		if (prop->value >= 7 && !(prop->value % 7)) {
+			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), AGE_WEEKS);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value / 7);
 		} else {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-						 AGE_DAYS);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-					matcher.numeric_entry), prop->value);
+			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), AGE_DAYS);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value);
 		}
 		break;
-		
+
 	case MATCHCRITERIA_AGE_GREATER_HOURS:
 	case MATCHCRITERIA_AGE_LOWER_HOURS:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-					 AGE_HOURS);
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-				matcher.numeric_entry), prop->value);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), AGE_HOURS);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value);
 		break;
-		
+
 	case MATCHCRITERIA_SCORE_GREATER:
 	case MATCHCRITERIA_SCORE_LOWER:
 	case MATCHCRITERIA_SCORE_EQUAL:
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry),
-					  prop->value);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value);
 		break;
 
 	case MATCHCRITERIA_SIZE_GREATER:
 	case MATCHCRITERIA_SIZE_SMALLER:
 	case MATCHCRITERIA_SIZE_EQUAL:
-		if(prop->value >= MB_SIZE && !(prop->value % MB_SIZE)) {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-						 SIZE_UNIT_MBYTES);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-					matcher.numeric_entry), prop->value/MB_SIZE);
-		} else if(prop->value >= KB_SIZE && !(prop->value % KB_SIZE)) {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-						 SIZE_UNIT_KBYTES);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-					matcher.numeric_entry), prop->value/KB_SIZE);
+		if (prop->value >= MB_SIZE && !(prop->value % MB_SIZE)) {
+			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), SIZE_UNIT_MBYTES);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value / MB_SIZE);
+		} else if (prop->value >= KB_SIZE && !(prop->value % KB_SIZE)) {
+			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), SIZE_UNIT_KBYTES);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value / KB_SIZE);
 		} else {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-						 SIZE_UNIT_BYTES);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(
-					matcher.numeric_entry), prop->value);		
+			gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), SIZE_UNIT_BYTES);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(matcher.numeric_entry), prop->value);
 		}
 		break;
 
 	case MATCHCRITERIA_NOT_COLORLABEL:
 	case MATCHCRITERIA_COLORLABEL:
-		gtk_cmoption_menu_set_history(GTK_CMOPTION_MENU(matcher.color_optmenu),
-					    prop->value + 1);
+		gtk_cmoption_menu_set_history(GTK_CMOPTION_MENU(matcher.color_optmenu), prop->value + 1);
 		menu = gtk_cmoption_menu_get_menu(GTK_CMOPTION_MENU(matcher.color_optmenu));
 		g_signal_emit_by_name(G_OBJECT(menu), "selection-done", menu);
 		break;
@@ -2668,7 +2444,7 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 		break;
 	}
 
-	switch(criteria) {
+	switch (criteria) {
 	case CRITERIA_SUBJECT:
 	case CRITERIA_FROM:
 	case CRITERIA_TO:
@@ -2686,9 +2462,7 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	case CRITERIA_TAG:
 	case CRITERIA_TAGGED:
 	case CRITERIA_TEST:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo),
-					negative_cond ? PREDICATE_DOES_NOT_CONTAIN :
-							PREDICATE_CONTAINS);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo), negative_cond ? PREDICATE_DOES_NOT_CONTAIN : PREDICATE_CONTAINS);
 		break;
 	case CRITERIA_FOUND_IN_ADDRESSBOOK:
 	case CRITERIA_UNREAD:
@@ -2702,28 +2476,20 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	case CRITERIA_HAS_ATTACHMENT:
 	case CRITERIA_SIGNED:
 	case CRITERIA_COLORLABEL:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2),
-					 negative_cond ? PREDICATE_FLAG_DISABLED :
-					 		 PREDICATE_FLAG_ENABLED);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.match_combo2), negative_cond ? PREDICATE_FLAG_DISABLED : PREDICATE_FLAG_ENABLED);
 		break;
 	case CRITERIA_WATCH_THREAD:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2),
-					 negative_cond ? THREAD_NOT_WATCHED :
-					 		 THREAD_WATCHED);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2), negative_cond ? THREAD_NOT_WATCHED : THREAD_WATCHED);
 		break;
 	case CRITERIA_IGNORE_THREAD:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2),
-					 negative_cond ? THREAD_NOT_IGNORED :
-					 		 THREAD_IGNORED);
-		break;	
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2), negative_cond ? THREAD_NOT_IGNORED : THREAD_IGNORED);
+		break;
 	case CRITERIA_PARTIAL:
-		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2),
-					 negative_cond ? PREDICATE_FLAG_DISABLED :
-					 		 PREDICATE_FLAG_ENABLED);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(matcher.criteria_combo2), negative_cond ? PREDICATE_FLAG_DISABLED : PREDICATE_FLAG_ENABLED);
 		break;
 	}
 
-	switch(prop->matchtype) {
+	switch (prop->matchtype) {
 	case MATCHTYPE_MATCH:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.regexp_checkbtn), FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matcher.case_checkbtn), TRUE);
@@ -2749,3 +2515,6 @@ static gboolean prefs_matcher_selected(GtkTreeSelection *selector,
 	return TRUE;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

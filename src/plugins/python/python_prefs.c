@@ -39,11 +39,11 @@
 PythonConfig python_config;
 
 static PrefParam prefs[] = {
-        {"console_win_width", "-1", &python_config.console_win_width,
-		P_INT, NULL, NULL, NULL},
-        {"console_win_height", "-1", &python_config.console_win_height,
-		P_INT, NULL, NULL, NULL},
-        {0,0,0,0,0,0,0}
+	{"console_win_width", "-1", &python_config.console_win_width,
+	 P_INT, NULL, NULL, NULL},
+	{"console_win_height", "-1", &python_config.console_win_height,
+	 P_INT, NULL, NULL, NULL},
+	{0, 0, 0, 0, 0, 0, 0}
 };
 
 void python_prefs_init(void)
@@ -66,7 +66,7 @@ void python_prefs_done(void)
 
 	if (!(pref_file) || (prefs_set_block_label(pref_file, PREFS_BLOCK_NAME) < 0))
 		return;
-	
+
 	if (prefs_write_param(prefs, pref_file->fp) < 0) {
 		g_warning("failed to write Python plugin configuration");
 		prefs_file_close_revert(pref_file);
@@ -79,3 +79,7 @@ void python_prefs_done(void)
 	} else
 		prefs_file_close(pref_file);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

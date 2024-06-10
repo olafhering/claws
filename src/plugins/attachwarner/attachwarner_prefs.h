@@ -23,13 +23,12 @@
 
 typedef struct _AttachWarnerPrefs AttachWarnerPrefs;
 
-struct _AttachWarnerPrefs
-{
-	gchar *		match_strings;
-	gboolean	skip_quotes;
-	gboolean	skip_forwards_and_redirections;
-	gboolean	skip_signature;
-	gboolean	case_sensitive;
+struct _AttachWarnerPrefs {
+	gchar *match_strings;
+	gboolean skip_quotes;
+	gboolean skip_forwards_and_redirections;
+	gboolean skip_signature;
+	gboolean case_sensitive;
 };
 
 extern AttachWarnerPrefs attwarnerprefs;

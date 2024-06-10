@@ -16,8 +16,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_INDICATOR
@@ -43,123 +43,125 @@ static void show_claws_mail(MessagingMenuApp *mmapp, const gchar *id, gpointer d
 
 void notification_indicator_setup(void)
 {
-  if(!mmapp) {
-    mmapp = messaging_menu_app_new(CLAWS_DESKTOP_FILE);
-  }
-  if(notify_config.indicator_enabled && !mmapp_registered) {
-    messaging_menu_app_register(MESSAGING_MENU_APP(mmapp));
-    g_signal_connect(mmapp, "activate-source", G_CALLBACK(show_claws_mail), NULL);
-    mmapp_registered = TRUE;
-  }
-  if(!launcher) {
-    launcher = unity_launcher_entry_get_for_desktop_id(CLAWS_DESKTOP_FILE);
-  }
+	if (!mmapp) {
+		mmapp = messaging_menu_app_new(CLAWS_DESKTOP_FILE);
+	}
+	if (notify_config.indicator_enabled && !mmapp_registered) {
+		messaging_menu_app_register(MESSAGING_MENU_APP(mmapp));
+		g_signal_connect(mmapp, "activate-source", G_CALLBACK(show_claws_mail), NULL);
+		mmapp_registered = TRUE;
+	}
+	if (!launcher) {
+		launcher = unity_launcher_entry_get_for_desktop_id(CLAWS_DESKTOP_FILE);
+	}
 }
 
 void notification_indicator_destroy(void)
 {
-  if(!launcher) {
-    unity_launcher_entry_set_count_visible(launcher, FALSE);
-  }
-  if(mmapp_registered) {
-    messaging_menu_app_unregister(mmapp);
-    mmapp_registered = FALSE;
-  }
-  if(mainwin_state_changed_signal_id != 0) {
-    MainWindow *mainwin;
-    if((mainwin = mainwindow_get_mainwindow()) != NULL)
-      g_signal_handler_disconnect(mainwin->window, mainwin_state_changed_signal_id);
-    mainwin_state_changed_signal_id = 0;
-  }
+	if (!launcher) {
+		unity_launcher_entry_set_count_visible(launcher, FALSE);
+	}
+	if (mmapp_registered) {
+		messaging_menu_app_unregister(mmapp);
+		mmapp_registered = FALSE;
+	}
+	if (mainwin_state_changed_signal_id != 0) {
+		MainWindow *mainwin;
+		if ((mainwin = mainwindow_get_mainwindow()) != NULL)
+			g_signal_handler_disconnect(mainwin->window, mainwin_state_changed_signal_id);
+		mainwin_state_changed_signal_id = 0;
+	}
 }
 
 static void show_claws_mail(MessagingMenuApp *mmapp, const gchar *id, gpointer data)
 {
-  MainWindow *mainwin;
+	MainWindow *mainwin;
 
-  if((mainwin = mainwindow_get_mainwindow()) == NULL)
-    return;
+	if ((mainwin = mainwindow_get_mainwindow()) == NULL)
+		return;
 
-  notification_show_mainwindow(mainwin);
-  if(data) {
-    Folder *folder = data;
-    FolderItem *item = folder->inbox;
+	notification_show_mainwindow(mainwin);
+	if (data) {
+		Folder *folder = data;
+		FolderItem *item = folder->inbox;
 
-    gchar *path = folder_item_get_identifier(item);
-    mainwindow_jump_to(path, FALSE);
-    g_free(path);
-  }
+		gchar *path = folder_item_get_identifier(item);
+		mainwindow_jump_to(path, FALSE);
+		g_free(path);
+	}
 }
 
 static gboolean mainwin_state_event(GtkWidget *widget, GdkEventWindowState *event, gpointer user_data)
 {
-  if(notify_config.indicator_hide_minimized) {
-    MainWindow *mainwin;
+	if (notify_config.indicator_hide_minimized) {
+		MainWindow *mainwin;
 
-    if((mainwin = mainwindow_get_mainwindow()) == NULL)
-      return FALSE;
+		if ((mainwin = mainwindow_get_mainwindow()) == NULL)
+			return FALSE;
 
-    if((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) && (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED)) {
-      gtk_window_set_skip_taskbar_hint(GTK_WINDOW(mainwin->window), TRUE);
-    }
-    else if((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) && !(event->new_window_state & GDK_WINDOW_STATE_ICONIFIED)) {
-      gtk_window_set_skip_taskbar_hint(GTK_WINDOW(mainwin->window), FALSE);
-    }
-  }
-  return FALSE;
+		if ((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) && (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED)) {
+			gtk_window_set_skip_taskbar_hint(GTK_WINDOW(mainwin->window), TRUE);
+		} else if ((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) && !(event->new_window_state & GDK_WINDOW_STATE_ICONIFIED)) {
+			gtk_window_set_skip_taskbar_hint(GTK_WINDOW(mainwin->window), FALSE);
+		}
+	}
+	return FALSE;
 }
 
 void notification_update_indicator(void)
 {
-  GList *cur_mb;
-  gint total_message_count;
+	GList *cur_mb;
+	gint total_message_count;
 
-  if(!mainwin_state_changed_signal_id) {
-    MainWindow *mainwin;
+	if (!mainwin_state_changed_signal_id) {
+		MainWindow *mainwin;
 
-    if((mainwin = mainwindow_get_mainwindow()) != NULL)
-      mainwin_state_changed_signal_id = g_signal_connect(G_OBJECT(mainwin->window), "window-state-event", G_CALLBACK(mainwin_state_event), NULL);
-  }
+		if ((mainwin = mainwindow_get_mainwindow()) != NULL)
+			mainwin_state_changed_signal_id = g_signal_connect(G_OBJECT(mainwin->window), "window-state-event", G_CALLBACK(mainwin_state_event), NULL);
+	}
 
-  if(!notify_config.indicator_enabled)
-    return;
+	if (!notify_config.indicator_enabled)
+		return;
 
-  total_message_count = 0;
-  /* check accounts for new/unread counts */
-  for(cur_mb = folder_get_list(); cur_mb; cur_mb = cur_mb->next) {
-    Folder *folder = cur_mb->data;
-    NotificationMsgCount count;
+	total_message_count = 0;
+	/* check accounts for new/unread counts */
+	for (cur_mb = folder_get_list(); cur_mb; cur_mb = cur_mb->next) {
+		Folder *folder = cur_mb->data;
+		NotificationMsgCount count;
 
-    if(!folder->name) {
-      debug_print("Notification plugin: Warning: Ignoring unnamed mailbox in indicator applet\n");
-      continue;
-    }
-    gchar *id = folder->name;
-    notification_core_get_msg_count_of_foldername(folder->name, &count);
+		if (!folder->name) {
+			debug_print("Notification plugin: Warning: Ignoring unnamed mailbox in indicator applet\n");
+			continue;
+		}
+		gchar *id = folder->name;
+		notification_core_get_msg_count_of_foldername(folder->name, &count);
 
-    total_message_count += count.unread_msgs;
+		total_message_count += count.unread_msgs;
 
-    if(count.new_msgs > 0) {
-      gchar *strcount = g_strdup_printf("%d / %d", count.new_msgs, count.unread_msgs);
+		if (count.new_msgs > 0) {
+			gchar *strcount = g_strdup_printf("%d / %d", count.new_msgs, count.unread_msgs);
 
-      if(messaging_menu_app_has_source(MESSAGING_MENU_APP(mmapp), id))
-        messaging_menu_app_set_source_string(MESSAGING_MENU_APP(mmapp), id, strcount);
-      else
-        messaging_menu_app_append_source_with_string(MESSAGING_MENU_APP(mmapp), id, NULL, id, strcount);
+			if (messaging_menu_app_has_source(MESSAGING_MENU_APP(mmapp), id))
+				messaging_menu_app_set_source_string(MESSAGING_MENU_APP(mmapp), id, strcount);
+			else
+				messaging_menu_app_append_source_with_string(MESSAGING_MENU_APP(mmapp), id, NULL, id, strcount);
 
-      g_free(strcount);
-      messaging_menu_app_draw_attention(MESSAGING_MENU_APP(mmapp), id);
-    }
-    else {
-      if(messaging_menu_app_has_source(MESSAGING_MENU_APP(mmapp), id)) {
-        messaging_menu_app_remove_attention(MESSAGING_MENU_APP(mmapp), id);
-        messaging_menu_app_remove_source(MESSAGING_MENU_APP(mmapp), id);
-      }
-    }
-  }
+			g_free(strcount);
+			messaging_menu_app_draw_attention(MESSAGING_MENU_APP(mmapp), id);
+		} else {
+			if (messaging_menu_app_has_source(MESSAGING_MENU_APP(mmapp), id)) {
+				messaging_menu_app_remove_attention(MESSAGING_MENU_APP(mmapp), id);
+				messaging_menu_app_remove_source(MESSAGING_MENU_APP(mmapp), id);
+			}
+		}
+	}
 
-  unity_launcher_entry_set_count(launcher, total_message_count);
-  unity_launcher_entry_set_count_visible(launcher, total_message_count > 0);
+	unity_launcher_entry_set_count(launcher, total_message_count);
+	unity_launcher_entry_set_count_visible(launcher, total_message_count > 0);
 }
 
 #endif /* NOTIFICATION_INDICATOR */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

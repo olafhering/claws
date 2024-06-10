@@ -27,22 +27,20 @@
 
 #define AVATAR_IMAGE_RENDER_HOOKLIST "avatar_image_render"
 
-typedef struct _AvatarRender	AvatarRender;
+typedef struct _AvatarRender AvatarRender;
 
-struct _AvatarRender
-{
+struct _AvatarRender {
 	MsgInfo *full_msginfo;
 	GtkWidget *image;
 	gint type;
 };
 
-AvatarRender *avatars_avatarrender_new		(MsgInfo *msginfo);
-void avatars_avatarrender_free			(AvatarRender *avrender);
+AvatarRender *avatars_avatarrender_new(MsgInfo *msginfo);
+void avatars_avatarrender_free(AvatarRender *avrender);
 
-gboolean avatars_internal_rendering_hook	(gpointer source,
-						 gpointer data);
+gboolean avatars_internal_rendering_hook(gpointer source, gpointer data);
 
-void avatars_init				(void);
-void avatars_done				(void);
+void avatars_init(void);
+void avatars_done(void);
 
 #endif

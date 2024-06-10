@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -68,8 +68,7 @@ gint export_mbox(FolderItem *default_src)
 
 	if (!window) {
 		export_create();
-	}
-	else {
+	} else {
 		gtk_widget_show(window);
 	}
 
@@ -115,10 +114,8 @@ static void export_create(void)
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(delete_event), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(key_pressed), NULL);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(delete_event), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(key_pressed), NULL);
 	MANAGE_WINDOW_SIGNALS_CONNECT(window);
 
 	vbox = gtk_vbox_new(FALSE, 4);
@@ -128,8 +125,7 @@ static void export_create(void)
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
 
-	desc_label = gtk_label_new
-		(_("Locate the folder to export and specify the mbox file."));
+	desc_label = gtk_label_new(_("Locate the folder to export and specify the mbox file."));
 	gtk_label_set_line_wrap(GTK_LABEL(desc_label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), desc_label, FALSE, FALSE, 0);
 
@@ -141,53 +137,34 @@ static void export_create(void)
 	gtk_widget_set_size_request(table, 420, -1);
 
 	src_label = gtk_label_new(_("Source folder:"));
-	gtk_table_attach(GTK_TABLE(table), src_label, 0, 1, 0, 1,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), src_label, 0, 1, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(src_label), 1, 0.5);
 
 	file_label = gtk_label_new(_("Mbox file:"));
-	gtk_table_attach(GTK_TABLE(table), file_label, 0, 1, 1, 2,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), file_label, 0, 1, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(file_label), 1, 0.5);
 
 	src_entry = gtk_entry_new();
-	gtk_table_attach(GTK_TABLE(table), src_entry, 1, 2, 0, 1,
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_SHRINK|GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), src_entry, 1, 2, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 
 	file_entry = gtk_entry_new();
-	gtk_table_attach(GTK_TABLE(table), file_entry, 1, 2, 1, 2,
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_SHRINK|GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), file_entry, 1, 2, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_activates_default(GTK_ENTRY(file_entry), TRUE);
 
 	src_button = gtkut_get_browse_directory_btn(_("_Browse"));
-	gtk_table_attach(GTK_TABLE(table), src_button, 2, 3, 0, 1,
-			 (GtkAttachOptions) (0),
-			 (GtkAttachOptions) (0), 0, 0);
-	g_signal_connect(G_OBJECT(src_button), "clicked",
-			 G_CALLBACK(export_srcsel_cb), NULL);
+	gtk_table_attach(GTK_TABLE(table), src_button, 2, 3, 0, 1, (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
+	g_signal_connect(G_OBJECT(src_button), "clicked", G_CALLBACK(export_srcsel_cb), NULL);
 
 	file_button = gtkut_get_browse_file_btn(_("B_rowse"));
-	gtk_table_attach(GTK_TABLE(table), file_button, 2, 3, 1, 2,
-			 (GtkAttachOptions) (0),
-			 (GtkAttachOptions) (0), 0, 0);
-	g_signal_connect(G_OBJECT(file_button), "clicked",
-			 G_CALLBACK(export_filesel_cb), NULL);
+	gtk_table_attach(GTK_TABLE(table), file_button, 2, 3, 1, 2, (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
+	g_signal_connect(G_OBJECT(file_button), "clicked", G_CALLBACK(export_filesel_cb), NULL);
 
-	gtkut_stock_button_set_create(&confirm_area,
-				      &cancel_button, GTK_STOCK_CANCEL,
-				      &ok_button, GTK_STOCK_OK,
-				      NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &cancel_button, GTK_STOCK_CANCEL, &ok_button, GTK_STOCK_OK, NULL, NULL);
 	gtk_box_pack_end(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 0);
 	gtk_widget_grab_default(ok_button);
 
-	g_signal_connect(G_OBJECT(ok_button), "clicked",
-			 G_CALLBACK(export_ok_cb), NULL);
-	g_signal_connect(G_OBJECT(cancel_button), "clicked",
-			 G_CALLBACK(export_cancel_cb), NULL);
+	g_signal_connect(G_OBJECT(ok_button), "clicked", G_CALLBACK(export_ok_cb), NULL);
+	g_signal_connect(G_OBJECT(cancel_button), "clicked", G_CALLBACK(export_cancel_cb), NULL);
 
 	gtk_widget_show_all(window);
 }
@@ -245,13 +222,12 @@ static void export_filesel_cb(GtkWidget *widget, gpointer data)
 	gchar *filename;
 
 	filename = filesel_select_file_save(_("Select exporting file"), NULL);
-	if (!filename) return;
+	if (!filename)
+		return;
 
-	if (g_getenv ("G_BROKEN_FILENAMES")) {
+	if (g_getenv("G_BROKEN_FILENAMES")) {
 		const gchar *oldstr = filename;
-		filename = conv_codeset_strdup (filename,
-						conv_get_locale_charset_str(),
-						CS_UTF_8);
+		filename = conv_codeset_strdup(filename, conv_get_locale_charset_str(), CS_UTF_8);
 		if (!filename) {
 			g_warning("export_filesel_cb(): failed to convert character set");
 			filename = g_strdup(oldstr);
@@ -266,8 +242,7 @@ static void export_srcsel_cb(GtkWidget *widget, gpointer data)
 {
 	FolderItem *src;
 
-	src = foldersel_folder_sel(NULL, FOLDER_SEL_ALL, NULL, FALSE,
-			_("Select folder to export"));
+	src = foldersel_folder_sel(NULL, FOLDER_SEL_ALL, NULL, FALSE, _("Select folder to export"));
 	if (src && src->path)
 		gtk_entry_set_text(GTK_ENTRY(src_entry), src->path);
 }
@@ -284,3 +259,7 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data
 		export_cancel_cb(NULL, NULL);
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

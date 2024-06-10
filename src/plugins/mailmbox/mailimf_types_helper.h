@@ -58,8 +58,7 @@ extern "C" {
   mailimf_mailbox_list_new_empty creates an empty list of mailboxes
 */
 
-struct mailimf_mailbox_list *
-mailimf_mailbox_list_new_empty();
+	struct mailimf_mailbox_list *mailimf_mailbox_list_new_empty();
 
 /*
   mailimf_mailbox_list_add adds a mailbox to the list of mailboxes
@@ -68,8 +67,7 @@ mailimf_mailbox_list_new_empty();
   other code will be returned otherwise
 */
 
-int mailimf_mailbox_list_add(struct mailimf_mailbox_list * mailbox_list,
-			     struct mailimf_mailbox * mb);
+	int mailimf_mailbox_list_add(struct mailimf_mailbox_list *mailbox_list, struct mailimf_mailbox *mb);
 
 /*
   mailimf_mailbox_list_add_parse parse the given string
@@ -79,8 +77,7 @@ int mailimf_mailbox_list_add(struct mailimf_mailbox_list * mailbox_list,
   other code will be returned otherwise
 */
 
-int mailimf_mailbox_list_add_parse(struct mailimf_mailbox_list * mailbox_list,
-				   char * mb_str);
+	int mailimf_mailbox_list_add_parse(struct mailimf_mailbox_list *mailbox_list, char *mb_str);
 
 /*
   mailimf_mailbox creates a mailimf_mailbox structure with the given
@@ -97,15 +94,13 @@ int mailimf_mailbox_list_add_parse(struct mailimf_mailbox_list * mailbox_list,
   other code will be returned otherwise
 */
 
-int mailimf_mailbox_list_add_mb(struct mailimf_mailbox_list * mailbox_list,
-				char * display_name, char * address);
+	int mailimf_mailbox_list_add_mb(struct mailimf_mailbox_list *mailbox_list, char *display_name, char *address);
 
 /*
   mailimf_address_list_new_empty creates an empty list of addresses
 */
 
-struct mailimf_address_list *
-mailimf_address_list_new_empty();
+	struct mailimf_address_list *mailimf_address_list_new_empty();
 
 /*
   mailimf_address_list_add adds a mailbox to the list of addresses
@@ -114,8 +109,7 @@ mailimf_address_list_new_empty();
   other code will be returned otherwise
 */
 
-int mailimf_address_list_add(struct mailimf_address_list * address_list,
-			     struct mailimf_address * addr);
+	int mailimf_address_list_add(struct mailimf_address_list *address_list, struct mailimf_address *addr);
 
 /*
   mailimf_address_list_add_parse parse the given string
@@ -125,8 +119,7 @@ int mailimf_address_list_add(struct mailimf_address_list * address_list,
   other code will be returned otherwise
 */
 
-int mailimf_address_list_add_parse(struct mailimf_address_list * address_list,
-				   char * addr_str);
+	int mailimf_address_list_add_parse(struct mailimf_address_list *address_list, char *addr_str);
 
 /*
   mailimf_address_list_add_mb creates a mailbox mailimf_address
@@ -143,8 +136,7 @@ int mailimf_address_list_add_parse(struct mailimf_address_list * address_list,
   other code will be returned otherwise
 */
 
-int mailimf_address_list_add_mb(struct mailimf_address_list * address_list,
-				char * display_name, char * address);
+	int mailimf_address_list_add_mb(struct mailimf_address_list *address_list, char *display_name, char *address);
 
 /*
   mailimf_resent_fields_add_data adds a set of resent fields in the
@@ -159,15 +151,8 @@ int mailimf_address_list_add_mb(struct mailimf_address_list * address_list,
   other code will be returned otherwise
 */
 
-int
-mailimf_resent_fields_add_data(struct mailimf_fields * fields,
-    struct mailimf_date_time * resent_date,
-    struct mailimf_mailbox_list * resent_from,
-    struct mailimf_mailbox * resent_sender,
-    struct mailimf_address_list * resent_to,
-    struct mailimf_address_list * resent_cc,
-    struct mailimf_address_list * resent_bcc,
-    char * resent_msg_id);
+	int
+	 mailimf_resent_fields_add_data(struct mailimf_fields *fields, struct mailimf_date_time *resent_date, struct mailimf_mailbox_list *resent_from, struct mailimf_mailbox *resent_sender, struct mailimf_address_list *resent_to, struct mailimf_address_list *resent_cc, struct mailimf_address_list *resent_bcc, char *resent_msg_id);
 
 /*
   mailimf_resent_fields_new_with_data_all creates a new mailimf_fields
@@ -182,14 +167,7 @@ mailimf_resent_fields_add_data(struct mailimf_fields * fields,
   other code will be returned otherwise
 */
 
-struct mailimf_fields *
-mailimf_resent_fields_new_with_data_all(struct mailimf_date_time *
-    resent_date, struct mailimf_mailbox_list * resent_from,
-    struct mailimf_mailbox * resent_sender,
-    struct mailimf_address_list * resent_to,
-    struct mailimf_address_list * resent_cc,
-    struct mailimf_address_list * resent_bcc,
-    char * resent_msg_id);
+	struct mailimf_fields *mailimf_resent_fields_new_with_data_all(struct mailimf_date_time *resent_date, struct mailimf_mailbox_list *resent_from, struct mailimf_mailbox *resent_sender, struct mailimf_address_list *resent_to, struct mailimf_address_list *resent_cc, struct mailimf_address_list *resent_bcc, char *resent_msg_id);
 
 /*
   mailimf_resent_fields_new_with_data_all creates a new mailimf_fields
@@ -203,20 +181,13 @@ mailimf_resent_fields_new_with_data_all(struct mailimf_date_time *
   other code will be returned otherwise
 */
 
-struct mailimf_fields *
-mailimf_resent_fields_new_with_data(struct mailimf_mailbox_list * from,
-    struct mailimf_mailbox * sender,
-    struct mailimf_address_list * to,
-    struct mailimf_address_list * cc,
-    struct mailimf_address_list * bcc);
+	struct mailimf_fields *mailimf_resent_fields_new_with_data(struct mailimf_mailbox_list *from, struct mailimf_mailbox *sender, struct mailimf_address_list *to, struct mailimf_address_list *cc, struct mailimf_address_list *bcc);
 
 /*
   this function creates a new mailimf_fields structure with no fields
 */
 
-struct mailimf_fields *
-mailimf_fields_new_empty(void);
-
+	struct mailimf_fields *mailimf_fields_new_empty(void);
 
 /*
   this function adds a field to the mailimf_fields structure
@@ -225,9 +196,7 @@ mailimf_fields_new_empty(void);
   other code will be returned otherwise
 */
 
-int mailimf_fields_add(struct mailimf_fields * fields,
-		       struct mailimf_field * field);
-
+	int mailimf_fields_add(struct mailimf_fields *fields, struct mailimf_field *field);
 
 /*
   mailimf_fields_add_data adds a set of fields in the
@@ -247,18 +216,7 @@ int mailimf_fields_add(struct mailimf_fields * fields,
   other code will be returned otherwise
 */
 
-int mailimf_fields_add_data(struct mailimf_fields * fields,
-			    struct mailimf_date_time * date,
-			    struct mailimf_mailbox_list * from,
-			    struct mailimf_mailbox * sender,
-			    struct mailimf_address_list * reply_to,
-			    struct mailimf_address_list * to,
-			    struct mailimf_address_list * cc,
-			    struct mailimf_address_list * bcc,
-			    char * msg_id,
-			    clist * in_reply_to,
-			    clist * references,
-			    char * subject);
+	int mailimf_fields_add_data(struct mailimf_fields *fields, struct mailimf_date_time *date, struct mailimf_mailbox_list *from, struct mailimf_mailbox *sender, struct mailimf_address_list *reply_to, struct mailimf_address_list *to, struct mailimf_address_list *cc, struct mailimf_address_list *bcc, char *msg_id, clist *in_reply_to, clist *references, char *subject);
 
 /*
   mailimf_fields_new_with_data_all creates a new mailimf_fields
@@ -278,18 +236,7 @@ int mailimf_fields_add_data(struct mailimf_fields * fields,
   other code will be returned otherwise
 */
 
-struct mailimf_fields *
-mailimf_fields_new_with_data_all(struct mailimf_date_time * date,
-				 struct mailimf_mailbox_list * from,
-				 struct mailimf_mailbox * sender,
-				 struct mailimf_address_list * reply_to,
-				 struct mailimf_address_list * to,
-				 struct mailimf_address_list * cc,
-				 struct mailimf_address_list * bcc,
-				 char * message_id,
-				 clist * in_reply_to,
-				 clist * references,
-				 char * subject);
+	struct mailimf_fields *mailimf_fields_new_with_data_all(struct mailimf_date_time *date, struct mailimf_mailbox_list *from, struct mailimf_mailbox *sender, struct mailimf_address_list *reply_to, struct mailimf_address_list *to, struct mailimf_address_list *cc, struct mailimf_address_list *bcc, char *message_id, clist *in_reply_to, clist *references, char *subject);
 
 /*
   mailimf_fields_new_with_data creates a new mailimf_fields
@@ -309,50 +256,37 @@ mailimf_fields_new_with_data_all(struct mailimf_date_time * date,
   other code will be returned otherwise
 */
 
-struct mailimf_fields *
-mailimf_fields_new_with_data(struct mailimf_mailbox_list * from,
-			     struct mailimf_mailbox * sender,
-			     struct mailimf_address_list * reply_to,
-			     struct mailimf_address_list * to,
-			     struct mailimf_address_list * cc,
-			     struct mailimf_address_list * bcc,
-			     clist * in_reply_to,
-			     clist * references,
-			     char * subject);
+	struct mailimf_fields *mailimf_fields_new_with_data(struct mailimf_mailbox_list *from, struct mailimf_mailbox *sender, struct mailimf_address_list *reply_to, struct mailimf_address_list *to, struct mailimf_address_list *cc, struct mailimf_address_list *bcc, clist *in_reply_to, clist *references, char *subject);
 
 /*
   this function returns an allocated message identifier to
   use in a Message-ID or Resent-Message-ID field
 */
 
-char * mailimf_get_message_id(void);
+	char *mailimf_get_message_id(void);
 
 /*
   this function returns a mailimf_date_time structure to
   use in a Date or Resent-Date field
 */
 
-struct mailimf_date_time * mailimf_get_current_date(void);
-
+	struct mailimf_date_time *mailimf_get_current_date(void);
 
 /*
   mailimf_single_fields_init fills a mailimf_single_fields structure
   with the content of a mailimf_fields structure
 */
 
-void mailimf_single_fields_init(struct mailimf_single_fields * single_fields,
-                                struct mailimf_fields * fields);
+	void mailimf_single_fields_init(struct mailimf_single_fields *single_fields, struct mailimf_fields *fields);
 
 /*
   mailimf_single_fields_new creates a new mailimf_single_fields and
   fills the structure with mailimf_fields
 */
 
-struct mailimf_single_fields *
-mailimf_single_fields_new(struct mailimf_fields * fields);
+	struct mailimf_single_fields *mailimf_single_fields_new(struct mailimf_fields *fields);
 
-void mailimf_single_fields_free(struct mailimf_single_fields *
-                                single_fields);
+	void mailimf_single_fields_free(struct mailimf_single_fields *single_fields);
 
 /*
   mailimf_field_new_custom creates a new field of type optional
@@ -361,10 +295,9 @@ void mailimf_single_fields_free(struct mailimf_single_fields *
   @param value should be allocated with malloc()
 */
 
-struct mailimf_field * mailimf_field_new_custom(char * name, char * value);
+	struct mailimf_field *mailimf_field_new_custom(char *name, char *value);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

@@ -37,8 +37,8 @@
 #endif
 
 typedef struct StringEntry_ {
-	gint	ref_count;
-	gchar  *string;
+	gint ref_count;
+	gchar *string;
 } StringEntry;
 
 static StringEntry *string_entry_new(const gchar *str)
@@ -66,10 +66,10 @@ StringTable *string_table_new(void)
 	strtable = g_new0(StringTable, 1);
 	cm_return_val_if_fail(strtable != NULL, NULL);
 	strtable->hash_table = g_hash_table_new(g_str_hash, g_str_equal);
-        if (strtable->hash_table == NULL) {
-                g_free(strtable);
-                return NULL;
-        }
+	if (strtable->hash_table == NULL) {
+		g_free(strtable);
+		return NULL;
+	}
 	return strtable;
 }
 
@@ -81,11 +81,10 @@ gchar *string_table_insert_string(StringTable *table, const gchar *str)
 
 	if (entry) {
 		entry->ref_count++;
-		XXX_DEBUG ("ref++ for %s (%d)\n", entry->string,
-			   entry->ref_count);
+		XXX_DEBUG("ref++ for %s (%d)\n", entry->string, entry->ref_count);
 	} else {
 		entry = string_entry_new(str);
-		XXX_DEBUG ("inserting %s\n", str);
+		XXX_DEBUG("inserting %s\n", str);
 		/* insert entry->string instead of str, since it can be
 		 * invalid pointer after this. */
 		g_hash_table_insert(table->hash_table, entry->string, entry);
@@ -103,19 +102,16 @@ void string_table_free_string(StringTable *table, const gchar *str)
 	if (entry) {
 		entry->ref_count--;
 		if (entry->ref_count <= 0) {
-			XXX_DEBUG ("refcount of string %s dropped to zero\n",
-				   entry->string);
+			XXX_DEBUG("refcount of string %s dropped to zero\n", entry->string);
 			g_hash_table_remove(table->hash_table, str);
 			string_entry_free(entry);
 		} else {
-			XXX_DEBUG ("ref-- for %s (%d)\n", entry->string,
-				   entry->ref_count); 
+			XXX_DEBUG("ref-- for %s (%d)\n", entry->string, entry->ref_count);
 		}
 	}
 }
 
-static gboolean string_table_remove_for_each_fn(gchar *key, StringEntry *entry,
-						gpointer user_data)
+static gboolean string_table_remove_for_each_fn(gchar *key, StringEntry *entry, gpointer user_data)
 {
 	cm_return_val_if_fail(key != NULL, TRUE);
 	cm_return_val_if_fail(entry != NULL, TRUE);
@@ -130,15 +126,12 @@ void string_table_free(StringTable *table)
 	cm_return_if_fail(table != NULL);
 	cm_return_if_fail(table->hash_table != NULL);
 
-	g_hash_table_foreach_remove(table->hash_table,
-				    (GHRFunc)string_table_remove_for_each_fn,
-				    NULL);
+	g_hash_table_foreach_remove(table->hash_table, (GHRFunc) string_table_remove_for_each_fn, NULL);
 	g_hash_table_destroy(table->hash_table);
 	g_free(table);
 }
 
-static void string_table_stats_for_each_fn(gchar *key, StringEntry *entry,
-					   guint *totals)
+static void string_table_stats_for_each_fn(gchar *key, StringEntry *entry, guint *totals)
 {
 	if (entry->ref_count > 1) {
 		*totals += strlen(key) * (entry->ref_count - 1);
@@ -149,7 +142,10 @@ void string_table_get_stats(StringTable *table)
 {
 	guint totals = 0;
 
-	g_hash_table_foreach(table->hash_table,
-			     (GHFunc)string_table_stats_for_each_fn, &totals);
-	XXX_DEBUG ("TOTAL UNSPILLED %d (%dK)\n", totals, totals / 1024);
+	g_hash_table_foreach(table->hash_table, (GHFunc) string_table_stats_for_each_fn, &totals);
+	XXX_DEBUG("TOTAL UNSPILLED %d (%dK)\n", totals, totals / 1024);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

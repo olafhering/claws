@@ -20,7 +20,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -40,63 +40,59 @@
 #include "perl_plugin.h"
 #include "perl_gtk.h"
 
-static void perl_filter_edit(GtkAction *,gpointer);
+static void perl_filter_edit(GtkAction *, gpointer);
 
-
-static GtkActionEntry mainwindow_tools_perl_edit[] = {{
-	"Tools/EditPerlRules",
-	NULL, N_("Edit perl filter rules (ext)..."), NULL, NULL, G_CALLBACK(perl_filter_edit)
-}};
+static GtkActionEntry mainwindow_tools_perl_edit[] = { {
+							"Tools/EditPerlRules",
+							NULL, N_("Edit perl filter rules (ext)..."), NULL, NULL, G_CALLBACK(perl_filter_edit)
+							}
+};
 
 static gint main_menu_id = 0;
 
-
 void perl_gtk_init(void)
 {
-  MainWindow *mainwin;
+	MainWindow *mainwin;
 
-  mainwin =  mainwindow_get_mainwindow();
+	mainwin = mainwindow_get_mainwindow();
 
-  gtk_action_group_add_actions(mainwin->action_group, mainwindow_tools_perl_edit,
-		  1, (gpointer)mainwin);
-  MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menu/Tools", "EditPerlRules", 
-		    "Tools/EditPerlRules", GTK_UI_MANAGER_MENUITEM,
-		    main_menu_id)
+	gtk_action_group_add_actions(mainwin->action_group, mainwindow_tools_perl_edit, 1, (gpointer)mainwin);
+	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menu/Tools", "EditPerlRules", "Tools/EditPerlRules", GTK_UI_MANAGER_MENUITEM, main_menu_id)
 }
 
 void perl_gtk_done(void)
 {
-  MainWindow *mainwin;
+	MainWindow *mainwin;
 
-  mainwin = mainwindow_get_mainwindow();
+	mainwin = mainwindow_get_mainwindow();
 
-  if(mainwin && !claws_is_exiting()) {
-    MENUITEM_REMUI_MANAGER(mainwin->ui_manager,mainwin->action_group, "Tools/EditPerlRules", main_menu_id);
-    main_menu_id = 0;
-  }
+	if (mainwin && !claws_is_exiting()) {
+		MENUITEM_REMUI_MANAGER(mainwin->ui_manager, mainwin->action_group, "Tools/EditPerlRules", main_menu_id);
+		main_menu_id = 0;
+	}
 }
 
 static void perl_filter_edit(GtkAction *action, gpointer callback_data)
 {
-  gchar *perlfilter;
-  gchar *pp;
-  gchar buf[1024];
-  gchar **cmdline;
+	gchar *perlfilter;
+	gchar *pp;
+	gchar buf[1024];
+	gchar **cmdline;
 
-  perlfilter = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PERLFILTER, NULL);
-  if (prefs_common_get_ext_editor_cmd() &&
-      (pp = strchr(prefs_common_get_ext_editor_cmd(), '%')) &&
-      *(pp + 1) == 's' && !strchr(pp + 2, '%')) {
-    g_snprintf(buf, sizeof(buf), prefs_common_get_ext_editor_cmd(), perlfilter);
-  }
-  else {
-    if (prefs_common_get_ext_editor_cmd())
-      g_warning("Perl plugin: external editor command-line is invalid: `%s'",
-		prefs_common_get_ext_editor_cmd());
-    g_snprintf(buf, sizeof(buf), "emacs %s", perlfilter);
-  }
-  g_free(perlfilter);
-  cmdline = strsplit_with_quote(buf, " ", 1024);
-  execute_detached(cmdline);
-  g_strfreev(cmdline);
+	perlfilter = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PERLFILTER, NULL);
+	if (prefs_common_get_ext_editor_cmd() && (pp = strchr(prefs_common_get_ext_editor_cmd(), '%')) && *(pp + 1) == 's' && !strchr(pp + 2, '%')) {
+		g_snprintf(buf, sizeof(buf), prefs_common_get_ext_editor_cmd(), perlfilter);
+	} else {
+		if (prefs_common_get_ext_editor_cmd())
+			g_warning("Perl plugin: external editor command-line is invalid: `%s'", prefs_common_get_ext_editor_cmd());
+		g_snprintf(buf, sizeof(buf), "emacs %s", perlfilter);
+	}
+	g_free(perlfilter);
+	cmdline = strsplit_with_quote(buf, " ", 1024);
+	execute_detached(cmdline);
+	g_strfreev(cmdline);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

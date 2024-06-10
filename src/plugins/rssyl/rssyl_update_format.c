@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -55,29 +55,28 @@ typedef struct _RUpdateFormatCtx RUpdateFormatCtx;
 
 extern FolderClass rssyl_class;
 
-static void rssyl_update_format_move_contents(FolderItem *olditem,
-		FolderItem *newitem);
+static void rssyl_update_format_move_contents(FolderItem *olditem, FolderItem *newitem);
 static gchar *_old_rssyl_item_get_path(Folder *folder, FolderItem *item);
 static void _delete_old_roots_func(gpointer data, gpointer user_data);
 
 static void rssyl_update_format_func(FolderItem *item, gpointer data)
 {
 	RFolderItem *ritem;
-	RUpdateFormatCtx *ctx = (RUpdateFormatCtx *)data;
+	RUpdateFormatCtx *ctx = (RUpdateFormatCtx *) data;
 	Folder *f = NULL;
 	FolderItem *new_item = NULL;
 	gchar *name;
 	OldRFeed *of;
 
-	if( !IS_RSSYL_FOLDER_ITEM(item) )
+	if (!IS_RSSYL_FOLDER_ITEM(item))
 		return;
 
 	/* Do not do anything once we reached first new folder
 	 * (which we created earlier in this process) */
-	if( ctx->reached_first_new )
+	if (ctx->reached_first_new)
 		return;
 
-	if( item->folder == ctx->n_first ) {
+	if (item->folder == ctx->n_first) {
 		ctx->reached_first_new = TRUE;
 		debug_print("RSSyl: (FORMAT) reached first new folder\n");
 		return;
@@ -85,7 +84,7 @@ static void rssyl_update_format_func(FolderItem *item, gpointer data)
 
 	debug_print("RSSyl: (FORMAT) item '%s'\n", item->name);
 
-	if( folder_item_parent(item) == NULL ) {
+	if (folder_item_parent(item) == NULL) {
 		/* Root rssyl folder */
 		ctx->oldroots = g_slist_prepend(ctx->oldroots, item);
 
@@ -137,16 +136,14 @@ static void rssyl_update_format_func(FolderItem *item, gpointer data)
 		new_item = folder_create_folder(ctx->n_parent, item->name);
 
 		if (new_item == NULL) {
-			debug_print("RSSyl: (FORMAT) couldn't add folder '%s', skipping it\n",
-					item->name);
+			debug_print("RSSyl: (FORMAT) couldn't add folder '%s', skipping it\n", item->name);
 			return;
 		}
 
 		of = rssyl_old_feed_get_by_name(ctx->oldfeeds, item->name);
 		if (of != NULL && of->url != NULL) {
 			/* Folder with an actual subscribed feed */
-			debug_print("RSSyl: (FORMAT) making '%s' a feed with URL '%s'\n",
-					item->name, of->url);
+			debug_print("RSSyl: (FORMAT) making '%s' a feed with URL '%s'\n", item->name, of->url);
 
 			ritem = (RFolderItem *)new_item;
 			ritem->url = g_strdup(of->url);
@@ -154,12 +151,10 @@ static void rssyl_update_format_func(FolderItem *item, gpointer data)
 			rssyl_feed_start_refresh_timeout(ritem);
 
 			ritem->official_title = g_strdup(of->official_name);
-			ritem->default_refresh_interval =
-				(of->default_refresh_interval != 0 ? TRUE : FALSE);
+			ritem->default_refresh_interval = (of->default_refresh_interval != 0 ? TRUE : FALSE);
 			ritem->refresh_interval = of->refresh_interval;
 			ritem->keep_old = (of->expired_num > -1 ? TRUE : FALSE);
-			ritem->fetch_comments =
-				(of->fetch_comments != 0 ? TRUE : FALSE);
+			ritem->fetch_comments = (of->fetch_comments != 0 ? TRUE : FALSE);
 			ritem->fetch_comments_max_age = of->fetch_comments_for;
 			ritem->silent_update = of->silent_update;
 			ritem->ssl_verify_peer = of->ssl_verify_peer;
@@ -184,16 +179,14 @@ static void rssyl_update_format_func(FolderItem *item, gpointer data)
 	ctx->n_prev = new_item;
 }
 
-
 void rssyl_update_format()
 {
 	RUpdateFormatCtx *ctx = NULL;
 	GSList *oldfeeds;
 	gchar *old_feeds_xml = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			RSSYL_DIR, G_DIR_SEPARATOR_S, "feeds.xml", NULL);
+					   RSSYL_DIR, G_DIR_SEPARATOR_S, "feeds.xml", NULL);
 
-	if (!g_file_test(old_feeds_xml,
-				G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+	if (!g_file_test(old_feeds_xml, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
 		g_free(old_feeds_xml);
 		return;
 	}
@@ -216,7 +209,7 @@ void rssyl_update_format()
 	folder_item_update_freeze();
 
 	/* Go through all RSSyl folders, making new copies */
-	folder_func_to_all_folders((FolderItemFunc)rssyl_update_format_func, ctx);
+	folder_func_to_all_folders((FolderItemFunc) rssyl_update_format_func, ctx);
 
 	g_slist_foreach(ctx->oldroots, _delete_old_roots_func, NULL);
 	g_slist_free(ctx->oldroots);
@@ -242,8 +235,7 @@ static void _delete_old_roots_func(gpointer data, gpointer user_data)
 }
 
 /* Copy each item in a feed to the new directory */
-static void rssyl_update_format_move_contents(FolderItem *olditem,
-		FolderItem *newitem)
+static void rssyl_update_format_move_contents(FolderItem *olditem, FolderItem *newitem)
 {
 	gchar *oldpath, *newpath, *fname, *fpath, *nfpath;
 	GDir *d = NULL;
@@ -253,16 +245,14 @@ static void rssyl_update_format_move_contents(FolderItem *olditem,
 	newpath = folder_item_get_path(newitem);
 
 	if ((d = g_dir_open(oldpath, 0, &error)) == NULL) {
-		debug_print("RSSyl: (FORMAT) couldn't open dir '%s': %s\n", oldpath,
-				error->message);
+		debug_print("RSSyl: (FORMAT) couldn't open dir '%s': %s\n", oldpath, error->message);
 		g_free(oldpath);
 		g_free(newpath);
 		g_error_free(error);
 		return;
 	}
 
-	debug_print("RSSyl: (FORMAT) moving contents of '%s' to '%s'\n",
-			oldpath, newpath);
+	debug_print("RSSyl: (FORMAT) moving contents of '%s' to '%s'\n", oldpath, newpath);
 
 	while ((fname = (gchar *)g_dir_read_name(d)) != NULL) {
 		gboolean migrate_file = to_number(fname) > 0 || strstr(fname, ".claws_") == fname;
@@ -293,8 +283,11 @@ static gchar *_old_rssyl_item_get_path(Folder *folder, FolderItem *item)
 		return g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, RSSYL_DIR, NULL);
 
 	tmp = rssyl_strreplace(item->name, "/", "\\");
-	result = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, RSSYL_DIR,
-			G_DIR_SEPARATOR_S, tmp, NULL);
+	result = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, RSSYL_DIR, G_DIR_SEPARATOR_S, tmp, NULL);
 	g_free(tmp);
 	return result;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

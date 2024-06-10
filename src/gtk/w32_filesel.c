@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 #define UNICODE
@@ -58,7 +58,7 @@ typedef struct _WinChooserCtx WinChooserCtx;
 
 static void *threaded_GetOpenFileName(void *arg)
 {
-	WinChooserCtx *ctx = (WinChooserCtx *)arg;
+	WinChooserCtx *ctx = (WinChooserCtx *) arg;
 
 	g_return_val_if_fail(ctx != NULL, NULL);
 	g_return_val_if_fail(ctx->data != NULL, NULL);
@@ -71,7 +71,7 @@ static void *threaded_GetOpenFileName(void *arg)
 
 static void *threaded_GetSaveFileName(void *arg)
 {
-	WinChooserCtx *ctx = (WinChooserCtx *)arg;
+	WinChooserCtx *ctx = (WinChooserCtx *) arg;
 
 	g_return_val_if_fail(ctx != NULL, NULL);
 	g_return_val_if_fail(ctx->data != NULL, NULL);
@@ -84,7 +84,7 @@ static void *threaded_GetSaveFileName(void *arg)
 
 static void *threaded_SHBrowseForFolder(void *arg)
 {
-	WinChooserCtx *ctx = (WinChooserCtx *)arg;
+	WinChooserCtx *ctx = (WinChooserCtx *) arg;
 
 	g_return_val_if_fail(ctx != NULL, NULL);
 	g_return_val_if_fail(ctx->data != NULL, NULL);
@@ -100,8 +100,7 @@ static void *threaded_SHBrowseForFolder(void *arg)
  * global static variable o.
  * It expects o.lpstrFile to point to an already allocated buffer,
  * of size at least MAXPATHLEN. */
-static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
-		const gchar *filter, const gboolean multi)
+static const gboolean _file_open_dialog(const gchar *path, const gchar *title, const gchar *filter, const gboolean multi)
 {
 	gboolean ret;
 	gunichar2 *path16 = NULL;
@@ -117,11 +116,9 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 
 	/* Path needs to be converted to UTF-16, so that the native chooser
 	 * can understand it. */
-	path16 = g_utf8_to_utf16(path ? path : "",
-			-1, NULL, NULL, &error);
+	path16 = g_utf8_to_utf16(path ? path : "", -1, NULL, NULL, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"), error->message);
 		debug_print("file path '%s' conversion to UTF-16 failed\n", path);
 		g_error_free(error);
 		error = NULL;
@@ -129,8 +126,7 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 	}
 
 	/* Chooser dialog title needs to be UTF-16 as well. */
-	title16 = g_utf8_to_utf16(title ? title : "",
-			-1, NULL, NULL, &error);
+	title16 = g_utf8_to_utf16(title ? title : "", -1, NULL, NULL, &error);
 	if (error != NULL) {
 		debug_print("dialog title '%s' conversion to UTF-16 failed\n", title);
 		g_error_free(error);
@@ -167,9 +163,9 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 		 * Therefore we need enough bytes to store the filter string twice
 		 * and three null chars. */
 		sz = sizeof(gunichar2);
-		win_filter16 = g_malloc0(conv_items*sz*2 + sz*3);
-		memcpy(win_filter16, filter16, conv_items*sz);
-		memcpy(win_filter16 + conv_items + 1, filter16, conv_items*sz);
+		win_filter16 = g_malloc0(conv_items * sz * 2 + sz * 3);
+		memcpy(win_filter16, filter16, conv_items * sz);
+		memcpy(win_filter16 + conv_items + 1, filter16, conv_items * sz);
 		g_free(filter16);
 
 		if (error != NULL) {
@@ -177,7 +173,7 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 			g_error_free(error);
 			error = NULL;
 		}
-		o.lpstrFilter = (LPCTSTR)win_filter16;
+		o.lpstrFilter = (LPCTSTR) win_filter16;
 		o.nFilterIndex = 1;
 	}
 
@@ -186,8 +182,7 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 	ctx->done = FALSE;
 
 #ifdef USE_PTHREAD
-	if (pthread_create(&pt, NULL, threaded_GetOpenFileName,
-				(void *)ctx) != 0) {
+	if (pthread_create(&pt, NULL, threaded_GetOpenFileName, (void *)ctx) != 0) {
 		debug_print("Couldn't run in a thread, continuing unthreaded.\n");
 		threaded_GetOpenFileName(ctx);
 	} else {
@@ -212,8 +207,7 @@ static const gboolean _file_open_dialog(const gchar *path, const gchar *title,
 	return ret;
 }
 
-gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *path,
-		              const gchar *filter)
+gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *path, const gchar *filter)
 {
 	gchar *str = NULL;
 	GError *error = NULL;
@@ -227,8 +221,7 @@ gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *pat
 	/* Now convert the returned file path back from UTF-16. */
 	str = g_utf16_to_utf8(o.lpstrFile, o.nMaxFile, NULL, NULL, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"), error->message);
 		debug_print("returned file path conversion to UTF-8 failed\n");
 		g_error_free(error);
 	}
@@ -237,8 +230,7 @@ gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *pat
 	return str;
 }
 
-GList *filesel_select_multiple_files_open_with_filter(const gchar *title,
-		const gchar *path, const gchar *filter)
+GList *filesel_select_multiple_files_open_with_filter(const gchar *title, const gchar *path, const gchar *filter)
 {
 	GList *file_list = NULL;
 	gchar *str = NULL;
@@ -260,8 +252,7 @@ GList *filesel_select_multiple_files_open_with_filter(const gchar *title,
 	str = g_utf16_to_utf8(o.lpstrFile, -1, &items_read, NULL, &error);
 
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"), error->message);
 		debug_print("returned file path conversion to UTF-8 failed\n");
 		g_error_free(error);
 		return NULL;
@@ -288,8 +279,7 @@ GList *filesel_select_multiple_files_open_with_filter(const gchar *title,
 	while (items_read > 0) {
 		str = g_utf16_to_utf8(f, -1, &items_read, NULL, &error);
 		if (error != NULL) {
-			alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"),
-					error->message);
+			alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"), error->message);
 			debug_print("returned file path conversion to UTF-8 failed\n");
 			g_error_free(error);
 			g_free(o.lpstrFile);
@@ -298,8 +288,7 @@ GList *filesel_select_multiple_files_open_with_filter(const gchar *title,
 
 		if (items_read > 0) {
 			debug_print("selected file '%s'\n", str);
-			file_list = g_list_append(file_list,
-					g_strconcat(dir, G_DIR_SEPARATOR_S, str, NULL));
+			file_list = g_list_append(file_list, g_strconcat(dir, G_DIR_SEPARATOR_S, str, NULL));
 		}
 		g_free(str);
 
@@ -334,19 +323,18 @@ gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 #endif
 
 	/* Find the filename part, if any */
-	if (path == NULL || path[strlen(path)-1] == G_DIR_SEPARATOR) {
+	if (path == NULL || path[strlen(path) - 1] == G_DIR_SEPARATOR) {
 		filename = "";
 	} else if ((filename = strrchr(path, G_DIR_SEPARATOR)) != NULL) {
 		filename++;
 	} else {
-		filename = (char *) path;
+		filename = (char *)path;
 	}
 
 	/* Convert it to UTF-16. */
 	filename16 = g_utf8_to_utf16(filename, -1, NULL, &conv_items, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert attachment name to UTF-16:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert attachment name to UTF-16:\n\n%s"), error->message);
 		debug_print("filename '%s' conversion to UTF-16 failed\n", filename);
 		g_error_free(error);
 		return NULL;
@@ -356,8 +344,7 @@ gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 	 * can understand it. */
 	path16 = g_utf8_to_utf16(path, -1, NULL, NULL, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"), error->message);
 		debug_print("file path '%s' conversion to UTF-16 failed\n", path);
 		g_error_free(error);
 		g_free(filename16);
@@ -393,8 +380,7 @@ gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 	ctx->done = FALSE;
 
 #ifdef USE_PTHREAD
-	if (pthread_create(&pt, NULL, threaded_GetSaveFileName,
-				(void *)ctx) != 0) {
+	if (pthread_create(&pt, NULL, threaded_GetSaveFileName, (void *)ctx) != 0) {
 		debug_print("Couldn't run in a thread, continuing unthreaded.\n");
 		threaded_GetSaveFileName(ctx);
 	} else {
@@ -422,8 +408,7 @@ gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 	/* Now convert the returned file path back from UTF-16. */
 	str = g_utf16_to_utf8(o.lpstrFile, o.nMaxFile, NULL, NULL, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"), error->message);
 		debug_print("returned file path conversion to UTF-8 failed\n");
 		g_error_free(error);
 	}
@@ -435,8 +420,7 @@ gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 /* This callback function is used to set the folder browse dialog
  * selection from filesel_select_file_open_folder() to set
  * chosen starting folder ("path" argument to that function. */
-static int CALLBACK _open_folder_callback(HWND hwnd, UINT uMsg,
-		LPARAM lParam, LPARAM lpData)
+static int CALLBACK _open_folder_callback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
 	if (uMsg != BFFM_INITIALIZED)
 		return 0;
@@ -459,19 +443,16 @@ gchar *filesel_select_file_open_folder(const gchar *title, const gchar *path)
 
 	/* Path needs to be converted to UTF-16, so that the native chooser
 	 * can understand it. */
-	path16 = g_utf8_to_utf16(path ? path : "",
-			-1, NULL, &conv_items, &error);
+	path16 = g_utf8_to_utf16(path ? path : "", -1, NULL, &conv_items, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path to UTF-16:\n\n%s"), error->message);
 		debug_print("file path '%s' conversion to UTF-16 failed\n", path);
 		g_error_free(error);
 		return NULL;
 	}
 
 	/* Chooser dialog title needs to be UTF-16 as well. */
-	title16 = g_utf8_to_utf16(title ? title : "",
-			-1, NULL, NULL, &error);
+	title16 = g_utf8_to_utf16(title ? title : "", -1, NULL, NULL, &error);
 	if (error != NULL) {
 		debug_print("dialog title '%s' conversion to UTF-16 failed\n", title);
 		g_error_free(error);
@@ -486,7 +467,7 @@ gchar *filesel_select_file_open_folder(const gchar *title, const gchar *path)
 	b.ulFlags = 0;
 	b.pidlRoot = NULL;
 	b.lpfn = _open_folder_callback;
-	b.lParam = (LPARAM)path16;
+	b.lParam = (LPARAM) path16;
 
 	CoInitialize(NULL);
 
@@ -495,8 +476,7 @@ gchar *filesel_select_file_open_folder(const gchar *title, const gchar *path)
 	ctx->done = FALSE;
 
 #ifdef USE_PTHREAD
-	if (pthread_create(&pt, NULL, threaded_SHBrowseForFolder,
-				(void *)ctx) != 0) {
+	if (pthread_create(&pt, NULL, threaded_SHBrowseForFolder, (void *)ctx) != 0) {
 		debug_print("Couldn't run in a thread, continuing unthreaded.\n");
 		threaded_SHBrowseForFolder(ctx);
 	} else {
@@ -536,8 +516,7 @@ gchar *filesel_select_file_open_folder(const gchar *title, const gchar *path)
 	 * the string is null-terminated. */
 	str = g_utf16_to_utf8(path16, -1, NULL, NULL, &error);
 	if (error != NULL) {
-		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"),
-				error->message);
+		alertpanel_error(_("Could not convert file path back to UTF-8:\n\n%s"), error->message);
 		debug_print("returned file path conversion to UTF-8 failed\n");
 		g_error_free(error);
 	}
@@ -553,3 +532,7 @@ gchar *filesel_select_file_save_folder(const gchar *title, const gchar *path)
 {
 	return filesel_select_file_open_folder(title, path);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

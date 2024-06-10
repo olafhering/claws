@@ -20,7 +20,7 @@
 #ifndef PREFS_FONTS_H
 #define PREFS_FONTS_H
 
-void prefs_fonts_init	(void);
-void prefs_fonts_done	(void);
+void prefs_fonts_init(void);
+void prefs_fonts_done(void);
 
-#endif /* PREFS_FONTS_H */ 
+#endif /* PREFS_FONTS_H */

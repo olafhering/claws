@@ -20,8 +20,7 @@
 #ifndef __MANUAL_H__
 #define __MANUAL_H__
 
-typedef enum
-{
+typedef enum {
 	MANUAL_MANUAL_CLAWS,
 	MANUAL_FAQ_CLAWS,
 } ManualType;
@@ -37,8 +36,8 @@ typedef enum
 #define MANUAL_ANCHOR_PLUGINS		"adv_plugins"
 #define MANUAL_ANCHOR_TAGS		"adv_tags"
 
-gboolean manual_available	(ManualType type);
-void	 manual_open		(ManualType type, gchar *url_anchor);
-void	 manual_open_with_anchor_cb(GtkWidget *widget, gchar *url_anchor);
+gboolean manual_available(ManualType type);
+void manual_open(ManualType type, gchar *url_anchor);
+void manual_open_with_anchor_cb(GtkWidget *widget, gchar *url_anchor);
 
 #endif /* __MANUAL_H__ */

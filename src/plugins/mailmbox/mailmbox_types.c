@@ -47,203 +47,191 @@
 
 /* *********************************************************************** */
 
-int claws_mailmbox_msg_info_update(struct claws_mailmbox_folder * folder,
-			     size_t msg_start, size_t msg_start_len,
-			     size_t msg_headers, size_t msg_headers_len,
-			     size_t msg_body, size_t msg_body_len,
-			     size_t msg_size, size_t msg_padding,
-			     uint32_t msg_uid)
+int claws_mailmbox_msg_info_update(struct claws_mailmbox_folder *folder, size_t msg_start, size_t msg_start_len, size_t msg_headers, size_t msg_headers_len, size_t msg_body, size_t msg_body_len, size_t msg_size, size_t msg_padding, uint32_t msg_uid)
 {
-  struct claws_mailmbox_msg_info * info;
-  int res;
-  chashdatum key;
-  chashdatum data;
-  int r;
-  
-  key.data = &msg_uid;
-  key.len = sizeof(msg_uid);
-  r = chash_get(folder->mb_hash, &key, &data);
-  if (r < 0) {
-    unsigned int index;
+	struct claws_mailmbox_msg_info *info;
+	int res;
+	chashdatum key;
+	chashdatum data;
+	int r;
 
-    info = claws_mailmbox_msg_info_new(msg_start, msg_start_len,
-        msg_headers, msg_headers_len,
-        msg_body, msg_body_len, msg_size, msg_padding, msg_uid);
-    if (info == NULL) {
-      res = MAILMBOX_ERROR_MEMORY;
-      goto err;
-    }
+	key.data = &msg_uid;
+	key.len = sizeof(msg_uid);
+	r = chash_get(folder->mb_hash, &key, &data);
+	if (r < 0) {
+		unsigned int index;
 
-    r = carray_add(folder->mb_tab, info, &index);
-    if (r < 0) {
-      claws_mailmbox_msg_info_free(info);
-      res = MAILMBOX_ERROR_MEMORY;
-      goto err;
-    }
+		info = claws_mailmbox_msg_info_new(msg_start, msg_start_len, msg_headers, msg_headers_len, msg_body, msg_body_len, msg_size, msg_padding, msg_uid);
+		if (info == NULL) {
+			res = MAILMBOX_ERROR_MEMORY;
+			goto err;
+		}
 
-    if (msg_uid != 0) {
-      chashdatum key;
-      chashdatum data;
-      
-      key.data = &msg_uid;
-      key.len = sizeof(msg_uid);
-      data.data = info;
-      data.len = 0;
-      
-      r = chash_set(folder->mb_hash, &key, &data, NULL);
-      if (r < 0) {
-	claws_mailmbox_msg_info_free(info);
-	carray_delete(folder->mb_tab, index);
-	res = MAILMBOX_ERROR_MEMORY;
-	goto err;
-      }
-    }
-    
-    info->msg_index = index;
-  }
-  else {
-    info = data.data;
-    
-    info->msg_start = msg_start;
-    info->msg_start_len = msg_start_len;
-    info->msg_headers = msg_headers;
-    info->msg_headers_len = msg_headers_len;
-    info->msg_body = msg_body;
-    info->msg_body_len = msg_body_len;
-    info->msg_size = msg_size;
-    info->msg_padding = msg_padding;
-  }
+		r = carray_add(folder->mb_tab, info, &index);
+		if (r < 0) {
+			claws_mailmbox_msg_info_free(info);
+			res = MAILMBOX_ERROR_MEMORY;
+			goto err;
+		}
 
-  return MAILMBOX_NO_ERROR;
+		if (msg_uid != 0) {
+			chashdatum key;
+			chashdatum data;
+
+			key.data = &msg_uid;
+			key.len = sizeof(msg_uid);
+			data.data = info;
+			data.len = 0;
+
+			r = chash_set(folder->mb_hash, &key, &data, NULL);
+			if (r < 0) {
+				claws_mailmbox_msg_info_free(info);
+				carray_delete(folder->mb_tab, index);
+				res = MAILMBOX_ERROR_MEMORY;
+				goto err;
+			}
+		}
+
+		info->msg_index = index;
+	} else {
+		info = data.data;
+
+		info->msg_start = msg_start;
+		info->msg_start_len = msg_start_len;
+		info->msg_headers = msg_headers;
+		info->msg_headers_len = msg_headers_len;
+		info->msg_body = msg_body;
+		info->msg_body_len = msg_body_len;
+		info->msg_size = msg_size;
+		info->msg_padding = msg_padding;
+	}
+
+	return MAILMBOX_NO_ERROR;
 
  err:
-  return res;
+	return res;
 }
 
-
-struct claws_mailmbox_msg_info *
-claws_mailmbox_msg_info_new(size_t msg_start, size_t msg_start_len,
-		      size_t msg_headers, size_t msg_headers_len,
-		      size_t msg_body, size_t msg_body_len,
-		      size_t msg_size, size_t msg_padding,
-		      uint32_t msg_uid)
+struct claws_mailmbox_msg_info *claws_mailmbox_msg_info_new(size_t msg_start, size_t msg_start_len, size_t msg_headers, size_t msg_headers_len, size_t msg_body, size_t msg_body_len, size_t msg_size, size_t msg_padding, uint32_t msg_uid)
 {
-  struct claws_mailmbox_msg_info * info;
+	struct claws_mailmbox_msg_info *info;
 
-  info = malloc(sizeof(* info));
-  if (info == NULL)
-    return NULL;
+	info = malloc(sizeof(*info));
+	if (info == NULL)
+		return NULL;
 
-  info->msg_index = 0;
-  info->msg_uid = msg_uid;
-  if (msg_uid != 0)
-    info->msg_written_uid = TRUE;
-  else
-    info->msg_written_uid = FALSE;
-  info->msg_deleted = FALSE;
+	info->msg_index = 0;
+	info->msg_uid = msg_uid;
+	if (msg_uid != 0)
+		info->msg_written_uid = TRUE;
+	else
+		info->msg_written_uid = FALSE;
+	info->msg_deleted = FALSE;
 
-  info->msg_start = msg_start;
-  info->msg_start_len = msg_start_len;
+	info->msg_start = msg_start;
+	info->msg_start_len = msg_start_len;
 
-  info->msg_headers = msg_headers;
-  info->msg_headers_len = msg_headers_len;
+	info->msg_headers = msg_headers;
+	info->msg_headers_len = msg_headers_len;
 
-  info->msg_body = msg_body;
-  info->msg_body_len = msg_body_len;
+	info->msg_body = msg_body;
+	info->msg_body_len = msg_body_len;
 
-  info->msg_size = msg_size;
+	info->msg_size = msg_size;
 
-  info->msg_padding = msg_padding;
+	info->msg_padding = msg_padding;
 
-  return info;
+	return info;
 }
 
-void claws_mailmbox_msg_info_free(struct claws_mailmbox_msg_info * info)
+void claws_mailmbox_msg_info_free(struct claws_mailmbox_msg_info *info)
 {
-  free(info);
+	free(info);
 }
-
 
 /* append info */
 
-struct claws_mailmbox_append_info *
-claws_mailmbox_append_info_new(const char * ai_message, size_t ai_size)
+struct claws_mailmbox_append_info *claws_mailmbox_append_info_new(const char *ai_message, size_t ai_size)
 {
-  struct claws_mailmbox_append_info * info;
+	struct claws_mailmbox_append_info *info;
 
-  info = malloc(sizeof(* info));
-  if (info == NULL)
-    return NULL;
+	info = malloc(sizeof(*info));
+	if (info == NULL)
+		return NULL;
 
-  info->ai_message = ai_message;
-  info->ai_size = ai_size;
+	info->ai_message = ai_message;
+	info->ai_size = ai_size;
 
-  return info;
+	return info;
 }
 
-void claws_mailmbox_append_info_free(struct claws_mailmbox_append_info * info)
+void claws_mailmbox_append_info_free(struct claws_mailmbox_append_info *info)
 {
-  free(info);
+	free(info);
 }
 
-struct claws_mailmbox_folder * claws_mailmbox_folder_new(const char * mb_filename)
+struct claws_mailmbox_folder *claws_mailmbox_folder_new(const char *mb_filename)
 {
-  struct claws_mailmbox_folder * folder;
+	struct claws_mailmbox_folder *folder;
 
-  folder = malloc(sizeof(* folder));
-  if (folder == NULL)
-    goto err;
+	folder = malloc(sizeof(*folder));
+	if (folder == NULL)
+		goto err;
 
-  strncpy(folder->mb_filename, mb_filename, PATH_MAX - 1);
-  folder->mb_filename[PATH_MAX - 1] = '\0';
-  folder->mb_mtime = (time_t) -1;
+	strncpy(folder->mb_filename, mb_filename, PATH_MAX - 1);
+	folder->mb_filename[PATH_MAX - 1] = '\0';
+	folder->mb_mtime = (time_t)-1;
 
-  folder->mb_fd = -1;
-  folder->mb_read_only = TRUE;
-  folder->mb_no_uid = TRUE;
+	folder->mb_fd = -1;
+	folder->mb_read_only = TRUE;
+	folder->mb_no_uid = TRUE;
 
-  folder->mb_changed = FALSE;
-  folder->mb_deleted_count = 0;
-  
-  folder->mb_mapping = NULL;
-  folder->mb_mapping_size = 0;
+	folder->mb_changed = FALSE;
+	folder->mb_deleted_count = 0;
 
-  folder->mb_written_uid = 0;
-  folder->mb_max_uid = 0;
+	folder->mb_mapping = NULL;
+	folder->mb_mapping_size = 0;
 
-  folder->mb_hash = chash_new(CHASH_DEFAULTSIZE, CHASH_COPYKEY);
-  if (folder->mb_hash == NULL)
-    goto free;
-  
-  folder->mb_tab = carray_new(128);
-  if (folder->mb_tab == NULL)
-    goto free_hash;
+	folder->mb_written_uid = 0;
+	folder->mb_max_uid = 0;
 
-  return folder;
+	folder->mb_hash = chash_new(CHASH_DEFAULTSIZE, CHASH_COPYKEY);
+	if (folder->mb_hash == NULL)
+		goto free;
+
+	folder->mb_tab = carray_new(128);
+	if (folder->mb_tab == NULL)
+		goto free_hash;
+
+	return folder;
 
  free_hash:
-  chash_free(folder->mb_hash);
+	chash_free(folder->mb_hash);
  free:
-  free(folder);
+	free(folder);
  err:
-  return NULL;
+	return NULL;
 }
 
-void claws_mailmbox_folder_free(struct claws_mailmbox_folder * folder)
+void claws_mailmbox_folder_free(struct claws_mailmbox_folder *folder)
 {
-  unsigned int i;
+	unsigned int i;
 
-  for(i = 0 ; i < carray_count(folder->mb_tab) ; i++) {
-    struct claws_mailmbox_msg_info * info;
+	for (i = 0; i < carray_count(folder->mb_tab); i++) {
+		struct claws_mailmbox_msg_info *info;
 
-    info = carray_get(folder->mb_tab, i);
-    if (info != NULL)
-      claws_mailmbox_msg_info_free(info);
-  }
+		info = carray_get(folder->mb_tab, i);
+		if (info != NULL)
+			claws_mailmbox_msg_info_free(info);
+	}
 
-  carray_free(folder->mb_tab);
-  
-  chash_free(folder->mb_hash);
+	carray_free(folder->mb_tab);
 
-  free(folder);
+	chash_free(folder->mb_hash);
+
+	free(folder);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

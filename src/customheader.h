@@ -22,20 +22,18 @@
 
 #include <glib.h>
 
-struct _CustomHeader
-{
+struct _CustomHeader {
 	gint account_id;
 	gchar *name;
 	gchar *value;
 };
 
-typedef struct _CustomHeader	CustomHeader;
+typedef struct _CustomHeader CustomHeader;
 
-gchar *custom_header_get_str		(CustomHeader	*ch);
-CustomHeader *custom_header_read_str	(const gchar	*buf);
-CustomHeader *custom_header_find	(GSList		*header_list,
-					 const gchar	*header);
-void custom_header_free			(CustomHeader	*ch);
-gboolean custom_header_is_allowed	(const gchar	*header);
+gchar *custom_header_get_str(CustomHeader *ch);
+CustomHeader *custom_header_read_str(const gchar *buf);
+CustomHeader *custom_header_find(GSList *header_list, const gchar *header);
+void custom_header_free(CustomHeader *ch);
+gboolean custom_header_is_allowed(const gchar *header);
 
 #endif /* __CUSTOMHEADER_H__ */

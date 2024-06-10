@@ -25,17 +25,16 @@
 
 #include <glib.h>
 #if HAVE_NETDB_H
-#  include <netdb.h>
+#include <netdb.h>
 #endif
 
-typedef struct _SockInfo	SockInfo;
+typedef struct _SockInfo SockInfo;
 
 #ifdef USE_GNUTLS
-#  include "ssl.h"
+#include "ssl.h"
 #endif
 
-typedef enum
-{
+typedef enum {
 	CONN_READY,
 	CONN_LOOKUPSUCCESS,
 	CONN_ESTABLISHED,
@@ -44,14 +43,10 @@ typedef enum
 	CONN_DISCONNECTED
 } ConnectionState;
 
-typedef gint (*SockConnectFunc)		(SockInfo	*sock,
-					 gpointer	 data);
-typedef gboolean (*SockFunc)		(SockInfo	*sock,
-					 GIOCondition	 condition,
-					 gpointer	 data);
+typedef gint (*SockConnectFunc) (SockInfo *sock, gpointer data);
+typedef gboolean (*SockFunc) (SockInfo *sock, GIOCondition condition, gpointer data);
 
-struct _SockInfo
-{
+struct _SockInfo {
 	gint sock;
 #if USE_GNUTLS
 	gnutls_session_t ssl;
@@ -83,40 +78,38 @@ struct _SockInfo
 	gboolean use_tls_sni;
 };
 
-void refresh_resolvers			(void);
-gint sock_init				(void);
-gint sock_cleanup			(void);
+void refresh_resolvers(void);
+gint sock_init(void);
+gint sock_cleanup(void);
 
-gint sock_set_io_timeout		(guint sec);
+gint sock_set_io_timeout(guint sec);
 
-gint sock_set_nonblocking_mode		(SockInfo *sock, gboolean nonblock);
-gboolean sock_is_nonblocking_mode	(SockInfo *sock);
+gint sock_set_nonblocking_mode(SockInfo *sock, gboolean nonblock);
+gboolean sock_is_nonblocking_mode(SockInfo *sock);
 
-guint sock_add_watch			(SockInfo *sock, GIOCondition condition,
-					 SockFunc func, gpointer data);
+guint sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpointer data);
 
-SockInfo *sock_connect			(const gchar *hostname, gushort port);
-gint sock_connect_async			(const gchar *hostname, gushort port,
-					 SockConnectFunc func, gpointer data);
-gint sock_connect_async_cancel		(gint id);
+SockInfo *sock_connect(const gchar *hostname, gushort port);
+gint sock_connect_async(const gchar *hostname, gushort port, SockConnectFunc func, gpointer data);
+gint sock_connect_async_cancel(gint id);
 
 /* Basic I/O functions */
-gint sock_read		(SockInfo *sock, gchar *buf, gint len);
-gint sock_write		(SockInfo *sock, const gchar *buf, gint len);
-gint sock_write_all	(SockInfo *sock, const gchar *buf, gint len);
-gint sock_close		(SockInfo *sock, gboolean close_fd);
+gint sock_read(SockInfo *sock, gchar *buf, gint len);
+gint sock_write(SockInfo *sock, const gchar *buf, gint len);
+gint sock_write_all(SockInfo *sock, const gchar *buf, gint len);
+gint sock_close(SockInfo *sock, gboolean close_fd);
 
 /* Functions to directly work on FD.  They are needed for pipes */
-gint fd_connect_unix	(const gchar *path);
-gint fd_open_unix	(const gchar *path);
-gint fd_accept		(gint sock);
+gint fd_connect_unix(const gchar *path);
+gint fd_open_unix(const gchar *path);
+gint fd_accept(gint sock);
 
 gint fd_connect_inet(gushort port);
 gint fd_open_inet(gushort port);
 
-gint fd_write		(gint sock, const gchar *buf, gint len);
-gint fd_write_all	(gint sock, const gchar *buf, gint len);
-gint fd_gets		(gint sock, gchar *buf, gint len);
-gint fd_close		(gint sock);
+gint fd_write(gint sock, const gchar *buf, gint len);
+gint fd_write_all(gint sock, const gchar *buf, gint len);
+gint fd_gets(gint sock, gchar *buf, gint len);
+gint fd_close(gint sock);
 
 #endif /* __SOCKET_H__ */

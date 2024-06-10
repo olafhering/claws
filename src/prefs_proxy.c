@@ -32,8 +32,7 @@
 #include "prefs_gtk.h"
 #include "passwordstore.h"
 
-typedef struct _ProxyPage
-{
+typedef struct _ProxyPage {
 	PrefsPage page;
 
 	GtkWidget *proxy_checkbtn;
@@ -46,13 +45,11 @@ typedef struct _ProxyPage
 	GtkWidget *proxy_pass_entry;
 } ProxyPage;
 
-static void showpwd_checkbtn_toggled(GtkToggleButton *button,
-		gpointer user_data);
+static void showpwd_checkbtn_toggled(GtkToggleButton *button, gpointer user_data);
 
-static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window,
-		gpointer data)
+static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	ProxyPage *page = (ProxyPage *)_page;
+	ProxyPage *page = (ProxyPage *) _page;
 
 	GtkWidget *vbox0, *vbox1, *vbox2;
 	GtkWidget *hbox;
@@ -85,14 +82,11 @@ static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window,
 
 	socks4_radiobtn = gtk_radio_button_new_with_label(NULL, "SOCKS4");
 	gtk_box_pack_start(GTK_BOX(hbox), socks4_radiobtn, FALSE, FALSE, 0);
-	g_object_set_data(G_OBJECT(socks4_radiobtn), MENU_VAL_ID,
-			GINT_TO_POINTER(PROXY_SOCKS4));
+	g_object_set_data(G_OBJECT(socks4_radiobtn), MENU_VAL_ID, GINT_TO_POINTER(PROXY_SOCKS4));
 
-	socks5_radiobtn = gtk_radio_button_new_with_label_from_widget(
-			GTK_RADIO_BUTTON(socks4_radiobtn), "SOCKS5");
+	socks5_radiobtn = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(socks4_radiobtn), "SOCKS5");
 	gtk_box_pack_start(GTK_BOX(hbox), socks5_radiobtn, FALSE, FALSE, 0);
-	g_object_set_data(G_OBJECT(socks5_radiobtn), MENU_VAL_ID,
-			GINT_TO_POINTER(PROXY_SOCKS5));
+	g_object_set_data(G_OBJECT(socks5_radiobtn), MENU_VAL_ID, GINT_TO_POINTER(PROXY_SOCKS5));
 
 	hbox = gtk_hbox_new(FALSE, 8);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox, FALSE, FALSE, 0);
@@ -123,35 +117,24 @@ static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window,
 	gtk_box_pack_start(GTK_BOX(vbox2), table, FALSE, FALSE, 0);
 
 	label = gtk_label_new(_("Username"));
-	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1,
-			GTK_SHRINK | GTK_FILL,
-			GTK_SHRINK | GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1, GTK_SHRINK | GTK_FILL, GTK_SHRINK | GTK_FILL, 0, 0);
 
 	proxy_name_entry = gtk_entry_new();
 	gtk_widget_set_size_request(proxy_name_entry, DEFAULT_ENTRY_WIDTH, -1);
-	gtk_table_attach(GTK_TABLE(table), proxy_name_entry, 1, 2, 0, 1,
-			GTK_EXPAND | GTK_SHRINK | GTK_FILL,
-			GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), proxy_name_entry, 1, 2, 0, 1, GTK_EXPAND | GTK_SHRINK | GTK_FILL, GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
 
 	label = gtk_label_new(_("Password"));
-	gtk_table_attach(GTK_TABLE(table), label, 2, 3, 0, 1,
-			GTK_SHRINK | GTK_FILL,
-			GTK_SHRINK | GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), label, 2, 3, 0, 1, GTK_SHRINK | GTK_FILL, GTK_SHRINK | GTK_FILL, 0, 0);
 
 	proxy_pass_entry = gtk_entry_new();
 	gtk_widget_set_size_request(proxy_pass_entry, DEFAULT_ENTRY_WIDTH, -1);
 	gtk_entry_set_visibility(GTK_ENTRY(proxy_pass_entry), FALSE);
-	gtk_table_attach(GTK_TABLE(table), proxy_pass_entry, 3, 4, 0, 1,
-			GTK_EXPAND | GTK_SHRINK | GTK_FILL,
-			GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), proxy_pass_entry, 3, 4, 0, 1, GTK_EXPAND | GTK_SHRINK | GTK_FILL, GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
 
 	button = gtk_check_button_new_with_label(_("Show password"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), FALSE);
-	gtk_table_attach(GTK_TABLE(table), button, 3, 4, 1, 2,
-			GTK_SHRINK | GTK_FILL,
-			GTK_SHRINK | GTK_FILL, 0, 0);
-	g_signal_connect(G_OBJECT(button), "toggled",
-			G_CALLBACK(showpwd_checkbtn_toggled), proxy_pass_entry);
+	gtk_table_attach(GTK_TABLE(table), button, 3, 4, 1, 2, GTK_SHRINK | GTK_FILL, GTK_SHRINK | GTK_FILL, 0, 0);
+	g_signal_connect(G_OBJECT(button), "toggled", G_CALLBACK(showpwd_checkbtn_toggled), proxy_pass_entry);
 
 	gtk_widget_show_all(vbox0);
 
@@ -160,24 +143,18 @@ static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window,
 	SET_TOGGLE_SENSITIVITY(socks5_radiobtn, vbox2);
 
 	/* Set widgets to their correct states, based on prefs. */
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(proxy_checkbtn),
-			prefs_common.use_proxy);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(proxy_checkbtn), prefs_common.use_proxy);
 	if (prefs_common.proxy_info.proxy_type == PROXY_SOCKS4)
 		button = socks4_radiobtn;
 	else
 		button = socks5_radiobtn;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-	gtk_entry_set_text(GTK_ENTRY(proxy_host_entry),
-			prefs_common.proxy_info.proxy_host);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(proxy_port_spinbtn),
-			(gdouble)prefs_common.proxy_info.proxy_port);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(proxy_auth_checkbtn),
-			prefs_common.proxy_info.use_proxy_auth);
-	gtk_entry_set_text(GTK_ENTRY(proxy_name_entry),
-			prefs_common.proxy_info.proxy_name);
+	gtk_entry_set_text(GTK_ENTRY(proxy_host_entry), prefs_common.proxy_info.proxy_host);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(proxy_port_spinbtn), (gdouble)prefs_common.proxy_info.proxy_port);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(proxy_auth_checkbtn), prefs_common.proxy_info.use_proxy_auth);
+	gtk_entry_set_text(GTK_ENTRY(proxy_name_entry), prefs_common.proxy_info.proxy_name);
 
-	buf =
-		passwd_store_get(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS);
+	buf = passwd_store_get(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS);
 	gtk_entry_set_text(GTK_ENTRY(proxy_pass_entry), buf != NULL ? buf : "");
 	if (buf != NULL) {
 		memset(buf, 0, strlen(buf));
@@ -195,18 +172,15 @@ static void prefs_proxy_create_widget(PrefsPage *_page, GtkWindow *window,
 	page->page.widget = vbox0;
 }
 
-
 static void prefs_proxy_destroy_widget(PrefsPage *_page)
 {
 }
 
-
 static void prefs_proxy_save(PrefsPage *_page)
 {
-	ProxyPage *page = (ProxyPage *)_page;
+	ProxyPage *page = (ProxyPage *) _page;
 
-	prefs_common.use_proxy = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->proxy_checkbtn));
+	prefs_common.use_proxy = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->proxy_checkbtn));
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->socks4_radiobtn)))
 		prefs_common.proxy_info.proxy_type = PROXY_SOCKS4;
@@ -214,23 +188,17 @@ static void prefs_proxy_save(PrefsPage *_page)
 		prefs_common.proxy_info.proxy_type = PROXY_SOCKS5;
 
 	g_free(prefs_common.proxy_info.proxy_host);
-	prefs_common.proxy_info.proxy_host = g_strdup(gtk_entry_get_text(
-				GTK_ENTRY(page->proxy_host_entry)));
+	prefs_common.proxy_info.proxy_host = g_strdup(gtk_entry_get_text(GTK_ENTRY(page->proxy_host_entry)));
 
-	prefs_common.proxy_info.proxy_port = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(page->proxy_port_spinbtn));
+	prefs_common.proxy_info.proxy_port = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->proxy_port_spinbtn));
 
-	prefs_common.proxy_info.use_proxy_auth = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->proxy_auth_checkbtn));
+	prefs_common.proxy_info.use_proxy_auth = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->proxy_auth_checkbtn));
 
 	g_free(prefs_common.proxy_info.proxy_name);
-	prefs_common.proxy_info.proxy_name = g_strdup(gtk_entry_get_text(
-				GTK_ENTRY(page->proxy_name_entry)));
+	prefs_common.proxy_info.proxy_name = g_strdup(gtk_entry_get_text(GTK_ENTRY(page->proxy_name_entry)));
 
-	passwd_store_set(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS,
-			gtk_entry_get_text(GTK_ENTRY(page->proxy_pass_entry)), FALSE);
+	passwd_store_set(PWS_CORE, PWS_CORE_PROXY, PWS_CORE_PROXY_PASS, gtk_entry_get_text(GTK_ENTRY(page->proxy_pass_entry)), FALSE);
 }
-
 
 ProxyPage *prefs_proxy;
 
@@ -260,11 +228,14 @@ void prefs_proxy_done(void)
 	g_free(prefs_proxy);
 }
 
-static void showpwd_checkbtn_toggled(GtkToggleButton *button,
-    gpointer user_data)
+static void showpwd_checkbtn_toggled(GtkToggleButton *button, gpointer user_data)
 {
 	gboolean active = gtk_toggle_button_get_active(button);
 	GtkWidget *entry = GTK_WIDGET(user_data);
 
 	gtk_entry_set_visibility(GTK_ENTRY(entry), active);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

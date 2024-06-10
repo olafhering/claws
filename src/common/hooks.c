@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -34,28 +34,26 @@ static GHookList *hooks_get_hooklist(const gchar *hooklist_name)
 
 	if (hooklist_table == NULL)
 		hooklist_table = g_hash_table_new(g_str_hash, g_str_equal);
-	
+
 	hooklist = (GHookList *) g_hash_table_lookup(hooklist_table, hooklist_name);
 	if (hooklist != NULL)
 		return hooklist;
-	
+
 	hooklist = g_new0(GHookList, 1);
 	g_hook_list_init(hooklist, sizeof(GHook));
 	g_hash_table_insert(hooklist_table, g_strdup(hooklist_name), hooklist);
-	
+
 	return hooklist;
 }
 
-gulong hooks_register_hook(const gchar *hooklist_name,
-			  ClawsMailHookFunction hook_func,
-			  gpointer userdata)
+gulong hooks_register_hook(const gchar *hooklist_name, ClawsMailHookFunction hook_func, gpointer userdata)
 {
 	GHookList *hooklist;
 	GHook *hook;
 
 	cm_return_val_if_fail(hooklist_name != NULL, HOOK_NONE);
 	cm_return_val_if_fail(hook_func != NULL, HOOK_NONE);
-	
+
 	hooklist = hooks_get_hooklist(hooklist_name);
 	cm_return_val_if_fail(hooklist != NULL, HOOK_NONE);
 
@@ -74,8 +72,7 @@ gulong hooks_register_hook(const gchar *hooklist_name,
 	return hook->hook_id;
 }
 
-void hooks_unregister_hook(const gchar *hooklist_name,
-			   gulong hook_id)
+void hooks_unregister_hook(const gchar *hooklist_name, gulong hook_id)
 {
 	GHookList *hooklist;
 	GHook *hook;
@@ -93,15 +90,14 @@ void hooks_unregister_hook(const gchar *hooklist_name,
 	g_hook_destroy(hooklist, hook_id);
 }
 
-struct MarshalData
-{
-	gpointer	source;
-	gboolean	abort;
+struct MarshalData {
+	gpointer source;
+	gboolean abort;
 };
 
 static void hooks_marshal(GHook *hook, gpointer data)
 {
-	gboolean (*func) (gpointer source, gpointer data);
+	gboolean (*func)(gpointer source, gpointer data);
 	struct MarshalData *marshal_data = (struct MarshalData *)data;
 
 	if (!marshal_data->abort) {
@@ -110,12 +106,11 @@ static void hooks_marshal(GHook *hook, gpointer data)
 	}
 }
 
-gboolean hooks_invoke(const gchar *hooklist_name,
-		  gpointer source)
+gboolean hooks_invoke(const gchar *hooklist_name, gpointer source)
 {
 	GHookList *hooklist;
 	struct MarshalData marshal_data;
-	
+
 	cm_return_val_if_fail(hooklist_name != NULL, FALSE);
 
 	hooklist = hooks_get_hooklist(hooklist_name);
@@ -128,3 +123,7 @@ gboolean hooks_invoke(const gchar *hooklist_name,
 
 	return marshal_data.abort;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

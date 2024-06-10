@@ -20,7 +20,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #include "claws-features.h"
-#endif 
+#endif
 
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
@@ -35,74 +35,63 @@
 #include "procmime.h"
 #include "prefs_common.h"
 
-static void
-update_preview_cb (GtkFileChooser *file_chooser, gpointer data)
+static void update_preview_cb(GtkFileChooser *file_chooser, gpointer data)
 {
 	GtkWidget *preview;
 	char *filename = NULL, *type = NULL;
 	GdkPixbuf *pixbuf = NULL;
 	gboolean have_preview = FALSE;
 
-	preview = GTK_WIDGET (data);
-	filename = gtk_file_chooser_get_preview_filename (file_chooser);
+	preview = GTK_WIDGET(data);
+	filename = gtk_file_chooser_get_preview_filename(file_chooser);
 
 	if (filename == NULL) {
-		gtk_file_chooser_set_preview_widget_active (file_chooser, FALSE);
+		gtk_file_chooser_set_preview_widget_active(file_chooser, FALSE);
 		return;
 	}
 	type = procmime_get_mime_type(filename);
-	
-	if (type && !strncmp(type, "image/", 6)) 
-		pixbuf = gdk_pixbuf_new_from_file_at_size (filename, 128, 128, NULL);
-	
+
+	if (type && !strncmp(type, "image/", 6))
+		pixbuf = gdk_pixbuf_new_from_file_at_size(filename, 128, 128, NULL);
+
 	g_free(type);
-	g_free (filename);
+	g_free(filename);
 
 	if (pixbuf) {
 		have_preview = TRUE;
-		gtk_image_set_from_pixbuf (GTK_IMAGE (preview), pixbuf);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(preview), pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
 	}
 
-	gtk_file_chooser_set_preview_widget_active (file_chooser, have_preview);
+	gtk_file_chooser_set_preview_widget_active(file_chooser, have_preview);
 }
-	
-static GList *filesel_create(const gchar *title, const gchar *path,
-			     gboolean multiple_files,
-			     gboolean open, gboolean folder_mode,
-			     const gchar *filter)
+
+static GList *filesel_create(const gchar *title, const gchar *path, gboolean multiple_files, gboolean open, gboolean folder_mode, const gchar *filter)
 {
 	GSList *slist = NULL, *slist_orig = NULL;
 	GList *list = NULL;
 
-	gint action = (open == TRUE) ? 
-			(folder_mode == TRUE ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-					       GTK_FILE_CHOOSER_ACTION_OPEN):
-			(folder_mode == TRUE ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-					       GTK_FILE_CHOOSER_ACTION_SAVE);
-			
-	gchar * action_btn = (open == TRUE) ? GTK_STOCK_OPEN:GTK_STOCK_SAVE;
-	GtkWidget *chooser = gtk_file_chooser_dialog_new
-				(title, NULL, action, 
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				action_btn, GTK_RESPONSE_ACCEPT, 
-				NULL);
+	gint action = (open == TRUE) ? (folder_mode == TRUE ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER : GTK_FILE_CHOOSER_ACTION_OPEN) : (folder_mode == TRUE ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER : GTK_FILE_CHOOSER_ACTION_SAVE);
+
+	gchar *action_btn = (open == TRUE) ? GTK_STOCK_OPEN : GTK_STOCK_SAVE;
+	GtkWidget *chooser = gtk_file_chooser_dialog_new(title, NULL, action,
+							 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+							 action_btn, GTK_RESPONSE_ACCEPT,
+							 NULL);
 
 	gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), FALSE);
 
 	if (filter != NULL) {
 		GtkFileFilter *file_filter = gtk_file_filter_new();
 		gtk_file_filter_add_pattern(file_filter, filter);
-		gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(chooser),
-					    file_filter);
+		gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(chooser), file_filter);
 	}
 
 	if (action == GTK_FILE_CHOOSER_ACTION_OPEN) {
 		GtkImage *preview;
-		preview = GTK_IMAGE(gtk_image_new ());
-		gtk_file_chooser_set_preview_widget (GTK_FILE_CHOOSER(chooser), GTK_WIDGET(preview));
-		g_signal_connect (chooser, "update-preview",
-			    G_CALLBACK (update_preview_cb), preview);
+		preview = GTK_IMAGE(gtk_image_new());
+		gtk_file_chooser_set_preview_widget(GTK_FILE_CHOOSER(chooser), GTK_WIDGET(preview));
+		g_signal_connect(chooser, "update-preview", G_CALLBACK(update_preview_cb), preview);
 
 	}
 
@@ -110,23 +99,23 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 		gtk_dialog_set_default_response(GTK_DIALOG(chooser), GTK_RESPONSE_ACCEPT);
 	}
 
-	manage_window_set_transient (GTK_WINDOW(chooser));
+	manage_window_set_transient(GTK_WINDOW(chooser));
 	gtk_window_set_modal(GTK_WINDOW(chooser), TRUE);
 
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(chooser), multiple_files);
+	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(chooser), multiple_files);
 
 	if (path && strlen(path) > 0) {
 		char *filename = NULL;
 		char *realpath = g_strdup(path);
 		char *tmp = NULL;
-		if (path[strlen(path)-1] == G_DIR_SEPARATOR) {
+		if (path[strlen(path) - 1] == G_DIR_SEPARATOR) {
 			filename = "";
 		} else if ((filename = strrchr(path, G_DIR_SEPARATOR)) != NULL) {
 			filename++;
-			*(strrchr(realpath, G_DIR_SEPARATOR)+1) = '\0';
+			*(strrchr(realpath, G_DIR_SEPARATOR) + 1) = '\0';
 		} else {
-			filename = (char *) path;
-			g_free(realpath); 
+			filename = (char *)path;
+			g_free(realpath);
 			realpath = g_strdup(get_home_dir());
 		}
 		if (g_utf8_validate(realpath, -1, NULL))
@@ -137,8 +126,7 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 		g_free(tmp);
 		if (action == GTK_FILE_CHOOSER_ACTION_SAVE) {
 			if (g_utf8_validate(filename, -1, NULL))
-				gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(chooser),
-								  filename);
+				gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(chooser), filename);
 		}
 		g_free(realpath);
 	} else {
@@ -153,22 +141,22 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 		g_free(tmp);
 	}
 
-	if (gtk_dialog_run (GTK_DIALOG (chooser)) == GTK_RESPONSE_ACCEPT) 
-		slist = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER (chooser));
-	
+	if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT)
+		slist = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(chooser));
+
 	manage_window_focus_out(chooser, NULL, NULL);
-	gtk_widget_destroy (chooser);
+	gtk_widget_destroy(chooser);
 
 	slist_orig = slist;
-	
+
 	if (slist) {
 		gchar *tmp = g_strdup(slist->data);
 
 		if (!path && prefs_common.attach_load_dir)
 			g_free(prefs_common.attach_load_dir);
-		
+
 		if (strrchr(tmp, G_DIR_SEPARATOR))
-			*(strrchr(tmp, G_DIR_SEPARATOR)+1) = '\0';
+			*(strrchr(tmp, G_DIR_SEPARATOR) + 1) = '\0';
 
 		if (!path)
 			prefs_common.attach_load_dir = g_filename_to_utf8(tmp, -1, NULL, NULL, NULL);
@@ -180,10 +168,10 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 		list = g_list_append(list, slist->data);
 		slist = slist->next;
 	}
-	
+
 	if (slist_orig)
 		g_slist_free(slist_orig);
-	
+
 	return list;
 }
 
@@ -197,11 +185,9 @@ GList *filesel_select_multiple_files_open(const gchar *title, const gchar *path)
 	return filesel_create(title, path, TRUE, TRUE, FALSE, NULL);
 }
 
-GList *filesel_select_multiple_files_open_with_filter(	const gchar *title,
-							const gchar *path,
-							const gchar *filter)
+GList *filesel_select_multiple_files_open_with_filter(const gchar *title, const gchar *path, const gchar *filter)
 {
-	return filesel_create (title, path, TRUE, TRUE, FALSE, filter);
+	return filesel_create(title, path, TRUE, TRUE, FALSE, filter);
 }
 
 /**
@@ -211,41 +197,42 @@ GList *filesel_select_multiple_files_open_with_filter(	const gchar *title,
  * @param title the title of the dialog
  * @param path the optional path to save to
  */
-static gchar *filesel_select_file(const gchar *title, const gchar *path,
-				  gboolean open, gboolean folder_mode,
-				  const gchar *filter)
+static gchar *filesel_select_file(const gchar *title, const gchar *path, gboolean open, gboolean folder_mode, const gchar *filter)
 {
-	GList * list = filesel_create(title, path, FALSE, open, folder_mode, filter);
-	gchar * result = NULL;
+	GList *list = filesel_create(title, path, FALSE, open, folder_mode, filter);
+	gchar *result = NULL;
 	if (list) {
 		result = g_strdup(list->data);
 	}
 	g_list_free(list);
 	return result;
 }
+
 gchar *filesel_select_file_open(const gchar *title, const gchar *path)
 {
-	return filesel_select_file (title, path, TRUE, FALSE, NULL);
+	return filesel_select_file(title, path, TRUE, FALSE, NULL);
 }
 
-gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *path,
-					    const gchar *filter)
+gchar *filesel_select_file_open_with_filter(const gchar *title, const gchar *path, const gchar *filter)
 {
-	return filesel_select_file (title, path, TRUE, FALSE, filter);
+	return filesel_select_file(title, path, TRUE, FALSE, filter);
 }
 
 gchar *filesel_select_file_save(const gchar *title, const gchar *path)
 {
-	return filesel_select_file (title, path, FALSE, FALSE, NULL);
+	return filesel_select_file(title, path, FALSE, FALSE, NULL);
 }
 
 gchar *filesel_select_file_open_folder(const gchar *title, const gchar *path)
 {
-	return filesel_select_file (title, path, TRUE, TRUE, NULL);
+	return filesel_select_file(title, path, TRUE, TRUE, NULL);
 }
 
 gchar *filesel_select_file_save_folder(const gchar *title, const gchar *path)
 {
-	return filesel_select_file (title, path, FALSE, TRUE, NULL);
+	return filesel_select_file(title, path, FALSE, TRUE, NULL);
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

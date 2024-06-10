@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -46,13 +46,12 @@
 
 typedef struct _PrivacyDataPGP PrivacyDataPGP;
 
-struct _PrivacyDataPGP
-{
-	PrivacyData	data;
-	
-	gboolean	done_sigtest;
-	gboolean	is_signed;
-	gboolean	inserted_mimeinfo;
+struct _PrivacyDataPGP {
+	PrivacyData data;
+
+	gboolean done_sigtest;
+	gboolean is_signed;
+	gboolean inserted_mimeinfo;
 };
 
 typedef struct _PKCS7MimeTaskData {
@@ -69,7 +68,7 @@ static PrivacyDataPGP *smime_new_privacydata()
 
 	data = g_new0(PrivacyDataPGP, 1);
 	data->data.system = &smime_system;
-	
+
 	return data;
 }
 
@@ -86,23 +85,22 @@ static gboolean smime_is_signed(MimeInfo *mimeinfo)
 	MimeInfo *signature;
 	const gchar *protocol, *tmpstr;
 	PrivacyDataPGP *data = NULL;
-	
+
 	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 	if (mimeinfo->privacy != NULL) {
 		data = (PrivacyDataPGP *) mimeinfo->privacy;
 		if (data->done_sigtest)
 			return data->is_signed;
 	}
-	
-	if (!g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") ||
-	    !g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime")) {
+
+	if (!g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") || !g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime")) {
 		tmpstr = procmime_mimeinfo_get_parameter(mimeinfo, "smime-type");
 		if (tmpstr && !g_ascii_strcasecmp(tmpstr, "signed-data")) {
 			if (data == NULL) {
 				data = smime_new_privacydata();
 				if (!data)
 					return FALSE;
-				mimeinfo->privacy = (PrivacyData *) data;
+				mimeinfo->privacy = (PrivacyData *)data;
 			}
 
 			data->done_sigtest = TRUE;
@@ -116,38 +114,31 @@ static gboolean smime_is_signed(MimeInfo *mimeinfo)
 	parent = procmime_mimeinfo_parent(mimeinfo);
 	if (parent == NULL)
 		return FALSE;
-	
-	if ((parent->type != MIMETYPE_MULTIPART) ||
-	    g_ascii_strcasecmp(parent->subtype, "signed"))
+
+	if ((parent->type != MIMETYPE_MULTIPART) || g_ascii_strcasecmp(parent->subtype, "signed"))
 		return FALSE;
 	protocol = procmime_mimeinfo_get_parameter(parent, "protocol");
-	if ((protocol == NULL) || 
-	    (g_ascii_strcasecmp(protocol, "application/pkcs7-signature") &&
-	     g_ascii_strcasecmp(protocol, "application/x-pkcs7-signature")))
+	if ((protocol == NULL) || (g_ascii_strcasecmp(protocol, "application/pkcs7-signature") && g_ascii_strcasecmp(protocol, "application/x-pkcs7-signature")))
 		return FALSE;
 
 	/* check if mimeinfo is the first child */
 	if (parent->node->children->data != mimeinfo)
 		return FALSE;
 
-
 	/* check signature */
-	signature = parent->node->children->next != NULL ? 
-	    (MimeInfo *) parent->node->children->next->data : NULL;
+	signature = parent->node->children->next != NULL ? (MimeInfo *)parent->node->children->next->data : NULL;
 	if (signature == NULL)
 		return FALSE;
-	if ((signature->type != MIMETYPE_APPLICATION) ||
-	    (g_ascii_strcasecmp(signature->subtype, "pkcs7-signature") &&
-	     g_ascii_strcasecmp(signature->subtype, "x-pkcs7-signature")))
+	if ((signature->type != MIMETYPE_APPLICATION) || (g_ascii_strcasecmp(signature->subtype, "pkcs7-signature") && g_ascii_strcasecmp(signature->subtype, "x-pkcs7-signature")))
 		return FALSE;
 
 	if (data == NULL) {
 		data = smime_new_privacydata();
 		if (!data)
 			return FALSE;
-		mimeinfo->privacy = (PrivacyData *) data;
+		mimeinfo->privacy = (PrivacyData *)data;
 	}
-	
+
 	data->done_sigtest = TRUE;
 	data->is_signed = TRUE;
 
@@ -166,26 +157,26 @@ static gchar *get_canonical_content(FILE *fp, const gchar *boundary)
 			if (IS_BOUNDARY(buf, boundary, boundary_len))
 				break;
 	}
-	
+
 	textbuffer = g_string_new("");
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		gchar *buf2;
 
 		if (boundary && IS_BOUNDARY(buf, boundary, boundary_len))
 			break;
-		
+
 		buf2 = canonicalize_str(buf);
 		g_string_append(textbuffer, buf2);
 		g_free(buf2);
 	}
 	g_string_truncate(textbuffer, textbuffer->len - 2);
-		
+
 	return g_string_free(textbuffer, FALSE);
 }
 
 static void free_pkcs7_mime_task_data(gpointer data)
 {
-	PKCS7MimeTaskData *task_data = (PKCS7MimeTaskData *)data;
+	PKCS7MimeTaskData *task_data = (PKCS7MimeTaskData *) data;
 
 	g_free(task_data->textstr);
 	g_free(task_data);
@@ -202,8 +193,7 @@ static gboolean create_mimeinfo_for_plaintext(const GString *verified, MimeInfo 
 	str_write_to_file(verified->str, tmpfile, TRUE);
 	newinfo = procmime_scan_file(tmpfile);
 	g_free(tmpfile);
-	decinfo = g_node_first_child(newinfo->node) != NULL ?
-		g_node_first_child(newinfo->node)->data : NULL;
+	decinfo = g_node_first_child(newinfo->node) != NULL ? g_node_first_child(newinfo->node)->data : NULL;
 
 	if (decinfo == NULL)
 		return FALSE;
@@ -216,12 +206,9 @@ static gboolean create_mimeinfo_for_plaintext(const GString *verified, MimeInfo 
 	return TRUE;
 }
 
-static void check_pkcs7_mime_sig_task(GTask *task,
-	gpointer source_object,
-	gpointer _task_data,
-	GCancellable *cancellable)
+static void check_pkcs7_mime_sig_task(GTask *task, gpointer source_object, gpointer _task_data, GCancellable *cancellable)
 {
-	PKCS7MimeTaskData *task_data = (PKCS7MimeTaskData *)_task_data;
+	PKCS7MimeTaskData *task_data = (PKCS7MimeTaskData *) _task_data;
 	GQuark domain;
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
@@ -253,10 +240,7 @@ static void check_pkcs7_mime_sig_task(GTask *task,
 		goto out_ctx;
 	}
 
-	err = gpgme_data_new_from_mem(&sigdata,
-		task_data->textstr,
-		task_data->textstr ? strlen(task_data->textstr) : 0,
-		0);
+	err = gpgme_data_new_from_mem(&sigdata, task_data->textstr, task_data->textstr ? strlen(task_data->textstr) : 0, 0);
 	if (err != GPG_ERR_NO_ERROR) {
 		gpgme_strerror_r(err, err_str, GPGERR_BUFSIZE);
 		g_warning("gpgme_data_new_from_mem failed: %s", err_str);
@@ -264,7 +248,7 @@ static void check_pkcs7_mime_sig_task(GTask *task,
 	}
 
 	if (task_data->encoding == ENC_BASE64) {
-		err = gpgme_data_set_encoding (sigdata, GPGME_DATA_ENCODING_BASE64);
+		err = gpgme_data_set_encoding(sigdata, GPGME_DATA_ENCODING_BASE64);
 		if (err != GPG_ERR_NO_ERROR) {
 			gpgme_strerror_r(err, err_str, GPGERR_BUFSIZE);
 			g_warning("gpgme_data_set_encoding failed: %s\n", err_str);
@@ -339,13 +323,13 @@ static void check_pkcs7_mime_sig_task(GTask *task,
 
 	goto out_sigdata;
 
-out_plain:
+ out_plain:
 	gpgme_data_release(plain);
-out_sigdata:
+ out_sigdata:
 	gpgme_data_release(sigdata);
-out_ctx:
+ out_ctx:
 	gpgme_release(ctx);
-out:
+ out:
 	if (cancelled)
 		return;
 
@@ -360,10 +344,7 @@ out:
  * If the caller does not provide a callback, and we have not already done so, create
  * and insert a new MimeInfo for the plaintext data returned by the sig verification.
  */
-static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
-	GCancellable *_cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data)
+static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo, GCancellable *_cancellable, GAsyncReadyCallback callback, gpointer user_data)
 {
 	MimeInfo *parent;
 	const gchar *tmp;
@@ -382,14 +363,11 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
 	parent = procmime_mimeinfo_parent(mimeinfo);
 	tmp = g_hash_table_lookup(parent->typeparameters, "boundary");
 	if (tmp) {
-		g_warning("Unexpected S/MIME message format subtype:%s boundary:%s",
-			mimeinfo->subtype, tmp);
+		g_warning("Unexpected S/MIME message format subtype:%s boundary:%s", mimeinfo->subtype, tmp);
 		return -1;
 	}
 
-	if (g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") &&
-		g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime"))
-	{
+	if (g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") && g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime")) {
 		g_warning("Unexpected S/MIME subtype:%s", mimeinfo->subtype);
 		return -1;
 	}
@@ -409,7 +387,7 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
 		return -1;
 	}
 
-	privacy_data = (PrivacyDataPGP *)mimeinfo->privacy;
+	privacy_data = (PrivacyDataPGP *) mimeinfo->privacy;
 
 	task_data = g_new0(PKCS7MimeTaskData, 1);
 	task_data->textstr = textstr;
@@ -452,8 +430,7 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
 	}
 
 	if (task_result == NULL) {
-		debug_print("sig check task propagated NULL task: %p GError: domain: %s code: %d message: \"%s\"\n",
-			task, g_quark_to_string(error->domain), error->code, error->message);
+		debug_print("sig check task propagated NULL task: %p GError: domain: %s code: %d message: \"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
 		g_object_unref(task);
 		g_error_free(error);
 		return -1;
@@ -467,7 +444,7 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
 			if (parent->content == MIMECONTENT_MEM) {
 				gint newlen = (gint)(strstr(parent->data.mem, "\n\n") - parent->data.mem);
 				if (newlen > 0)
-				parent->length = newlen;
+					parent->length = newlen;
 			}
 		}
 
@@ -481,35 +458,24 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo,
 	return 1;
 }
 
-static gint smime_check_sig_async(MimeInfo *mimeinfo,
-	GCancellable *cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data)
+static gint smime_check_sig_async(MimeInfo *mimeinfo, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data)
 {
 	MimeInfo *parent;
 	gchar *boundary;
 
 	/* Detached signature with a boundary */
-	if (g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") &&
-		g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime"))
-	{
+	if (g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime") && g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime")) {
 		parent = procmime_mimeinfo_parent(mimeinfo);
 		boundary = g_hash_table_lookup(parent->typeparameters, "boundary");
 
 		if (boundary == NULL) {
-			g_warning("Unexpected S/MIME format subtype:%s without a boundary",
-				mimeinfo->subtype);
+			g_warning("Unexpected S/MIME format subtype:%s without a boundary", mimeinfo->subtype);
 			return -1;
 		}
 
-		return cm_check_detached_sig_async(mimeinfo,
-			cancellable,
-			callback,
-			user_data,
-			GPGME_PROTOCOL_CMS,
-			get_canonical_content);
+		return cm_check_detached_sig_async(mimeinfo, cancellable, callback, user_data, GPGME_PROTOCOL_CMS, get_canonical_content);
 
-	/* Opaque pkcs7-mime blob with smime-type=signed-data */
+		/* Opaque pkcs7-mime blob with smime-type=signed-data */
 	} else {
 		return check_pkcs7_mime_sig(mimeinfo, cancellable, callback, user_data);
 	}
@@ -518,21 +484,21 @@ static gint smime_check_sig_async(MimeInfo *mimeinfo,
 static gboolean smime_is_encrypted(MimeInfo *mimeinfo)
 {
 	const gchar *tmpstr;
-	
+
 	if (mimeinfo->type != MIMETYPE_APPLICATION)
 		return FALSE;
 	if (!g_ascii_strcasecmp(mimeinfo->subtype, "pkcs7-mime")) {
 		tmpstr = procmime_mimeinfo_get_parameter(mimeinfo, "smime-type");
 		if (tmpstr && g_ascii_strcasecmp(tmpstr, "enveloped-data"))
 			return FALSE;
-		else 
+		else
 			return TRUE;
 
 	} else if (!g_ascii_strcasecmp(mimeinfo->subtype, "x-pkcs7-mime")) {
 		tmpstr = procmime_mimeinfo_get_parameter(mimeinfo, "smime-type");
 		if (tmpstr && g_ascii_strcasecmp(tmpstr, "enveloped-data"))
 			return FALSE;
-		else 
+		else
 			return TRUE;
 	}
 	return FALSE;
@@ -554,7 +520,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 	SignatureData *sig_data = NULL;
 
 	cm_return_val_if_fail(smime_is_encrypted(mimeinfo), NULL);
-	
+
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
 		return NULL;
@@ -562,8 +528,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 
 	err = gpgme_set_protocol(ctx, GPGME_PROTOCOL_CMS);
 	if (err) {
-		debug_print ("gpgme_set_protocol failed: %s\n",
-                   gpgme_strerror (err));
+		debug_print("gpgme_set_protocol failed: %s\n", gpgme_strerror(err));
 		privacy_set_error(_("Couldn't set GPG protocol, %s"), gpgme_strerror(err));
 		gpgme_release(ctx);
 		return NULL;
@@ -573,7 +538,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 	encinfo = mimeinfo;
 
 	cipher = sgpgme_data_from_mimeinfo(encinfo);
-	
+
 	plain = sgpgme_decrypt_verify(cipher, &sigstat, ctx);
 
 	if (sigstat != NULL && sigstat->signatures != NULL) {
@@ -592,25 +557,24 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 		return NULL;
 	}
 
-    	fname = g_strdup_printf("%s%cplaintext.%08x",
-		get_mime_tmp_dir(), G_DIR_SEPARATOR, ++id);
+	fname = g_strdup_printf("%s%cplaintext.%08x", get_mime_tmp_dir(), G_DIR_SEPARATOR, ++id);
 
-    	if ((dstfp = claws_fopen(fname, "wb")) == NULL) {
-        	FILE_OP_ERROR(fname, "claws_fopen");
-        	g_free(fname);
-        	gpgme_data_release(plain);
+	if ((dstfp = claws_fopen(fname, "wb")) == NULL) {
+		FILE_OP_ERROR(fname, "claws_fopen");
+		g_free(fname);
+		gpgme_data_release(plain);
 		debug_print("can't open!\n");
 		privacy_set_error(_("Couldn't open temporary file"));
 		if (sig_data)
 			privacy_free_signature_data(sig_data);
 		return NULL;
-    	}
+	}
 
 	if (fprintf(dstfp, "MIME-Version: 1.0\n") < 0) {
-        	FILE_OP_ERROR(fname, "fprintf");
-        	g_free(fname);
+		FILE_OP_ERROR(fname, "fprintf");
+		g_free(fname);
 		claws_fclose(dstfp);
-        	gpgme_data_release(plain);
+		gpgme_data_release(plain);
 		debug_print("can't close!\n");
 		privacy_set_error(_("Couldn't write to temporary file"));
 		if (sig_data)
@@ -622,11 +586,11 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 
 	if (len > 0) {
 		if (claws_fwrite(chars, 1, len, dstfp) < len) {
-        		FILE_OP_ERROR(fname, "claws_fwrite");
-        		claws_fclose(dstfp);
-        		g_free(fname);
-        		g_free(chars);
-        		gpgme_data_release(plain);
+			FILE_OP_ERROR(fname, "claws_fwrite");
+			claws_fclose(dstfp);
+			g_free(fname);
+			g_free(chars);
+			gpgme_data_release(plain);
 			debug_print("can't write!\n");
 			privacy_set_error(_("Couldn't write to temporary file"));
 			if (sig_data)
@@ -635,10 +599,10 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 		}
 	}
 	if (claws_safe_fclose(dstfp) == EOF) {
-        	FILE_OP_ERROR(fname, "claws_fclose");
-        	g_free(fname);
-       		g_free(chars);
-        	gpgme_data_release(plain);
+		FILE_OP_ERROR(fname, "claws_fclose");
+		g_free(fname);
+		g_free(chars);
+		gpgme_data_release(plain);
 		debug_print("can't close!\n");
 		privacy_set_error(_("Couldn't close temporary file"));
 		if (sig_data)
@@ -655,8 +619,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 			privacy_free_signature_data(sig_data);
 		return NULL;
 	}
-	decinfo = g_node_first_child(parseinfo->node) != NULL ?
-		g_node_first_child(parseinfo->node)->data : NULL;
+	decinfo = g_node_first_child(parseinfo->node) != NULL ? g_node_first_child(parseinfo->node)->data : NULL;
 	if (decinfo == NULL) {
 		privacy_set_error(_("Couldn't parse decrypted file parts."));
 		if (sig_data)
@@ -677,7 +640,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 			if (!data) {
 				return NULL;
 			}
-			decinfo->privacy = (PrivacyData *) data;	
+			decinfo->privacy = (PrivacyData *)data;
 		}
 
 		if (data != NULL) {
@@ -705,7 +668,7 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 	gpgme_sign_result_t result = NULL;
 	gchar *test_msg;
 	gchar *real_content = NULL;
-	
+
 	fp = my_tmpfile();
 	if (fp == NULL) {
 		perror("my_tmpfile");
@@ -717,30 +680,28 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 	/* read temporary file into memory */
 	test_msg = file_read_stream_to_str(fp);
 	claws_fclose(fp);
-	
-	memset (&info, 0, sizeof info);
+
+	memset(&info, 0, sizeof info);
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *) mimeinfo->node->children->data;
+	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
 	/* create temporary multipart for content */
 	sigmultipart = procmime_mimeinfo_new();
 	sigmultipart->type = MIMETYPE_MULTIPART;
 	sigmultipart->subtype = g_strdup("signed");
-	
+
 	do {
 		if (boundary)
 			g_free(boundary);
 		boundary = generate_mime_boundary("Sig");
 	} while (strstr(test_msg, boundary) != NULL);
-	
+
 	g_free(test_msg);
 
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"),
-                            g_strdup(boundary));
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("protocol"),
-                            g_strdup("application/pkcs7-signature"));
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"), g_strdup(boundary));
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("protocol"), g_strdup("application/pkcs7-signature"));
 	g_node_append(sigmultipart->node, msgcontent->node);
 	g_node_append(mimeinfo->node, sigmultipart->node);
 
@@ -761,17 +722,16 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 
 	claws_fclose(fp);
 
-	gpgme_data_new_from_mem(&gpgtext, textstr, textstr?strlen(textstr):0, 0);
+	gpgme_data_new_from_mem(&gpgtext, textstr, textstr ? strlen(textstr) : 0, 0);
 	gpgme_data_new(&gpgsig);
 	gpgme_new(&ctx);
 	gpgme_set_armor(ctx, TRUE);
-	gpgme_signers_clear (ctx);
+	gpgme_signers_clear(ctx);
 
 	err = gpgme_set_protocol(ctx, GPGME_PROTOCOL_CMS);
 
 	if (err) {
-		debug_print ("gpgme_set_protocol failed: %s\n",
-                   gpgme_strerror (err));
+		debug_print("gpgme_set_protocol failed: %s\n", gpgme_strerror(err));
 		gpgme_data_release(gpgtext);
 		gpgme_release(ctx);
 		return FALSE;
@@ -786,8 +746,8 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 
 	info.c = ctx;
 	prefs_gpg_enable_agent(TRUE);
-    	gpgme_set_passphrase_cb (ctx, NULL, &info);
-	
+	gpgme_set_passphrase_cb(ctx, NULL, &info);
+
 	err = gpgme_op_sign(ctx, gpgtext, gpgsig, GPGME_SIG_MODE_DETACH);
 	if (err != GPG_ERR_NO_ERROR) {
 		alertpanel_error("S/MIME : Cannot sign, %s (%d)", gpg_strerror(err), gpg_err_code(err));
@@ -797,19 +757,17 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 	}
 	result = gpgme_op_sign_result(ctx);
 	if (result && result->signatures) {
-	    if (gpgme_get_protocol(ctx) == GPGME_PROTOCOL_OpenPGP) {
-		gchar *down_algo = g_ascii_strdown(gpgme_hash_algo_name(
-			    result->signatures->hash_algo), -1);
-		micalg = g_strdup_printf("pgp-%s", down_algo);
-		g_free(down_algo);
-	    } else {
-		micalg = g_strdup(gpgme_hash_algo_name(
-			    result->signatures->hash_algo));
-	    }
+		if (gpgme_get_protocol(ctx) == GPGME_PROTOCOL_OpenPGP) {
+			gchar *down_algo = g_ascii_strdown(gpgme_hash_algo_name(result->signatures->hash_algo), -1);
+			micalg = g_strdup_printf("pgp-%s", down_algo);
+			g_free(down_algo);
+		} else {
+			micalg = g_strdup(gpgme_hash_algo_name(result->signatures->hash_algo));
+		}
 	} else {
-	    /* can't get result (maybe no signing key?) */
-	    debug_print("gpgme_op_sign_result error\n");
-	    return FALSE;
+		/* can't get result (maybe no signing key?) */
+		debug_print("gpgme_op_sign_result error\n");
+		return FALSE;
 	}
 
 	gpgme_release(ctx);
@@ -822,7 +780,7 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 		g_free(micalg);
 		return FALSE;
 	}
-	real_content = sigcontent+strlen("-----BEGIN SIGNED MESSAGE-----\n");
+	real_content = sigcontent + strlen("-----BEGIN SIGNED MESSAGE-----\n");
 	if (!strstr(real_content, "-----END SIGNED MESSAGE-----")) {
 		debug_print("missing end\n");
 		gpgme_release(ctx);
@@ -831,18 +789,15 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 	}
 	*strstr(real_content, "-----END SIGNED MESSAGE-----") = '\0';
 	/* add signature */
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("micalg"),
-                            micalg);
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("micalg"), micalg);
 
 	newinfo = procmime_mimeinfo_new();
 	newinfo->type = MIMETYPE_APPLICATION;
 	newinfo->subtype = g_strdup("pkcs7-signature");
-	g_hash_table_insert(newinfo->typeparameters, g_strdup("name"),
-			     g_strdup("smime.p7s"));
+	g_hash_table_insert(newinfo->typeparameters, g_strdup("name"), g_strdup("smime.p7s"));
 	newinfo->content = MIMECONTENT_MEM;
 	newinfo->disposition = DISPOSITIONTYPE_ATTACHMENT;
-	g_hash_table_insert(newinfo->dispositionparameters, g_strdup("filename"),
-			    g_strdup("smime.p7s"));
+	g_hash_table_insert(newinfo->dispositionparameters, g_strdup("filename"), g_strdup("smime.p7s"));
 	newinfo->data.mem = g_malloc(len + 1);
 	newinfo->tmp = TRUE;
 	memmove(newinfo->data.mem, real_content, len);
@@ -854,6 +809,7 @@ gboolean smime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from
 
 	return TRUE;
 }
+
 gchar *smime_get_encrypt_data(GSList *recp_names)
 {
 	return sgpgme_get_encrypt_data(recp_names, GPGME_PROTOCOL_CMS);
@@ -864,8 +820,7 @@ static const gchar *smime_get_encrypt_warning(void)
 	if (prefs_gpg_should_skip_encryption_warning(smime_system.id))
 		return NULL;
 	else
-		return _("Please note that email headers, like Subject, "
-			 "are not encrypted by the S/MIME system.");
+		return _("Please note that email headers, like Subject, " "are not encrypted by the S/MIME system.");
 }
 
 static void smime_inhibit_encrypt_warning(gboolean inhibit)
@@ -896,7 +851,7 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	}
 
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
-		debug_print ("gpgme_new failed: %s\n", gpgme_strerror(err));
+		debug_print("gpgme_new failed: %s\n", gpgme_strerror(err));
 		g_free(fprs);
 		return FALSE;
 	}
@@ -904,14 +859,13 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	err = gpgme_set_protocol(ctx, GPGME_PROTOCOL_CMS);
 
 	if (err) {
-		debug_print ("gpgme_set_protocol failed: %s\n",
-                   gpgme_strerror (err));
+		debug_print("gpgme_set_protocol failed: %s\n", gpgme_strerror(err));
 		g_free(fprs);
 		return FALSE;
 	}
 
-	kset = g_malloc(sizeof(gpgme_key_t)*(i+1));
-	memset(kset, 0, sizeof(gpgme_key_t)*(i+1));
+	kset = g_malloc(sizeof(gpgme_key_t) * (i + 1));
+	memset(kset, 0, sizeof(gpgme_key_t) * (i + 1));
 	i = 0;
 
 	while (fprs[i] && strlen(fprs[i])) {
@@ -919,7 +873,7 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 		gpgme_error_t err;
 		err = gpgme_get_key(ctx, fprs[i], &key, 0);
 		if (err) {
-			debug_print("can't add key '%s'[%d] (%s)\n", fprs[i],i, gpgme_strerror(err));
+			debug_print("can't add key '%s'[%d] (%s)\n", fprs[i], i, gpgme_strerror(err));
 			break;
 		}
 		debug_print("found %s at %d\n", fprs[i], i);
@@ -931,23 +885,18 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	debug_print("Encrypting message content\n");
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *) mimeinfo->node->children->data;
+	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
-
 
 	/* create temporary multipart for content */
 	encmultipart = procmime_mimeinfo_new();
 	encmultipart->type = MIMETYPE_APPLICATION;
 	encmultipart->subtype = g_strdup("x-pkcs7-mime");
-	g_hash_table_insert(encmultipart->typeparameters, g_strdup("name"),
-                            g_strdup("smime.p7m"));
-	g_hash_table_insert(encmultipart->typeparameters,
-			    g_strdup("smime-type"),
-			    g_strdup("enveloped-data"));
-	
+	g_hash_table_insert(encmultipart->typeparameters, g_strdup("name"), g_strdup("smime.p7m"));
+	g_hash_table_insert(encmultipart->typeparameters, g_strdup("smime-type"), g_strdup("enveloped-data"));
+
 	encmultipart->disposition = DISPOSITIONTYPE_ATTACHMENT;
-	g_hash_table_insert(encmultipart->dispositionparameters, g_strdup("filename"),
-                            g_strdup("smime.p7m"));
+	g_hash_table_insert(encmultipart->dispositionparameters, g_strdup("filename"), g_strdup("smime.p7m"));
 
 	g_node_append(encmultipart->node, msgcontent->node);
 
@@ -984,10 +933,10 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	claws_fclose(fp);
 
 	/* encrypt data */
-	gpgme_data_new_from_mem(&gpgtext, textstr, textstr?strlen(textstr):0, 0);
+	gpgme_data_new_from_mem(&gpgtext, textstr, textstr ? strlen(textstr) : 0, 0);
 	gpgme_data_new(&gpgenc);
 	cm_gpgme_data_rewind(gpgtext);
-	
+
 	gpgme_op_encrypt(ctx, kset, GPGME_ENCRYPT_ALWAYS_TRUST, gpgtext, gpgenc);
 
 	gpgme_release(ctx);
@@ -1040,16 +989,16 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 }
 
 static PrivacySystem smime_system = {
-	"smime",			/* id */
-	"S-MIME",			/* name */
+	"smime", /* id */
+	"S-MIME", /* name */
 
 	smime_free_privacydata,	/* free_privacydata */
 
-	smime_is_signed,		/* is_signed(MimeInfo *) */
+	smime_is_signed, /* is_signed(MimeInfo *) */
 	smime_check_sig_async,
 
-	smime_is_encrypted,		/* is_encrypted(MimeInfo *) */
-	smime_decrypt,			/* decrypt(MimeInfo *) */
+	smime_is_encrypted, /* is_encrypted(MimeInfo *) */
+	smime_decrypt, /* decrypt(MimeInfo *) */
 
 	TRUE,
 	smime_sign,
@@ -1074,9 +1023,13 @@ void smime_done()
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_PRIVACY, N_("S/MIME")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_PRIVACY, N_("S/MIME")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
 #endif /* USE_GPGME */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

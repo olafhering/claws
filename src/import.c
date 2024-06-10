@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -59,7 +59,7 @@ static void import_destsel_cb(GtkWidget *widget, gpointer data);
 static gint delete_event(GtkWidget *widget, GdkEventAny *event, gpointer data);
 static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-gint import_mbox(FolderItem *default_dest, const gchar* mbox_file)
+gint import_mbox(FolderItem *default_dest, const gchar *mbox_file)
 /* return values: -2 skipped/cancelled, -1 error, 0 OK */
 {
 	gchar *dest_id = NULL;
@@ -68,8 +68,7 @@ gint import_mbox(FolderItem *default_dest, const gchar* mbox_file)
 
 	if (!window) {
 		import_create();
-	}
-	else {
+	} else {
 		gtk_widget_show(window);
 	}
 
@@ -119,10 +118,8 @@ static void import_create(void)
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(delete_event), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(key_pressed), NULL);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(delete_event), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(key_pressed), NULL);
 	MANAGE_WINDOW_SIGNALS_CONNECT(window);
 
 	vbox = gtk_vbox_new(FALSE, 4);
@@ -132,8 +129,7 @@ static void import_create(void)
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
 
-	desc_label = gtk_label_new
-		(_("Locate the mbox file and specify the destination folder."));
+	desc_label = gtk_label_new(_("Locate the mbox file and specify the destination folder."));
 	gtk_label_set_line_wrap(GTK_LABEL(desc_label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), desc_label, FALSE, FALSE, 0);
 
@@ -145,51 +141,33 @@ static void import_create(void)
 	gtk_widget_set_size_request(table, 420, -1);
 
 	file_label = gtk_label_new(_("Mbox file:"));
-	gtk_table_attach(GTK_TABLE(table), file_label, 0, 1, 0, 1,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), file_label, 0, 1, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(file_label), 1, 0.5);
 
 	dest_label = gtk_label_new(_("Destination folder:"));
-	gtk_table_attach(GTK_TABLE(table), dest_label, 0, 1, 1, 2,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), dest_label, 0, 1, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(dest_label), 1, 0.5);
 
 	file_entry = gtk_entry_new();
-	gtk_table_attach(GTK_TABLE(table), file_entry, 1, 2, 0, 1,
-			 (GtkAttachOptions) (GTK_EXPAND|GTK_SHRINK|GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table), file_entry, 1, 2, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 
 	dest_entry = gtk_entry_new();
-	gtk_table_attach(GTK_TABLE(table), dest_entry, 1, 2, 1, 2,
-			 GTK_EXPAND|GTK_SHRINK|GTK_FILL, 0, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), dest_entry, 1, 2, 1, 2, GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0, 0);
 
 	file_button = gtkut_get_browse_file_btn(_("_Browse"));
-	gtk_table_attach(GTK_TABLE(table), file_button, 2, 3, 0, 1,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
-	g_signal_connect(G_OBJECT(file_button), "clicked",
-			 G_CALLBACK(import_filesel_cb), NULL);
+	gtk_table_attach(GTK_TABLE(table), file_button, 2, 3, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+	g_signal_connect(G_OBJECT(file_button), "clicked", G_CALLBACK(import_filesel_cb), NULL);
 
 	dest_button = gtkut_get_browse_directory_btn(_("B_rowse"));
-	gtk_table_attach(GTK_TABLE(table), dest_button, 2, 3, 1, 2,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
-	g_signal_connect(G_OBJECT(dest_button), "clicked",
-			 G_CALLBACK(import_destsel_cb), NULL);
+	gtk_table_attach(GTK_TABLE(table), dest_button, 2, 3, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+	g_signal_connect(G_OBJECT(dest_button), "clicked", G_CALLBACK(import_destsel_cb), NULL);
 
-	gtkut_stock_button_set_create(&confirm_area,
-				      &cancel_button, GTK_STOCK_CANCEL,
-				      &ok_button, GTK_STOCK_OK,
-				      NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &cancel_button, GTK_STOCK_CANCEL, &ok_button, GTK_STOCK_OK, NULL, NULL);
 	gtk_box_pack_end(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 0);
 	gtk_widget_grab_default(ok_button);
 
-	g_signal_connect(G_OBJECT(ok_button), "clicked",
-			 G_CALLBACK(import_ok_cb), NULL);
-	g_signal_connect(G_OBJECT(cancel_button), "clicked",
-			 G_CALLBACK(import_cancel_cb), NULL);
+	g_signal_connect(G_OBJECT(ok_button), "clicked", G_CALLBACK(import_ok_cb), NULL);
+	g_signal_connect(G_OBJECT(cancel_button), "clicked", G_CALLBACK(import_cancel_cb), NULL);
 
 	gtk_widget_show_all(window);
 }
@@ -255,7 +233,8 @@ static void import_filesel_cb(GtkWidget *widget, gpointer data)
 	gchar *utf8_filename;
 
 	filename = filesel_select_file_open(_("Select importing file"), NULL);
-	if (!filename) return;
+	if (!filename)
+		return;
 
 	utf8_filename = g_filename_to_utf8(filename, -1, NULL, NULL, NULL);
 	if (!utf8_filename) {
@@ -271,10 +250,9 @@ static void import_destsel_cb(GtkWidget *widget, gpointer data)
 	FolderItem *dest;
 	gchar *path;
 
-	dest = foldersel_folder_sel(NULL, FOLDER_SEL_COPY, NULL, FALSE,
-			_("Select folder to import to"));
+	dest = foldersel_folder_sel(NULL, FOLDER_SEL_COPY, NULL, FALSE, _("Select folder to import to"));
 	if (!dest)
-		 return;
+		return;
 	path = folder_item_get_identifier(dest);
 	gtk_entry_set_text(GTK_ENTRY(dest_entry), path);
 	g_free(path);
@@ -292,3 +270,7 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data
 		import_cancel_cb(NULL, NULL);
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

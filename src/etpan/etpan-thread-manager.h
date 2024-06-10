@@ -25,34 +25,28 @@
 
 /* ** object creation ** */
 
-struct etpan_thread_manager * etpan_thread_manager_new(void);
-void etpan_thread_manager_free(struct etpan_thread_manager * manager);
+struct etpan_thread_manager *etpan_thread_manager_new(void);
+void etpan_thread_manager_free(struct etpan_thread_manager *manager);
 
-
-struct etpan_thread_op * etpan_thread_op_new(void);
-void etpan_thread_op_free(struct etpan_thread_op * op);
+struct etpan_thread_op *etpan_thread_op_new(void);
+void etpan_thread_op_free(struct etpan_thread_op *op);
 
 /* ** thread creation ** */
 
-struct etpan_thread *
-etpan_thread_manager_get_thread(struct etpan_thread_manager * manager);
+struct etpan_thread *etpan_thread_manager_get_thread(struct etpan_thread_manager *manager);
 
-void etpan_thread_unbind(struct etpan_thread * thread);
+void etpan_thread_unbind(struct etpan_thread *thread);
 
 /* ** op schedule ** */
 
-int etpan_thread_op_schedule(struct etpan_thread * thread,
-                             struct etpan_thread_op * op);
-
-
+int etpan_thread_op_schedule(struct etpan_thread *thread, struct etpan_thread_op *op);
 
 /* ** manager main loop ** */
 
+void etpan_thread_manager_stop(struct etpan_thread_manager *manager);
+void etpan_thread_manager_join(struct etpan_thread_manager *manager);
 
-void etpan_thread_manager_stop(struct etpan_thread_manager * manager);
-void etpan_thread_manager_join(struct etpan_thread_manager * manager);
-
-int etpan_thread_manager_get_fd(struct etpan_thread_manager * manager);
-void etpan_thread_manager_loop(struct etpan_thread_manager * manager);
+int etpan_thread_manager_get_fd(struct etpan_thread_manager *manager);
+void etpan_thread_manager_loop(struct etpan_thread_manager *manager);
 
 #endif

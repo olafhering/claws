@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -32,7 +32,7 @@
 #include "utils.h"
 #include "file-utils.h"
 
-static gboolean prefs_is_readonly	(const gchar 	*path);
+static gboolean prefs_is_readonly(const gchar *path);
 
 /*!
  *\brief	Open preferences file for reading
@@ -105,7 +105,7 @@ PrefFile *prefs_write_open(const gchar *path)
 	return pfile;
 }
 
-gboolean prefs_common_get_flush_metadata (void);
+gboolean prefs_common_get_flush_metadata(void);
 
 /*!
  *\brief	Close and free preferences file
@@ -137,24 +137,24 @@ gint prefs_file_close(PrefFile *pfile)
 	}
 
 	if (orig_fp) {
-    		while (claws_fgets(buf, sizeof(buf), orig_fp) != NULL) {
+		while (claws_fgets(buf, sizeof(buf), orig_fp) != NULL) {
 			/* next block */
 			if (buf[0] == '[') {
-				if (claws_fputs(buf, fp)  == EOF) {
+				if (claws_fputs(buf, fp) == EOF) {
 					g_warning("failed to write configuration to file");
 					prefs_file_close_revert(pfile);
-				
+
 					return -1;
 				}
 				break;
 			}
 		}
-		
+
 		while (claws_fgets(buf, sizeof(buf), orig_fp) != NULL)
 			if (claws_fputs(buf, fp) == EOF) {
 				g_warning("failed to write configuration to file");
-				prefs_file_close_revert(pfile);			
-				
+				prefs_file_close_revert(pfile);
+
 				return -1;
 			}
 		claws_fclose(orig_fp);
@@ -173,7 +173,7 @@ gint prefs_file_close(PrefFile *pfile)
 	if (is_file_exist(path)) {
 		bakpath = g_strconcat(path, ".bak", NULL);
 #ifdef G_OS_WIN32
-                claws_unlink(bakpath);
+		claws_unlink(bakpath);
 #endif
 		if (g_rename(path, bakpath) < 0) {
 			FILE_OP_ERROR(path, "rename");
@@ -184,9 +184,8 @@ gint prefs_file_close(PrefFile *pfile)
 			return -1;
 		}
 	}
-
 #ifdef G_OS_WIN32
-        claws_unlink(path);
+	claws_unlink(path);
 #endif
 	if (g_rename(tmppath, path) < 0) {
 		FILE_OP_ERROR(tmppath, "rename");
@@ -221,7 +220,8 @@ gint prefs_file_close_revert(PrefFile *pfile)
 		tmppath = g_strconcat(pfile->path, ".tmp", NULL);
 	claws_fclose(pfile->fp);
 	if (pfile->writing) {
-		if (claws_unlink(tmppath) < 0) FILE_OP_ERROR(tmppath, "unlink");
+		if (claws_unlink(tmppath) < 0)
+			FILE_OP_ERROR(tmppath, "unlink");
 		g_free(tmppath);
 	}
 	g_free(pfile->path);
@@ -233,7 +233,7 @@ gint prefs_file_close_revert(PrefFile *pfile)
 /*!
  *\brief	Check if "path" is a file and read-only
  */
-static gboolean prefs_is_readonly(const gchar * path)
+static gboolean prefs_is_readonly(const gchar *path)
 {
 	if (path == NULL)
 		return TRUE;
@@ -244,10 +244,10 @@ static gboolean prefs_is_readonly(const gchar * path)
 /*!
  *\brief	Check if "rcfile" is in rcdir, a file and read-only
  */
-gboolean prefs_rc_is_readonly(const gchar * rcfile)
+gboolean prefs_rc_is_readonly(const gchar *rcfile)
 {
 	gboolean result;
-	gchar * rcpath;
+	gchar *rcpath;
 
 	if (rcfile == NULL)
 		return TRUE;
@@ -276,7 +276,7 @@ gint prefs_set_block_label(PrefFile *pfile, const gchar *label)
 	if (!pfile->writing) {
 		while (claws_fgets(buf, sizeof(buf), pfile->fp) != NULL) {
 			gint val;
-			
+
 			val = strncmp(buf, block_label, strlen(block_label));
 			if (val == 0) {
 				debug_print("Found %s\n", block_label);
@@ -300,7 +300,7 @@ gint prefs_set_block_label(PrefFile *pfile, const gchar *label)
 						g_warning("failed to write configuration to file");
 						prefs_file_close_revert(pfile);
 						g_free(block_label);
-						
+
 						return -1;
 					}
 				}
@@ -312,8 +312,7 @@ gint prefs_set_block_label(PrefFile *pfile, const gchar *label)
 			}
 		}
 
-		if (claws_fputs(block_label, pfile->fp) == EOF ||
-			claws_fputc('\n', pfile->fp) == EOF) {
+		if (claws_fputs(block_label, pfile->fp) == EOF || claws_fputc('\n', pfile->fp) == EOF) {
 			g_warning("failed to write configuration to file");
 			prefs_file_close_revert(pfile);
 			g_free(block_label);
@@ -326,3 +325,7 @@ gint prefs_set_block_label(PrefFile *pfile, const gchar *label)
 
 	return 0;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

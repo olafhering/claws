@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #include <glib.h>
@@ -80,19 +80,19 @@ struct clamd_result {
 
 static gboolean scan_func(GNode *node, gpointer data)
 {
-	struct clamd_result *result = (struct clamd_result *) data;
-	MimeInfo *mimeinfo = (MimeInfo *) node->data;
+	struct clamd_result *result = (struct clamd_result *)data;
+	MimeInfo *mimeinfo = (MimeInfo *)node->data;
 	gchar *outfile;
 	response buf;
 	int max;
 	GStatBuf info;
-	gchar* msg, *name;
+	gchar *msg, *name;
 
 	outfile = procmime_get_tmp_file_name(mimeinfo);
 	if (procmime_get_part(outfile, mimeinfo) < 0)
 		g_warning("can't get the part of multipart message");
 	else {
-    	max = config.clamav_max_size * 1048576; /* maximum file size */
+		max = config.clamav_max_size * 1048576;	/* maximum file size */
 		if (g_stat(outfile, &info) == -1)
 			g_warning("can't determine file size");
 		else {
@@ -101,60 +101,57 @@ static gboolean scan_func(GNode *node, gpointer data)
 				result->status = clamd_verify_email(outfile, &buf);
 				debug_print("status: %d\n", result->status);
 				switch (result->status) {
-					case NO_SOCKET: 
-						g_warning("[scanning] no socket information");
-						if (config.alert_ack) {
-						    alertpanel_error(_("Scanning\nNo socket information.\nAntivirus disabled."));
-						    config.alert_ack = FALSE;
-						}
-						break;
-					case NO_CONNECTION:
-						g_warning("[scanning] Clamd does not respond to ping");
-						if (config.alert_ack) {
-						    alertpanel_warning(_("Scanning\nClamd does not respond to ping.\nIs clamd running?"));
-						    config.alert_ack = FALSE;
-						}
-						break;
-					case VIRUS: 
-						name = clamd_get_virus_name(buf.msg);
-						msg = g_strconcat(_("Detected %s virus."),
-							name, NULL);
-						g_free(name);
-						g_warning("%s", msg);
-						debug_print("no_recv: %d\n", prefs_common_get_prefs()->no_recv_err_panel);
-						if (prefs_common_get_prefs()->no_recv_err_panel) {
-						    statusbar_print_all("%s", msg);
-						}
-						else {
-						    alertpanel_warning("%s\n", msg);
-						}
-						g_free(msg);
-						config.alert_ack = TRUE;
-						break;
-					case SCAN_ERROR:
-						debug_print("Error: %s\n", buf.msg);
-						if (config.alert_ack) {
-						    alertpanel_error(_("Scanning error:\n%s"), buf.msg);
-						    config.alert_ack = FALSE;
-						}
-						break;
-					case OK:
-						debug_print("No virus detected.\n");
-						config.alert_ack = TRUE;
-						break;
+				case NO_SOCKET:
+					g_warning("[scanning] no socket information");
+					if (config.alert_ack) {
+						alertpanel_error(_("Scanning\nNo socket information.\nAntivirus disabled."));
+						config.alert_ack = FALSE;
+					}
+					break;
+				case NO_CONNECTION:
+					g_warning("[scanning] Clamd does not respond to ping");
+					if (config.alert_ack) {
+						alertpanel_warning(_("Scanning\nClamd does not respond to ping.\nIs clamd running?"));
+						config.alert_ack = FALSE;
+					}
+					break;
+				case VIRUS:
+					name = clamd_get_virus_name(buf.msg);
+					msg = g_strconcat(_("Detected %s virus."), name, NULL);
+					g_free(name);
+					g_warning("%s", msg);
+					debug_print("no_recv: %d\n", prefs_common_get_prefs()->no_recv_err_panel);
+					if (prefs_common_get_prefs()->no_recv_err_panel) {
+						statusbar_print_all("%s", msg);
+					} else {
+						alertpanel_warning("%s\n", msg);
+					}
+					g_free(msg);
+					config.alert_ack = TRUE;
+					break;
+				case SCAN_ERROR:
+					debug_print("Error: %s\n", buf.msg);
+					if (config.alert_ack) {
+						alertpanel_error(_("Scanning error:\n%s"), buf.msg);
+						config.alert_ack = FALSE;
+					}
+					break;
+				case OK:
+					debug_print("No virus detected.\n");
+					config.alert_ack = TRUE;
+					break;
 				}
-			}
-			else {
-				msg = g_strdup_printf(_("File: %s. Size (%d) greater than limit (%d)\n"), outfile, (int) info.st_size, max);
+			} else {
+				msg = g_strdup_printf(_("File: %s. Size (%d) greater than limit (%d)\n"), outfile, (int)info.st_size, max);
 				statusbar_print_all("%s", msg);
 				debug_print("%s", msg);
 				g_free(msg);
 			}
 		}
 		if (g_unlink(outfile) < 0)
-                        FILE_OP_ERROR(outfile, "g_unlink");
+			FILE_OP_ERROR(outfile, "g_unlink");
 	}
-	
+
 	return (result->status == OK) ? FALSE : TRUE;
 }
 
@@ -170,7 +167,8 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		return FALSE;
 
 	mimeinfo = procmime_scan_message(msginfo);
-	if (!mimeinfo) return FALSE;
+	if (!mimeinfo)
+		return FALSE;
 
 	debug_print("Scanning message %d for viruses\n", msginfo->msgnum);
 	if (message_callback != NULL)
@@ -183,10 +181,8 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		if (config.clamav_recv_infected) {
 			FolderItem *clamav_save_folder;
 
-			if ((!config.clamav_save_folder) ||
-			    (config.clamav_save_folder[0] == '\0') ||
-			    ((clamav_save_folder = folder_find_item_from_identifier(config.clamav_save_folder)) == NULL))
-				    clamav_save_folder = folder_get_default_trash();
+			if ((!config.clamav_save_folder) || (config.clamav_save_folder[0] == '\0') || ((clamav_save_folder = folder_find_item_from_identifier(config.clamav_save_folder)) == NULL))
+				clamav_save_folder = folder_get_default_trash();
 
 			procmsg_msginfo_unset_flags(msginfo, ~0, 0);
 			msginfo->filter_op = IS_MOVE;
@@ -195,40 +191,33 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 			folder_item_remove_msg(msginfo->folder, msginfo->msgnum);
 		}
 	}
-	
+
 	procmime_mimeinfo_free_all(&mimeinfo);
 
 	return (result.status == OK) ? FALSE : TRUE;
 }
 
-Clamd_Stat clamd_prepare(void) {
+Clamd_Stat clamd_prepare(void)
+{
 	debug_print("Creating socket\n");
-	if (!config.clamd_config_type
-			|| (config.clamd_host != NULL
-				&& *(config.clamd_host) != '\0'
-				&& config.clamd_port > 0)) {
-		if (config.clamd_host == NULL
-				|| *(config.clamd_host) == '\0'
-				|| config.clamd_port == 0) {
+	if (!config.clamd_config_type || (config.clamd_host != NULL && *(config.clamd_host) != '\0' && config.clamd_port > 0)) {
+		if (config.clamd_host == NULL || *(config.clamd_host) == '\0' || config.clamd_port == 0) {
 			/* error */
 			return NO_SOCKET;
 		}
 		/* Manual configuration has highest priority */
-		debug_print("Using user input: %s:%d\n",
-			config.clamd_host, config.clamd_port);
+		debug_print("Using user input: %s:%d\n", config.clamd_host, config.clamd_port);
 		clamd_create_config_manual(config.clamd_host, config.clamd_port);
-	}
-	else if (config.clamd_config_type || config.clamd_config_folder != NULL) {
+	} else if (config.clamd_config_type || config.clamd_config_folder != NULL) {
 		if (config.clamd_config_folder == NULL) {
 			/* error */
 			return NO_SOCKET;
 		}
 		debug_print("Using clamd.conf: %s\n", config.clamd_config_folder);
 		clamd_create_config_automatic(config.clamd_config_folder);
-	}
-	else {
+	} else {
 		/* Fall back. Try enable anyway */
-		if (! clamd_find_socket())
+		if (!clamd_find_socket())
 			return NO_SOCKET;
 	}
 
@@ -258,11 +247,11 @@ void clamav_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-    if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
 void clamav_set_message_callback(MessageCallback callback)
@@ -274,8 +263,7 @@ gint plugin_init(gchar **error)
 {
 	gchar *rcpath;
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	hook_id = hooks_register_hook(MAIL_FILTERING_HOOKLIST, mail_filtering_hook, NULL);
@@ -296,23 +284,23 @@ gint plugin_init(gchar **error)
 		config.alert_ack = TRUE;
 		Clamd_Stat status = clamd_prepare();
 		switch (status) {
-			case NO_SOCKET: 
-				g_warning("[init] no socket information");
-				alertpanel_error(_("Init\nNo socket information.\nAntivirus disabled."));
-				break;
-			case NO_CONNECTION:
-				g_warning("[init] Clamd does not respond to ping");
-				alertpanel_warning(_("Init\nClamd does not respond to ping.\nIs clamd running?"));
-				break;
-			default:
-				break;
+		case NO_SOCKET:
+			g_warning("[init] no socket information");
+			alertpanel_error(_("Init\nNo socket information.\nAntivirus disabled."));
+			break;
+		case NO_CONNECTION:
+			g_warning("[init] Clamd does not respond to ping");
+			alertpanel_warning(_("Init\nClamd does not respond to ping.\nIs clamd running?"));
+			break;
+		default:
+			break;
 		}
 	}
 
 	debug_print("Clamd plugin loaded\n");
 
 	return 0;
-	
+
 }
 
 gboolean plugin_done(void)
@@ -333,25 +321,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin uses Clam AntiVirus to scan all messages that are "
-	       "received from an IMAP, LOCAL or POP account.\n"
-	       "\n"
-	       "When a message attachment is found to contain a virus it can be "
-	       "deleted or saved in a specially designated folder.\n"
-	       "\n"
-	       "Because this plugin communicates with clamd via a\n"
-	       "socket then there are some minimum requirements to\n"
-	       "the permissions for your home folder and the\n"
-	       ".claws-mail folder provided the clamav-daemon is\n"
-	       "configured to communicate via a unix socket. All\n"
-	       "users at least need to be given execute permissions\n"
-	       "on these folders.\n"
-	       "\n"
-	       "To avoid changing permissions you could configure\n"
-	       "the clamav-daemon to communicate via a TCP socket\n"
-	       "and choose manual configuration for clamd.\n" 
-	       "\n"
-	       "Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus");
+	return _("This plugin uses Clam AntiVirus to scan all messages that are " "received from an IMAP, LOCAL or POP account.\n" "\n" "When a message attachment is found to contain a virus it can be " "deleted or saved in a specially designated folder.\n" "\n" "Because this plugin communicates with clamd via a\n" "socket then there are some minimum requirements to\n" "the permissions for your home folder and the\n" ".claws-mail folder provided the clamav-daemon is\n" "configured to communicate via a unix socket. All\n" "users at least need to be given execute permissions\n" "on these folders.\n" "\n" "To avoid changing permissions you could configure\n" "the clamav-daemon to communicate via a TCP socket\n" "and choose manual configuration for clamd.\n" "\n" "Options can be found in /Configuration/Preferences/Plugins/Clam AntiVirus");
 }
 
 const gchar *plugin_type(void)
@@ -371,8 +341,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_FILTERING, N_("Virus detection")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_FILTERING, N_("Virus detection")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -42,8 +42,8 @@ struct _PersonEdit_dlg {
 	GtkWidget *notebook;
 	GtkWidget *ok_btn;
 	GtkWidget *cancel_btn;
-	GtkWidget *statusbar;	/* used when prefs_common.addressbook_use_editaddress_dialog is TRUE */
-	GtkWidget *title;	/* used when prefs_common.addressbook_use_editaddress_dialog is FALSE */
+	GtkWidget *statusbar; /* used when prefs_common.addressbook_use_editaddress_dialog is TRUE */
+	GtkWidget *title; /* used when prefs_common.addressbook_use_editaddress_dialog is FALSE */
 	gint status_cid;
 
 	/* User data tab */
@@ -82,7 +82,7 @@ struct _PersonEdit_dlg {
 
 static const char *ATTRIBUTE[] = {
 	"telephoneNumber",
-	/*"description (Remarks)",*/
+	/*"description (Remarks)", */
 	"title",
 	"telexNumber",
 	"facsimileTelephoneNumber",
@@ -110,6 +110,6 @@ static const int ATTRIBUTE_SIZE = (sizeof(ATTRIBUTE) / sizeof(*ATTRIBUTE)) - 1;
 void addressbook_edit_person_page_attrib_ldap(PersonEditDlg *personEditDlg, gint pageNum, gchar *pageLbl);
 int get_attribute_index(const gchar *string_literal);
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __EDITADDRESS_OTHER_ATTRIBUTES_LDAP_H__ */

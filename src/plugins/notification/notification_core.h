@@ -23,57 +23,56 @@
 #include "procmsg.h"
 
 typedef struct {
-  gchar *from;
-  gchar *subject;
-  FolderItem *folder_item;
-  gchar *folderitem_name;
+	gchar *from;
+	gchar *subject;
+	FolderItem *folder_item;
+	gchar *folderitem_name;
 	MsgInfo *msginfo;
 } CollectedMsg;
 
 typedef enum {
-  F_TYPE_MAIL=0,
-  F_TYPE_NEWS,
-  F_TYPE_CALENDAR,
-  F_TYPE_RSS,
-  F_TYPE_LAST
+	F_TYPE_MAIL = 0,
+	F_TYPE_NEWS,
+	F_TYPE_CALENDAR,
+	F_TYPE_RSS,
+	F_TYPE_LAST
 } NotificationFolderType;
 
-typedef struct 
-{
-  guint new_msgs;
-  guint unread_msgs;
-  guint unreadmarked_msgs;
-  guint marked_msgs;
-  guint total_msgs;
+typedef struct {
+	guint new_msgs;
+	guint unread_msgs;
+	guint unreadmarked_msgs;
+	guint marked_msgs;
+	guint total_msgs;
 } NotificationMsgCount;
 
 /* Collect new and possibly unread messages in all folders */
-GSList*  notification_collect_msgs(gboolean, GSList*, gint);
-void     notification_collected_msgs_free(GSList*);
+GSList *notification_collect_msgs(gboolean, GSList *, gint);
+void notification_collected_msgs_free(GSList *);
 
-void     notification_core_global_includes_changed(void);
-void     notification_core_free(void);
-void     notification_update_msg_counts(FolderItem*);
-void     notification_core_get_msg_count(GSList*,NotificationMsgCount*);
-void     notification_core_get_msg_count_of_foldername(gchar*, NotificationMsgCount*);
-void     notification_new_unnotified_msgs(FolderItemUpdateData*);
-gboolean notification_notified_hash_msginfo_update(MsgInfoUpdate*);
-void     notification_notified_hash_startup_init(void);
+void notification_core_global_includes_changed(void);
+void notification_core_free(void);
+void notification_update_msg_counts(FolderItem *);
+void notification_core_get_msg_count(GSList *, NotificationMsgCount *);
+void notification_core_get_msg_count_of_foldername(gchar *, NotificationMsgCount *);
+void notification_new_unnotified_msgs(FolderItemUpdateData *);
+gboolean notification_notified_hash_msginfo_update(MsgInfoUpdate *);
+void notification_notified_hash_startup_init(void);
 
-void     notification_show_mainwindow(MainWindow *mainwin);
+void notification_show_mainwindow(MainWindow *mainwin);
 /* folder type specific settings */
-gboolean notify_include_folder_type(FolderType, gchar*);
+gboolean notify_include_folder_type(FolderType, gchar *);
 
 void notification_toggle_hide_show_window(void);
 
 #ifdef HAVE_LIBNOTIFY
 /* Sanitize a string to use with libnotify. Returns a freshly
  * allocated string that must be freed by the user. */
-gchar* notification_libnotify_sanitize_str(gchar*);
+gchar *notification_libnotify_sanitize_str(gchar *);
 /* Returns a freshly allocated copy of the input string, which
  * is guaranteed to be valid UTF8. The returned string has to
  * be freed. */
-gchar* notification_validate_utf8_str(gchar*);
+gchar *notification_validate_utf8_str(gchar *);
 #endif
 
 #endif /* NOTIFICATION_CORE_H */

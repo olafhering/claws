@@ -22,19 +22,18 @@
 
 typedef struct _DescriptionWindow DescriptionWindow;
 
-struct _DescriptionWindow
-{
-	GtkWidget 	* window;
-	GtkWidget	* parent;
-	gboolean	parent_modal;
+struct _DescriptionWindow {
+	GtkWidget *window;
+	GtkWidget *parent;
+	gboolean parent_modal;
 	/** Number of columns for each line of data **/
-	int		  columns;
+	int columns;
 	/** title of the window **/
-	gchar		* title;
+	gchar *title;
 	/** description **/
-	gchar		* description;
+	gchar *description;
 	/** points to the table of strings to be show in the window */
-	gchar 		** symbol_table;
+	gchar **symbol_table;
 };
 
 void description_window_create(DescriptionWindow *dwindow);

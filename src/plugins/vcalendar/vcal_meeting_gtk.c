@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -56,11 +56,10 @@
 #include "utils.h"
 #include "file-utils.h"
 
-struct _VCalMeeting
-{
-	gchar     *uid;
-	gint       sequence;
-	gint 	   method;
+struct _VCalMeeting {
+	gchar *uid;
+	gint sequence;
+	gint method;
 	GtkWidget *window;
 #ifndef GENERIC_UMPC
 	GtkWidget *table;
@@ -79,11 +78,11 @@ struct _VCalMeeting
 	GtkWidget *location;
 	GtkWidget *summary;
 	GtkWidget *description;
-	GSList 	  *attendees;
+	GSList *attendees;
 	GtkWidget *attendees_vbox;
 	GtkWidget *save_btn;
 	GtkWidget *avail_btn;
-	GSList 	  *avail_accounts;
+	GSList *avail_accounts;
 	GtkWidget *total_avail_evtbox;
 	GtkWidget *total_avail_img;
 	GtkWidget *total_avail_msg;
@@ -217,10 +216,9 @@ enum {
 
 static gboolean avail_btn_can_be_sensitive(void)
 {
-	if (vcalprefs.freebusy_get_url == NULL
-	||  *vcalprefs.freebusy_get_url == '\0')
+	if (vcalprefs.freebusy_get_url == NULL || *vcalprefs.freebusy_get_url == '\0')
 		return FALSE;
-	else 
+	else
 		return TRUE;
 }
 
@@ -229,7 +227,7 @@ static gint get_dtdate(const gchar *str, gint field)
 	time_t t = icaltime_as_timet((icaltime_from_string(str)));
 	struct tm buft;
 	struct tm *lt;
-	
+
 	tzset();
 
 #ifdef G_OS_WIN32
@@ -238,7 +236,7 @@ static gint get_dtdate(const gchar *str, gint field)
 #endif
 	lt = localtime_r(&t, &buft);
 
-	switch(field){
+	switch (field) {
 	case DAY:
 		return lt->tm_mday;
 	case MONTH:
@@ -266,7 +264,7 @@ static gboolean remove_btn_cb(GtkButton *widget, gpointer data)
 	VCalAttendee *attendee = (VCalAttendee *)data;
 	gtk_container_remove(GTK_CONTAINER(attendee->meet->attendees_vbox), attendee->hbox);
 	attendee->meet->attendees = g_slist_remove(attendee->meet->attendees, attendee);
-	
+
 	g_free(attendee->status);
 
 	return TRUE;
@@ -275,13 +273,12 @@ static gboolean remove_btn_cb(GtkButton *widget, gpointer data)
 VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar *partstat, gchar *cutype, gboolean first)
 {
 	GtkWidget *att_hbox = gtk_hbox_new(FALSE, 6);
-	VCalAttendee *attendee 	= g_new0(VCalAttendee, 1);
+	VCalAttendee *attendee = g_new0(VCalAttendee, 1);
 
-	attendee->address	= gtk_entry_new();
-	attendee->cutype	= gtk_combo_box_text_new();
-	attendee->avail_evtbox  = gtk_event_box_new();
-	attendee->avail_img	= gtk_image_new_from_stock
-                        (GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	attendee->address = gtk_entry_new();
+	attendee->cutype = gtk_combo_box_text_new();
+	attendee->avail_evtbox = gtk_event_box_new();
+	attendee->avail_img = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	gtk_widget_show(attendee->address);
 	gtk_widget_show(attendee->cutype);
@@ -290,14 +287,14 @@ VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar
 	CLAWS_SET_TIP(attendee->address, _("Use <tab> to autocomplete from addressbook"));
 	gtk_widget_set_size_request(attendee->avail_evtbox, 18, 16);
 	gtk_event_box_set_visible_window(GTK_EVENT_BOX(attendee->avail_evtbox), FALSE);
-	gtk_container_add (GTK_CONTAINER(attendee->avail_evtbox), attendee->avail_img);
+	gtk_container_add(GTK_CONTAINER(attendee->avail_evtbox), attendee->avail_img);
 
 	if (address) {
 		gchar *str = g_strdup_printf("%s%s%s%s",
-				(name && strlen(name))?name:"",
-				(name && strlen(name))?" <":"",
-				address,
-				(name && strlen(name))?">":"");
+					     (name && strlen(name)) ? name : "",
+					     (name && strlen(name)) ? " <" : "",
+					     address,
+					     (name && strlen(name)) ? ">" : "");
 		gtk_entry_set_text(GTK_ENTRY(attendee->address), str);
 		g_free(str);
 	}
@@ -309,9 +306,9 @@ VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(attendee->cutype), _("Group"));
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(attendee->cutype), _("Resource"));
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(attendee->cutype), _("Room"));
-	
+
 	gtk_combo_box_set_active(GTK_COMBO_BOX(attendee->cutype), 0);
-	
+
 	if (cutype) {
 		if (!strcmp(cutype, "group"))
 			gtk_combo_box_set_active(GTK_COMBO_BOX(attendee->cutype), 1);
@@ -320,11 +317,11 @@ VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar
 		if (!strcmp(cutype, "room"))
 			gtk_combo_box_set_active(GTK_COMBO_BOX(attendee->cutype), 3);
 	}
-	
-	attendee->add_btn	= gtk_button_new_with_label(_("Add..."));
-	attendee->remove_btn	= gtk_button_new_with_label(_("Remove"));
-	attendee->meet		= meet;
-	attendee->hbox		= att_hbox;
+
+	attendee->add_btn = gtk_button_new_with_label(_("Add..."));
+	attendee->remove_btn = gtk_button_new_with_label(_("Remove"));
+	attendee->meet = meet;
+	attendee->hbox = att_hbox;
 
 	gtk_widget_show(attendee->add_btn);
 	gtk_widget_show(attendee->remove_btn);
@@ -332,13 +329,11 @@ VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar
 
 	gtk_box_pack_start(GTK_BOX(attendee->hbox), attendee->avail_evtbox, FALSE, FALSE, 0);
 	gtk_widget_set_sensitive(attendee->remove_btn, !first);
-	meet->attendees 	= g_slist_append(meet->attendees, attendee);
-	
-	g_signal_connect(G_OBJECT(attendee->remove_btn), "clicked",
-			 G_CALLBACK(remove_btn_cb), attendee);
-	g_signal_connect(G_OBJECT(attendee->add_btn), "clicked",
-			 G_CALLBACK(add_btn_cb), attendee);
-	
+	meet->attendees = g_slist_append(meet->attendees, attendee);
+
+	g_signal_connect(G_OBJECT(attendee->remove_btn), "clicked", G_CALLBACK(remove_btn_cb), attendee);
+	g_signal_connect(G_OBJECT(attendee->add_btn), "clicked", G_CALLBACK(add_btn_cb), attendee);
+
 	gtk_box_pack_start(GTK_BOX(att_hbox), attendee->address, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(att_hbox), attendee->cutype, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(att_hbox), attendee->add_btn, FALSE, FALSE, 0);
@@ -359,7 +354,7 @@ static gchar *get_organizer(VCalMeeting *meet)
 	int i = 0;
 	GSList *cur = meet->avail_accounts;
 	while (i < index && cur && cur->data) {
-		debug_print("%d:skipping %s\n",i,((PrefsAccount *)(cur->data))->address);
+		debug_print("%d:skipping %s\n", i, ((PrefsAccount *)(cur->data))->address);
 		cur = cur->next;
 		i++;
 	}
@@ -375,7 +370,7 @@ static gchar *get_organizer_name(VCalMeeting *meet)
 	int i = 0;
 	GSList *cur = meet->avail_accounts;
 	while (i < index && cur && cur->data) {
-		debug_print("%d:skipping %s\n",i,((PrefsAccount *)(cur->data))->address);
+		debug_print("%d:skipping %s\n", i, ((PrefsAccount *)(cur->data))->address);
 		cur = cur->next;
 		i++;
 	}
@@ -390,39 +385,39 @@ static int get_current_gmt_offset(void)
 	time_t now = time(NULL);
 	struct tm gmt;
 	struct tm local;
-	
+
 	tzset();
 
 #ifdef G_OS_WIN32
 	if (now < 0)
 		now = 1;
 #endif
-	gmtime_r(& now, & gmt);
-	localtime_r(& now, & local);
-	
+	gmtime_r(&now, &gmt);
+	localtime_r(&now, &local);
+
 	local.tm_isdst = 0;
-	return mktime(&local)-mktime(&gmt);
+	return mktime(&local) - mktime(&gmt);
 }
 
 static int get_gmt_offset_at_time(time_t then)
 {
 	struct tm gmt;
 	struct tm local;
-	
+
 	tzset();
 
 #ifdef G_OS_WIN32
 	if (then < 0)
 		then = 1;
 #endif
-	gmtime_r(& then, & gmt);
-	localtime_r(& then, & local);
-	
+	gmtime_r(&then, &gmt);
+	localtime_r(&then, &local);
+
 	local.tm_isdst = 0;
-	return mktime(&local)-mktime(&gmt);
+	return mktime(&local) - mktime(&gmt);
 }
 
-static gchar *get_date(VCalMeeting *meet, int start) 
+static gchar *get_date(VCalMeeting *meet, int start)
 {
 	struct tm *lt;
 	time_t t;
@@ -438,14 +433,14 @@ static gchar *get_date(VCalMeeting *meet, int start)
 		t = 1;
 #endif
 	lt = localtime_r(&t, &buft);
-	
+
 	gtk_calendar_get_date(GTK_CALENDAR(start ? meet->start_c : meet->end_c), &y, &m, &d);
 	lt->tm_mday = d;
-	lt->tm_mon  = m;
+	lt->tm_mon = m;
 	lt->tm_year = y - 1900;
 	lt->tm_hour = 0;
-	lt->tm_min  = 0;
-	lt->tm_sec  = 0;
+	lt->tm_min = 0;
+	lt->tm_sec = 0;
 
 	if (start) {
 		gtkut_time_select_get_time(GTK_COMBO_BOX(meet->start_time), &lt->tm_hour, &lt->tm_min);
@@ -465,19 +460,19 @@ static gchar *get_date(VCalMeeting *meet, int start)
 
 static gchar *get_location(VCalMeeting *meet)
 {
-	return gtk_editable_get_chars(GTK_EDITABLE(meet->location),0, -1);
+	return gtk_editable_get_chars(GTK_EDITABLE(meet->location), 0, -1);
 }
 
-static gchar *get_summary(VCalMeeting *meet) 
+static gchar *get_summary(VCalMeeting *meet)
 {
-	return gtk_editable_get_chars(GTK_EDITABLE(meet->summary),0, -1);
+	return gtk_editable_get_chars(GTK_EDITABLE(meet->summary), 0, -1);
 }
 
-static gchar *get_description(VCalMeeting *meet) 
+static gchar *get_description(VCalMeeting *meet)
 {
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(meet->description));
 	GtkTextIter start, end;
-	
+
 	gtk_text_buffer_get_start_iter(buffer, &start);
 	gtk_text_buffer_get_end_iter(buffer, &end);
 	return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
@@ -506,12 +501,10 @@ static void vcal_destroy(VCalMeeting *meet)
 	gtk_widget_destroy(meet->window);
 }
 
-static gboolean meeting_key_pressed(GtkWidget *widget,
-				    GdkEventKey *event,
-				    gpointer data)
+static gboolean meeting_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
 	VCalMeeting *meet = (VCalMeeting *)data;
-	
+
 	if (event && event->keyval == GDK_KEY_Escape) {
 		vcal_destroy(meet);
 	}
@@ -544,20 +537,24 @@ static void meeting_start_changed(GtkWidget *widget, gpointer data)
 	localtime_r(&end_t, &end_lt);
 
 	gtk_calendar_get_date(GTK_CALENDAR(meet->start_c), &y, &m, &d);
-	start_lt.tm_mday = d; start_lt.tm_mon  = m; start_lt.tm_year = y - 1900;
+	start_lt.tm_mday = d;
+	start_lt.tm_mon = m;
+	start_lt.tm_year = y - 1900;
 
 	start_t = mktime(&start_lt);
 	debug_print("start %s\n", ctime(&start_t));
 
 	gtk_calendar_get_date(GTK_CALENDAR(meet->end_c), &y, &m, &d);
-	end_lt.tm_mday = d; end_lt.tm_mon  = m; end_lt.tm_year = y - 1900;
+	end_lt.tm_mday = d;
+	end_lt.tm_mon = m;
+	end_lt.tm_year = y - 1900;
 
 	gtkut_time_select_get_time(GTK_COMBO_BOX(meet->end_time), &end_lt.tm_hour, &end_lt.tm_min);
 
 	end_t = mktime(&end_lt);
 
 	debug_print("end   %s\n", ctime(&end_t));
-	
+
 	if (end_t > start_t) {
 		debug_print("ok\n");
 		return;
@@ -576,9 +573,7 @@ static void meeting_start_changed(GtkWidget *widget, gpointer data)
 
 	gtk_calendar_select_day(GTK_CALENDAR(meet->end_c), end_lt.tm_mday);
 
-	gtk_calendar_select_month(GTK_CALENDAR(meet->end_c),
-				end_lt.tm_mon,
-				end_lt.tm_year + 1900);
+	gtk_calendar_select_month(GTK_CALENDAR(meet->end_c), end_lt.tm_mon, end_lt.tm_year + 1900);
 
 	gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), end_lt.tm_hour, end_lt.tm_min);
 
@@ -609,27 +604,31 @@ static void meeting_end_changed(GtkWidget *widget, gpointer data)
 #endif
 	localtime_r(&start_t, &start_lt);
 	localtime_r(&end_t, &end_lt);
-	
+
 	gtk_calendar_get_date(GTK_CALENDAR(meet->start_c), &y, &m, &d);
-	start_lt.tm_mday = d; start_lt.tm_mon  = m; start_lt.tm_year = y - 1900;
+	start_lt.tm_mday = d;
+	start_lt.tm_mon = m;
+	start_lt.tm_year = y - 1900;
 	gtkut_time_select_get_time(GTK_COMBO_BOX(meet->start_time), &start_lt.tm_hour, &start_lt.tm_min);
 
 	start_t = mktime(&start_lt);
 	debug_print("start %s\n", ctime(&start_t));
 
 	gtk_calendar_get_date(GTK_CALENDAR(meet->end_c), &y, &m, &d);
-	end_lt.tm_mday = d; end_lt.tm_mon  = m; end_lt.tm_year = y - 1900;
+	end_lt.tm_mday = d;
+	end_lt.tm_mon = m;
+	end_lt.tm_year = y - 1900;
 
 	end_t = mktime(&end_lt);
 
 	debug_print("end   %s\n", ctime(&end_t));
-	
+
 	if (end_t > start_t) {
 		debug_print("ok\n");
 		return;
 	}
 	start_t = end_t - 3600;
-	
+
 	tzset();
 
 #ifdef G_OS_WIN32
@@ -644,9 +643,7 @@ static void meeting_end_changed(GtkWidget *widget, gpointer data)
 
 	gtk_calendar_select_day(GTK_CALENDAR(meet->start_c), start_lt.tm_mday);
 
-	gtk_calendar_select_month(GTK_CALENDAR(meet->start_c),
-				start_lt.tm_mon,
-				start_lt.tm_year + 1900);
+	gtk_calendar_select_month(GTK_CALENDAR(meet->start_c), start_lt.tm_mon, start_lt.tm_year + 1900);
 
 	gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->start_time), start_lt.tm_hour, start_lt.tm_min);
 
@@ -659,21 +656,24 @@ static void att_update_icon(VCalMeeting *meet, VCalAttendee *attendee, gint avai
 	const gchar *icon = GTK_STOCK_DIALOG_INFO;
 
 	switch (avail) {
-		case 0:  icon = GTK_STOCK_DIALOG_WARNING;	break;
-		case 1:  icon = GTK_STOCK_DIALOG_INFO;		break;
-		default: icon = GTK_STOCK_DIALOG_QUESTION;	break;
+	case 0:
+		icon = GTK_STOCK_DIALOG_WARNING;
+		break;
+	case 1:
+		icon = GTK_STOCK_DIALOG_INFO;
+		break;
+	default:
+		icon = GTK_STOCK_DIALOG_QUESTION;
+		break;
 	}
-	if (!gtk_entry_get_text(GTK_ENTRY(attendee->address)) 
-	 || strlen(gtk_entry_get_text(GTK_ENTRY(attendee->address)))==0) {
+	if (!gtk_entry_get_text(GTK_ENTRY(attendee->address))
+	    || strlen(gtk_entry_get_text(GTK_ENTRY(attendee->address))) == 0) {
 		if (attendee->avail_img) {
 			gtk_widget_hide(attendee->avail_img);
 		}
 		CLAWS_SET_TIP(attendee->avail_evtbox, NULL);
 	} else if (attendee->avail_img) {
-		gtk_image_set_from_stock
-		        (GTK_IMAGE(attendee->avail_img), 
-			icon, 
-			GTK_ICON_SIZE_SMALL_TOOLBAR);
+		gtk_image_set_from_stock(GTK_IMAGE(attendee->avail_img), icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
 		gtk_widget_show(attendee->avail_img);
 		CLAWS_SET_TIP(attendee->avail_evtbox, text);
 	}
@@ -686,26 +686,25 @@ gboolean attendee_available(VCalAttendee *attendee, const gchar *dtstart, const 
 	struct icaltimetype start = icaltime_from_string(dtstart);
 	struct icaltimetype end = icaltime_from_string(dtend);
 	gboolean result = TRUE;
-	
 
 	if (contents == NULL)
 		return TRUE;
 
 	toplvl = icalcomponent_new_from_string((gchar *)contents);
-	
+
 	if (toplvl == NULL)
 		return TRUE;
 
 	vfreebusy = icalcomponent_get_first_component(toplvl, ICAL_VFREEBUSY_COMPONENT);
 	while (vfreebusy && icalcomponent_isa(vfreebusy) != ICAL_VFREEBUSY_COMPONENT)
 		vfreebusy = icalcomponent_get_next_component(toplvl, ICAL_VFREEBUSY_COMPONENT);
-	
+
 	if (vfreebusy) {
 		busyprop = icalcomponent_get_first_property(vfreebusy, ICAL_FREEBUSY_PROPERTY);
 		while (busyprop) {
 			struct icalperiodtype ipt = icalproperty_get_freebusy(busyprop);
-			
-			if ( icaltime_compare(start, ipt.end) >= 0 || icaltime_compare(end, ipt.start) <= 0 ) {
+
+			if (icaltime_compare(start, ipt.end) >= 0 || icaltime_compare(end, ipt.start) <= 0) {
 				result = TRUE;
 			} else {
 				result = FALSE;
@@ -719,8 +718,7 @@ gboolean attendee_available(VCalAttendee *attendee, const gchar *dtstart, const 
 	return result;
 }
 
-static gchar *get_avail_msg(const gchar *unavailable_persons, gboolean multiple, 
-	gboolean short_version, gint offset_before, gint offset_after)
+static gchar *get_avail_msg(const gchar *unavailable_persons, gboolean multiple, gboolean short_version, gint offset_before, gint offset_after)
 {
 	gchar *msg, *intro = NULL, *outro = NULL, *before = NULL, *after = NULL;
 
@@ -731,55 +729,53 @@ static gchar *get_avail_msg(const gchar *unavailable_persons, gboolean multiple,
 	else
 		intro = g_strdup_printf(_("%s is busy at the time of your planned meeting"), unavailable_persons);
 	if (offset_before == 3600)
-		before = g_strdup_printf(_("%d hour sooner"), offset_before/3600);
-	else if (offset_before > 3600 && offset_before%3600 == 0)
-		before = g_strdup_printf(_("%d hours sooner"), offset_before/3600);
+		before = g_strdup_printf(_("%d hour sooner"), offset_before / 3600);
+	else if (offset_before > 3600 && offset_before % 3600 == 0)
+		before = g_strdup_printf(_("%d hours sooner"), offset_before / 3600);
 	else if (offset_before > 3600)
-		before = g_strdup_printf(_("%d hours and %d minutes sooner"), offset_before/3600, (offset_before%3600)/60);
+		before = g_strdup_printf(_("%d hours and %d minutes sooner"), offset_before / 3600, (offset_before % 3600) / 60);
 	else if (offset_before == 1800)
-		before = g_strdup_printf(_("%d minutes sooner"), offset_before/60);
+		before = g_strdup_printf(_("%d minutes sooner"), offset_before / 60);
 	else
 		before = NULL;
-	
+
 	if (offset_after == 3600)
-		after = g_strdup_printf(_("%d hour later"), offset_after/3600);
-	else if (offset_after > 3600 && offset_after%3600 == 0)
-		after = g_strdup_printf(_("%d hours later"), offset_after/3600);
+		after = g_strdup_printf(_("%d hour later"), offset_after / 3600);
+	else if (offset_after > 3600 && offset_after % 3600 == 0)
+		after = g_strdup_printf(_("%d hours later"), offset_after / 3600);
 	else if (offset_after > 3600)
-		after = g_strdup_printf(_("%d hours and %d minutes later"), offset_after/3600, (offset_after%3600)/60);
+		after = g_strdup_printf(_("%d hours and %d minutes later"), offset_after / 3600, (offset_after % 3600) / 60);
 	else if (offset_after == 1800)
-		after = g_strdup_printf(_("%d minutes later"), offset_after/60);
+		after = g_strdup_printf(_("%d minutes later"), offset_after / 60);
 	else
 		after = NULL;
-	
+
 	if (multiple) {
 		if (before && after)
 			outro = g_strdup_printf(_("\n\nEveryone would be available %s or %s."), before, after);
 		else if (before || after)
-			outro = g_strdup_printf(_("\n\nEveryone would be available %s."), before?before:after);
+			outro = g_strdup_printf(_("\n\nEveryone would be available %s."), before ? before : after);
 		else
-			outro = g_strdup_printf(_("\n\nIt isn't possible to have this meeting with everyone "
-						"in the previous or next 6 hours."));
+			outro = g_strdup_printf(_("\n\nIt isn't possible to have this meeting with everyone " "in the previous or next 6 hours."));
 	} else {
 		if (short_version) {
 			if (before && after)
 				outro = g_markup_printf_escaped(_("would be available %s or %s"), before, after);
 			else if (before || after)
-				outro = g_markup_printf_escaped(_("would be available %s"), before?before:after);
+				outro = g_markup_printf_escaped(_("would be available %s"), before ? before : after);
 			else
 				outro = g_strdup_printf(_("not available"));
 		} else {
 			if (before && after)
 				outro = g_markup_printf_escaped(_(", but would be available %s or %s."), before, after);
 			else if (before || after)
-				outro = g_markup_printf_escaped(_(", but would be available %s."), before?before:after);
+				outro = g_markup_printf_escaped(_(", but would be available %s."), before ? before : after);
 			else
-				outro = g_strdup_printf(_(", and isn't available "
-							"in the previous or next 6 hours."));
+				outro = g_strdup_printf(_(", and isn't available " "in the previous or next 6 hours."));
 		}
 	}
 	if (multiple && short_version)
-		msg = g_strconcat(outro+2, NULL);
+		msg = g_strconcat(outro + 2, NULL);
 	else if (multiple)
 		msg = g_strconcat(intro, unavailable_persons, outro, NULL);
 	else if (short_version)
@@ -807,13 +803,12 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 	GHashTable *avail_table_avail = g_hash_table_new(NULL, g_direct_equal);
 	GHashTable *avail_table_before = g_hash_table_new(NULL, g_direct_equal);
 	GHashTable *avail_table_after = g_hash_table_new(NULL, g_direct_equal);
-	
+
 	for (cur = attendees; cur; cur = cur->next) {
 		VCalAttendee *attendee = (VCalAttendee *)cur->data;
-		if (!attendee_available(attendee, icaltime_as_ical_string(start), icaltime_as_ical_string(end),
-				attendee->cached_contents)) {
+		if (!attendee_available(attendee, icaltime_as_ical_string(start), icaltime_as_ical_string(end), attendee->cached_contents)) {
 			gchar *mail = NULL;
-			
+
 			if (attendee->org)
 				mail = g_strdup(_("You"));
 			else
@@ -840,21 +835,19 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 	}
 	offset = -1800;
 	found = FALSE;
-	while (!found && offset >= -3600*6) {
+	while (!found && offset >= -3600 * 6) {
 		gboolean ok = TRUE;
-		struct icaltimetype new_start = icaltime_from_timet_with_zone(icaltime_as_timet(start)+offset, FALSE, NULL);
-		struct icaltimetype new_end   = icaltime_from_timet_with_zone(icaltime_as_timet(end)+offset, FALSE, NULL);
+		struct icaltimetype new_start = icaltime_from_timet_with_zone(icaltime_as_timet(start) + offset, FALSE, NULL);
+		struct icaltimetype new_end = icaltime_from_timet_with_zone(icaltime_as_timet(end) + offset, FALSE, NULL);
 		for (cur = attendees; cur; cur = cur->next) {
 			VCalAttendee *attendee = (VCalAttendee *)cur->data;
-			debug_print("trying %s - %s (offset %d)\n", 
-				icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), offset);
-			if (!attendee_available(attendee, icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end),
-					attendee->cached_contents)) {
+			debug_print("trying %s - %s (offset %d)\n", icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), offset);
+			if (!attendee_available(attendee, icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), attendee->cached_contents)) {
 				ok = FALSE;
 				break;
 			} else {
 				if (!g_hash_table_lookup(avail_table_before, attendee)
-				&&  !g_hash_table_lookup(avail_table_avail, attendee))
+				    && !g_hash_table_lookup(avail_table_avail, attendee))
 					g_hash_table_insert(avail_table_before, attendee, GINT_TO_POINTER(-offset));
 			}
 		}
@@ -866,21 +859,19 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 	}
 	found = FALSE;
 	offset = 1800;
-	while (!found && offset <= 3600*6) {
+	while (!found && offset <= 3600 * 6) {
 		gboolean ok = TRUE;
-		struct icaltimetype new_start = icaltime_from_timet_with_zone(icaltime_as_timet(start)+offset, FALSE, NULL);
-		struct icaltimetype new_end   = icaltime_from_timet_with_zone(icaltime_as_timet(end)+offset, FALSE, NULL);
+		struct icaltimetype new_start = icaltime_from_timet_with_zone(icaltime_as_timet(start) + offset, FALSE, NULL);
+		struct icaltimetype new_end = icaltime_from_timet_with_zone(icaltime_as_timet(end) + offset, FALSE, NULL);
 		for (cur = attendees; cur; cur = cur->next) {
 			VCalAttendee *attendee = (VCalAttendee *)cur->data;
-			debug_print("trying %s - %s (offset %d)\n", 
-				icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), offset);
-			if (!attendee_available(attendee, icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end),
-					attendee->cached_contents)) {
+			debug_print("trying %s - %s (offset %d)\n", icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), offset);
+			if (!attendee_available(attendee, icaltime_as_ical_string(new_start), icaltime_as_ical_string(new_end), attendee->cached_contents)) {
 				ok = FALSE;
 				break;
 			} else {
 				if (!g_hash_table_lookup(avail_table_after, attendee)
-				&&  !g_hash_table_lookup(avail_table_avail, attendee))
+				    && !g_hash_table_lookup(avail_table_avail, attendee))
 					g_hash_table_insert(avail_table_after, attendee, GINT_TO_POINTER(offset));
 			}
 		}
@@ -891,7 +882,7 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 
 		offset += 1800;
 	}
-	
+
 	for (cur = attendees; cur; cur = cur->next) {
 		VCalAttendee *attendee = (VCalAttendee *)cur->data;
 		gint ok = GPOINTER_TO_INT(g_hash_table_lookup(avail_table_avail, attendee));
@@ -907,7 +898,7 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 			att_update_icon(meet, attendee, 0, msg);
 			g_free(msg);
 		}
-		
+
 	}
 	g_hash_table_destroy(avail_table_before);
 	g_hash_table_destroy(avail_table_after);
@@ -915,20 +906,14 @@ static gboolean find_availability(const gchar *dtstart, const gchar *dtend, GSLi
 	if (for_send) {
 		msg = get_avail_msg(unavailable_persons, (total > 1), FALSE, offset_before, offset_after);
 
-		val = alertpanel_full(_("Not everyone is available"), msg,
-				   	GTK_STOCK_CANCEL, _("Send anyway"), NULL, ALERTFOCUS_FIRST,
-						FALSE, NULL, ALERT_QUESTION);
+		val = alertpanel_full(_("Not everyone is available"), msg, GTK_STOCK_CANCEL, _("Send anyway"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_QUESTION);
 		g_free(msg);
 	}
 	msg = get_avail_msg(unavailable_persons, TRUE, TRUE, offset_before, offset_after);
 	g_free(unavailable_persons);
-	gtk_image_set_from_stock
-		(GTK_IMAGE(meet->total_avail_img), 
-		GTK_STOCK_DIALOG_WARNING, 
-		GTK_ICON_SIZE_SMALL_TOOLBAR);
+	gtk_image_set_from_stock(GTK_IMAGE(meet->total_avail_img), GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_widget_show(meet->total_avail_img);
-	gtk_label_set_text(GTK_LABEL(meet->total_avail_msg), _("Not everyone is available. "
-				"See tooltips for more info..."));
+	gtk_label_set_text(GTK_LABEL(meet->total_avail_msg), _("Not everyone is available. " "See tooltips for more info..."));
 	CLAWS_SET_TIP(meet->total_avail_evtbox, msg);
 	g_free(msg);
 	return (val == G_ALERTALTERNATE);
@@ -948,21 +933,20 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 	gchar *organizer = NULL;
 	VCalAttendee *dummy_org = NULL;
 	gchar *internal_ifb = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				"vcalendar", G_DIR_SEPARATOR_S, 
-				"internal.ifb", NULL);
+					  "vcalendar", G_DIR_SEPARATOR_S,
+					  "internal.ifb", NULL);
 	gboolean local_only = FALSE;
 	GSList *attlist;
 	GdkWindow *gdkwin;
 
-	if (vcalprefs.freebusy_get_url == NULL
-	||  *vcalprefs.freebusy_get_url == '\0') {
+	if (vcalprefs.freebusy_get_url == NULL || *vcalprefs.freebusy_get_url == '\0') {
 		local_only = TRUE;
 	} else {
 		real_url = g_strdup(vcalprefs.freebusy_get_url);
 		tmp = real_url;
 
 		while (strchr(tmp, '%')) {
-			tmp = strchr(tmp, '%')+1;
+			tmp = strchr(tmp, '%') + 1;
 			num_format++;
 		}
 		if (num_format > 2) {
@@ -975,12 +959,12 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 		tmp = NULL;
 		if (strstr(real_url, "%u") != NULL) {
 			change_user = strstr(real_url, "%u");
-			*(strstr(real_url, "%u")+1) = 's';
-		} 
+			*(strstr(real_url, "%u") + 1) = 's';
+		}
 		if (strstr(real_url, "%d") != NULL) {
 			change_dom = strstr(real_url, "%d");
-			*(strstr(real_url, "%d")+1) = 's';
-		} 
+			*(strstr(real_url, "%d") + 1) = 's';
+		}
 		debug_print("url format %s\n", real_url);
 	}
 	dtstart = get_date(meet, TRUE);
@@ -989,22 +973,22 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 	/* hack to check our own avail. */
 	organizer = get_organizer(meet);
 	dummy_org = g_new0(VCalAttendee, 1);
-	dummy_org->address	= gtk_entry_new();
-	dummy_org->avail_img	= meet->avail_img;
-	dummy_org->avail_evtbox	= meet->avail_evtbox;
+	dummy_org->address = gtk_entry_new();
+	dummy_org->avail_img = meet->avail_img;
+	dummy_org->avail_evtbox = meet->avail_evtbox;
 	dummy_org->org = TRUE;
 	gtk_entry_set_text(GTK_ENTRY(dummy_org->address), organizer);
 	g_free(organizer);
 	dummy_org->cached_contents = file_read_to_str(internal_ifb);
 	g_free(internal_ifb);
-	
+
 	if (!local_only) {
 		meet->attendees = g_slist_prepend(meet->attendees, dummy_org);
 		attlist = meet->attendees;
 	} else {
 		attlist = g_slist_prepend(NULL, dummy_org);
 	}
-	
+
 	gtk_widget_set_sensitive(meet->save_btn, FALSE);
 	gtk_widget_set_sensitive(meet->avail_btn, FALSE);
 
@@ -1029,11 +1013,11 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 
 			extract_address(remail);
 			if (strrchr(remail, ' '))
-				user = g_strdup(strrchr(remail, ' ')+1);
+				user = g_strdup(strrchr(remail, ' ') + 1);
 			else
 				user = g_strdup(remail);
 			if (strchr(user, '@')) {
-				domain = g_strdup(strchr(user, '@')+1);
+				domain = g_strdup(strchr(user, '@') + 1);
 				*(strchr(user, '@')) = '\0';
 			} else {
 				domain = g_strdup("");
@@ -1060,18 +1044,18 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 			contents = attendee->cached_contents;
 			attendee->cached_contents = NULL;
 		} else if (!local_only) {
-			if (strncmp(tmp, "http://", 7) 
-			&& strncmp(tmp, "https://", 8)
-			&& strncmp(tmp, "webcal://", 9)
-			&& strncmp(tmp, "webcals://", 10)
-			&& strncmp(tmp, "ftp://", 6)
-			&& strncmp(tmp, "ftps://", 7)
-			&& strncmp(tmp, "sftp://", 7))
+			if (strncmp(tmp, "http://", 7)
+			    && strncmp(tmp, "https://", 8)
+			    && strncmp(tmp, "webcal://", 9)
+			    && strncmp(tmp, "webcals://", 10)
+			    && strncmp(tmp, "ftp://", 6)
+			    && strncmp(tmp, "ftps://", 7)
+			    && strncmp(tmp, "sftp://", 7))
 				contents = file_read_to_str(tmp);
 			else {
 				gchar *label = g_strdup_printf(_("Fetching planning for %s..."), email);
 				if (!strncmp(tmp, "webcal", 6)) {
-					gchar *tmp2 = g_strdup_printf("http%s", tmp+6);
+					gchar *tmp2 = g_strdup_printf("http%s", tmp + 6);
 					g_free(tmp);
 					tmp = tmp2;
 				}
@@ -1089,8 +1073,7 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 			uncertain = TRUE;
 			att_update_icon(meet, attendee, 2, _("Free/busy retrieval failed"));
 			continue;
-		}
-		else {
+		} else {
 			if (!attendee_available(attendee, dtstart, dtend, contents)) {
 				find_avail = TRUE;
 				debug_print("not available!\n");
@@ -1099,10 +1082,10 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 				att_update_icon(meet, attendee, 1, _("Available"));
 			}
 			attendee->cached_contents = contents;
-			
+
 		}
 	}
-	
+
 	if (find_avail) {
 		res = find_availability((dtstart), (dtend), attlist, for_send, meet);
 	} else {
@@ -1111,18 +1094,12 @@ static gboolean check_attendees_availability(VCalMeeting *meet, gboolean tell_if
 			if (for_send)
 				alertpanel_notice(_("Everyone is available."));
 			else if (!uncertain) {
-				gtk_image_set_from_stock
-		        		(GTK_IMAGE(meet->total_avail_img), 
-					GTK_STOCK_DIALOG_INFO, 
-					GTK_ICON_SIZE_SMALL_TOOLBAR);
+				gtk_image_set_from_stock(GTK_IMAGE(meet->total_avail_img), GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_SMALL_TOOLBAR);
 				gtk_widget_show(meet->total_avail_img);
 				gtk_label_set_text(GTK_LABEL(meet->total_avail_msg), _("Everyone is available."));
 				CLAWS_SET_TIP(meet->total_avail_evtbox, NULL);
 			} else {
-				gtk_image_set_from_stock
-		        		(GTK_IMAGE(meet->total_avail_img), 
-					GTK_STOCK_DIALOG_QUESTION, 
-					GTK_ICON_SIZE_SMALL_TOOLBAR);
+				gtk_image_set_from_stock(GTK_IMAGE(meet->total_avail_img), GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_SMALL_TOOLBAR);
 				gtk_widget_show(meet->total_avail_img);
 				gtk_label_set_text(GTK_LABEL(meet->total_avail_msg), _("Everyone is available."));
 				CLAWS_SET_TIP(meet->total_avail_evtbox, _("Everyone seems available, but some free/busy information failed to be retrieved."));
@@ -1180,12 +1157,11 @@ static gboolean send_meeting_cb(GtkButton *widget, gpointer data)
 	PrefsAccount *account = NULL;
 	gboolean res = FALSE;
 	gboolean found_att = FALSE;
-	Folder *folder = folder_find_from_name (PLUGIN_NAME, vcal_folder_get_class());
+	Folder *folder = folder_find_from_name(PLUGIN_NAME, vcal_folder_get_class());
 	gboolean redisp = FALSE;
 	GdkWindow *gdkwin;
 
-	if (meet->uid == NULL && meet->visible && 
-	    !check_attendees_availability(meet, FALSE, TRUE)) {
+	if (meet->uid == NULL && meet->visible && !check_attendees_availability(meet, FALSE, TRUE)) {
 		return FALSE;
 	}
 
@@ -1203,38 +1179,33 @@ static gboolean send_meeting_cb(GtkButton *widget, gpointer data)
 	if (gdkwin != NULL)
 		gdk_window_set_cursor(gdkwin, watch_cursor);
 
-	organizer	= get_organizer(meet);
-	account		= account_find_from_address(organizer, FALSE);
+	organizer = get_organizer(meet);
+	account = account_find_from_address(organizer, FALSE);
 
-	if(account == NULL) {
+	if (account == NULL) {
 		debug_print("can't get account from address %s\n", organizer);
 		g_free(organizer);
 		return FALSE;
 	}
 
-	organizer_name	= get_organizer_name(meet);
+	organizer_name = get_organizer_name(meet);
 
 	if (meet->uid) {
-		uid 	= g_strdup(meet->uid);
+		uid = g_strdup(meet->uid);
 	} else {
-		uid 	= prefs_account_generate_msgid(account);
+		uid = prefs_account_generate_msgid(account);
 	}
 
-	dtstart		= get_date(meet, TRUE);
-	dtend		= get_date(meet, FALSE);
-	location	= get_location(meet);
-	summary		= get_summary(meet);
-	description	= get_description(meet);
-	
-	event = vcal_manager_new_event(uid, organizer, organizer_name, location, summary, description,
-					dtstart, dtend, NULL, tzid, NULL, meet->method, 
-					meet->sequence,
-					ICAL_VEVENT_COMPONENT);
-	
-	vcal_manager_update_answer(event, organizer, organizer_name, 
-				   ICAL_PARTSTAT_ACCEPTED,
-				   ICAL_CUTYPE_INDIVIDUAL);
-	
+	dtstart = get_date(meet, TRUE);
+	dtend = get_date(meet, FALSE);
+	location = get_location(meet);
+	summary = get_summary(meet);
+	description = get_description(meet);
+
+	event = vcal_manager_new_event(uid, organizer, organizer_name, location, summary, description, dtstart, dtend, NULL, tzid, NULL, meet->method, meet->sequence, ICAL_VEVENT_COMPONENT);
+
+	vcal_manager_update_answer(event, organizer, organizer_name, ICAL_PARTSTAT_ACCEPTED, ICAL_CUTYPE_INDIVIDUAL);
+
 	for (cur = meet->attendees; cur && cur->data; cur = cur->next) {
 		VCalAttendee *attendee = (VCalAttendee *)cur->data;
 		gchar *email = gtk_editable_get_chars(GTK_EDITABLE(attendee->address), 0, -1);
@@ -1243,36 +1214,35 @@ static gboolean send_meeting_cb(GtkButton *widget, gpointer data)
 		gchar *name = NULL;
 		enum icalparameter_cutype cutype = ICAL_CUTYPE_INDIVIDUAL;
 		enum icalparameter_partstat status = ICAL_PARTSTAT_NEEDSACTION;
-		
+
 		index = gtk_combo_box_get_active(GTK_COMBO_BOX(attendee->cutype));
-		
+
 		cutype = ICAL_CUTYPE_INDIVIDUAL + index;
 		if (attendee->status) {
-			if(!strcmp(attendee->status, "accepted"))
+			if (!strcmp(attendee->status, "accepted"))
 				status = ICAL_PARTSTAT_ACCEPTED;
-			if(!strcmp(attendee->status, "tentatively accepted"))
+			if (!strcmp(attendee->status, "tentatively accepted"))
 				status = ICAL_PARTSTAT_TENTATIVE;
-			if(!strcmp(attendee->status, "declined"))
+			if (!strcmp(attendee->status, "declined"))
 				status = ICAL_PARTSTAT_DECLINED;
-			g_free(attendee->status);			
+			g_free(attendee->status);
 		}
 		if (strlen(email)) {
 			if (strstr(email, " <")) {
 				name = email;
-				email = strstr(email," <") + 2;
-				*(strstr(name," <")) = '\0';
+				email = strstr(email, " <") + 2;
+				*(strstr(name, " <")) = '\0';
 				if (strstr(email, ">"))
 					*(strstr(email, ">")) = '\0';
-			} 
-			
-			vcal_manager_update_answer(event, email, name, 
-					status,	cutype);
-					
+			}
+
+			vcal_manager_update_answer(event, email, name, status, cutype);
+
 			found_att = strcmp(email, organizer);
 		}
 		g_free(orig_email);
 	}
-	
+
 	if (found_att)
 		res = vcal_manager_request(account, event);
 	else
@@ -1295,8 +1265,7 @@ static gboolean send_meeting_cb(GtkButton *widget, gpointer data)
 	if (res) {
 		vcal_destroy(meet);
 	} else {
-		alertpanel_error(_("Could not send the meeting invitation.\n"
-				   "Check the recipients."));
+		alertpanel_error(_("Could not send the meeting invitation.\n" "Check the recipients."));
 	}
 
 	if (folder)
@@ -1329,136 +1298,103 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 
 	meet->visible = visible;
 
-	meet->window 		= gtkut_window_new(GTK_WINDOW_TOPLEVEL, "vcal_meeting_gtk");
+	meet->window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "vcal_meeting_gtk");
 #ifndef GENERIC_UMPC
-	meet->table  		= gtk_table_new(7, 2, FALSE);
+	meet->table = gtk_table_new(7, 2, FALSE);
 #else
-	meet->table1  		= gtk_table_new(4, 2, FALSE);
-	meet->table2  		= gtk_table_new(2, 2, FALSE);
+	meet->table1 = gtk_table_new(4, 2, FALSE);
+	meet->table2 = gtk_table_new(2, 2, FALSE);
 #endif
-	meet->who    		= gtk_combo_box_text_new();
-	
-	meet->start_c		= gtk_calendar_new();
-	meet->end_c		= gtk_calendar_new();
+	meet->who = gtk_combo_box_text_new();
 
-	meet->avail_evtbox  = gtk_event_box_new();
-	meet->avail_img	= gtk_image_new_from_stock
-                        (GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	meet->start_c = gtk_calendar_new();
+	meet->end_c = gtk_calendar_new();
+
+	meet->avail_evtbox = gtk_event_box_new();
+	meet->avail_img = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	meet->start_time = gtkut_time_select_combo_new();
-	
+
 	meet->end_time = gtkut_time_select_combo_new();
 
-	meet->location  	= gtk_entry_new();
-	meet->summary		= gtk_entry_new();
-	meet->description	= gtk_text_view_new();
-        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(meet->description));
-        gtk_text_view_set_editable(GTK_TEXT_VIEW(meet->description), TRUE);
-        gtk_text_buffer_add_selection_clipboard(buffer, gtk_clipboard_get(GDK_SELECTION_PRIMARY));
+	meet->location = gtk_entry_new();
+	meet->summary = gtk_entry_new();
+	meet->description = gtk_text_view_new();
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(meet->description));
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(meet->description), TRUE);
+	gtk_text_buffer_add_selection_clipboard(buffer, gtk_clipboard_get(GDK_SELECTION_PRIMARY));
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
-					    GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(scrolledwin), meet->description);
 
 	if (event) {
 		meet->uid = g_strdup(event->uid);
 		meet->sequence = event->sequence + 1;
-		meet->method = (event->method == ICAL_METHOD_CANCEL ?
-				ICAL_METHOD_CANCEL:ICAL_METHOD_REQUEST);
+		meet->method = (event->method == ICAL_METHOD_CANCEL ? ICAL_METHOD_CANCEL : ICAL_METHOD_REQUEST);
 
 		gtk_entry_set_text(GTK_ENTRY(meet->location), event->location);
-		gtk_entry_set_text(GTK_ENTRY(meet->summary), event->summary);	
-		gtk_text_buffer_set_text(buffer, event->description, -1);	
-	} else 
+		gtk_entry_set_text(GTK_ENTRY(meet->summary), event->summary);
+		gtk_text_buffer_set_text(buffer, event->description, -1);
+	} else
 		meet->method = ICAL_METHOD_REQUEST;
-	
-	meet->save_btn		= gtk_button_new_with_label(_("Save & Send"));
-	meet->avail_btn		= gtk_button_new_with_label(_("Check availability"));
 
-	meet->total_avail_evtbox  = gtk_event_box_new();
-	meet->total_avail_img	= gtk_image_new_from_stock
-                        (GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	meet->save_btn = gtk_button_new_with_label(_("Save & Send"));
+	meet->avail_btn = gtk_button_new_with_label(_("Check availability"));
+
+	meet->total_avail_evtbox = gtk_event_box_new();
+	meet->total_avail_img = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	meet->total_avail_msg = gtk_label_new("");
-	
+
 	gtk_widget_set_size_request(meet->total_avail_evtbox, 18, 16);
 	gtk_event_box_set_visible_window(GTK_EVENT_BOX(meet->total_avail_evtbox), FALSE);
-	gtk_container_add (GTK_CONTAINER(meet->total_avail_evtbox), meet->total_avail_img);
+	gtk_container_add(GTK_CONTAINER(meet->total_avail_evtbox), meet->total_avail_img);
 
-	g_signal_connect(G_OBJECT(meet->save_btn), "clicked",
-			 G_CALLBACK(send_meeting_cb), meet);
+	g_signal_connect(G_OBJECT(meet->save_btn), "clicked", G_CALLBACK(send_meeting_cb), meet);
 
-	g_signal_connect(G_OBJECT(meet->avail_btn), "clicked",
-			 G_CALLBACK(check_avail_cb), meet);
+	g_signal_connect(G_OBJECT(meet->avail_btn), "clicked", G_CALLBACK(check_avail_cb), meet);
 
-	g_signal_connect(G_OBJECT(meet->window), "destroy",
-			 G_CALLBACK(destroy_meeting_cb), meet);
-	g_signal_connect(G_OBJECT(meet->window), "key_press_event",
-			 G_CALLBACK(meeting_key_pressed), meet);
-	
+	g_signal_connect(G_OBJECT(meet->window), "destroy", G_CALLBACK(destroy_meeting_cb), meet);
+	g_signal_connect(G_OBJECT(meet->window), "key_press_event", G_CALLBACK(meeting_key_pressed), meet);
 
 	gtk_widget_set_size_request(meet->description, -1, 100);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(meet->description), GTK_WRAP_WORD);
-	
+
 	if (!event || (event && !event->dtstart && !event->dtend)) {
-		time_t t = time (NULL)+ 3600;
+		time_t t = time(NULL) + 3600;
 		struct tm buft1, buft2;
- 		struct tm *lt = localtime_r (&t, &buft1);
+		struct tm *lt = localtime_r(&t, &buft1);
 		mktime(lt);
-		gtk_calendar_select_day(GTK_CALENDAR(meet->start_c),
-					lt->tm_mday);
-		gtk_calendar_select_month(GTK_CALENDAR(meet->start_c),
-					lt->tm_mon, lt->tm_year + 1900);
-	
+		gtk_calendar_select_day(GTK_CALENDAR(meet->start_c), lt->tm_mday);
+		gtk_calendar_select_month(GTK_CALENDAR(meet->start_c), lt->tm_mon, lt->tm_year + 1900);
+
 		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->start_time), lt->tm_hour, 0);
 
 		t += 3600;
 		lt = localtime_r(&t, &buft2);
-		
-		gtk_calendar_select_day(GTK_CALENDAR(meet->end_c),
-					lt->tm_mday);
-		gtk_calendar_select_month(GTK_CALENDAR(meet->end_c),
-					lt->tm_mon, lt->tm_year + 1900);
+
+		gtk_calendar_select_day(GTK_CALENDAR(meet->end_c), lt->tm_mday);
+		gtk_calendar_select_month(GTK_CALENDAR(meet->end_c), lt->tm_mon, lt->tm_year + 1900);
 
 		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), lt->tm_hour, 0);
 	} else {
-		gtk_calendar_select_day(GTK_CALENDAR(meet->start_c),
-					get_dtdate(event->dtstart, DAY));
-		gtk_calendar_select_day(GTK_CALENDAR(meet->end_c),
-					get_dtdate(event->dtend, DAY));
+		gtk_calendar_select_day(GTK_CALENDAR(meet->start_c), get_dtdate(event->dtstart, DAY));
+		gtk_calendar_select_day(GTK_CALENDAR(meet->end_c), get_dtdate(event->dtend, DAY));
 
-		gtk_calendar_select_month(GTK_CALENDAR(meet->start_c),
-					get_dtdate(event->dtstart, MONTH)-1,
-					get_dtdate(event->dtstart, YEAR));
-		gtk_calendar_select_month(GTK_CALENDAR(meet->end_c),
-					get_dtdate(event->dtend, MONTH)-1,
-					get_dtdate(event->dtend, YEAR));
+		gtk_calendar_select_month(GTK_CALENDAR(meet->start_c), get_dtdate(event->dtstart, MONTH) - 1, get_dtdate(event->dtstart, YEAR));
+		gtk_calendar_select_month(GTK_CALENDAR(meet->end_c), get_dtdate(event->dtend, MONTH) - 1, get_dtdate(event->dtend, YEAR));
 
-		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->start_time),
-					get_dtdate(event->dtstart, HOUR), 
-					get_dtdate(event->dtstart, MINUTE));
+		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->start_time), get_dtdate(event->dtstart, HOUR), get_dtdate(event->dtstart, MINUTE));
 
-		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time),
-					get_dtdate(event->dtend, HOUR), 
-					get_dtdate(event->dtend, MINUTE));
+		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), get_dtdate(event->dtend, HOUR), get_dtdate(event->dtend, MINUTE));
 	}
 
-	g_signal_connect(G_OBJECT(meet->start_c), "day-selected",
-			 G_CALLBACK(meeting_start_changed), meet);
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(meet->start_time))),
-			 "changed",
-			 G_CALLBACK(meeting_start_changed),
-			 meet);
+	g_signal_connect(G_OBJECT(meet->start_c), "day-selected", G_CALLBACK(meeting_start_changed), meet);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(meet->start_time))), "changed", G_CALLBACK(meeting_start_changed), meet);
 
-	g_signal_connect(G_OBJECT(meet->end_c), "day-selected",
-			 G_CALLBACK(meeting_end_changed), meet);
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(meet->end_time))),
-			 "changed",
-			 G_CALLBACK(meeting_end_changed),
-			 meet);
+	g_signal_connect(G_OBJECT(meet->end_c), "day-selected", G_CALLBACK(meeting_end_changed), meet);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(meet->end_time))), "changed", G_CALLBACK(meeting_end_changed), meet);
 
 #ifndef GENERIC_UMPC
 	gtk_widget_set_size_request(meet->start_time, 80, -1);
@@ -1467,17 +1403,17 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	gtk_widget_set_size_request(meet->start_time, 120, -1);
 	gtk_widget_set_size_request(meet->end_time, 120, -1);
 #endif
-	
+
 	date_hbox = gtk_hbox_new(FALSE, 6);
 	date_vbox = gtk_vbox_new(FALSE, 6);
 	hbox = gtk_hbox_new(FALSE, 6);
-	label = gtk_label_new(g_strconcat("<b>",_("Starts at:"),"</b> ",NULL));
+	label = gtk_label_new(g_strconcat("<b>", _("Starts at:"), "</b> ", NULL));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
-	
+
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->start_time, FALSE, FALSE, 0);
-	label = gtk_label_new(g_strconcat("<b> ",_("on:"),"</b>",NULL));
+	label = gtk_label_new(g_strconcat("<b> ", _("on:"), "</b>", NULL));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -1486,22 +1422,22 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	gtk_box_pack_start(GTK_BOX(date_hbox), date_vbox, FALSE, FALSE, 0);
 
 #ifndef GENERIC_UMPC
-	label = gtk_label_new(" "); 
+	label = gtk_label_new(" ");
 #else
-	label = gtk_label_new(""); 
+	label = gtk_label_new("");
 #endif
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(date_hbox), label, TRUE, TRUE, 0);
 
 	date_vbox = gtk_vbox_new(FALSE, 6);
 	hbox = gtk_hbox_new(FALSE, 6);
-	label = gtk_label_new(g_strconcat("<b>",_("Ends at:"),"</b> ", NULL));
+	label = gtk_label_new(g_strconcat("<b>", _("Ends at:"), "</b> ", NULL));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
-	
+
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->end_time, FALSE, FALSE, 0);
-	label = gtk_label_new(g_strconcat("<b> ",_("on:"),"</b>",NULL));
+	label = gtk_label_new(g_strconcat("<b> ", _("on:"), "</b>", NULL));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -1529,8 +1465,8 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 			g_free(answer);
 			g_free(type);
 			list = list->next;
-		} 
-		
+		}
+
 		if (firstadd == TRUE)
 			attendee_add(meet, NULL, NULL, NULL, NULL, TRUE);
 	}
@@ -1539,56 +1475,52 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 		gtk_window_set_title(GTK_WINDOW(meet->window), _("New meeting"));
 	} else {
 		gchar *title = g_strdup_printf(_("%s - Edit meeting"),
-			event->summary);
+					       event->summary);
 		gtk_window_set_title(GTK_WINDOW(meet->window), title);
 		g_free(title);
 	}
 	address_completion_start(meet->window);
-	
+
 	accounts = account_get_list();
 	g_return_val_if_fail(accounts != NULL, NULL);
 
 	for (i = 0; accounts != NULL; accounts = accounts->next) {
 		PrefsAccount *ac = (PrefsAccount *)accounts->data;
-		
+
 		if (ac->protocol == A_NNTP) {
 			continue;
 		}
 		if (!event && ac == account_get_cur_account()) {
 			num = i;
-		}
-		else if (event && !strcmp(ac->address, event->organizer))
+		} else if (event && !strcmp(ac->address, event->organizer))
 			num = i;
 
 		meet->avail_accounts = g_slist_append(meet->avail_accounts, ac);
-		
+
 		if (ac->name)
-			s = g_strdup_printf("%s: %s <%s>",
-					       ac->account_name,
-					       ac->name, ac->address);
+			s = g_strdup_printf("%s: %s <%s>", ac->account_name, ac->name, ac->address);
 		else
-			s = g_strdup_printf("%s: %s",
-					       ac->account_name, ac->address);
+			s = g_strdup_printf("%s: %s", ac->account_name, ac->address);
 
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(meet->who), s);
 		g_free(s);
 		i++;
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(meet->who), num);
-	
+
 	save_hbox = gtk_hbox_new(FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(save_hbox), meet->save_btn, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(save_hbox), meet->avail_btn, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(save_hbox), meet->total_avail_evtbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(save_hbox), meet->total_avail_msg, FALSE, FALSE, 0);
-	
+
 	hbox = gtk_hbox_new(FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->avail_evtbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->who, TRUE, TRUE, 0);
 
 	gtk_widget_set_size_request(meet->avail_evtbox, 18, 16);
 	gtk_event_box_set_visible_window(GTK_EVENT_BOX(meet->avail_evtbox), FALSE);
-	gtk_container_add (GTK_CONTAINER(meet->avail_evtbox), meet->avail_img);
+	gtk_container_add(GTK_CONTAINER(meet->avail_evtbox), meet->avail_img);
 
 #ifndef GENERIC_UMPC
 	TABLE_ADD_LINE(_("Organizer:"), hbox, FALSE);
@@ -1598,7 +1530,7 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	TABLE_ADD_LINE(_("Description:"), scrolledwin, TRUE);
 	TABLE_ADD_LINE(_("Attendees:"), meet->attendees_vbox, FALSE);
 	TABLE_ADD_LINE("", save_hbox, TRUE);
-	
+
 	gtk_widget_set_size_request(meet->window, -1, -1);
 	gtk_container_add(GTK_CONTAINER(meet->window), meet->table);
 #else
@@ -1608,25 +1540,21 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	TABLE_ADD_LINE(_("Description:"), scrolledwin, TRUE, TRUE);
 	TABLE_ADD_LINE(_("Attendees:"), meet->attendees_vbox, FALSE, TRUE);
 	TABLE_ADD_LINE("", date_hbox, TRUE, FALSE);
-	
-	notebook = gtk_notebook_new ();
-	gtk_notebook_set_show_border (GTK_NOTEBOOK (notebook), FALSE);
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			meet->table1,
-			gtk_label_new_with_mnemonic(_("Event:")));
-			
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			meet->table2,
-			gtk_label_new_with_mnemonic(_("Time:")));
-	gtk_widget_show (notebook);
-	
+
+	notebook = gtk_notebook_new();
+	gtk_notebook_set_show_border(GTK_NOTEBOOK(notebook), FALSE);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), meet->table1, gtk_label_new_with_mnemonic(_("Event:")));
+
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), meet->table2, gtk_label_new_with_mnemonic(_("Time:")));
+	gtk_widget_show(notebook);
+
 	maemo_vbox0 = gtk_vbox_new(FALSE, 3);
 	gtk_box_pack_start(GTK_BOX(maemo_vbox0), notebook, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(maemo_vbox0), save_hbox, FALSE, FALSE, 0);
-	
+
 	gtk_widget_set_size_request(meet->window, -1, -1);
-	gtk_container_add (GTK_CONTAINER (meet->window), maemo_vbox0);
-	
+	gtk_container_add(GTK_CONTAINER(meet->window), maemo_vbox0);
+
 	maemo_connect_key_press_to_mainwindow(GTK_WINDOW(meet->window));
 #endif
 	if (visible) {
@@ -1651,35 +1579,29 @@ VCalMeeting *vcal_meeting_create_with_start(VCalEvent *event, struct tm *sdate)
 {
 	VCalMeeting *meet = vcal_meeting_create(event);
 
-	gtk_calendar_select_day(GTK_CALENDAR(meet->start_c),
-				sdate->tm_mday);
-	gtk_calendar_select_day(GTK_CALENDAR(meet->end_c),
-				sdate->tm_mday);
+	gtk_calendar_select_day(GTK_CALENDAR(meet->start_c), sdate->tm_mday);
+	gtk_calendar_select_day(GTK_CALENDAR(meet->end_c), sdate->tm_mday);
 
-	gtk_calendar_select_month(GTK_CALENDAR(meet->start_c),
-				sdate->tm_mon, sdate->tm_year+1900);
-	gtk_calendar_select_month(GTK_CALENDAR(meet->end_c),
-				sdate->tm_mon, sdate->tm_year+1900);
+	gtk_calendar_select_month(GTK_CALENDAR(meet->start_c), sdate->tm_mon, sdate->tm_year + 1900);
+	gtk_calendar_select_month(GTK_CALENDAR(meet->end_c), sdate->tm_mon, sdate->tm_year + 1900);
 
 	if (sdate->tm_hour != 0) {
 		gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->start_time), sdate->tm_hour, 0);
 
 		if (sdate->tm_hour < 23) {
-			gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), sdate->tm_hour+1, 0);
+			gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), sdate->tm_hour + 1, 0);
 		} else {
 			struct tm tm_tomorrow;
 
 			tm_tomorrow.tm_mday = sdate->tm_mday;
 			tm_tomorrow.tm_mon = sdate->tm_mon;
 			tm_tomorrow.tm_wday = sdate->tm_wday;
-			tm_tomorrow.tm_year = sdate->tm_year+1900;
+			tm_tomorrow.tm_year = sdate->tm_year + 1900;
 			tm_tomorrow.tm_hour = sdate->tm_hour;
 			orage_move_day(&tm_tomorrow, +1);
-			gtk_calendar_select_day(GTK_CALENDAR(meet->end_c),
-						tm_tomorrow.tm_mday);
-			gtk_calendar_select_month(GTK_CALENDAR(meet->end_c),
-						tm_tomorrow.tm_mon, tm_tomorrow.tm_year);
-			
+			gtk_calendar_select_day(GTK_CALENDAR(meet->end_c), tm_tomorrow.tm_mday);
+			gtk_calendar_select_month(GTK_CALENDAR(meet->end_c), tm_tomorrow.tm_mon, tm_tomorrow.tm_year);
+
 			gtkut_time_select_select_by_time(GTK_COMBO_BOX(meet->end_time), 0, 0);
 		}
 	}
@@ -1715,12 +1637,12 @@ gboolean vcal_meeting_alert_check(gpointer data)
 		start = icaltime_as_timet(icaltime_from_string(event->dtstart));
 		end = icaltime_as_timet(icaltime_from_string(event->dtend));
 		current = time(NULL);
-		
-		if (start - current <= (vcalprefs.alert_delay*60) 
-		&&  start - current + 60 > (vcalprefs.alert_delay*60)) {
+
+		if (start - current <= (vcalprefs.alert_delay * 60)
+		    && start - current + 60 > (vcalprefs.alert_delay * 60)) {
 			warn = TRUE;
-		} else if (event->postponed - current <= (vcalprefs.alert_delay*60)
-		&&         event->postponed - current + 60 > (vcalprefs.alert_delay*60)) {
+		} else if (event->postponed - current <= (vcalprefs.alert_delay * 60)
+			   && event->postponed - current + 60 > (vcalprefs.alert_delay * 60)) {
 			warn = TRUE;
 		}
 		if (warn) {
@@ -1739,44 +1661,27 @@ gboolean vcal_meeting_alert_check(gpointer data)
 			estart = g_strdup(ctime(&tmpt));
 
 			if (length >= 60)
-				hours = g_strdup_printf(ngettext("%d hour", "%d hours", 
-						(length/60) > 1 ? 2 : 1), length/60);
-			if (length%60)
-				minutes = g_strdup_printf(ngettext("%d minute", "%d minutes",
-						length%60), length%60);
+				hours = g_strdup_printf(ngettext("%d hour", "%d hours", (length / 60) > 1 ? 2 : 1), length / 60);
+			if (length % 60)
+				minutes = g_strdup_printf(ngettext("%d minute", "%d minutes", length % 60), length % 60);
 
-			duration = g_strdup_printf("%s%s%s",
-					hours?hours:"",
-					hours && minutes ? " ":"",
-					minutes?minutes:"");
+			duration = g_strdup_printf("%s%s%s", hours ? hours : "", hours && minutes ? " " : "", minutes ? minutes : "");
 
 			g_free(hours);
 			g_free(minutes);
 
 			title = g_strdup_printf(_("Upcoming event: %s"), event->summary);
-			message = g_strdup_printf(_("You have a meeting or event soon.\n"
-					 "It starts at %s and ends %s later.\n"
-                     "Location: %s\n"
-					 "More information:\n\n"
-					 "%s"),
-						estart,
-						duration,
-						event->location?event->location:"",
-						event->description);
+			message = g_strdup_printf(_("You have a meeting or event soon.\n" "It starts at %s and ends %s later.\n" "Location: %s\n" "More information:\n\n" "%s"), estart, duration, event->location ? event->location : "", event->description);
 
 			g_free(duration);
 			g_free(estart);
 
-			postpone_min = (vcalprefs.alert_delay/2 > 15) ? 15: (vcalprefs.alert_delay/2);
+			postpone_min = (vcalprefs.alert_delay / 2 > 15) ? 15 : (vcalprefs.alert_delay / 2);
 			if (postpone_min == 0)
 				postpone_min = 1;
 
-			label = g_strdup_printf(ngettext("Remind me in %d minute", "Remind me in %d minutes",
-						 postpone_min > 1 ? 2:1), 
-						 postpone_min);
-			aval = alertpanel_full(title, message,
-				   	label, GTK_STOCK_OK, NULL, ALERTFOCUS_FIRST, FALSE,
-				   	NULL, ALERT_NOTICE);
+			label = g_strdup_printf(ngettext("Remind me in %d minute", "Remind me in %d minutes", postpone_min > 1 ? 2 : 1), postpone_min);
+			aval = alertpanel_full(title, message, label, GTK_STOCK_OK, NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_NOTICE);
 			g_free(label);
 
 			g_free(title);
@@ -1784,18 +1689,18 @@ gboolean vcal_meeting_alert_check(gpointer data)
 
 			if (aval == G_ALERTDEFAULT) {
 				if (event->postponed == 0)
-					event->postponed = start + (postpone_min*60);
+					event->postponed = start + (postpone_min * 60);
 				else
-					event->postponed += (postpone_min*60);
+					event->postponed += (postpone_min * 60);
 			} else {
 				event->postponed = (time_t)0;
 			}
 			vcal_manager_save_event(event, FALSE);
 		}
-		
+
 		vcal_manager_free_event((VCalEvent *)cur->data);
 	}
-	
+
 	g_slist_free(events);
 
 	return TRUE;
@@ -1805,8 +1710,8 @@ void multisync_export(void)
 {
 	GSList *list = NULL;
 	gchar *path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				"vcalendar", G_DIR_SEPARATOR_S, 
-				"multisync", NULL);
+				  "vcalendar", G_DIR_SEPARATOR_S,
+				  "multisync", NULL);
 	GSList *files = NULL;
 	GSList *cur = NULL;
 	gchar *backup_file;
@@ -1822,25 +1727,17 @@ void multisync_export(void)
 		g_free(path);
 		return;
 	}
-	
+
 	list = vcal_folder_get_waiting_events();
 	for (cur = list; cur; cur = cur->next) {
 		gchar *tmp = NULL;
 		VCalEvent *event = (VCalEvent *)cur->data;
-		gchar *file = g_strdup_printf("multisync%"CM_TIME_FORMAT"-%d",
-				time(NULL), i);
+		gchar *file = g_strdup_printf("multisync%" CM_TIME_FORMAT "-%d",
+					      time(NULL), i);
 
 		i++;
 
-		calendar = 
-        		icalcomponent_vanew(
-        		    ICAL_VCALENDAR_COMPONENT,
-	        	    icalproperty_new_version("2.0"),
-        		    icalproperty_new_prodid(
-                		 "-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
-			    icalproperty_new_calscale("GREGORIAN"),
-        		    (void*)0
-        	    ); 	
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 		vcal_manager_event_dump(event, FALSE, FALSE, calendar, FALSE);
 		tmp = g_strconcat(path, G_DIR_SEPARATOR_S, file, NULL);
 		str_write_to_file(icalcomponent_as_ical_string(calendar), tmp, TRUE);
@@ -1851,12 +1748,12 @@ void multisync_export(void)
 	}
 
 	g_slist_free(list);
-	
+
 	backup_file = g_strconcat(path, G_DIR_SEPARATOR_S, "backup_entries", NULL);
 	fp = claws_fopen(backup_file, "wb");
 	if (fp) {
 		for (cur = files; cur; cur = cur->next) {
-			gchar * file = (char *)cur->data;
+			gchar *file = (char *)cur->data;
 			if (fprintf(fp, "1 1 %s\n", file) < 0)
 				FILE_OP_ERROR(file, "fprintf");
 			g_free(file);
@@ -1871,9 +1768,7 @@ void multisync_export(void)
 	g_slist_free(files);
 }
 
-gboolean vcal_meeting_export_calendar(const gchar *path, 
-				const gchar *user, const gchar *pass,
-				gboolean automatic)
+gboolean vcal_meeting_export_calendar(const gchar *path, const gchar *user, const gchar *pass, gboolean automatic)
 {
 	GSList *list = vcal_folder_get_waiting_events();
 	GSList *subs = NULL;
@@ -1882,12 +1777,12 @@ gboolean vcal_meeting_export_calendar(const gchar *path,
 	gchar *file;
 	gchar *tmpfile = get_tmp_file();
 	gchar *internal_file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				"vcalendar", G_DIR_SEPARATOR_S, 
-				"internal.ics", NULL);
+					   "vcalendar", G_DIR_SEPARATOR_S,
+					   "internal.ics", NULL);
 
 	gboolean res = TRUE;
 	long filesize = 0;
-	
+
 	multisync_export();
 
 	if (vcalprefs.export_subs && vcalprefs.export_enable)
@@ -1897,10 +1792,7 @@ gboolean vcal_meeting_export_calendar(const gchar *path,
 		g_slist_free(list);
 		g_slist_free(subs);
 		if (!automatic) {
-			alertpanel_full(_("Empty calendar"),
-					_("There is nothing to export."),
-				   	GTK_STOCK_OK, NULL, NULL, ALERTFOCUS_FIRST, FALSE,
-			   	NULL, ALERT_NOTICE);
+			alertpanel_full(_("Empty calendar"), _("There is nothing to export."), GTK_STOCK_OK, NULL, NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_NOTICE);
 			g_free(tmpfile);
 			g_free(internal_file);
 			return FALSE;
@@ -1909,16 +1801,8 @@ gboolean vcal_meeting_export_calendar(const gchar *path,
 			goto putfile;
 		}
 	}
-	
-	calendar = 
-        	icalcomponent_vanew(
-        	    ICAL_VCALENDAR_COMPONENT,
-	            icalproperty_new_version("2.0"),
-        	    icalproperty_new_prodid(
-                	 "-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
-		    icalproperty_new_calscale("GREGORIAN"),
-        	    (void*)0
-            ); 	
+
+	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 
 	for (cur = list; cur; cur = cur->next) {
 		VCalEvent *event = (VCalEvent *)cur->data;
@@ -1949,8 +1833,8 @@ gboolean vcal_meeting_export_calendar(const gchar *path,
 	}
 
 	icalcomponent_free(calendar);
-	
-putfile:
+
+ putfile:
 	g_free(internal_file);
 	g_slist_free(list);
 	g_slist_free(subs);
@@ -1965,28 +1849,25 @@ putfile:
 	else
 		file = g_strdup(path);
 
-	if (file 
-	&& strncmp(file, "http://", 7) 
-	&& strncmp(file, "https://", 8)
-	&& strncmp(file, "webcal://", 9)
-	&& strncmp(file, "webcals://", 10)
-	&& strncmp(file, "ftp://", 6)) {
+	if (file && strncmp(file, "http://", 7)
+	    && strncmp(file, "https://", 8)
+	    && strncmp(file, "webcal://", 9)
+	    && strncmp(file, "webcals://", 10)
+	    && strncmp(file, "ftp://", 6)) {
 		gchar *afile;
 		if (file[0] != G_DIR_SEPARATOR)
-			afile = g_strdup_printf("%s%s%s", get_home_dir(), 
-					G_DIR_SEPARATOR_S, file);
+			afile = g_strdup_printf("%s%s%s", get_home_dir(), G_DIR_SEPARATOR_S, file);
 		else
 			afile = g_strdup(file);
 		if (move_file(tmpfile, afile, TRUE) != 0) {
-			log_error(LOG_PROTOCOL, _("Couldn't export calendar to '%s'\n"),
-				afile);
+			log_error(LOG_PROTOCOL, _("Couldn't export calendar to '%s'\n"), afile);
 			res = FALSE;
 		}
 		g_free(afile);
 	} else if (file) {
 		FILE *fp = claws_fopen(tmpfile, "rb");
 		if (!strncmp(file, "webcal", 6)) {
-			gchar *tmp = g_strdup_printf("http%s", file+6);
+			gchar *tmp = g_strdup_printf("http%s", file + 6);
 			g_free(file);
 			file = tmp;
 		}
@@ -2001,8 +1882,7 @@ putfile:
 	return res;
 }
 
-gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
-				const gchar *pass)
+gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user, const gchar *pass)
 {
 	GSList *list = vcal_folder_get_waiting_events();
 	GSList *cur;
@@ -2010,41 +1890,27 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 	gchar *file;
 	gchar *tmpfile = get_tmp_file();
 	gchar *internal_file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				"vcalendar", G_DIR_SEPARATOR_S, 
-				"internal.ifb", NULL);
+					   "vcalendar", G_DIR_SEPARATOR_S,
+					   "internal.ifb", NULL);
 	time_t whole_start = time(NULL);
-	time_t whole_end = whole_start + (60*60*24*365);
+	time_t whole_end = whole_start + (60 * 60 * 24 * 365);
 	gboolean res = TRUE;
 	struct icaltimetype itt_start, itt_end;
 	long filesize = 0;
-	
+
 	multisync_export();
 
-	calendar = 
-        	icalcomponent_vanew(
-        	    ICAL_VCALENDAR_COMPONENT,
-	            icalproperty_new_version("2.0"),
-        	    icalproperty_new_prodid(
-                	 "-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
-		    icalproperty_new_calscale("GREGORIAN"),
-        	    (void*)0
-            ); 	
+	calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), (void *)0);
 
 	timezone = icalcomponent_new(ICAL_VTIMEZONE_COMPONENT);
-	
-	icalcomponent_add_property(timezone,
-		icalproperty_new_tzid("UTC"));
-	
+
+	icalcomponent_add_property(timezone, icalproperty_new_tzid("UTC"));
+
 	tzc = icalcomponent_new(ICAL_XSTANDARD_COMPONENT);
-	icalcomponent_add_property(tzc,
-		icalproperty_new_dtstart(
-			icaltime_from_string("19700101T000000")));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzoffsetfrom(0.0));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzoffsetto(0.0));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzname("Greenwich meridian time"));
+	icalcomponent_add_property(tzc, icalproperty_new_dtstart(icaltime_from_string("19700101T000000")));
+	icalcomponent_add_property(tzc, icalproperty_new_tzoffsetfrom(0.0));
+	icalcomponent_add_property(tzc, icalproperty_new_tzoffsetto(0.0));
+	icalcomponent_add_property(tzc, icalproperty_new_tzname("Greenwich meridian time"));
 
 	icalcomponent_add_component(timezone, tzc);
 
@@ -2053,31 +1919,24 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 	itt_start = icaltime_from_timet_with_zone(whole_start, FALSE, NULL);
 	itt_end = icaltime_from_timet_with_zone(whole_end, FALSE, NULL);
 	itt_start.second = itt_start.minute = itt_start.hour = 0;
-	itt_end.second = 59; itt_end.minute = 59; itt_end.hour = 23;
+	itt_end.second = 59;
+	itt_end.minute = 59;
+	itt_end.hour = 23;
 
+	vfreebusy = icalcomponent_vanew(ICAL_VFREEBUSY_COMPONENT, icalproperty_vanew_dtstart(itt_start, 0), icalproperty_vanew_dtend(itt_end, 0), (void *)0);
 
-	vfreebusy = 
-	    icalcomponent_vanew(
-                ICAL_VFREEBUSY_COMPONENT,
-		icalproperty_vanew_dtstart(itt_start, 0),
-		icalproperty_vanew_dtend(itt_end, 0),
-                (void*)0
-                );
-
-	debug_print("DTSTART:%s\nDTEND:%s\n",
-		icaltime_as_ical_string(itt_start),
-		icaltime_as_ical_string(itt_end));
+	debug_print("DTSTART:%s\nDTEND:%s\n", icaltime_as_ical_string(itt_start), icaltime_as_ical_string(itt_end));
 
 	for (cur = list; cur; cur = cur->next) {
 		VCalEvent *event = (VCalEvent *)cur->data;
 		icalproperty *prop;
 		struct icalperiodtype ipt;
-	
+
 		ipt.start = icaltime_from_string(event->dtstart);
 		ipt.end = icaltime_from_string(event->dtend);
 		ipt.duration = icaltime_subtract(ipt.end, ipt.start);
-		if (icaltime_as_timet(ipt.start) <= icaltime_as_timet(itt_end) 
-		 && icaltime_as_timet(ipt.end) >= icaltime_as_timet(itt_start)) {
+		if (icaltime_as_timet(ipt.start) <= icaltime_as_timet(itt_end)
+		    && icaltime_as_timet(ipt.end) >= icaltime_as_timet(itt_start)) {
 			prop = icalproperty_new_freebusy(ipt);
 			icalcomponent_add_property(vfreebusy, prop);
 		}
@@ -2085,11 +1944,11 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 	}
 
 	icalcomponent_add_component(calendar, vfreebusy);
-	
+
 	if (str_write_to_file(icalcomponent_as_ical_string(calendar), internal_file, TRUE) < 0) {
 		g_warning("can't export freebusy");
 	}
-	
+
 	g_free(internal_file);
 
 	if (vcalprefs.export_freebusy_enable) {
@@ -2105,7 +1964,7 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 
 	icalcomponent_free(calendar);
 	g_slist_free(list);
-	
+
 	if ((!path || strlen(path) == 0 || !vcalprefs.export_freebusy_enable)) {
 		g_free(tmpfile);
 		return TRUE;
@@ -2113,28 +1972,25 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 
 	file = g_strdup(path);
 
-	if (file 
-	&& strncmp(file, "http://", 7) 
-	&& strncmp(file, "https://", 8)
-	&& strncmp(file, "webcal://", 9)
-	&& strncmp(file, "webcals://", 10)
-	&& strncmp(file, "ftp://", 6)) {
+	if (file && strncmp(file, "http://", 7)
+	    && strncmp(file, "https://", 8)
+	    && strncmp(file, "webcal://", 9)
+	    && strncmp(file, "webcals://", 10)
+	    && strncmp(file, "ftp://", 6)) {
 		gchar *afile;
 		if (file[0] != G_DIR_SEPARATOR)
-			afile = g_strdup_printf("%s%s%s", get_home_dir(), 
-					G_DIR_SEPARATOR_S, file);
+			afile = g_strdup_printf("%s%s%s", get_home_dir(), G_DIR_SEPARATOR_S, file);
 		else
 			afile = g_strdup(file);
 		if (move_file(tmpfile, file, TRUE) != 0) {
-			log_error(LOG_PROTOCOL, _("Couldn't export free/busy to '%s'\n"),
-				afile);
+			log_error(LOG_PROTOCOL, _("Couldn't export free/busy to '%s'\n"), afile);
 			res = FALSE;
 		}
 		g_free(afile);
 	} else if (file) {
 		FILE *fp = claws_fopen(tmpfile, "rb");
 		if (!strncmp(file, "webcal", 6)) {
-			gchar *tmp = g_strdup_printf("http%s", file+6);
+			gchar *tmp = g_strdup_printf("http%s", file + 6);
 			g_free(file);
 			file = tmp;
 		}
@@ -2148,3 +2004,7 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 		g_free(file);
 	return res;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

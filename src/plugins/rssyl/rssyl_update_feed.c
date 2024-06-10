@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -70,15 +70,13 @@ void rssyl_fetch_feed(RFetchCtx *ctx, RSSylVerboseFlags verbose)
 	g_return_if_fail(ctx != NULL);
 
 #ifdef USE_PTHREAD
-	if( pthread_create(&pt, NULL, rssyl_fetch_feed_thr,
-				(void *)ctx) != 0 ) {
+	if (pthread_create(&pt, NULL, rssyl_fetch_feed_thr, (void *)ctx) != 0) {
 		/* Bummer, couldn't create thread. Continue non-threaded. */
 		rssyl_fetch_feed_thr(ctx);
 	} else {
 		/* Thread created, let's wait until it finishes. */
-		debug_print("RSSyl: waiting for thread to finish (timeout: %ds)\n",
-				feed_get_timeout(ctx->feed));
-		while( !ctx->ready ) {
+		debug_print("RSSyl: waiting for thread to finish (timeout: %ds)\n", feed_get_timeout(ctx->feed));
+		while (!ctx->ready) {
 			claws_do_idle();
 		}
 
@@ -92,42 +90,41 @@ void rssyl_fetch_feed(RFetchCtx *ctx, RSSylVerboseFlags verbose)
 
 	debug_print("RSSyl: got response_code %d\n", ctx->response_code);
 
-	if( ctx->response_code == FEED_ERR_INIT ) {
+	if (ctx->response_code == FEED_ERR_INIT) {
 		debug_print("RSSyl: libfeed reports init error from libcurl\n");
 		ctx->error = g_strdup("Internal error");
-	} else if( ctx->response_code == FEED_ERR_FETCH ) {
+	} else if (ctx->response_code == FEED_ERR_FETCH) {
 		debug_print("RSSyl: libfeed reports some other error from libcurl\n");
 		ctx->error = g_strdup(ctx->feed->fetcherr);
-	} else if( ctx->response_code == FEED_ERR_UNAUTH ) {
+	} else if (ctx->response_code == FEED_ERR_UNAUTH) {
 		debug_print("RSSyl: URL authorization type is unknown\n");
 		ctx->error = g_strdup("Unknown value for URL authorization type");
-	} else if( ctx->response_code >= 400 && ctx->response_code < 500 ) {
-		switch( ctx->response_code ) {
-			case 401:
-				ctx->error = g_strdup(_("401 (Authorisation required)"));
-				break;
-			case 403:
-				ctx->error = g_strdup(_("403 (Forbidden)"));
-				break;
-			case 404:
-				ctx->error = g_strdup(_("404 (Not found)"));
-				break;
-			default:
-				ctx->error = g_strdup_printf(_("Error %d"), ctx->response_code);
-				break;
+	} else if (ctx->response_code >= 400 && ctx->response_code < 500) {
+		switch (ctx->response_code) {
+		case 401:
+			ctx->error = g_strdup(_("401 (Authorisation required)"));
+			break;
+		case 403:
+			ctx->error = g_strdup(_("403 (Forbidden)"));
+			break;
+		case 404:
+			ctx->error = g_strdup(_("404 (Not found)"));
+			break;
+		default:
+			ctx->error = g_strdup_printf(_("Error %d"), ctx->response_code);
+			break;
 		}
 	}
 
 	/* Here we handle "imperfect" conditions. If requested, we also
 	 * display error dialogs for user. We always log the error. */
-	if( ctx->error != NULL ) {
+	if (ctx->error != NULL) {
 		/* libcurl wasn't happy */
 		debug_print("RSSyl: Error: %s\n", ctx->error);
-		if( verbose & RSSYL_SHOW_ERRORS) {
-			gchar *msg = g_markup_printf_escaped(
-					(const char *) C_("First parameter is URL, second is error text",
-						"Error fetching feed at\n<b>%s</b>:\n\n%s"),
-					feed_get_url(ctx->feed), ctx->error);
+		if (verbose & RSSYL_SHOW_ERRORS) {
+			gchar *msg = g_markup_printf_escaped((const char *)C_("First parameter is URL, second is error text",
+									      "Error fetching feed at\n<b>%s</b>:\n\n%s"),
+							     feed_get_url(ctx->feed), ctx->error);
 			alertpanel_error("%s", msg);
 			g_free(msg);
 		}
@@ -136,25 +133,21 @@ void rssyl_fetch_feed(RFetchCtx *ctx, RSSylVerboseFlags verbose)
 
 		ctx->success = FALSE;
 	} else {
-		if( ctx->feed == NULL || ctx->response_code == FEED_ERR_NOFEED) {
-			if( verbose & RSSYL_SHOW_ERRORS) {
-				gchar *msg = g_markup_printf_escaped(
-						(const char *) _("No valid feed found at\n<b>%s</b>"),
-						feed_get_url(ctx->feed));
+		if (ctx->feed == NULL || ctx->response_code == FEED_ERR_NOFEED) {
+			if (verbose & RSSYL_SHOW_ERRORS) {
+				gchar *msg = g_markup_printf_escaped((const char *)_("No valid feed found at\n<b>%s</b>"),
+								     feed_get_url(ctx->feed));
 				alertpanel_error("%s", msg);
 				g_free(msg);
 			}
 
-			log_error(LOG_PROTOCOL, RSSYL_LOG_ERROR_NOFEED,
-					feed_get_url(ctx->feed));
+			log_error(LOG_PROTOCOL, RSSYL_LOG_ERROR_NOFEED, feed_get_url(ctx->feed));
 
 			ctx->success = FALSE;
 		} else if (feed_get_title(ctx->feed) == NULL) {
 			/* We shouldn't do this, since a title is mandatory. */
 			feed_set_title(ctx->feed, _("Untitled feed"));
-			log_print(LOG_PROTOCOL,
-					_("RSSyl: Possibly invalid feed without title at %s.\n"),
-					feed_get_url(ctx->feed));
+			log_print(LOG_PROTOCOL, _("RSSyl: Possibly invalid feed without title at %s.\n"), feed_get_url(ctx->feed));
 		}
 	}
 }
@@ -225,8 +218,7 @@ gboolean rssyl_update_feed(RFolderItem *ritem, RSSylVerboseFlags verbose)
 	g_return_val_if_fail(ritem != NULL, FALSE);
 	g_return_val_if_fail(ritem->url != NULL, FALSE);
 
-	debug_print("RSSyl: starting to update '%s' (%s)\n",
-			ritem->item.name, ritem->url);
+	debug_print("RSSyl: starting to update '%s' (%s)\n", ritem->item.name, ritem->url);
 
 	log_print(LOG_PROTOCOL, RSSYL_LOG_UPDATING, ritem->url);
 
@@ -248,8 +240,7 @@ gboolean rssyl_update_feed(RFolderItem *ritem, RSSylVerboseFlags verbose)
 		g_free(ritem->auth->password);
 	}
 
-	debug_print("RSSyl: fetch done; success == %s\n",
-			ctx->success ? "TRUE" : "FALSE");
+	debug_print("RSSyl: fetch done; success == %s\n", ctx->success ? "TRUE" : "FALSE");
 
 	if (!ctx->success) {
 		feed_free(ctx->feed);
@@ -262,33 +253,31 @@ gboolean rssyl_update_feed(RFolderItem *ritem, RSSylVerboseFlags verbose)
 	rssyl_deleted_update(ritem);
 
 	debug_print("RSSyl: STARTING TO PARSE FEED\n");
-  if( ctx->success && !(ctx->success = rssyl_parse_feed(ritem, ctx->feed)) ) {
+	if (ctx->success && !(ctx->success = rssyl_parse_feed(ritem, ctx->feed))) {
 		/* both libcurl and libfeed were happy, but we weren't */
 		debug_print("RSSyl: Error processing feed\n");
-		if( verbose & RSSYL_SHOW_ERRORS ) {
-			gchar *msg = g_markup_printf_escaped(
-					(const char *) _("Couldn't process feed at\n<b>%s</b>\n\n"
-						"Please contact developers, this should not happen."),
-					feed_get_url(ctx->feed));
+		if (verbose & RSSYL_SHOW_ERRORS) {
+			gchar *msg = g_markup_printf_escaped((const char *)_("Couldn't process feed at\n<b>%s</b>\n\n" "Please contact developers, this should not happen."),
+							     feed_get_url(ctx->feed));
 			alertpanel_error("%s", msg);
 			g_free(msg);
 		}
 
 		log_error(LOG_PROTOCOL, RSSYL_LOG_ERROR_PROC, ctx->feed->url);
 	}
-	
+
 	debug_print("RSSyl: FEED PARSED\n");
 
 	STATUSBAR_POP(mainwin);
 
-	if( claws_is_exiting() ) {
+	if (claws_is_exiting()) {
 		feed_free(ctx->feed);
 		g_free(ctx->error);
 		g_free(ctx);
 		return FALSE;
 	}
 
-	if( ritem->fetch_comments )
+	if (ritem->fetch_comments)
 		rssyl_update_comments(ritem);
 
 	/* Prune our deleted items list of items which are no longer in
@@ -316,7 +305,7 @@ static gboolean rssyl_update_recursively_func(GNode *node, gpointer data)
 	item = FOLDER_ITEM(node->data);
 	ritem = (RFolderItem *)item;
 
-	if( ritem->url != NULL ) {
+	if (ritem->url != NULL) {
 		debug_print("RSSyl: Updating feed '%s'\n", item->name);
 		rssyl_update_feed(ritem, 0);
 	} else
@@ -330,32 +319,33 @@ void rssyl_update_recursively(FolderItem *item)
 	g_return_if_fail(item != NULL);
 	g_return_if_fail(item->folder != NULL);
 
-	if( item->folder->klass != rssyl_folder_get_class() )
+	if (item->folder->klass != rssyl_folder_get_class())
 		return;
 
 	debug_print("Recursively updating '%s'\n", item->name);
 
-	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-			rssyl_update_recursively_func, NULL);
+	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, rssyl_update_recursively_func, NULL);
 }
 
 void rssyl_update_all_func(FolderItem *item, gpointer data)
 {
 	/* Only try to refresh our feed folders */
-	if( !IS_RSSYL_FOLDER_ITEM(item) )
+	if (!IS_RSSYL_FOLDER_ITEM(item))
 		return;
 
-	if( folder_item_parent(item) == NULL )
+	if (folder_item_parent(item) == NULL)
 		rssyl_update_recursively(item);
 }
 
 void rssyl_update_all_feeds(void)
 {
-	if (prefs_common_get_prefs()->work_offline &&
-			!inc_offline_should_override(TRUE,
-				_("Claws Mail needs network access in order to update your feeds.")) ) {
+	if (prefs_common_get_prefs()->work_offline && !inc_offline_should_override(TRUE, _("Claws Mail needs network access in order to update your feeds."))) {
 		return;
 	}
 
-	folder_func_to_all_folders((FolderItemFunc)rssyl_update_all_func, NULL);
+	folder_func_to_all_folders((FolderItemFunc) rssyl_update_all_func, NULL);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

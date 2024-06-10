@@ -15,9 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
-
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -42,8 +41,7 @@
 #include "utils.h"
 #include "prefs_common.h"
 
-enum
-{
+enum {
 	COL_DISPLAYNAME,
 	COL_FIRSTNAME,
 	COL_LASTNAME,
@@ -51,8 +49,7 @@ enum
 	N_NAME_COLS
 };
 
-enum
-{
+enum {
 	SET_ICON,
 	SET_PERSON,
 	N_SET_COLUMNS
@@ -79,25 +76,25 @@ static void addrmerge_do_merge(struct AddrMergePage *page)
 	/* Update target name */
 	if (nameTarget && nameTarget != target) {
 		target->status = UPDATE_ENTRY;
-		addritem_person_set_first_name( target, nameTarget->firstName );
-		addritem_person_set_last_name( target, nameTarget->lastName );
-		addritem_person_set_nick_name( target, nameTarget->nickName );
-		addritem_person_set_common_name( target, ADDRITEM_NAME(nameTarget ));
+		addritem_person_set_first_name(target, nameTarget->firstName);
+		addritem_person_set_last_name(target, nameTarget->lastName);
+		addritem_person_set_nick_name(target, nameTarget->nickName);
+		addritem_person_set_common_name(target, ADDRITEM_NAME(nameTarget));
 	}
 
 	/* Merge emails into target */
 	for (node = page->emails; node; node = node->next) {
 		email = node->data;
-		person = ( ItemPerson * ) ADDRITEM_PARENT(email);
+		person = (ItemPerson *)ADDRITEM_PARENT(email);
 		/* Remove the email from the person */
-		email = addrbook_person_remove_email( page->abf, person, email );
-		if( email ) {
-			addrcache_remove_email( page->abf->addressCache, email );
+		email = addrbook_person_remove_email(page->abf, person, email);
+		if (email) {
+			addrcache_remove_email(page->abf->addressCache, email);
 			/* Add the email to the target */
-			addrcache_person_add_email( page->abf->addressCache, target, email );
+			addrcache_person_add_email(page->abf->addressCache, target, email);
 		}
 		person->status = UPDATE_ENTRY;
-		addressbook_folder_refresh_one_person( page->clist, person );
+		addressbook_folder_refresh_one_person(page->clist, person);
 	}
 
 	/* Merge persons into target */
@@ -105,46 +102,46 @@ static void addrmerge_do_merge(struct AddrMergePage *page)
 		GList *nodeE, *nodeA;
 		person = node->data;
 
-		if (person == target) continue;
+		if (person == target)
+			continue;
 		person->status = DELETE_ENTRY;
 
 		/* Move all emails to the target */
 		for (nodeE = person->listEMail; nodeE; nodeE = nodeE->next) {
 			email = nodeE->data;
-			addritem_person_add_email( target, email );
+			addritem_person_add_email(target, email);
 		}
-		g_list_free( person->listEMail );
+		g_list_free(person->listEMail);
 		person->listEMail = NULL;
 
 		/* Move all attributes to the target */
 		for (nodeA = person->listAttrib; nodeA; nodeA = nodeA->next) {
 			UserAttribute *attrib = nodeA->data;
-			addritem_person_add_attribute( target, attrib );
+			addritem_person_add_attribute(target, attrib);
 		}
-		g_list_free( person->listAttrib );
+		g_list_free(person->listAttrib);
 		person->listAttrib = NULL;
 
 		/* Remove the person */
-		addrselect_list_remove( page->addressSelect, (AddrItemObject *)person );
-		addressbook_folder_remove_one_person( page->clist, person );
+		addrselect_list_remove(page->addressSelect, (AddrItemObject *)person);
+		addressbook_folder_remove_one_person(page->clist, person);
 		if (page->pobj->type == ADDR_ITEM_FOLDER)
 			addritem_folder_remove_person(ADAPTER_FOLDER(page->pobj)->itemFolder, person);
-		person = addrbook_remove_person( page->abf, person );
+		person = addrbook_remove_person(page->abf, person);
 
-		if( person ) {
+		if (person) {
 			gchar *filename = addritem_person_get_picture(person);
-			if ((g_strcmp0(person->picture, target->picture) &&
-					filename && is_file_exist(filename)))
+			if ((g_strcmp0(person->picture, target->picture) && filename && is_file_exist(filename)))
 				claws_unlink(filename);
 			if (filename)
 				g_free(filename);
-			addritem_free_item_person( person );
+			addritem_free_item_person(person);
 		}
 	}
 
-	addressbook_folder_refresh_one_person( page->clist, target );
+	addressbook_folder_refresh_one_person(page->clist, target);
 
-	addrbook_set_dirty( page->abf, TRUE );
+	addrbook_set_dirty(page->abf, TRUE);
 	addressbook_export_to_file();
 
 #ifdef USE_LDAP
@@ -159,8 +156,9 @@ static void addrmerge_do_merge(struct AddrMergePage *page)
 	addrmerge_done(page);
 }
 
-static void addrmerge_dialog_cb(GtkWidget* widget, gint action, gpointer data) {
-	struct AddrMergePage* page = data;
+static void addrmerge_dialog_cb(GtkWidget *widget, gint action, gpointer data)
+{
+	struct AddrMergePage *page = data;
 
 	if (action != GTK_RESPONSE_ACCEPT)
 		return addrmerge_done(page);
@@ -168,37 +166,33 @@ static void addrmerge_dialog_cb(GtkWidget* widget, gint action, gpointer data) {
 	addrmerge_do_merge(page);
 }
 
-static void addrmerge_update_dialog_sensitive( struct AddrMergePage *page )
+static void addrmerge_update_dialog_sensitive(struct AddrMergePage *page)
 {
 	gboolean canMerge = (page->target && page->nameTarget);
-	gtk_dialog_set_response_sensitive( GTK_DIALOG(page->dialog),
-			GTK_RESPONSE_ACCEPT, canMerge );
+	gtk_dialog_set_response_sensitive(GTK_DIALOG(page->dialog), GTK_RESPONSE_ACCEPT, canMerge);
 }
 
-static void addrmerge_name_selected( GtkCMCList *clist, gint row, gint column, GdkEvent *event, struct AddrMergePage *page )
+static void addrmerge_name_selected(GtkCMCList *clist, gint row, gint column, GdkEvent *event, struct AddrMergePage *page)
 {
-	ItemPerson *person = gtk_cmclist_get_row_data( clist, row );
+	ItemPerson *person = gtk_cmclist_get_row_data(clist, row);
 	page->nameTarget = person;
 	addrmerge_update_dialog_sensitive(page);
 }
 
-static void addrmerge_picture_selected(GtkTreeView *treeview,
-		struct AddrMergePage *page)
+static void addrmerge_picture_selected(GtkTreeView *treeview, struct AddrMergePage *page)
 {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GList *list;
 	ItemPerson *pictureTarget;
 
-	/* Get selected picture target */ 
+	/* Get selected picture target */
 	model = gtk_icon_view_get_model(GTK_ICON_VIEW(page->iconView));
 	list = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(page->iconView));
 	page->target = NULL;
 	if (list != NULL) {
 		if (gtk_tree_model_get_iter(model, &iter, (GtkTreePath *)list->data)) {
-			gtk_tree_model_get(model, &iter,
-					SET_PERSON, &pictureTarget,
-					-1);
+			gtk_tree_model_get(model, &iter, SET_PERSON, &pictureTarget, -1);
 			page->target = pictureTarget;
 		}
 
@@ -208,7 +202,7 @@ static void addrmerge_picture_selected(GtkTreeView *treeview,
 	addrmerge_update_dialog_sensitive(page);
 }
 
-static void addrmerge_prompt( struct AddrMergePage *page )
+static void addrmerge_prompt(struct AddrMergePage *page)
 {
 	GtkWidget *dialog;
 	GtkWidget *frame;
@@ -224,34 +218,20 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 	GError *error = NULL;
 	gchar *msg, *label_msg;
 
-	dialog = page->dialog = gtk_dialog_new_with_buttons (
-			_("Merge addresses"),
-			GTK_WINDOW(mainwin->window),
-			GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_STOCK_CANCEL,
-			GTK_RESPONSE_CANCEL,
-			"_Merge",
-			GTK_RESPONSE_ACCEPT,
-			NULL);
+	dialog = page->dialog = gtk_dialog_new_with_buttons(_("Merge addresses"), GTK_WINDOW(mainwin->window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, "_Merge", GTK_RESPONSE_ACCEPT, NULL);
 
-	g_signal_connect ( dialog, "response",
-			G_CALLBACK(addrmerge_dialog_cb), page);
+	g_signal_connect(dialog, "response", G_CALLBACK(addrmerge_dialog_cb), page);
 
 	mvbox = gtk_vbox_new(FALSE, 4);
-	gtk_container_add(GTK_CONTAINER(
-			gtk_dialog_get_content_area(GTK_DIALOG(dialog))), mvbox);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), mvbox);
 	gtk_container_set_border_width(GTK_CONTAINER(mvbox), 8);
 	hbox = gtk_hbox_new(FALSE, 4);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 8);
-	gtk_box_pack_start(GTK_BOX(mvbox),
-			hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(mvbox), hbox, FALSE, FALSE, 0);
 
-	msg = page->pickPicture || page->pickName ?
-		_("Merging %u contacts." ) :
-		_("Really merge these %u contacts?" );
-	label_msg = g_strdup_printf(msg,
-			g_list_length(page->addressSelect->listSelect));
-	label = gtk_label_new( label_msg );
+	msg = page->pickPicture || page->pickName ? _("Merging %u contacts.") : _("Really merge these %u contacts?");
+	label_msg = g_strdup_printf(msg, g_list_length(page->addressSelect->listSelect));
+	label = gtk_label_new(label_msg);
 	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -260,31 +240,24 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 	if (page->pickPicture) {
 		GtkWidget *scrollwinPictures;
 
-		store = gtk_list_store_new(N_SET_COLUMNS,
-					GDK_TYPE_PIXBUF,
-					G_TYPE_POINTER,
-					-1);
+		store = gtk_list_store_new(N_SET_COLUMNS, GDK_TYPE_PIXBUF, G_TYPE_POINTER, -1);
 		gtk_list_store_clear(store);
 
-		vbox = gtkut_get_options_frame(mvbox, &frame,
-				_("Keep which picture?"));
+		vbox = gtkut_get_options_frame(mvbox, &frame, _("Keep which picture?"));
 		gtk_container_set_border_width(GTK_CONTAINER(frame), 4);
 
 		scrollwinPictures = gtk_scrolled_window_new(NULL, NULL);
 		gtk_container_set_border_width(GTK_CONTAINER(scrollwinPictures), 1);
-		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwinPictures),
-				GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrollwinPictures),
-				GTK_SHADOW_IN);
-		gtk_box_pack_start (GTK_BOX (vbox), scrollwinPictures, FALSE, FALSE, 0);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwinPictures), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrollwinPictures), GTK_SHADOW_IN);
+		gtk_box_pack_start(GTK_BOX(vbox), scrollwinPictures, FALSE, FALSE, 0);
 		gtk_widget_set_size_request(scrollwinPictures, 464, 192);
 
 		iconView = gtk_icon_view_new_with_model(GTK_TREE_MODEL(store));
 		gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(iconView), GTK_SELECTION_SINGLE);
 		gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(iconView), SET_ICON);
 		gtk_container_add(GTK_CONTAINER(scrollwinPictures), GTK_WIDGET(iconView));
-		g_signal_connect(G_OBJECT(iconView), "selection-changed",
-				G_CALLBACK(addrmerge_picture_selected), page);
+		g_signal_connect(G_OBJECT(iconView), "selection-changed", G_CALLBACK(addrmerge_picture_selected), page);
 
 		/* Add pictures from persons */
 		for (node = page->persons; node; node = node->next) {
@@ -297,8 +270,7 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 
 				pixbuf = gdk_pixbuf_new_from_file(filename, &error);
 				if (error) {
-					debug_print("Failed to read image: \n%s",
-							error->message);
+					debug_print("Failed to read image: \n%s", error->message);
 					g_error_free(error);
 					continue;
 				}
@@ -307,10 +279,7 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 				gtk_image_set_from_pixbuf(GTK_IMAGE(image), pixbuf);
 
 				gtk_list_store_append(store, &iter);
-				gtk_list_store_set(store, &iter,
-						SET_ICON, pixbuf,
-						SET_PERSON, person,
-						-1);
+				gtk_list_store_set(store, &iter, SET_ICON, pixbuf, SET_PERSON, person, -1);
 			}
 			if (filename)
 				g_free(filename);
@@ -326,22 +295,16 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 		name_titles[COL_LASTNAME] = _("Last Name");
 		name_titles[COL_NICKNAME] = _("Nickname");
 
-		store = gtk_list_store_new(N_SET_COLUMNS,
-					GDK_TYPE_PIXBUF,
-					G_TYPE_POINTER,
-					-1);
+		store = gtk_list_store_new(N_SET_COLUMNS, GDK_TYPE_PIXBUF, G_TYPE_POINTER, -1);
 		gtk_list_store_clear(store);
 
-		vbox = gtkut_get_options_frame(mvbox, &frame,
-				_("Keep which name?"));
+		vbox = gtkut_get_options_frame(mvbox, &frame, _("Keep which name?"));
 		gtk_container_set_border_width(GTK_CONTAINER(frame), 4);
 
 		scrollwinNames = gtk_scrolled_window_new(NULL, NULL);
 		gtk_container_set_border_width(GTK_CONTAINER(scrollwinNames), 1);
-		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwinNames),
-				GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrollwinNames),
-				GTK_SHADOW_IN);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwinNames), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrollwinNames), GTK_SHADOW_IN);
 		gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(scrollwinNames), FALSE, FALSE, 0);
 
 		namesList = gtk_cmclist_new_with_titles(N_NAME_COLS, name_titles);
@@ -360,12 +323,11 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 			text[COL_FIRSTNAME] = person->firstName;
 			text[COL_LASTNAME] = person->lastName;
 			text[COL_NICKNAME] = person->nickName;
-			row = gtk_cmclist_insert( GTK_CMCLIST(namesList), -1, text );
-			gtk_cmclist_set_row_data( GTK_CMCLIST(namesList), row, person );
+			row = gtk_cmclist_insert(GTK_CMCLIST(namesList), -1, text);
+			gtk_cmclist_set_row_data(GTK_CMCLIST(namesList), row, person);
 		}
 
-		g_signal_connect(G_OBJECT(namesList), "select_row",
-				G_CALLBACK(addrmerge_name_selected), page);
+		g_signal_connect(G_OBJECT(namesList), "select_row", G_CALLBACK(addrmerge_name_selected), page);
 	}
 
 	page->iconView = iconView;
@@ -375,13 +337,9 @@ static void addrmerge_prompt( struct AddrMergePage *page )
 	gtk_widget_show_all(dialog);
 }
 
-void addrmerge_merge(
-		GtkCMCTree *clist,
-		AddressObject *pobj,
-		AddressDataSource *ds,
-		AddrSelectList *list)
+void addrmerge_merge(GtkCMCTree *clist, AddressObject *pobj, AddressDataSource *ds, AddrSelectList *list)
 {
-	struct AddrMergePage* page;
+	struct AddrMergePage *page;
 	AdapterDSource *ads = NULL;
 	AddressBookFile *abf;
 	gboolean procFlag;
@@ -393,34 +351,35 @@ void addrmerge_merge(
 	gboolean pickPicture = FALSE, pickName = FALSE;
 
 	/* Test for read only */
-	if( ds->interface->readOnly ) {
+	if (ds->interface->readOnly) {
 		alertpanel_warning(_("This address data is read-only and cannot be deleted."));
 		return;
 	}
 
 	/* Test whether Ok to proceed */
 	procFlag = FALSE;
-	if( pobj->type == ADDR_DATASOURCE ) {
+	if (pobj->type == ADDR_DATASOURCE) {
 		ads = ADAPTER_DSOURCE(pobj);
-		if( ads->subType == ADDR_BOOK ) procFlag = TRUE;
-	}
-	else if( pobj->type == ADDR_ITEM_FOLDER ) {
+		if (ads->subType == ADDR_BOOK)
+			procFlag = TRUE;
+	} else if (pobj->type == ADDR_ITEM_FOLDER) {
+		procFlag = TRUE;
+	} else if (pobj->type == ADDR_ITEM_GROUP) {
 		procFlag = TRUE;
 	}
-	else if( pobj->type == ADDR_ITEM_GROUP ) {
-		procFlag = TRUE;
-	}
-	if( ! procFlag ) return;
+	if (!procFlag)
+		return;
 	abf = ds->rawDataSource;
-	if( abf == NULL ) return;
+	if (abf == NULL)
+		return;
 
 	/* Gather selected persons and emails */
 	for (node = list->listSelect; node; node = node->next) {
 		item = node->data;
-		aio = ( AddrItemObject * ) item->addressItem;
-		if( aio->type == ITEMTYPE_EMAIL ) {
+		aio = (AddrItemObject *)item->addressItem;
+		if (aio->type == ITEMTYPE_EMAIL) {
 			emails = g_list_prepend(emails, aio);
-		} else if( aio->type == ITEMTYPE_PERSON ) {
+		} else if (aio->type == ITEMTYPE_PERSON) {
 			persons = g_list_prepend(persons, aio);
 		}
 	}
@@ -460,10 +419,7 @@ void addrmerge_merge(
 			nameTarget = person;
 		} else if (nameTarget == person) {
 			continue;
-		} else if (g_strcmp0(person->firstName, nameTarget->firstName) ||
-				g_strcmp0(person->lastName, nameTarget->lastName) ||
-				g_strcmp0(person->nickName, nameTarget->nickName) ||
-				g_strcmp0(ADDRITEM_NAME(person), ADDRITEM_NAME(nameTarget))) {
+		} else if (g_strcmp0(person->firstName, nameTarget->firstName) || g_strcmp0(person->lastName, nameTarget->lastName) || g_strcmp0(person->nickName, nameTarget->nickName) || g_strcmp0(ADDRITEM_NAME(person), ADDRITEM_NAME(nameTarget))) {
 			pickName = TRUE;
 			break;
 		}
@@ -490,7 +446,11 @@ void addrmerge_merge(
 	addrmerge_prompt(page);
 	return;
 
-abort:
-	g_list_free( emails );
-	g_list_free( persons );
+ abort:
+	g_list_free(emails);
+	g_list_free(persons);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

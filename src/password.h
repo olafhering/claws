@@ -58,23 +58,19 @@ gchar *password_decrypt_old(const gchar *password);
 
 #ifdef PASSWORD_CRYPTO_GNUTLS
 /* GNUTLS implementation */
-gchar *password_encrypt_gnutls(const gchar *password,
-		const gchar *encryption_passphrase);
-gchar *password_decrypt_gnutls(const gchar *password,
-		const gchar *decryption_passphrase);
+gchar *password_encrypt_gnutls(const gchar *password, const gchar *encryption_passphrase);
+gchar *password_decrypt_gnutls(const gchar *password, const gchar *decryption_passphrase);
 #define password_encrypt_real(n, m) password_encrypt_gnutls(n, m)
 #define password_decrypt_real(n, m) password_decrypt_gnutls(n, m)
 #endif
 
 /* Wrapper function that will apply best encryption available,
  * and return a string ready to be saved as-is in preferences. */
-gchar *password_encrypt(const gchar *password,
-		const gchar *encryption_passphrase);
+gchar *password_encrypt(const gchar *password, const gchar *encryption_passphrase);
 
 /* This is a wrapper function that looks at the whole string from
  * prefs (e.g. including the leading '!' for old implementation),
  * and tries to do the smart thing. */
-gchar *password_decrypt(const gchar *password,
-		const gchar *decryption_passphrase);
+gchar *password_decrypt(const gchar *password, const gchar *decryption_passphrase);
 
 #endif /* __PASSWORD_H */

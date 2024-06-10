@@ -54,19 +54,18 @@
 /* Pine file object */
 typedef struct _PineFile PineFile;
 struct _PineFile {
-	FILE  *file;
+	FILE *file;
 	gchar *path;
-	gint  retVal;
+	gint retVal;
 	GHashTable *uniqTable;
-	void  (*cbProgress)( void *, void *, void * );
+	void (*cbProgress)(void *, void *, void *);
 };
 
 /* Function prototypes */
-PineFile *pine_create	( void );
-void pine_set_file	( PineFile* pineFile, const gchar *value );
-void pine_free		( PineFile *pineFile );
-gint pine_import_data	( PineFile *pineFile, AddressCache *cache );
-gchar *pine_find_file	( void );
+PineFile *pine_create(void);
+void pine_set_file(PineFile *pineFile, const gchar *value);
+void pine_free(PineFile *pineFile);
+gint pine_import_data(PineFile *pineFile, AddressCache *cache);
+gchar *pine_find_file(void);
 
 #endif /* __PINE_H__ */
-

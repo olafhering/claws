@@ -14,7 +14,6 @@
 #define GTK_IS_SCTREE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_GTK_SCTREE))
 #define GTK_IS_SCTREE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_GTK_SCTREE))
 
-
 typedef struct _GtkSCTree GtkSCTree;
 typedef struct _GtkSCTreeClass GtkSCTreeClass;
 
@@ -43,88 +42,52 @@ struct _GtkSCTree {
 };
 
 struct _GtkSCTreeClass {
-    	GtkCMCTreeClass parent_class;
-    
-    	/* Signal: invoke the popup menu for rows */
-    	void (* row_popup_menu) (GtkSCTree *sctree, GdkEventButton *event);
-    
-    	/* Signal: invoke the popup menu for empty areas */
-    	void (* empty_popup_menu) (GtkSCTree *sctree, GdkEventButton *event);
+	GtkCMCTreeClass parent_class;
+
+	/* Signal: invoke the popup menu for rows */
+	void (*row_popup_menu)(GtkSCTree * sctree, GdkEventButton *event);
+
+	/* Signal: invoke the popup menu for empty areas */
+	void (*empty_popup_menu)(GtkSCTree * sctree, GdkEventButton *event);
 
 	/* Signal: open the file in the selected row */
-	void (* open_row) (GtkSCTree *sctree);
+	void (*open_row)(GtkSCTree * sctree);
 
-    	/* Signal: initiate a drag and drop operation */
-    	void (* start_drag) (GtkSCTree *sctree, gint button, GdkEvent *event);
+	/* Signal: initiate a drag and drop operation */
+	void (*start_drag)(GtkSCTree * sctree, gint button, GdkEvent *event);
 };
 
+GType gtk_sctree_get_type(void);
 
-GType gtk_sctree_get_type (void);
+GtkWidget *gtk_sctree_new_with_titles(gint columns, gint tree_column, gchar *titles[]);
+void gtk_sctree_select(GtkSCTree * sctree, GtkCMCTreeNode *node);
+void gtk_sctree_select_with_state(GtkSCTree * sctree, GtkCMCTreeNode *node, int state);
+void gtk_sctree_unselect_all(GtkSCTree * sctree);
 
-GtkWidget *gtk_sctree_new_with_titles	(gint		 columns, 
-					 gint		 tree_column, 
-					 gchar		*titles[]);
-void gtk_sctree_select			(GtkSCTree	*sctree,
-					 GtkCMCTreeNode	*node);
-void gtk_sctree_select_with_state	(GtkSCTree	*sctree,
-					 GtkCMCTreeNode	*node,
-					 int		 state);
-void gtk_sctree_unselect_all		(GtkSCTree	*sctree);
+void gtk_sctree_set_anchor_row(GtkSCTree * sctree, GtkCMCTreeNode *node);
 
-void gtk_sctree_set_anchor_row		(GtkSCTree	*sctree,
-					 GtkCMCTreeNode	*node);
+void gtk_sctree_remove_node(GtkSCTree * sctree, GtkCMCTreeNode *node);
 
-void gtk_sctree_remove_node		(GtkSCTree	*sctree,
-					 GtkCMCTreeNode	*node);
-
-void gtk_sctree_set_stripes(GtkSCTree  *sctree, gboolean show_stripes);
-void gtk_sctree_set_recursive_expand(GtkSCTree  *sctree, gboolean rec_exp);
+void gtk_sctree_set_stripes(GtkSCTree * sctree, gboolean show_stripes);
+void gtk_sctree_set_recursive_expand(GtkSCTree * sctree, gboolean rec_exp);
 
 /***********************************************************
  *             Tree sorting functions                      *
  ***********************************************************/
 
-void gtk_sctree_sort_node (GtkCMCTree *ctree, GtkCMCTreeNode *node);
+void gtk_sctree_sort_node(GtkCMCTree *ctree, GtkCMCTreeNode *node);
 
-void gtk_sctree_sort_recursive (GtkCMCTree *ctree, GtkCMCTreeNode *node);
+void gtk_sctree_sort_recursive(GtkCMCTree *ctree, GtkCMCTreeNode *node);
 
-GtkCMCTreeNode* gtk_sctree_insert_node        (GtkCMCTree *ctree,
-                                             GtkCMCTreeNode *parent,
-                                             GtkCMCTreeNode *sibling,
-                                             gchar *text[],
-                                             guint8 spacing,
-                                             GdkPixbuf *pixbuf_closed,
-                                             GdkPixbuf *pixbuf_opened,
-                                             gboolean is_leaf,
-                                             gboolean expanded);
-void        gtk_sctree_set_node_info        (GtkCMCTree *ctree,
-                                             GtkCMCTreeNode *node,
-                                             const gchar *text,
-                                             guint8 spacing,
-                                             GdkPixbuf *pixbuf_closed,
-                                             GdkPixbuf *pixbuf_opened,
-                                             gboolean is_leaf,
-                                             gboolean expanded);
-GtkCMCTreeNode *
-gtk_sctree_insert_gnode 		    (GtkCMCTree          *ctree,
-					     GtkCMCTreeNode      *parent,
-					     GtkCMCTreeNode      *sibling,
-					     GNode             *gnode,
-					     GtkCMCTreeGNodeFunc  func,
-					     gpointer           data);
+GtkCMCTreeNode *gtk_sctree_insert_node(GtkCMCTree *ctree, GtkCMCTreeNode *parent, GtkCMCTreeNode *sibling, gchar *text[], guint8 spacing, GdkPixbuf *pixbuf_closed, GdkPixbuf *pixbuf_opened, gboolean is_leaf, gboolean expanded);
+void gtk_sctree_set_node_info(GtkCMCTree *ctree, GtkCMCTreeNode *node, const gchar *text, guint8 spacing, GdkPixbuf *pixbuf_closed, GdkPixbuf *pixbuf_opened, gboolean is_leaf, gboolean expanded);
+GtkCMCTreeNode *gtk_sctree_insert_gnode(GtkCMCTree *ctree, GtkCMCTreeNode *parent, GtkCMCTreeNode *sibling, GNode *gnode, GtkCMCTreeGNodeFunc func, gpointer data);
 
-void gtk_sctree_set_column_tooltip	    (GtkSCTree		*sctree,
-					     int		 column,
-					     const gchar 	*tip);
-void gtk_sctree_set_use_markup		    (GtkSCTree		*sctree,
-					     int		 column,
-					     gboolean		 markup);
+void gtk_sctree_set_column_tooltip(GtkSCTree * sctree, int column, const gchar *tip);
+void gtk_sctree_set_use_markup(GtkSCTree * sctree, int column, gboolean markup);
 
 /* This assumes that x and y coordinates are inside the clist_window.
  * Returns true if the coordinates are inside a tree expander on
  * one of the rows. */
-gboolean
-gtk_sctree_is_hot_spot (GtkSCTree *ctree, 
-		       gint      x, 
-		       gint      y);
+gboolean gtk_sctree_is_hot_spot(GtkSCTree * ctree, gint x, gint y);
 #endif /* __GTK_SCTREE_H__ */

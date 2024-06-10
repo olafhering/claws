@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -31,7 +31,7 @@
 #include <glib/gi18n.h>
 
 #if HAVE_LOCALE_H
-#  include <locale.h>
+#include <locale.h>
 #endif
 
 #include "common/claws.h"
@@ -79,8 +79,8 @@
 #define PLUGIN_NAME (_("SpamAssassin"))
 
 enum {
-    CHILD_RUNNING = 1 << 0,
-    TIMEOUT_RUNNING = 1 << 1,
+	CHILD_RUNNING = 1 << 0,
+	TIMEOUT_RUNNING = 1 << 1,
 };
 
 static gulong hook_id = HOOK_NONE;
@@ -93,7 +93,7 @@ extern SessionStats session_stats;
 
 static PrefParam param[] = {
 	{"enable", "FALSE", &config.enable, P_BOOL,
-	NULL, NULL, NULL},
+	 NULL, NULL, NULL},
 	{"transport", "0", &config.transport, P_INT,
 	 NULL, NULL, NULL},
 	{"hostname", "localhost", &config.hostname, P_STRING,
@@ -128,7 +128,7 @@ static PrefParam param[] = {
 
 gboolean timeout_func(gpointer data)
 {
-	gint *running = (gint *) data;
+	gint *running = (gint *)data;
 
 	if (*running & CHILD_RUNNING)
 		return TRUE;
@@ -209,7 +209,7 @@ static MsgStatus msg_is_spam(FILE *fp)
 
 	message_cleanup(&m);
 
-	return is_spam ? MSG_IS_SPAM:MSG_IS_HAM;
+	return is_spam ? MSG_IS_SPAM : MSG_IS_HAM;
 }
 
 static gboolean mail_filtering_hook(gpointer source, gpointer data)
@@ -240,8 +240,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		gchar *ab_folderpath;
 		gboolean whitelisted = FALSE;
 
-		if (*config.whitelist_ab_folder == '\0' ||
-			strcasecmp(config.whitelist_ab_folder, "Any") == 0) {
+		if (*config.whitelist_ab_folder == '\0' || strcasecmp(config.whitelist_ab_folder, "Any") == 0) {
 			/* match the whole addressbook */
 			ab_folderpath = NULL;
 		} else {
@@ -250,11 +249,10 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		}
 
 		start_address_completion(ab_folderpath);
-		if (msginfo->from && 
-		    found_in_addressbook(msginfo->from))
-				whitelisted = TRUE;
+		if (msginfo->from && found_in_addressbook(msginfo->from))
+			whitelisted = TRUE;
 		end_address_completion();
-		
+
 		if (whitelisted) {
 			debug_print("message is ham (whitelisted)\n");
 			claws_fclose(fp);
@@ -272,7 +270,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		g_timeout_add(50, timeout_func, &running);
 		running |= TIMEOUT_RUNNING;
 
-		while(running & CHILD_RUNNING) {
+		while (running & CHILD_RUNNING) {
 			int ret;
 
 			ret = waitpid(pid, &status, WNOHANG);
@@ -281,15 +279,16 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 					MsgStatus result = MSG_IS_HAM;
 					running &= ~CHILD_RUNNING;
 					result = WEXITSTATUS(status);
-    					is_spam = (result == MSG_IS_SPAM) ? TRUE : FALSE;
+					is_spam = (result == MSG_IS_SPAM) ? TRUE : FALSE;
 					error = (result == MSG_FILTERING_ERROR);
 				}
-			} if (ret < 0) {
+			}
+			if (ret < 0) {
 				running &= ~CHILD_RUNNING;
 			} /* ret == 0 continue */
-	    
+
 			g_main_context_iteration(NULL, TRUE);
-    		}
+		}
 
 		while (running & TIMEOUT_RUNNING)
 			g_main_context_iteration(NULL, TRUE);
@@ -304,34 +303,27 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		if (config.receive_spam) {
 			FolderItem *save_folder = NULL;
 
-			if ((!config.save_folder) ||
-			    (config.save_folder[0] == '\0') ||
-			    ((save_folder = folder_find_item_from_identifier(config.save_folder)) == NULL)) {
-			 	if (mail_filtering_data->account && mail_filtering_data->account->set_trash_folder) {
-					save_folder = folder_find_item_from_identifier(
-						mail_filtering_data->account->trash_folder);
+			if ((!config.save_folder) || (config.save_folder[0] == '\0') || ((save_folder = folder_find_item_from_identifier(config.save_folder)) == NULL)) {
+				if (mail_filtering_data->account && mail_filtering_data->account->set_trash_folder) {
+					save_folder = folder_find_item_from_identifier(mail_filtering_data->account->trash_folder);
 					if (save_folder)
 						debug_print("found trash folder from account's advanced settings\n");
 				}
-				if (save_folder == NULL && mail_filtering_data->account &&
-				    mail_filtering_data->account->folder) {
-				    	save_folder = mail_filtering_data->account->folder->trash;
+				if (save_folder == NULL && mail_filtering_data->account && mail_filtering_data->account->folder) {
+					save_folder = mail_filtering_data->account->folder->trash;
 					if (save_folder)
 						debug_print("found trash folder from account's trash\n");
 				}
-				if (save_folder == NULL && mail_filtering_data->account &&
-				    !mail_filtering_data->account->folder)  {
+				if (save_folder == NULL && mail_filtering_data->account && !mail_filtering_data->account->folder) {
 					if (mail_filtering_data->account->inbox) {
-						FolderItem *item = folder_find_item_from_identifier(
-							mail_filtering_data->account->inbox);
+						FolderItem *item = folder_find_item_from_identifier(mail_filtering_data->account->inbox);
 						if (item && item->folder->trash) {
 							save_folder = item->folder->trash;
 							debug_print("found trash folder from account's inbox\n");
 						}
-					} 
+					}
 					if (!save_folder && mail_filtering_data->account->local_inbox) {
-						FolderItem *item = folder_find_item_from_identifier(
-							mail_filtering_data->account->local_inbox);
+						FolderItem *item = folder_find_item_from_identifier(mail_filtering_data->account->local_inbox);
 						if (item && item->folder->trash) {
 							save_folder = item->folder->trash;
 							debug_print("found trash folder from account's local_inbox\n");
@@ -357,12 +349,9 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		debug_print("message is ham\n");
 		procmsg_msginfo_unset_flags(msginfo, MSG_SPAM, 0);
 	}
-	
+
 	if (error) {
-		gchar *msg = _("The SpamAssassin plugin couldn't filter "
-					   "a message. The probable cause of the error "
-					   "is an unreachable spamd daemon. Please make "
-					   "sure spamd is running and accessible.");
+		gchar *msg = _("The SpamAssassin plugin couldn't filter " "a message. The probable cause of the error " "is an unreachable spamd daemon. Please make " "sure spamd is running and accessible.");
 		if (!prefs_common_get_prefs()->no_recv_err_panel) {
 			if (!warned_error) {
 				alertpanel_error("%s", msg);
@@ -372,7 +361,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 			log_error(LOG_PROTOCOL, "%s\n", msg);
 		}
 	}
-	
+
 	return FALSE;
 }
 
@@ -381,18 +370,13 @@ SpamAssassinConfig *spamassassin_get_config(void)
 	return &config;
 }
 
-gchar* spamassassin_create_tmp_spamc_wrapper(gboolean spam)
+gchar *spamassassin_create_tmp_spamc_wrapper(gboolean spam)
 {
 	gchar *contents;
 	gchar *fname = get_tmp_file();
 
 	if (fname != NULL) {
-		contents = g_strdup_printf(
-						"spamc -d %s -p %u -u %s -t %u -s %u %s -L %s<\"$*\";exit $?",
-						config.hostname, config.port, 
-						config.username, config.timeout,
-						config.max_size * 1024, config.compress?"-z":"",
-						spam?"spam":"ham");
+		contents = g_strdup_printf("spamc -d %s -p %u -u %s -t %u -s %u %s -L %s<\"$*\";exit $?", config.hostname, config.port, config.username, config.timeout, config.max_size * 1024, config.compress ? "-z" : "", spam ? "spam" : "ham");
 		if (str_write_to_file(contents, fname, TRUE) < 0) {
 			g_free(fname);
 			fname = NULL;
@@ -414,11 +398,7 @@ int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 		return -1;
 	}
 
-	if (config.transport == SPAMASSASSIN_TRANSPORT_TCP
-	&&  prefs_common_get_prefs()->work_offline
-	&&  !inc_offline_should_override(TRUE,
-		_("Claws Mail needs network access in order "
-		  "to feed the mail to the remote learner."))) {
+	if (config.transport == SPAMASSASSIN_TRANSPORT_TCP && prefs_common_get_prefs()->work_offline && !inc_offline_should_override(TRUE, _("Claws Mail needs network access in order " "to feed the mail to the remote learner."))) {
 		return -1;
 	}
 
@@ -431,14 +411,10 @@ int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 		if (config.transport == SPAMASSASSIN_TRANSPORT_TCP) {
 			spamc_wrapper = spamassassin_create_tmp_spamc_wrapper(spam);
 			if (spamc_wrapper != NULL) {
-				cmd = g_strconcat(shell?shell:"sh", " ",
-								spamc_wrapper, " ", file, NULL);
+				cmd = g_strconcat(shell ? shell : "sh", " ", spamc_wrapper, " ", file, NULL);
 			}
 		} else {
-			cmd = g_strdup_printf("sa-learn -u %s%s %s %s",
-							config.username,
-							prefs_common_get_prefs()->work_offline?" -L":"",
-							spam?"--spam":"--ham", file);
+			cmd = g_strdup_printf("sa-learn -u %s%s %s %s", config.username, prefs_common_get_prefs()->work_offline ? " -L" : "", spam ? "--spam" : "--ham", file);
 		}
 	} else {
 		if (msglist) {
@@ -456,10 +432,8 @@ int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 						spamc_wrapper = spamassassin_create_tmp_spamc_wrapper(spam);
 					}
 
-					if (spamc_wrapper && tmpfile &&
-				    	copy_file(procmsg_get_message_file(info), tmpfile, TRUE) == 0) {
-						tmpcmd = g_strconcat(shell?shell:"sh", " ", spamc_wrapper, " ",
-											tmpfile, NULL);
+					if (spamc_wrapper && tmpfile && copy_file(procmsg_get_message_file(info), tmpfile, TRUE) == 0) {
+						tmpcmd = g_strconcat(shell ? shell : "sh", " ", spamc_wrapper, " ", tmpfile, NULL);
 						debug_print("%s\n", tmpcmd);
 						execute_command_line(tmpcmd, FALSE, NULL);
 						g_free(tmpcmd);
@@ -470,10 +444,7 @@ int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 					g_free(spamc_wrapper);
 				return 0;
 			} else {
-				cmd = g_strdup_printf("sa-learn -u %s%s %s",
-						config.username,
-						prefs_common_get_prefs()->work_offline?" -L":"",
-						spam?"--spam":"--ham");
+				cmd = g_strdup_printf("sa-learn -u %s%s %s", config.username, prefs_common_get_prefs()->work_offline ? " -L" : "", spam ? "--spam" : "--ham");
 
 				/* concatenate all message tmpfiles to the sa-learn command-line */
 				for (; cur; cur = cur->next) {
@@ -481,8 +452,7 @@ int spamassassin_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 					gchar *tmpcmd = NULL;
 					gchar *tmpfile = get_tmp_file();
 
-					if (tmpfile &&
-				    	copy_file(procmsg_get_message_file(info), tmpfile, TRUE) == 0) {			
+					if (tmpfile && copy_file(procmsg_get_message_file(info), tmpfile, TRUE) == 0) {
 						tmpcmd = g_strconcat(cmd, " ", tmpfile, NULL);
 						g_free(cmd);
 						cmd = tmpcmd;
@@ -523,17 +493,17 @@ void spamassassin_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
 gboolean spamassassin_check_username(void)
 {
 	if (config.username == NULL || config.username[0] == '\0') {
-		config.username = (gchar*)g_get_user_name();
+		config.username = (gchar *)g_get_user_name();
 		if (config.username == NULL) {
 			if (hook_id != HOOK_NONE) {
 				spamassassin_unregister_hook();
@@ -557,8 +527,7 @@ gint plugin_init(gchar **error)
 
 	hook_id = HOOK_NONE;
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	prefs_set_default(param);
@@ -575,7 +544,7 @@ gint plugin_init(gchar **error)
 		config.transport = SPAMASSASSIN_TRANSPORT_TCP;
 #endif
 	spamassassin_gtk_init();
-		
+
 	debug_print("SpamAssassin plugin loaded\n");
 
 	if (config.process_emails) {
@@ -584,8 +553,7 @@ gint plugin_init(gchar **error)
 
 	if (!config.enable || config.transport == SPAMASSASSIN_DISABLED) {
 		log_warning(LOG_PROTOCOL, _("SpamAssassin plugin is loaded but disabled by its preferences.\n"));
-	}
-	else {
+	} else {
 		if (config.transport == SPAMASSASSIN_TRANSPORT_TCP)
 			debug_print("Enabling learner with a remote spamassassin server requires spamc/spamd 3.1.x\n");
 		procmsg_register_spam_learner(spamassassin_learn);
@@ -593,7 +561,7 @@ gint plugin_init(gchar **error)
 	}
 
 	return 0;
-	
+
 }
 
 gboolean plugin_done(void)
@@ -617,17 +585,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin can check all messages that are received from an "
-			 "IMAP, LOCAL or POP account for spam using a SpamAssassin "
-			 "server. You will need a SpamAssassin Server (spamd) running "
-			 "somewhere.\n"
-			 "\n"
-			 "It can also be used for marking messages as Ham or Spam.\n"
-			 "\n"
-		 	 "When a message is identified as spam it can be deleted or "
-		 	 "saved in a specially designated folder.\n"
-			 "\n"
-			 "Options can be found in /Configuration/Preferences/Plugins/SpamAssassin");
+	return _("This plugin can check all messages that are received from an " "IMAP, LOCAL or POP account for spam using a SpamAssassin " "server. You will need a SpamAssassin Server (spamd) running " "somewhere.\n" "\n" "It can also be used for marking messages as Ham or Spam.\n" "\n" "When a message is identified as spam it can be deleted or " "saved in a specially designated folder.\n" "\n" "Options can be found in /Configuration/Preferences/Plugins/SpamAssassin");
 }
 
 const gchar *plugin_type(void)
@@ -647,10 +605,10 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_FILTERING, N_("Spam detection")},
-		  {PLUGIN_FILTERING, N_("Spam learning")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_FILTERING, N_("Spam detection")},
+	{PLUGIN_FILTERING, N_("Spam learning")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
 
@@ -679,21 +637,20 @@ FolderItem *spamassassin_get_spam_folder(MsgInfo *msginfo)
 	if (item || msginfo == NULL || msginfo->folder == NULL)
 		return item;
 
-	if (msginfo->folder->folder &&
-	    msginfo->folder->folder->account && 
-	    msginfo->folder->folder->account->set_trash_folder) {
-		item = folder_find_item_from_identifier(
-			msginfo->folder->folder->account->trash_folder);
+	if (msginfo->folder->folder && msginfo->folder->folder->account && msginfo->folder->folder->account->set_trash_folder) {
+		item = folder_find_item_from_identifier(msginfo->folder->folder->account->trash_folder);
 	}
 
-	if (item == NULL && 
-	    msginfo->folder->folder &&
-	    msginfo->folder->folder->trash)
+	if (item == NULL && msginfo->folder->folder && msginfo->folder->folder->trash)
 		item = msginfo->folder->folder->trash;
-		
+
 	if (item == NULL)
 		item = folder_get_default_trash();
-		
+
 	debug_print("SA spam dir: %s\n", folder_item_get_path(item));
 	return item;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

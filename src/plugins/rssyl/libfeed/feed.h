@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <expat.h>
 
-#define FEED_DEFAULT_TIMEOUT	20	/* In seconds */
+#define FEED_DEFAULT_TIMEOUT	20 /* In seconds */
 
 /* ---------------- Structures */
 
@@ -42,7 +42,7 @@ struct _FeedAuth {
 	gchar *username;
 	gchar *password;
 };
-	
+
 struct _Feed {
 	gchar *url;
 	FeedAuth *auth;

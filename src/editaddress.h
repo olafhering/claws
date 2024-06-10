@@ -24,15 +24,11 @@
 #ifndef __EDITADDRESS_H__
 #define __EDITADDRESS_H__
 
-typedef void (*EditAddressPostUpdateCallback) (ItemPerson *person);
+typedef void (*EditAddressPostUpdateCallback)(ItemPerson *person);
 
-ItemPerson *addressbook_edit_person( AddressBookFile *abf, ItemFolder *parent, ItemPerson *person,
-									 gboolean pgMail, GtkWidget *parent_container,
-									 EditAddressPostUpdateCallback,
-									 gboolean get_focus );
-void addressbook_edit_person_invalidate( AddressBookFile *abf, ItemFolder *parent_folder,
-										 ItemPerson *person );
-void addressbook_edit_person_widgetset_hide( void );
-void addressbook_edit_reload_attr_list( void );
+ItemPerson *addressbook_edit_person(AddressBookFile *abf, ItemFolder *parent, ItemPerson *person, gboolean pgMail, GtkWidget *parent_container, EditAddressPostUpdateCallback, gboolean get_focus);
+void addressbook_edit_person_invalidate(AddressBookFile *abf, ItemFolder *parent_folder, ItemPerson *person);
+void addressbook_edit_person_widgetset_hide(void);
+void addressbook_edit_reload_attr_list(void);
 
 #endif /* __EDITADDRESS_H__ */

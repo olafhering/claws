@@ -24,7 +24,7 @@
 
 #include <glib.h>
 
-typedef struct _PrefFile	PrefFile;
+typedef struct _PrefFile PrefFile;
 
 struct _PrefFile {
 	FILE *fp;
@@ -33,12 +33,11 @@ struct _PrefFile {
 	gboolean writing;
 };
 
-PrefFile *prefs_read_open	(const gchar	*path);
-PrefFile *prefs_write_open	(const gchar	*path);
-gint prefs_file_close		(PrefFile	*pfile);
-gint prefs_file_close_revert	(PrefFile	*pfile);
-gboolean prefs_rc_is_readonly	(const gchar 	*rcfile);
-gint prefs_set_block_label	(PrefFile       *pfile,
-				 const gchar	*block_label);
+PrefFile *prefs_read_open(const gchar *path);
+PrefFile *prefs_write_open(const gchar *path);
+gint prefs_file_close(PrefFile * pfile);
+gint prefs_file_close_revert(PrefFile * pfile);
+gboolean prefs_rc_is_readonly(const gchar *rcfile);
+gint prefs_set_block_label(PrefFile * pfile, const gchar *block_label);
 
 #endif

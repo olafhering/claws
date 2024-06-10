@@ -39,14 +39,16 @@
 
 static gint main_menu_id = 0;
 
-static void manage_cb(GtkAction *action, gpointer data) {
+static void manage_cb(GtkAction *action, gpointer data)
+{
 	sieve_manager_show();
 }
 
-static GtkActionEntry sieve_main_menu[] = {{
-	"Tools/ManageSieveFilters",
-	NULL, N_("Manage Sieve Filters..."), NULL, NULL, G_CALLBACK(manage_cb)
-}};
+static GtkActionEntry sieve_main_menu[] = { {
+					     "Tools/ManageSieveFilters",
+					     NULL, N_("Manage Sieve Filters..."), NULL, NULL, G_CALLBACK(manage_cb)
+					     }
+};
 
 /**
  * Initialize plugin.
@@ -59,17 +61,12 @@ gint plugin_init(gchar **error)
 {
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
-	gtk_action_group_add_actions(mainwin->action_group, sieve_main_menu, 1,
-			(gpointer)mainwin);
-	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager,
-			"/Menu/Tools", "ManageSieveFilters", "Tools/ManageSieveFilters",
-			GTK_UI_MANAGER_MENUITEM, main_menu_id)
-
-	sieve_prefs_init();
+	gtk_action_group_add_actions(mainwin->action_group, sieve_main_menu, 1, (gpointer)mainwin);
+	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menu/Tools", "ManageSieveFilters", "Tools/ManageSieveFilters", GTK_UI_MANAGER_MENUITEM, main_menu_id)
+	    sieve_prefs_init();
 
 	debug_print("ManageSieve plugin loaded\n");
 
@@ -92,9 +89,7 @@ gboolean plugin_done(void)
 	sieve_sessions_close();
 
 	if (mainwin)
-		MENUITEM_REMUI_MANAGER(mainwin->ui_manager,
-				mainwin->action_group,
-				"Tools/ManageSieveFilters", main_menu_id);
+		MENUITEM_REMUI_MANAGER(mainwin->ui_manager, mainwin->action_group, "Tools/ManageSieveFilters", main_menu_id);
 
 	debug_print("ManageSieve plugin unloaded\n");
 
@@ -125,6 +120,7 @@ const gchar *plugin_type(void)
 {
 	return "GTK2";
 }
+
 /**
  * Get the license acronym the plugin is released under.
  *
@@ -152,9 +148,13 @@ const gchar *plugin_version(void)
  */
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] =
-		{ {PLUGIN_UTILITY, N_("ManageSieve")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_UTILITY, N_("ManageSieve")},
+	{PLUGIN_NOTHING, NULL}
+	};
 
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

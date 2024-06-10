@@ -8,8 +8,7 @@
 
 #define FEED_URL "http://example.com/feed.xml"
 
-static void
-test_Feed_create(void)
+static void test_Feed_create(void)
 {
 	Feed *feed = feed_new(FEED_URL);
 
@@ -21,8 +20,7 @@ test_Feed_create(void)
 	feed_free(feed);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
@@ -30,3 +28,7 @@ main(int argc, char *argv[])
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

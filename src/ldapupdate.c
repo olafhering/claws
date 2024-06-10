@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -81,7 +81,8 @@ struct _Rdn {
  * \param group  Group to print.
  * \param array  GHashTAble of item_group, or <i>NULL</i> if none created.
  */
-void ldapsvr_retrieve_item_group(ItemGroup *group, GHashTable *array) {
+void ldapsvr_retrieve_item_group(ItemGroup *group, GHashTable *array)
+{
 	/* Not implemented in this release */
 	cm_return_if_fail(group != NULL);
 }
@@ -90,7 +91,8 @@ void ldapsvr_retrieve_item_group(ItemGroup *group, GHashTable *array) {
  * Create an initial EmailKeyValue structure
  * \return empty structure
  */
-EmailKeyValue *emailkeyvalue_create() {
+EmailKeyValue *emailkeyvalue_create()
+{
 	EmailKeyValue *buf;
 
 	buf = g_new0(EmailKeyValue, 1);
@@ -104,7 +106,8 @@ EmailKeyValue *emailkeyvalue_create() {
  * Create an initial AttrKeyValue structure
  * \return empty structure
  */
-AttrKeyValue *attrkeyvalue_create() {
+AttrKeyValue *attrkeyvalue_create()
+{
 	AttrKeyValue *buf;
 
 	buf = g_new0(AttrKeyValue, 1);
@@ -117,7 +120,8 @@ AttrKeyValue *attrkeyvalue_create() {
  * Free created AttrKeyValue structure
  * \param akv AttrKeyValue structure to free
  */
-void attrkeyvalue_free(AttrKeyValue *akv) {
+void attrkeyvalue_free(AttrKeyValue *akv)
+{
 	if (akv->key) {
 		g_free(akv->key);
 		akv->key = NULL;
@@ -135,10 +139,11 @@ void attrkeyvalue_free(AttrKeyValue *akv) {
  * \param item   ItemEmail to update.
  * \return object, or <i>NULL</i> if none created.
  */
-EmailKeyValue *ldapsvr_retrieve_item_email(ItemEMail *item) {
+EmailKeyValue *ldapsvr_retrieve_item_email(ItemEMail *item)
+{
 	EmailKeyValue *newItem;
 	cm_return_val_if_fail(item != NULL, NULL);
-	newItem = emailkeyvalue_create();		
+	newItem = emailkeyvalue_create();
 	newItem->alias = g_strdup(ADDRITEM_NAME(item));
 	newItem->mail = g_strdup(item->address);
 	newItem->remarks = g_strdup(item->remarks);
@@ -150,7 +155,8 @@ EmailKeyValue *ldapsvr_retrieve_item_email(ItemEMail *item) {
  * \param item   UserAttribute to update.
  * \return object, or <i>NULL</i> if none created.
  */
-AttrKeyValue *ldapsvr_retrieve_attribute(UserAttribute *item) {
+AttrKeyValue *ldapsvr_retrieve_attribute(UserAttribute *item)
+{
 	AttrKeyValue *newItem;
 	cm_return_val_if_fail(item != NULL, NULL);
 	newItem = attrkeyvalue_create();
@@ -165,16 +171,25 @@ AttrKeyValue *ldapsvr_retrieve_attribute(UserAttribute *item) {
  * \param array GHashTable with user input.
  * \return false if update is not needed, or true if update is needed.
  */
-gboolean ldapsvr_retrieve_item_person(ItemPerson *person, GHashTable *array) {
+gboolean ldapsvr_retrieve_item_person(ItemPerson *person, GHashTable *array)
+{
 	GList *node, *attr;
 
 	cm_return_val_if_fail(person != NULL, FALSE);
 	switch (person->status) {
-		case NONE: return FALSE;
-		case ADD_ENTRY: g_hash_table_insert(array, "status", "new"); break;
-		case UPDATE_ENTRY: g_hash_table_insert(array, "status", "update"); break;
-		case DELETE_ENTRY: g_hash_table_insert(array, "status", "delete"); break;
-		default: g_critical("ldapsvr_retrieve_item_person->Unknown status: %d", person->status);
+	case NONE:
+		return FALSE;
+	case ADD_ENTRY:
+		g_hash_table_insert(array, "status", "new");
+		break;
+	case UPDATE_ENTRY:
+		g_hash_table_insert(array, "status", "update");
+		break;
+	case DELETE_ENTRY:
+		g_hash_table_insert(array, "status", "delete");
+		break;
+	default:
+		g_critical("ldapsvr_retrieve_item_person->Unknown status: %d", person->status);
 	}
 	g_hash_table_insert(array, "uid", ADDRITEM_ID(person));
 	g_hash_table_insert(array, "cn", ADDRITEM_NAME(person));
@@ -211,50 +226,45 @@ gboolean ldapsvr_retrieve_item_person(ItemPerson *person, GHashTable *array) {
  * \param data Data to process.
  * \param fd Output stream.
  */
-void ldapsvr_print_contacts_hashtable(gpointer key, gpointer data, gpointer fd) {
-	gchar *keyName = (gchar *) key;
+void ldapsvr_print_contacts_hashtable(gpointer key, gpointer data, gpointer fd)
+{
+	gchar *keyName = (gchar *)key;
 	GList *node;
 
 	if (g_ascii_strcasecmp("mail", keyName) == 0) {
-		node = (GList *) data;
+		node = (GList *)data;
 		while (node) {
 			EmailKeyValue *item = node->data;
 			if (debug_get_mode()) {
-				debug_print("\t\talias = %s\n", item->alias?item->alias:"null");
-				debug_print("\t\tmail = %s\n", item->mail?item->mail:"null");
-				debug_print("\t\tremarks = %s\n", item->remarks?item->remarks:"null");
-			}
-			else if (fd) {
-				FILE *stream = (FILE *) fd;
-				fprintf(stream, "\t\talias = %s\n", item->alias?item->alias:"null");
-				fprintf(stream, "\t\tmail = %s\n", item->mail?item->mail:"null");
-				fprintf(stream, "\t\tremarks = %s\n", item->remarks?item->remarks:"null");
+				debug_print("\t\talias = %s\n", item->alias ? item->alias : "null");
+				debug_print("\t\tmail = %s\n", item->mail ? item->mail : "null");
+				debug_print("\t\tremarks = %s\n", item->remarks ? item->remarks : "null");
+			} else if (fd) {
+				FILE *stream = (FILE *)fd;
+				fprintf(stream, "\t\talias = %s\n", item->alias ? item->alias : "null");
+				fprintf(stream, "\t\tmail = %s\n", item->mail ? item->mail : "null");
+				fprintf(stream, "\t\tremarks = %s\n", item->remarks ? item->remarks : "null");
 			}
 			node = g_list_next(node);
 		}
-	}
-	else if (g_ascii_strcasecmp("attribute", keyName) == 0) {
-		node = (GList *) data;
+	} else if (g_ascii_strcasecmp("attribute", keyName) == 0) {
+		node = (GList *)data;
 		while (node) {
 			AttrKeyValue *item = node->data;
 			if (debug_get_mode()) {
-				debug_print("\t\t%s = %s\n", item->key?item->key:"null",
-						item->value?item->value:"null");
-			}
-			else if (fd) {
-				FILE *stream = (FILE *) fd;
-				fprintf(stream, "\t\t%s = %s\n", item->key?item->key:"null",
-						item->value?item->value:"null");
+				debug_print("\t\t%s = %s\n", item->key ? item->key : "null", item->value ? item->value : "null");
+			} else if (fd) {
+				FILE *stream = (FILE *)fd;
+				fprintf(stream, "\t\t%s = %s\n", item->key ? item->key : "null", item->value ? item->value : "null");
 			}
 			node = g_list_next(node);
 		}
-	}
-	else {
+	} else {
 		if (debug_get_mode())
-			debug_print("\t\t%s = %s\n", keyName?keyName:"null", data?(gchar *)data:"null");
+			debug_print("\t\t%s = %s\n", keyName ? keyName : "null", data ? (gchar *)data : "null");
 		else if (fd) {
-			FILE *stream = (FILE *) fd;
-			fprintf(stream, "\t\t%s = %s\n", keyName?keyName:"null", data?(gchar *)data:"null");
+			FILE *stream = (FILE *)fd;
+			fprintf(stream, "\t\t%s = %s\n", keyName ? keyName : "null", data ? (gchar *)data : "null");
 		}
 	}
 }
@@ -264,7 +274,8 @@ void ldapsvr_print_contacts_hashtable(gpointer key, gpointer data, gpointer fd) 
  *
  * \param list List of GHashTable
  */
-void ldapsvr_free_hashtable(GList *list) {
+void ldapsvr_free_hashtable(GList *list)
+{
 	GList *tmp = list;
 	while (tmp) {
 		g_hash_table_destroy(tmp->data);
@@ -282,13 +293,14 @@ void ldapsvr_free_hashtable(GList *list) {
  * \param uid PersonID in cache
  * \return person object, or <i>NULL</i> if fail
  */
-ItemPerson *ldapsvr_get_contact(LdapServer *server, gchar *uid) {
+ItemPerson *ldapsvr_get_contact(LdapServer *server, gchar *uid)
+{
 	AddrItemObject *aio;
 	cm_return_val_if_fail(server != NULL || uid != NULL, NULL);
 	aio = addrcache_get_object(server->addressCache, uid);
 	if (aio) {
-		if(aio->type == ITEMTYPE_PERSON) {
-			return (ItemPerson *) aio;
+		if (aio->type == ITEMTYPE_PERSON) {
+			return (ItemPerson *)aio;
 		}
 	}
 	return NULL;
@@ -299,7 +311,8 @@ ItemPerson *ldapsvr_get_contact(LdapServer *server, gchar *uid) {
  *
  * \return empty structure
  */
-Rdn *rdn_create() {
+Rdn *rdn_create()
+{
 	Rdn *buf;
 
 	buf = g_new0(Rdn, 1);
@@ -313,7 +326,8 @@ Rdn *rdn_create() {
  * Free a created Rdn structure
  * \param rdn Structure to free
  */
-void rdn_free(Rdn *rdn) {
+void rdn_free(Rdn *rdn)
+{
 	if (rdn->attribute) {
 		g_free(rdn->attribute);
 		rdn->attribute = NULL;
@@ -337,7 +351,8 @@ void rdn_free(Rdn *rdn) {
  * \param head Uniq part of dn
  * \param tail Common part of dn
  */
-void update_rdn(Rdn *rdn, gchar *head, gchar *tail) {
+void update_rdn(Rdn *rdn, gchar *head, gchar *tail)
+{
 	rdn->value = g_strdup(head);
 	rdn->new_dn = g_strdup_printf("%s=%s%s", rdn->attribute, head, tail);
 }
@@ -349,13 +364,14 @@ void update_rdn(Rdn *rdn, gchar *head, gchar *tail) {
  * \param dn dn for current object
  * \return Rdn structure
  */
-Rdn *ldapsvr_modify_dn(GHashTable *hash, gchar *dn) {
+Rdn *ldapsvr_modify_dn(GHashTable *hash, gchar *dn)
+{
 	Rdn *rdn;
 	gchar *pos, *compare;
 	gchar *rest;
 	gchar *val;
 	cm_return_val_if_fail(hash != NULL || dn != NULL, NULL);
-	
+
 	pos = g_strstr_len(dn, strlen(dn), "=");
 	if (!pos)
 		return NULL;
@@ -378,7 +394,7 @@ Rdn *ldapsvr_modify_dn(GHashTable *hash, gchar *dn) {
 		GList *list = g_hash_table_lookup(hash, rdn->attribute);
 		while (list) {
 			EmailKeyValue *item = list->data;
-			compare = (gchar *) item->mail;
+			compare = (gchar *)item->mail;
 			if (strcmp(compare, rdn->value) == 0) {
 				update_rdn(rdn, compare, rest);
 				return rdn;
@@ -387,12 +403,11 @@ Rdn *ldapsvr_modify_dn(GHashTable *hash, gchar *dn) {
 		}
 		/* if compare and rdn->attribute are equal then last email removed/empty  */
 		if (strcmp(compare, rdn->attribute) != 0) {
-	 		/* RDN changed. Find new */
+			/* RDN changed. Find new */
 			update_rdn(rdn, compare, rest);
 			return rdn;
 		}
-	}
-	else {
+	} else {
 		compare = g_hash_table_lookup(hash, rdn->attribute);
 		/* if compare and rdn->attribute are equal then dn removed/empty */
 		if (compare != NULL && strcmp(compare, rdn->attribute) != 0) {
@@ -442,9 +457,9 @@ Rdn *ldapsvr_modify_dn(GHashTable *hash, gchar *dn) {
  * \param server AddressBook resource
  * \param contact GHashTable with current changed object
  */
-void clean_up(LDAP *ld, LdapServer *server, GHashTable *contact) {
-	ItemPerson *person = 
-		ldapsvr_get_contact(server, g_hash_table_lookup(contact , "uid"));
+void clean_up(LDAP *ld, LdapServer *server, GHashTable *contact)
+{
+	ItemPerson *person = ldapsvr_get_contact(server, g_hash_table_lookup(contact, "uid"));
 	if (person) {
 		gchar *displayName;
 		person->status = NONE;
@@ -454,8 +469,7 @@ void clean_up(LDAP *ld, LdapServer *server, GHashTable *contact) {
 	}
 	if (server->retVal != LDAPRC_SUCCESS) {
 		if (person) {
-			ItemPerson *res = 
-				addrcache_remove_person(server->addressCache, person);
+			ItemPerson *res = addrcache_remove_person(server->addressCache, person);
 			if (!res)
 				g_critical("ldapsvr_update_book: Could not clean cache\n");
 			else
@@ -472,14 +486,15 @@ void clean_up(LDAP *ld, LdapServer *server, GHashTable *contact) {
  * \param dn Distinguesh Name for current object
  * \return AttrKeyValue, or <i>NULL</i> if none created
  */
-AttrKeyValue *get_cn(gchar *dn) {
+AttrKeyValue *get_cn(gchar *dn)
+{
 	AttrKeyValue *cn;
 	gchar *start;
 	gchar *end;
 	gchar *item;
 	gchar **key_value;
 	cm_return_val_if_fail(dn != NULL, NULL);
-	
+
 	cn = attrkeyvalue_create();
 	start = g_strstr_len(dn, strlen(dn), "cn");
 	if (start == NULL) {
@@ -506,14 +521,15 @@ AttrKeyValue *get_cn(gchar *dn) {
  * \param dn Distinguesh Name for current object
  * \return AttrKeyValue, or <i>NULL</i> if none created
  */
-AttrKeyValue *get_mail(gchar *dn) {
+AttrKeyValue *get_mail(gchar *dn)
+{
 	AttrKeyValue *mail;
 	gchar *start;
 	gchar *end;
 	gchar *item;
 	gchar **key_value;
 	cm_return_val_if_fail(dn != NULL, NULL);
-	
+
 	mail = attrkeyvalue_create();
 	start = g_strstr_len(dn, strlen(dn), "mail");
 	if (start == NULL) {
@@ -540,13 +556,14 @@ AttrKeyValue *get_mail(gchar *dn) {
  * \param dn Distinguesh Name for current object
  * \return AttrKeyValue, or <i>NULL</i> if none created
  */
-AttrKeyValue *get_ou(gchar *dn) {
+AttrKeyValue *get_ou(gchar *dn)
+{
 	AttrKeyValue *ou;
 	gchar *start;
 	gchar *end;
 	gchar *item;
 	gchar **key_value;
-	
+
 	cm_return_val_if_fail(dn != NULL, NULL);
 	ou = attrkeyvalue_create();
 	start = g_strstr_len(dn, strlen(dn), ",o=");
@@ -576,25 +593,33 @@ AttrKeyValue *get_ou(gchar *dn) {
  *
  * \param mods LDAPMod structure
  */
-void ldapsvr_print_ldapmod(LDAPMod *mods[]) {
+void ldapsvr_print_ldapmod(LDAPMod *mods[])
+{
 	gchar *mod_op;
 	int i;
 
 	cm_return_if_fail(mods != NULL);
-	g_printerr( "Type\n");
+	g_printerr("Type\n");
 	for (i = 0; NULL != mods[i]; i++) {
-		LDAPMod *mod = (LDAPMod *) mods[i];
+		LDAPMod *mod = (LDAPMod *)mods[i];
 		gchar **vals;
 		switch (mod->mod_op) {
-			case LDAP_MOD_ADD: mod_op = g_strdup("ADD"); break;
-			case LDAP_MOD_REPLACE: mod_op = g_strdup("MODIFY"); break;
-			case LDAP_MOD_DELETE: mod_op = g_strdup("DELETE"); break;
-			default: mod_op = g_strdup("UNKNOWN");
+		case LDAP_MOD_ADD:
+			mod_op = g_strdup("ADD");
+			break;
+		case LDAP_MOD_REPLACE:
+			mod_op = g_strdup("MODIFY");
+			break;
+		case LDAP_MOD_DELETE:
+			mod_op = g_strdup("DELETE");
+			break;
+		default:
+			mod_op = g_strdup("UNKNOWN");
 		}
-		g_printerr( "Operation: %s\tType:%s\nValues:\n", mod_op, mod->mod_type);
+		g_printerr("Operation: %s\tType:%s\nValues:\n", mod_op, mod->mod_type);
 		vals = mod->mod_vals.modv_strvals;
 		while (*vals) {
-			g_printerr( "\t%s\n", *vals++);
+			g_printerr("\t%s\n", *vals++);
 		}
 	}
 }
@@ -609,7 +634,8 @@ void ldapsvr_print_ldapmod(LDAPMod *mods[]) {
  * \param cnt Number of attributes to compare
  * \param  mods LDAPMod structure
  */
-void ldapsvr_compare_attr(LDAP *ld, gchar *dn, gint cnt, LDAPMod *mods[]) {
+void ldapsvr_compare_attr(LDAP *ld, gchar *dn, gint cnt, LDAPMod *mods[])
+{
 	int i, rc;
 
 #ifdef OPEN_LDAP_API_AT_LEAST_3000
@@ -638,8 +664,7 @@ void ldapsvr_compare_attr(LDAP *ld, gchar *dn, gint cnt, LDAPMod *mods[]) {
 
 #endif
 
-		g_printerr("ldap_compare for (%s:%s)\" failed[0x%x]: %s\n",
-        	mods[i]->mod_type, value, rc, ldaputil_get_error(ld));
+		g_printerr("ldap_compare for (%s:%s)\" failed[0x%x]: %s\n", mods[i]->mod_type, value, rc, ldaputil_get_error(ld));
 		g_free(value);
 	}
 }
@@ -654,7 +679,8 @@ void ldapsvr_compare_attr(LDAP *ld, gchar *dn, gint cnt, LDAPMod *mods[]) {
  * \param value New value
  * \return int, return will be LDAP_MOD_ADD, LDAP_MOD_REPLACE, or LDAP_MOD_DELETE
  */
-int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *attr, char *value) {
+int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *attr, char *value)
+{
 	LDAPMessage *res, *e = NULL;
 	BerElement *ber;
 	struct berval **vals;
@@ -668,7 +694,7 @@ int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *a
 	cm_return_val_if_fail(ld != NULL || server != NULL || attr != NULL, -1);
 	ctl = server->control;
 	mail = get_mail(dn);
-	if (! mail)
+	if (!mail)
 		return -2;
 	filter = g_strdup_printf("(&(mail=%s)(%s=*))", mail->value, attr);
 	attrkeyvalue_free(mail);
@@ -677,19 +703,17 @@ int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *a
 		rc = ldap_search_ext_s(ld, ctl->baseDN, LDAP_SCOPE_ONELEVEL, filter, NULL, 0, NULL, NULL, NULL, 0, &res);
 
 		if (rc) {
-			log_error(LOG_PROTOCOL, _("LDAP error (search): for attribute '%s': %d (%s)\n"),
-					attr, rc, ldaputil_get_error(ld));
+			log_error(LOG_PROTOCOL, _("LDAP error (search): for attribute '%s': %d (%s)\n"), attr, rc, ldaputil_get_error(ld));
 			retVal = -2;
-		}
-		else {
+		} else {
 			e = ldap_first_entry(ld, res);
 			/* entry has this attribute */
 			if (e) {
-				attribute = ldap_first_attribute( ld, e, &ber );
+				attribute = ldap_first_attribute(ld, e, &ber);
 				if (attribute) {
 					if (value) {
-						if( ( vals = ldap_get_values_len( ld, e, attr ) ) != NULL ) {
-							for( i = 0; vals[i] != NULL; i++ ) {
+						if ((vals = ldap_get_values_len(ld, e, attr)) != NULL) {
+							for (i = 0; vals[i] != NULL; i++) {
 								debug_print("Compare: %s=%s\n", attr, vals[i]->bv_val);
 								/* attribute has same value */
 								if (strcmp(vals[i]->bv_val, value) == 0)
@@ -700,12 +724,11 @@ int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *a
 							}
 						}
 						ldap_value_free_len(vals);
-					}
-					else
+					} else
 						retVal = LDAP_MOD_DELETE;
 				}
-				if( ber != NULL ) {
-					ber_free( ber, 0 );
+				if (ber != NULL) {
+					ber_free(ber, 0);
 				}
 				ldap_memfree(attribute);
 			}
@@ -719,8 +742,7 @@ int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *a
 					retVal = -1;
 			}
 		}
-	}
-	else
+	} else
 		retVal = -2;
 	g_free(filter);
 	return retVal;
@@ -737,7 +759,8 @@ int ldapsvr_compare_manual_attr(LDAP *ld, LdapServer *server, gchar *dn, char *a
  * \param value New value
  * \return int, return will be LDAP_MOD_ADD, LDAP_MOD_REPLACE, or LDAP_MOD_DELETE
  */
-int ldapsvr_deside_operation(LDAP *ld, LdapServer *server, char *dn, char *attr, char *value) {
+int ldapsvr_deside_operation(LDAP *ld, LdapServer *server, char *dn, char *attr, char *value)
+{
 	int rc;
 	gboolean dummy = FALSE;
 
@@ -753,11 +776,10 @@ int ldapsvr_deside_operation(LDAP *ld, LdapServer *server, char *dn, char *attr,
 	/* value containing empty string cause invalid syntax. A bug in
 	 * the LDAP library? Therefore we add a dummy value
 	 */
-	if (strcmp(value,"") == 0) {
+	if (strcmp(value, "") == 0) {
 		value = g_strdup("thisisonlyadummy");
 		dummy = TRUE;
 	}
-
 #ifdef OPEN_LDAP_API_AT_LEAST_3000
 
 	val.bv_val = value;
@@ -772,26 +794,30 @@ int ldapsvr_deside_operation(LDAP *ld, LdapServer *server, char *dn, char *attr,
 
 #endif
 
-	debug_print("ldap_compare for (%s:%s)\" error_code[0x%x]: %s\n",
-       	attr, value, rc, ldaputil_get_error(ld));
+	debug_print("ldap_compare for (%s:%s)\" error_code[0x%x]: %s\n", attr, value, rc, ldaputil_get_error(ld));
 	switch (rc) {
-		case LDAP_COMPARE_FALSE: 
-			if (dummy)
-				return LDAP_MOD_DELETE;
-			else
-				return LDAP_MOD_REPLACE;
-		case LDAP_COMPARE_TRUE: return -1;
-		case LDAP_NO_SUCH_ATTRIBUTE: return LDAP_MOD_ADD;
+	case LDAP_COMPARE_FALSE:
+		if (dummy)
+			return LDAP_MOD_DELETE;
+		else
+			return LDAP_MOD_REPLACE;
+	case LDAP_COMPARE_TRUE:
+		return -1;
+	case LDAP_NO_SUCH_ATTRIBUTE:
+		return LDAP_MOD_ADD;
 		/* LDAP_INAPPROPRIATE_MATCHING needs extensive testing because I
 		 * am not aware off the condition causing this return value!
 		 */
-		case LDAP_INAPPROPRIATE_MATCHING:
-			if (dummy)
-				value = NULL;
-			return ldapsvr_compare_manual_attr(ld, server, dn, attr, value);
-		case LDAP_UNDEFINED_TYPE: return -2;
-		case LDAP_INVALID_SYNTAX: return -2;
-		default: return -2;
+	case LDAP_INAPPROPRIATE_MATCHING:
+		if (dummy)
+			value = NULL;
+		return ldapsvr_compare_manual_attr(ld, server, dn, attr, value);
+	case LDAP_UNDEFINED_TYPE:
+		return -2;
+	case LDAP_INVALID_SYNTAX:
+		return -2;
+	default:
+		return -2;
 	}
 }
 
@@ -802,7 +828,8 @@ int ldapsvr_deside_operation(LDAP *ld, LdapServer *server, char *dn, char *attr,
  * \param attr Attribute to check
  * \result <i>TRUE</i> if attribute is found in the current search criteria
  */
-gboolean ldapsvr_check_search_attributes(char **list, char *attr) {
+gboolean ldapsvr_check_search_attributes(char **list, char *attr)
+{
 	while (*list) {
 		if (strcmp(*list++, attr) == 0)
 			return TRUE;
@@ -818,7 +845,8 @@ gboolean ldapsvr_check_search_attributes(char **list, char *attr) {
  * \param dn dn for the entry
  * \param contact GHashTable with information for the current contact
  */
-void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHashTable *contact) {
+void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHashTable *contact)
+{
 	GList *node;
 	gboolean CHECKED_ATTRIBUTE[ATTRIBUTE_SIZE + 1];
 	LDAPMod *mods[ATTRIBUTE_SIZE + 1];
@@ -832,14 +860,13 @@ void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHa
 		CHECKED_ATTRIBUTE[i] = FALSE;
 		attr[i][0] = attr[i][1] = NULL;
 	}
-	node = g_hash_table_lookup(contact , "attribute");
+	node = g_hash_table_lookup(contact, "attribute");
 	while (node) {
 		AttrKeyValue *item = node->data;
 		if (item) {
 			int index = get_attribute_index(item->key);
 			if (index >= 0) {
-				debug_print("Found other attribute: %s = %s\n",
-						item->key?item->key:"null", item->value?item->value:"null");
+				debug_print("Found other attribute: %s = %s\n", item->key ? item->key : "null", item->value ? item->value : "null");
 				mod_op = ldapsvr_deside_operation(ld, server, dn, item->key, item->value);
 				/* Only consider attributes which we no how to handle.
 				 * Set to TRUE in CHECKED_ATTRIBUTE array to indicate no further action
@@ -851,29 +878,28 @@ void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHa
 				}
 				if (mod_op == LDAP_MOD_DELETE) {
 					/* Setting param to NULL instructs OpenLDAP to remove any
-			 		* value stored for this attribute and remove the attribute
-			 		* completely. Should multiple instances of an attribute be
-			 		* allowed in the future param is required to have the value
-			 		* store for the attribute which is going to be deleted
-			 		*/
+					 * value stored for this attribute and remove the attribute
+					 * completely. Should multiple instances of an attribute be
+					 * allowed in the future param is required to have the value
+					 * store for the attribute which is going to be deleted
+					 */
 					item->value = NULL;
 				}
 				if (mod_op == LDAP_MOD_REPLACE && strcmp(item->value, "") == 0) {
 					/* Having an empty string is considered a syntax error in
-			 		* ldap. E.g attributes with empty strings are not allowed
-			 		* in which case we treate this as a request for deleting
-			 		* the attribute.
-			 		*/
+					 * ldap. E.g attributes with empty strings are not allowed
+					 * in which case we treate this as a request for deleting
+					 * the attribute.
+					 */
 					mod_op = LDAP_MOD_DELETE;
 					item->value = NULL;
 				}
 				if (mod_op == LDAP_MOD_ADD && strcmp(item->value, "") == 0) {
 					/* Adding an empty string is considered a syntax error in
-			 		* ldap. E.g attributes with empty strings are not allowed
-			 		* in which case we silently refuse to add this entry
-			 		*/
-				}
-				else {
+					 * ldap. E.g attributes with empty strings are not allowed
+					 * in which case we silently refuse to add this entry
+					 */
+				} else {
 					SETMOD(mods[cnt], modarr[cnt], mod_op, g_strdup(item->key), attr[cnt], g_strdup(item->value));
 					cnt++;
 					CHECKED_ATTRIBUTE[index] = TRUE;
@@ -894,10 +920,10 @@ void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHa
 				debug_print("not updating jpegPhoto\n");
 				continue;
 			}
-			if (ldapsvr_check_search_attributes(attribs, (char *) ATTRIBUTE[i])) {
-				mod_op = ldapsvr_deside_operation(ld, server, dn, (char *) ATTRIBUTE[i], "");
+			if (ldapsvr_check_search_attributes(attribs, (char *)ATTRIBUTE[i])) {
+				mod_op = ldapsvr_deside_operation(ld, server, dn, (char *)ATTRIBUTE[i], "");
 				if (mod_op == LDAP_MOD_DELETE) {
-					SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_DELETE, g_strdup((char *) ATTRIBUTE[i]), attr[cnt], NULL);
+					SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_DELETE, g_strdup((char *)ATTRIBUTE[i]), attr[cnt], NULL);
 					cnt++;
 				}
 			}
@@ -911,30 +937,28 @@ void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHa
 	rc = ldap_modify_ext_s(ld, dn, mods, NULL, NULL);
 	if (rc) {
 		switch (rc) {
-			case LDAP_ALREADY_EXISTS: 
-				server->retVal = LDAPRC_ALREADY_EXIST;
-				break;
-			default:
-				log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"),
-						dn, rc, ldaputil_get_error(ld));
-				if (rc == 0x8)
-					server->retVal = LDAPRC_STRONG_AUTH;
-				else
-					server->retVal = LDAPRC_NAMING_VIOLATION;
+		case LDAP_ALREADY_EXISTS:
+			server->retVal = LDAPRC_ALREADY_EXIST;
+			break;
+		default:
+			log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"), dn, rc, ldaputil_get_error(ld));
+			if (rc == 0x8)
+				server->retVal = LDAPRC_STRONG_AUTH;
+			else
+				server->retVal = LDAPRC_NAMING_VIOLATION;
 		}
-	}
-	else {
+	} else {
 		char **attribs = ldapctl_full_attribute_array(server->control);
 		for (i = 0; i < ATTRIBUTE_SIZE; i++) {
 			if (!strcmp(ATTRIBUTE[i], "jpegPhoto")) {
 				debug_print("not updating jpegPhoto\n");
 				continue;
 			}
-			if (ldapsvr_check_search_attributes(attribs, (char *) ATTRIBUTE[i])) {
+			if (ldapsvr_check_search_attributes(attribs, (char *)ATTRIBUTE[i])) {
 				if (CHECKED_ATTRIBUTE[i] == FALSE) {
-					AddrItemObject *aio = addrcache_get_object(server->addressCache, g_hash_table_lookup(contact , "uid"));
-					ItemPerson *person = (ItemPerson *) aio;
-					addritem_person_remove_attribute(person, (const gchar *) ATTRIBUTE[i]);
+					AddrItemObject *aio = addrcache_get_object(server->addressCache, g_hash_table_lookup(contact, "uid"));
+					ItemPerson *person = (ItemPerson *)aio;
+					addritem_person_remove_attribute(person, (const gchar *)ATTRIBUTE[i]);
 				}
 			}
 		}
@@ -948,20 +972,21 @@ void ldapsvr_handle_other_attributes(LDAP *ld, LdapServer *server, char *dn, GHa
  * \param server AddressBook resource
  * \param contact GHashTable with object to add
  */
-void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
+void ldapsvr_add_contact(LdapServer *server, GHashTable *contact)
+{
 	gchar *email = NULL, *param = NULL;
 	LDAP *ld = NULL;
 	LDAPMod *mods[MODSIZE];
 	LDAPMod modarr[7];
 	gint cnt = 0;
-	char *cn[] = {NULL, NULL};
-	char *displayName[] = {NULL, NULL};
-	char *givenName[] = {NULL, NULL};
+	char *cn[] = { NULL, NULL };
+	char *displayName[] = { NULL, NULL };
+	char *givenName[] = { NULL, NULL };
 	char **mail = NULL;
-	char *sn[] = {NULL, NULL};
-	char *org[] = {NULL, NULL};
-	char *obj[] = {/*"top",*/ "person", "organizationalPerson", "inetOrgPerson", NULL}; 
-	int rc=0;
+	char *sn[] = { NULL, NULL };
+	char *org[] = { NULL, NULL };
+	char *obj[] = { /*"top", */ "person", "organizationalPerson", "inetOrgPerson", NULL };
+	int rc = 0;
 	GList *node;
 	AttrKeyValue *ou, *commonName;
 	ItemPerson *person;
@@ -969,7 +994,7 @@ void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
 	GList *mailList;
 
 	cm_return_if_fail(server != NULL || contact != NULL);
-	node = g_hash_table_lookup(contact , "mail");
+	node = g_hash_table_lookup(contact, "mail");
 	if (node) {
 		EmailKeyValue *newEmail = node->data;
 		email = g_strdup(newEmail->mail);
@@ -979,11 +1004,9 @@ void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
 		clean_up(ld, server, contact);
 		return;
 	}
-	base_dn = g_strdup_printf("mail=%s,%s",
-			email, server->control->baseDN?server->control->baseDN:"null");
+	base_dn = g_strdup_printf("mail=%s,%s", email, server->control->baseDN ? server->control->baseDN : "null");
 	g_free(email);
-	person = 
-		ldapsvr_get_contact(server, g_hash_table_lookup(contact , "uid"));
+	person = ldapsvr_get_contact(server, g_hash_table_lookup(contact, "uid"));
 	person->externalID = g_strdup(base_dn);
 	debug_print("dn: %s\n", base_dn);
 	ld = ldapsvr_connect(server->control);
@@ -1000,41 +1023,39 @@ void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
 		cnt++;
 		attrkeyvalue_free(ou);
 	}
-	
+
 	commonName = get_cn(base_dn);
 	if (commonName == NULL) {
-		param = g_hash_table_lookup(contact , "cn");
+		param = g_hash_table_lookup(contact, "cn");
 		if (param) {
 			SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_ADD, "cn", cn, param);
-		}
-		else {
+		} else {
 			clean_up(ld, server, contact);
 			debug_print("no CN found\n");
 			return;
 		}
-	}
-	else {
+	} else {
 		SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_ADD, g_strdup(commonName->key), cn, g_strdup(commonName->value));
 		cnt++;
-		param = g_hash_table_lookup(contact , "cn");
+		param = g_hash_table_lookup(contact, "cn");
 		SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_ADD, "displayName", displayName, param);
 		g_hash_table_insert(contact, "displayName", param);
 		attrkeyvalue_free(commonName);
 	}
 	cnt++;
-	param = g_hash_table_lookup(contact , "givenName");
+	param = g_hash_table_lookup(contact, "givenName");
 	if (param) {
 		SETMOD(mods[cnt], modarr[cnt], LDAP_MOD_ADD, "givenName", givenName, param);
 		cnt++;
 	}
-	mailList = g_hash_table_lookup(contact , "mail");
+	mailList = g_hash_table_lookup(contact, "mail");
 	if (mailList) {
 		char **tmp;
-		tmp = g_malloc(sizeof(*tmp) * (g_list_length(mailList)+1));
+		tmp = g_malloc(sizeof(*tmp) * (g_list_length(mailList) + 1));
 		mail = tmp;
 		while (mailList) {
 			EmailKeyValue *item = mailList->data;
-			*tmp++ = g_strdup((gchar *) item->mail);
+			*tmp++ = g_strdup((gchar *)item->mail);
 			mailList = g_list_next(mailList);
 		}
 		*tmp = NULL;
@@ -1054,16 +1075,15 @@ void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
 	rc = ldap_add_ext_s(ld, base_dn, mods, NULL, NULL);
 	if (rc) {
 		switch (rc) {
-			case LDAP_ALREADY_EXISTS: 
-				server->retVal = LDAPRC_ALREADY_EXIST;
-				break;
-			default:
-				log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"),
-						base_dn, rc, ldaputil_get_error(ld));
-				if (rc == 0x8)
-					server->retVal = LDAPRC_STRONG_AUTH;
-				else
-					server->retVal = LDAPRC_NAMING_VIOLATION;
+		case LDAP_ALREADY_EXISTS:
+			server->retVal = LDAPRC_ALREADY_EXIST;
+			break;
+		default:
+			log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"), base_dn, rc, ldaputil_get_error(ld));
+			if (rc == 0x8)
+				server->retVal = LDAPRC_STRONG_AUTH;
+			else
+				server->retVal = LDAPRC_NAMING_VIOLATION;
 		}
 	}
 	ldapsvr_handle_other_attributes(ld, server, base_dn, contact);
@@ -1077,17 +1097,18 @@ void ldapsvr_add_contact(LdapServer *server, GHashTable *contact) {
  * \param server AddressBook resource
  * \param contact GHashTable with object to update
  */
-void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
+void ldapsvr_update_contact(LdapServer *server, GHashTable *contact)
+{
 	LDAP *ld = NULL;
 	LDAPMod *mods[MODSIZE];
 	LDAPMod modarr[4];
 	gint cnt = 0;
 	gchar *param, *dn;
 	Rdn *NoRemove = NULL;
-	char *cn[] = {NULL, NULL};
-	char *givenName[] = {NULL, NULL};
+	char *cn[] = { NULL, NULL };
+	char *givenName[] = { NULL, NULL };
 	char **mail = NULL;
-	char *sn[] = {NULL, NULL};
+	char *sn[] = { NULL, NULL };
 	GList *mailList;
 	int mod_op;
 
@@ -1119,8 +1140,8 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 
 #endif
 
-		if(rc != LDAP_SUCCESS) {
-			if (rc ==  LDAP_ALREADY_EXISTS) {
+		if (rc != LDAP_SUCCESS) {
+			if (rc == LDAP_ALREADY_EXISTS) {
 				/* We are messing with a contact with more than one listed email
 				 * address and the email we are changing is not the one used for dn
 				 */
@@ -1128,17 +1149,14 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 				 * dn. For now we just refuse the update. It will be caught later on as
 				 * a LDAPRC_NAMING_VIOLATION error.
 				 */
-			}
-			else {
-				log_error(LOG_PROTOCOL, _("LDAP error (rename): from '%s' to '%s': %d (%s)\n"),
-						dn, newRdn, rc, ldaputil_get_error(ld));
+			} else {
+				log_error(LOG_PROTOCOL, _("LDAP error (rename): from '%s' to '%s': %d (%s)\n"), dn, newRdn, rc, ldaputil_get_error(ld));
 				g_free(newRdn);
 				rdn_free(NoRemove);
 				clean_up(ld, server, contact);
 				return;
 			}
-		}
-		else {
+		} else {
 			ItemPerson *person = g_hash_table_lookup(contact, "person");
 			g_free(newRdn);
 			dn = g_strdup(NoRemove->new_dn);
@@ -1148,13 +1166,12 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 				person->externalID = dn;
 			}
 		}
-	}
-	else {
+	} else {
 		server->retVal = LDAPRC_NODN;
 		clean_up(ld, server, contact);
 		return;
 	}
-	param = g_hash_table_lookup(contact , "cn");
+	param = g_hash_table_lookup(contact, "cn");
 	mod_op = ldapsvr_deside_operation(ld, server, dn, "displayName", param);
 	if (mod_op >= 0 && (strcmp(param, NoRemove->value) != 0 && strcmp("cn", NoRemove->attribute) != 0)) {
 		if (mod_op == LDAP_MOD_DELETE) {
@@ -1180,14 +1197,13 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 			 * ldap. E.g attributes with empty strings are not allowed
 			 * in which case we silently refuse to add this entry
 			 */
-		}
-		else {
+		} else {
 			SETMOD(mods[cnt], modarr[cnt], mod_op, "displayName", cn, param);
 			cnt++;
 			g_hash_table_insert(contact, "displayName", param);
 		}
 	}
-	param = g_hash_table_lookup(contact , "givenName");
+	param = g_hash_table_lookup(contact, "givenName");
 	mod_op = ldapsvr_deside_operation(ld, server, dn, "givenName", param);
 	if (mod_op >= 0 && (strcmp(param, NoRemove->value) != 0 && strcmp("givenName", NoRemove->attribute) != 0)) {
 		if (mod_op == LDAP_MOD_DELETE) {
@@ -1213,22 +1229,21 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 			 * ldap. E.g attributes with empty strings are not allowed
 			 * in which case we silently refuse to add this entry
 			 */
-		}
-		else {
+		} else {
 			SETMOD(mods[cnt], modarr[cnt], mod_op, "givenName", givenName, param);
 			cnt++;
 		}
 	}
-	mailList = g_hash_table_lookup(contact , "mail");
+	mailList = g_hash_table_lookup(contact, "mail");
 	if (mailList) {
 		debug_print("# of mail: %d\n", g_list_length(mailList));
 		if (!(strcmp("mail", NoRemove->attribute) == 0 && g_list_length(mailList) == 1)) {
 			char **tmp;
-			tmp = g_malloc(sizeof(*tmp) * (g_list_length(mailList)+1));
+			tmp = g_malloc(sizeof(*tmp) * (g_list_length(mailList) + 1));
 			mail = tmp;
 			while (mailList) {
 				EmailKeyValue *item = mailList->data;
-				*tmp++ = g_strdup((gchar *) item->mail);
+				*tmp++ = g_strdup((gchar *)item->mail);
 				mailList = g_list_next(mailList);
 			}
 			*tmp = NULL;
@@ -1239,14 +1254,13 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 			SETMODS(mods[cnt], modarr[cnt], LDAP_MOD_REPLACE, "mail", mail);
 			cnt++;
 		}
-	}
-	else {
+	} else {
 		/*
 		 * an error condition since at least one email adress
 		 * is required. Should never occur though.
 		 */
 	}
-	param = g_hash_table_lookup(contact , "sn");
+	param = g_hash_table_lookup(contact, "sn");
 	mod_op = ldapsvr_deside_operation(ld, server, dn, "sn", param);
 	if (mod_op >= 0 && (strcmp(param, NoRemove->value) != 0 && strcmp("sn", NoRemove->attribute) != 0)) {
 		if (mod_op == LDAP_MOD_DELETE) {
@@ -1272,8 +1286,7 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 			 * ldap. E.g attributes with empty strings are not allowed
 			 * in which case we silently refuse to add this entry
 			 */
-		}
-		else {
+		} else {
 			SETMOD(mods[cnt], modarr[cnt], mod_op, "sn", sn, param);
 			cnt++;
 		}
@@ -1287,8 +1300,7 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
 		mods[cnt] = NULL;
 		rc = ldap_modify_ext_s(ld, dn, mods, NULL, NULL);
 		if (rc) {
-			log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"),
-					dn, rc, ldaputil_get_error(ld));
+			log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"), dn, rc, ldaputil_get_error(ld));
 			server->retVal = LDAPRC_NAMING_VIOLATION;
 		}
 		if (mail)
@@ -1309,7 +1321,8 @@ void ldapsvr_update_contact(LdapServer *server, GHashTable *contact) {
  * \param server AddressBook resource
  * \param contact GHashTable with object to delete
  */
-void ldapsvr_delete_contact(LdapServer *server, GHashTable *contact) {
+void ldapsvr_delete_contact(LdapServer *server, GHashTable *contact)
+{
 	LDAP *ld = NULL;
 	gchar *dn;
 	int rc;
@@ -1328,8 +1341,7 @@ void ldapsvr_delete_contact(LdapServer *server, GHashTable *contact) {
 	server->retVal = LDAPRC_SUCCESS;
 	rc = ldap_delete_ext_s(ld, dn, NULL, NULL);
 	if (rc) {
-		log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"),
-				dn, rc, ldaputil_get_error(ld));
+		log_error(LOG_PROTOCOL, _("LDAP error (modify): for DN '%s': %d (%s)\n"), dn, rc, ldaputil_get_error(ld));
 		server->retVal = LDAPRC_NODN;
 	}
 	clean_up(ld, server, contact);
@@ -1341,7 +1353,8 @@ void ldapsvr_delete_contact(LdapServer *server, GHashTable *contact) {
  * \param server AddressBook resource.
  * \param person ItemPerson holding user input.
  */
-void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
+void ldapsvr_update_book(LdapServer *server, ItemPerson *item)
+{
 	GList *node = NULL;
 	GHashTable *contact = NULL;
 	GList *contacts = NULL, *head = NULL;
@@ -1352,15 +1365,14 @@ void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
 	contact = g_hash_table_new(g_str_hash, g_str_equal);
 	if (item) {
 		gboolean result = ldapsvr_retrieve_item_person(item, contact);
-		debug_print("Found contact to update: %s\n", result? "Yes" : "No");
+		debug_print("Found contact to update: %s\n", result ? "Yes" : "No");
 		if (result) {
 			if (debug_get_mode()) {
 				addritem_print_item_person(item, stdout);
 			}
 			contacts = g_list_append(contacts, contact);
 		}
-	}
-	else {
+	} else {
 		ItemFolder *folder = server->addressCache->rootFolder;
 		node = folder->listFolder;
 		if (node) {
@@ -1368,15 +1380,15 @@ void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
 				AddrItemObject *aio = node->data;
 				if (aio) {
 					if (aio->type == ITEMTYPE_FOLDER) {
-						ItemFolder *folder = (ItemFolder *) aio;
+						ItemFolder *folder = (ItemFolder *)aio;
 						GList *persons = folder->listPerson;
 						while (persons) {
 							AddrItemObject *aio = persons->data;
 							if (aio) {
 								if (aio->type == ITEMTYPE_PERSON) {
-									ItemPerson *item = (ItemPerson *) aio;
+									ItemPerson *item = (ItemPerson *)aio;
 									gboolean result = ldapsvr_retrieve_item_person(item, contact);
-									debug_print("Found contact to update: %s\n", result? "Yes" : "No");
+									debug_print("Found contact to update: %s\n", result ? "Yes" : "No");
 									if (result) {
 										if (debug_get_mode()) {
 											gchar *uid = g_hash_table_lookup(contact, "uid");
@@ -1390,8 +1402,7 @@ void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
 							persons = g_list_next(persons);
 						}
 					}
-				}
-				else {
+				} else {
 					g_printerr("\t\tpid : ???\n");
 				}
 				node = g_list_next(node);
@@ -1404,8 +1415,7 @@ void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
 			debug_print("Contacts which must be updated in LDAP:\n");
 		while (contacts) {
 			debug_print("\tContact:\n");
-			g_hash_table_foreach(contacts->data, 
-				ldapsvr_print_contacts_hashtable, stderr);
+			g_hash_table_foreach(contacts->data, ldapsvr_print_contacts_hashtable, stderr);
 			contacts = g_list_next(contacts);
 		}
 	}
@@ -1413,29 +1423,29 @@ void ldapsvr_update_book(LdapServer *server, ItemPerson *item) {
 		contacts = head;
 	while (contacts) {
 		gchar *status;
-		contact = (GHashTable *) contacts->data;
-		status = (gchar *) g_hash_table_lookup(contact, "status");
+		contact = (GHashTable *)contacts->data;
+		status = (gchar *)g_hash_table_lookup(contact, "status");
 		if (status == NULL)
 			status = g_strdup("NULL");
 		if (g_ascii_strcasecmp(status, "new") == 0) {
 			ldapsvr_add_contact(server, contact);
-		}
-		else if (g_ascii_strcasecmp(status, "update") == 0) {
+		} else if (g_ascii_strcasecmp(status, "update") == 0) {
 			ldapsvr_update_contact(server, contact);
-		}
-		else if (g_ascii_strcasecmp(status, "delete") == 0) {
+		} else if (g_ascii_strcasecmp(status, "delete") == 0) {
 			ldapsvr_delete_contact(server, contact);
-		}
-		else
+		} else
 			g_critical("ldapsvr_update_book->Unknown status: %s\n", status);
 		contacts = g_list_next(contacts);
 	}
 	ldapsvr_free_hashtable(head);
 }
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 /*
  * End of Source.
  */
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

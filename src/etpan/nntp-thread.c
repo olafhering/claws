@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -51,17 +51,16 @@
 
 #define NNTP_BATCH_SIZE 5000
 
-static struct etpan_thread_manager * thread_manager = NULL;
-static chash * nntp_hash = NULL;
-static chash * session_hash = NULL;
+static struct etpan_thread_manager *thread_manager = NULL;
+static chash *nntp_hash = NULL;
+static chash *session_hash = NULL;
 static guint thread_manager_signal = 0;
-static GIOChannel * io_channel = NULL;
+static GIOChannel *io_channel = NULL;
 
-static int do_newsnntp_socket_connect(newsnntp * imap, const char * server,
-			       gushort port, ProxyInfo * proxy_info)
+static int do_newsnntp_socket_connect(newsnntp *imap, const char *server, gushort port, ProxyInfo *proxy_info)
 {
-	SockInfo * sock;
-	mailstream * stream;
+	SockInfo *sock;
+	mailstream *stream;
 
 	if (!proxy_info)
 		return newsnntp_socket_connect(imap, server, port);
@@ -79,8 +78,7 @@ static int do_newsnntp_socket_connect(newsnntp * imap, const char * server,
 		return NEWSNNTP_ERROR_CONNECTION_REFUSED;
 	}
 
-	stream = mailstream_socket_open_timeout(sock->sock,
-			imap->nntp_timeout);
+	stream = mailstream_socket_open_timeout(sock->sock, imap->nntp_timeout);
 	if (stream == NULL) {
 		sock_close(sock, TRUE);
 		return NEWSNNTP_ERROR_MEMORY;
@@ -95,18 +93,13 @@ static int do_newsnntp_socket_connect(newsnntp * imap, const char * server,
 }
 
 #ifdef USE_GNUTLS
-static int do_newsnntp_ssl_connect_with_callback(newsnntp * imap, const char * server,
-	gushort port,
-	void (* callback)(struct mailstream_ssl_context * ssl_context, void * data),
-	void * data,
-	ProxyInfo *proxy_info)
+static int do_newsnntp_ssl_connect_with_callback(newsnntp *imap, const char *server, gushort port, void (*callback)(struct mailstream_ssl_context *ssl_context, void *data), void *data, ProxyInfo *proxy_info)
 {
-	SockInfo * sock;
-	mailstream * stream;
+	SockInfo *sock;
+	mailstream *stream;
 
 	if (!proxy_info)
-		return newsnntp_ssl_connect_with_callback(imap, server,
-				port, callback, data);
+		return newsnntp_ssl_connect_with_callback(imap, server, port, callback, data);
 
 	if (port == 0)
 		port = 563;
@@ -121,8 +114,7 @@ static int do_newsnntp_ssl_connect_with_callback(newsnntp * imap, const char * s
 		return NEWSNNTP_ERROR_CONNECTION_REFUSED;
 	}
 
-	stream = mailstream_ssl_open_with_callback_timeout(sock->sock,
-			imap->nntp_timeout, callback, data);
+	stream = mailstream_ssl_open_with_callback_timeout(sock->sock, imap->nntp_timeout, callback, data);
 	if (stream == NULL) {
 		sock_close(sock, TRUE);
 		return NEWSNNTP_ERROR_SSL;
@@ -137,35 +129,35 @@ static int do_newsnntp_ssl_connect_with_callback(newsnntp * imap, const char * s
 }
 #endif
 
-static void nntp_logger(int direction, const char * str, size_t size) 
+static void nntp_logger(int direction, const char *str, size_t size)
 {
 	gchar *buf;
 	gchar **lines;
 	int i = 0;
 
 	if (size > 256) {
-		log_print(LOG_PROTOCOL, "NNTP%c [data - %"G_GSIZE_FORMAT" bytes]\n", direction?'>':'<', size);
+		log_print(LOG_PROTOCOL, "NNTP%c [data - %" G_GSIZE_FORMAT " bytes]\n", direction ? '>' : '<', size);
 		return;
 	}
-	buf = malloc(size+1);
-	memset(buf, 0, size+1);
+	buf = malloc(size + 1);
+	memset(buf, 0, size + 1);
 	strncpy(buf, str, size);
 	buf[size] = '\0';
 
-	if (!strncmp(buf, "<<<<<<<", 7) 
-	||  !strncmp(buf, ">>>>>>>", 7)) {
+	if (!strncmp(buf, "<<<<<<<", 7)
+	    || !strncmp(buf, ">>>>>>>", 7)) {
 		free(buf);
 		return;
 	}
 	while (strstr(buf, "\r"))
 		*strstr(buf, "\r") = ' ';
-	while (strlen(buf) > 0 && buf[strlen(buf)-1] == '\n')
-		buf[strlen(buf)-1] = '\0';
+	while (strlen(buf) > 0 && buf[strlen(buf) - 1] == '\n')
+		buf[strlen(buf) - 1] = '\0';
 
 	lines = g_strsplit(buf, "\n", -1);
 
 	while (lines[i] && *lines[i]) {
-		log_print(LOG_PROTOCOL, "NNTP%c %s\n", direction?'>':'<', lines[i]);
+		log_print(LOG_PROTOCOL, "NNTP%c %s\n", direction ? '>' : '<', lines[i]);
 		i++;
 	}
 	g_strfreev(lines);
@@ -179,7 +171,7 @@ static void delete_nntp(Folder *folder, newsnntp *nntp)
 	key.data = &folder;
 	key.len = sizeof(folder);
 	chash_delete(session_hash, &key, NULL);
-	
+
 	key.data = &nntp;
 	key.len = sizeof(nntp);
 	if (nntp && nntp->nntp_stream) {
@@ -188,22 +180,20 @@ static void delete_nntp(Folder *folder, newsnntp *nntp)
 		nntp->nntp_stream = NULL;
 	}
 	debug_print("removing newsnntp %p\n", nntp);
-	newsnntp_free(nntp);	
+	newsnntp_free(nntp);
 }
 
-static gboolean thread_manager_event(GIOChannel * source,
-    GIOCondition condition,
-    gpointer data)
+static gboolean thread_manager_event(GIOChannel *source, GIOCondition condition, gpointer data)
 {
 #ifdef G_OS_WIN32
 	gsize bytes_read;
 	gchar ch;
-	
+
 	if (condition & G_IO_IN)
 		g_io_channel_read_chars(source, &ch, 1, &bytes_read, NULL);
 #endif
 	etpan_thread_manager_loop(thread_manager);
-	
+
 	return TRUE;
 }
 
@@ -213,26 +203,23 @@ extern gboolean etpan_skip_ssl_cert_check;
 void nntp_main_init(gboolean skip_ssl_cert_check)
 {
 	int fd_thread_manager;
-	
+
 	etpan_skip_ssl_cert_check = skip_ssl_cert_check;
-	
+
 	nntp_hash = chash_new(CHASH_COPYKEY, CHASH_DEFAULTSIZE);
 	session_hash = chash_new(CHASH_COPYKEY, CHASH_DEFAULTSIZE);
-	
+
 	thread_manager = etpan_thread_manager_new();
-	
+
 	fd_thread_manager = etpan_thread_manager_get_fd(thread_manager);
-	
+
 #ifndef G_OS_WIN32
 	io_channel = g_io_channel_unix_new(fd_thread_manager);
 #else
 	io_channel = g_io_channel_win32_new_fd(fd_thread_manager);
 #endif
-	
-	thread_manager_signal = g_io_add_watch_full(io_channel, 0, G_IO_IN,
-						    thread_manager_event,
-						    (gpointer) NULL,
-						    NULL);
+
+	thread_manager_signal = g_io_add_watch_full(io_channel, 0, G_IO_IN, thread_manager_event, (gpointer)NULL, NULL);
 }
 
 void nntp_main_done(gboolean have_connectivity)
@@ -243,58 +230,58 @@ void nntp_main_done(gboolean have_connectivity)
 	return;
 #endif
 	etpan_thread_manager_join(thread_manager);
-	
+
 	g_source_remove(thread_manager_signal);
 	g_io_channel_unref(io_channel);
-	
+
 	etpan_thread_manager_free(thread_manager);
-	
+
 	chash_free(session_hash);
 	chash_free(nntp_hash);
 }
 
-void nntp_init(Folder * folder)
+void nntp_init(Folder *folder)
 {
-	struct etpan_thread * thread;
+	struct etpan_thread *thread;
 	chashdatum key;
 	chashdatum value;
-	
+
 	thread = etpan_thread_manager_get_thread(thread_manager);
-	
+
 	key.data = &folder;
 	key.len = sizeof(folder);
 	value.data = thread;
 	value.len = 0;
-	
+
 	chash_set(nntp_hash, &key, &value, NULL);
 }
 
-void nntp_done(Folder * folder)
+void nntp_done(Folder *folder)
 {
-	struct etpan_thread * thread;
+	struct etpan_thread *thread;
 	chashdatum key;
 	chashdatum value;
 	int r;
-	
+
 	key.data = &folder;
 	key.len = sizeof(folder);
-	
+
 	r = chash_get(nntp_hash, &key, &value);
 	if (r < 0)
 		return;
-	
+
 	thread = value.data;
-	
+
 	etpan_thread_unbind(thread);
-	
+
 	chash_delete(nntp_hash, &key, NULL);
-	
+
 	debug_print("remove thread\n");
 }
 
-static struct etpan_thread * get_thread(Folder * folder)
+static struct etpan_thread *get_thread(Folder *folder)
 {
-	struct etpan_thread * thread;
+	struct etpan_thread *thread;
 	chashdatum key;
 	chashdatum value;
 	int r;
@@ -311,48 +298,45 @@ static struct etpan_thread * get_thread(Folder * folder)
 	return thread;
 }
 
-static newsnntp * get_nntp(Folder * folder)
+static newsnntp *get_nntp(Folder *folder)
 {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	chashdatum key;
 	chashdatum value;
 	int r;
-	
+
 	key.data = &folder;
 	key.len = sizeof(folder);
-	
+
 	r = chash_get(session_hash, &key, &value);
 	if (r < 0)
 		return NULL;
-	
+
 	nntp = value.data;
 	debug_print("found nntp %p\n", nntp);
 	return nntp;
 }
 
-
-static void generic_cb(int cancelled, void * result, void * callback_data)
+static void generic_cb(int cancelled, void *result, void *callback_data)
 {
-	struct etpan_thread_op * op;
-	
-	op = (struct etpan_thread_op *) callback_data;
+	struct etpan_thread_op *op;
+
+	op = (struct etpan_thread_op *)callback_data;
 
 	debug_print("generic_cb\n");
 	op->finished = 1;
 }
 
-static void threaded_run(Folder * folder, void * param, void * result,
-			 void (* func)(struct etpan_thread_op * ))
+static void threaded_run(Folder *folder, void *param, void *result, void (*func)(struct etpan_thread_op *))
 {
-	struct etpan_thread_op * op;
-	struct etpan_thread * thread;
-	void (*previous_stream_logger)(int direction,
-		const char * str, size_t size);
+	struct etpan_thread_op *op;
+	struct etpan_thread *thread;
+	void (*previous_stream_logger)(int direction, const char *str, size_t size);
 
 	nntp_folder_ref(folder);
 
 	op = etpan_thread_op_new();
-	
+
 	op->nntp = get_nntp(folder);
 	op->param = param;
 	op->result = result;
@@ -360,17 +344,17 @@ static void threaded_run(Folder * folder, void * param, void * result,
 	op->run = func;
 	op->callback = generic_cb;
 	op->callback_data = op;
-	
+
 	previous_stream_logger = mailstream_logger;
 	mailstream_logger = nntp_logger;
 
 	thread = get_thread(folder);
 	etpan_thread_op_schedule(thread, op);
-	
+
 	while (!op->finished) {
 		gtk_main_iteration();
 	}
-	
+
 	mailstream_logger = previous_stream_logger;
 
 	etpan_thread_op_free(op);
@@ -378,15 +362,14 @@ static void threaded_run(Folder * folder, void * param, void * result,
 	nntp_folder_unref(folder);
 }
 
-
 /* connect */
 
 struct connect_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	PrefsAccount *account;
-	const char * server;
+	const char *server;
 	int port;
-	ProxyInfo * proxy_info;
+	ProxyInfo *proxy_info;
 };
 
 struct connect_result {
@@ -400,48 +383,45 @@ struct connect_result {
 	}							\
 }
 
-static void connect_run(struct etpan_thread_op * op)
+static void connect_run(struct etpan_thread_op *op)
 {
 	int r;
-	struct connect_param * param;
-	struct connect_result * result;
-	
+	struct connect_param *param;
+	struct connect_result *result;
+
 	param = op->param;
 	result = op->result;
-	
+
 	CHECK_NNTP();
 
-	r = do_newsnntp_socket_connect(param->nntp,
-				    param->server, param->port,
-				    param->proxy_info);
-	
+	r = do_newsnntp_socket_connect(param->nntp, param->server, param->port, param->proxy_info);
+
 	result->error = r;
 }
 
-
-int nntp_threaded_connect(Folder * folder, const char * server, int port, ProxyInfo *proxy_info)
+int nntp_threaded_connect(Folder *folder, const char *server, int port, ProxyInfo *proxy_info)
 {
 	struct connect_param param;
 	struct connect_result result;
 	chashdatum key;
 	chashdatum value;
-	newsnntp * nntp, * oldnntp;
-	
+	newsnntp *nntp, *oldnntp;
+
 	oldnntp = get_nntp(folder);
 
 	nntp = newsnntp_new(0, NULL);
-	
+
 	if (oldnntp) {
 		debug_print("deleting old nntp %p\n", oldnntp);
 		delete_nntp(folder, oldnntp);
 	}
-	
+
 	key.data = &folder;
 	key.len = sizeof(folder);
 	value.data = nntp;
 	value.len = 0;
 	chash_set(session_hash, &key, &value, NULL);
-	
+
 	param.nntp = nntp;
 	param.server = server;
 	param.port = port;
@@ -449,37 +429,35 @@ int nntp_threaded_connect(Folder * folder, const char * server, int port, ProxyI
 
 	refresh_resolvers();
 	threaded_run(folder, &param, &result, connect_run);
-	
+
 	debug_print("connect ok %i with nntp %p\n", result.error, nntp);
-	
+
 	return result.error;
 }
+
 #ifdef USE_GNUTLS
-static void connect_ssl_run(struct etpan_thread_op * op)
+static void connect_ssl_run(struct etpan_thread_op *op)
 {
 	int r;
-	struct connect_param * param;
-	struct connect_result * result;
-	
+	struct connect_param *param;
+	struct connect_result *result;
+
 	param = op->param;
 	result = op->result;
-	
+
 	CHECK_NNTP();
 
-	r = do_newsnntp_ssl_connect_with_callback(param->nntp,
-				 param->server, param->port,
-				 etpan_connect_ssl_context_cb, param->account,
-				 param->proxy_info);
+	r = do_newsnntp_ssl_connect_with_callback(param->nntp, param->server, param->port, etpan_connect_ssl_context_cb, param->account, param->proxy_info);
 	result->error = r;
 }
 
-int nntp_threaded_connect_ssl(Folder * folder, const char * server, int port, ProxyInfo *proxy_info)
+int nntp_threaded_connect_ssl(Folder *folder, const char *server, int port, ProxyInfo *proxy_info)
 {
 	struct connect_param param;
 	struct connect_result result;
 	chashdatum key;
 	chashdatum value;
-	newsnntp * nntp, * oldnntp;
+	newsnntp *nntp, *oldnntp;
 	gboolean accept_if_valid = FALSE;
 
 	oldnntp = get_nntp(folder);
@@ -510,61 +488,59 @@ int nntp_threaded_connect_ssl(Folder * folder, const char * server, int port, Pr
 	threaded_run(folder, &param, &result, connect_ssl_run);
 
 	if (result.error == NEWSNNTP_NO_ERROR && !etpan_skip_ssl_cert_check) {
-		if (etpan_certificate_check(nntp->nntp_stream, server, port,
-					    accept_if_valid) != TRUE)
+		if (etpan_certificate_check(nntp->nntp_stream, server, port, accept_if_valid) != TRUE)
 			return -1;
 	}
 	debug_print("connect %d with nntp %p\n", result.error, nntp);
-	
+
 	return result.error;
 }
 #endif
 
-void nntp_threaded_disconnect(Folder * folder)
+void nntp_threaded_disconnect(Folder *folder)
 {
-	newsnntp * nntp;
-	
+	newsnntp *nntp;
+
 	nntp = get_nntp(folder);
 	if (nntp == NULL) {
 		debug_print("was disconnected\n");
 		return;
 	}
-	
+
 	debug_print("deleting old nntp %p\n", nntp);
 	delete_nntp(folder, nntp);
-	
+
 	debug_print("disconnect ok\n");
 }
 
-void nntp_threaded_cancel(Folder * folder)
+void nntp_threaded_cancel(Folder *folder)
 {
-	newsnntp * nntp;
-	
+	newsnntp *nntp;
+
 	nntp = get_nntp(folder);
 	if (nntp->nntp_stream != NULL)
 		mailstream_cancel(nntp->nntp_stream);
 }
 
-
 struct login_param {
-	newsnntp * nntp;
-	const char * login;
-	const char * password;
+	newsnntp *nntp;
+	const char *login;
+	const char *password;
 };
 
 struct login_result {
 	int error;
 };
 
-static void login_run(struct etpan_thread_op * op)
+static void login_run(struct etpan_thread_op *op)
 {
-	struct login_param * param;
-	struct login_result * result;
+	struct login_param *param;
+	struct login_result *result;
 	int r;
 #ifdef DISABLE_LOG_DURING_LOGIN
 	int old_debug;
 #endif
-	
+
 	param = op->param;
 	result = op->result;
 
@@ -581,13 +557,11 @@ static void login_run(struct etpan_thread_op * op)
 	if (r == NEWSNNTP_WARNING_REQUEST_AUTHORIZATION_PASSWORD) {
 		r = newsnntp_authinfo_password(param->nntp, param->password);
 	}
-	
-
 
 #ifdef DISABLE_LOG_DURING_LOGIN
 	mailstream_debug = old_debug;
 #endif
-	
+
 	result->error = r;
 	if (param->nntp->nntp_response)
 		nntp_logger(0, param->nntp->nntp_response, strlen(param->nntp->nntp_response));
@@ -595,69 +569,69 @@ static void login_run(struct etpan_thread_op * op)
 	debug_print("nntp login run - end %i\n", r);
 }
 
-int nntp_threaded_login(Folder * folder, const char * login, const char * password)
+int nntp_threaded_login(Folder *folder, const char *login, const char *password)
 {
 	struct login_param param;
 	struct login_result result;
-	
+
 	debug_print("nntp login - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.login = login;
 	param.password = password;
 
 	threaded_run(folder, &param, &result, login_run);
-	
+
 	debug_print("nntp login - end\n");
-	
+
 	return result.error;
 }
 
 struct date_param {
-	newsnntp * nntp;
-	struct tm * lt;
+	newsnntp *nntp;
+	struct tm *lt;
 };
 
 struct date_result {
 	int error;
 };
 
-static void date_run(struct etpan_thread_op * op)
+static void date_run(struct etpan_thread_op *op)
 {
-	struct date_param * param;
-	struct date_result * result;
+	struct date_param *param;
+	struct date_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_date(param->nntp, param->lt);
-	
+
 	result->error = r;
 	debug_print("nntp date run - end %i\n", r);
 }
 
-int nntp_threaded_date(Folder * folder, struct tm *lt)
+int nntp_threaded_date(Folder *folder, struct tm *lt)
 {
 	struct date_param param;
 	struct date_result result;
-	
+
 	debug_print("nntp date - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.lt = lt;
 
 	threaded_run(folder, &param, &result, date_run);
-	
+
 	debug_print("nntp date - end\n");
-	
+
 	return result.error;
 }
 
 struct list_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	clist **grouplist;
 };
 
@@ -665,42 +639,42 @@ struct list_result {
 	int error;
 };
 
-static void list_run(struct etpan_thread_op * op)
+static void list_run(struct etpan_thread_op *op)
 {
-	struct list_param * param;
-	struct list_result * result;
+	struct list_param *param;
+	struct list_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_list(param->nntp, param->grouplist);
-	
+
 	result->error = r;
 	debug_print("nntp list run - end %i\n", r);
 }
 
-int nntp_threaded_list(Folder * folder, clist **grouplist)
+int nntp_threaded_list(Folder *folder, clist **grouplist)
 {
 	struct list_param param;
 	struct list_result result;
-	
+
 	debug_print("nntp list - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.grouplist = grouplist;
 
 	threaded_run(folder, &param, &result, list_run);
-	
+
 	debug_print("nntp list - end\n");
-	
+
 	return result.error;
 }
 
 struct post_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	char *contents;
 	size_t len;
 };
@@ -709,43 +683,43 @@ struct post_result {
 	int error;
 };
 
-static void post_run(struct etpan_thread_op * op)
+static void post_run(struct etpan_thread_op *op)
 {
-	struct post_param * param;
-	struct post_result * result;
+	struct post_param *param;
+	struct post_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_post(param->nntp, param->contents, param->len);
-	
+
 	result->error = r;
 	debug_print("nntp post run - end %i\n", r);
 }
 
-int nntp_threaded_post(Folder * folder, char *contents, size_t len)
+int nntp_threaded_post(Folder *folder, char *contents, size_t len)
 {
 	struct post_param param;
 	struct post_result result;
-	
+
 	debug_print("nntp post - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.contents = contents;
 	param.len = len;
 
 	threaded_run(folder, &param, &result, post_run);
-	
+
 	debug_print("nntp post - end\n");
-	
+
 	return result.error;
 }
 
 struct article_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	guint32 num;
 	char **contents;
 	size_t *len;
@@ -755,44 +729,44 @@ struct article_result {
 	int error;
 };
 
-static void article_run(struct etpan_thread_op * op)
+static void article_run(struct etpan_thread_op *op)
 {
-	struct article_param * param;
-	struct article_result * result;
+	struct article_param *param;
+	struct article_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_article(param->nntp, param->num, param->contents, param->len);
-	
+
 	result->error = r;
 	debug_print("nntp article run - end %i\n", r);
 }
 
-int nntp_threaded_article(Folder * folder, guint32 num, char **contents, size_t *len)
+int nntp_threaded_article(Folder *folder, guint32 num, char **contents, size_t *len)
 {
 	struct article_param param;
 	struct article_result result;
-	
+
 	debug_print("nntp article - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.num = num;
 	param.contents = contents;
 	param.len = len;
 
 	threaded_run(folder, &param, &result, article_run);
-	
+
 	debug_print("nntp article - end\n");
-	
+
 	return result.error;
 }
 
 struct group_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	const char *group;
 	struct newsnntp_group_info **info;
 };
@@ -801,84 +775,84 @@ struct group_result {
 	int error;
 };
 
-static void group_run(struct etpan_thread_op * op)
+static void group_run(struct etpan_thread_op *op)
 {
-	struct group_param * param;
-	struct group_result * result;
+	struct group_param *param;
+	struct group_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_group(param->nntp, param->group, param->info);
-	
+
 	result->error = r;
 	debug_print("nntp group run - end %i\n", r);
 }
 
-int nntp_threaded_group(Folder * folder, const char *group, struct newsnntp_group_info **info)
+int nntp_threaded_group(Folder *folder, const char *group, struct newsnntp_group_info **info)
 {
 	struct group_param param;
 	struct group_result result;
-	
+
 	debug_print("nntp group - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 	param.group = group;
 	param.info = info;
 
 	threaded_run(folder, &param, &result, group_run);
-	
+
 	debug_print("nntp group - end\n");
-	
+
 	return result.error;
 }
 
 struct mode_reader_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 };
 
 struct mode_reader_result {
 	int error;
 };
 
-static void mode_reader_run(struct etpan_thread_op * op)
+static void mode_reader_run(struct etpan_thread_op *op)
 {
-	struct mode_reader_param * param;
-	struct mode_reader_result * result;
+	struct mode_reader_param *param;
+	struct mode_reader_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
 
 	r = newsnntp_mode_reader(param->nntp);
-	
+
 	result->error = r;
 	debug_print("nntp mode_reader run - end %i\n", r);
 }
 
-int nntp_threaded_mode_reader(Folder * folder)
+int nntp_threaded_mode_reader(Folder *folder)
 {
 	struct mode_reader_param param;
 	struct mode_reader_result result;
-	
+
 	debug_print("nntp mode_reader - begin\n");
-	
+
 	param.nntp = get_nntp(folder);
 
 	threaded_run(folder, &param, &result, mode_reader_run);
-	
+
 	debug_print("nntp mode_reader - end\n");
-	
+
 	return result.error;
 }
 
 struct xover_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	guint32 beg;
 	guint32 end;
 	struct newsnntp_xover_resp_item **result;
@@ -889,29 +863,28 @@ struct xover_result {
 	int error;
 };
 
-static void xover_run(struct etpan_thread_op * op)
+static void xover_run(struct etpan_thread_op *op)
 {
-	struct xover_param * param;
-	struct xover_result * result;
+	struct xover_param *param;
+	struct xover_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
-	
+
 	if (param->result) {
 		r = newsnntp_xover_single(param->nntp, param->beg, param->result);
 	} else {
 		r = newsnntp_xover_range(param->nntp, param->beg, param->end, param->msglist);
 	}
-	
+
 	result->error = r;
-	debug_print("nntp xover run %d-%d - end %i\n",
-			param->beg, param->end, r);
+	debug_print("nntp xover run %d-%d - end %i\n", param->beg, param->end, r);
 }
 
-int nntp_threaded_xover(Folder * folder, guint32 beg, guint32 end, struct newsnntp_xover_resp_item **single_result, clist **multiple_result)
+int nntp_threaded_xover(Folder *folder, guint32 beg, guint32 end, struct newsnntp_xover_resp_item **single_result, clist **multiple_result)
 {
 	struct xover_param param;
 	struct xover_result result;
@@ -955,8 +928,7 @@ int nntp_threaded_xover(Folder * folder, guint32 beg, guint32 end, struct newsnn
 
 		/* Append the new data (l) to list of results (h). */
 		if (l != NULL) {
-			debug_print("total items so far %d, items this batch %d\n",
-					clist_count(h), clist_count(l));
+			debug_print("total items so far %d, items this batch %d\n", clist_count(h), clist_count(l));
 			clist_concat(h, l);
 			clist_free(l);
 			l = NULL;
@@ -966,7 +938,7 @@ int nntp_threaded_xover(Folder * folder, guint32 beg, guint32 end, struct newsnn
 	}
 
 	statusbar_progress_all(0, 0, 0);
-	
+
 	debug_print("nntp xover - end\n");
 
 	*multiple_result = h;
@@ -975,7 +947,7 @@ int nntp_threaded_xover(Folder * folder, guint32 beg, guint32 end, struct newsnn
 }
 
 struct xhdr_param {
-	newsnntp * nntp;
+	newsnntp *nntp;
 	const char *header;
 	guint32 beg;
 	guint32 end;
@@ -986,29 +958,28 @@ struct xhdr_result {
 	int error;
 };
 
-static void xhdr_run(struct etpan_thread_op * op)
+static void xhdr_run(struct etpan_thread_op *op)
 {
-	struct xhdr_param * param;
-	struct xhdr_result * result;
+	struct xhdr_param *param;
+	struct xhdr_result *result;
 	int r;
-	
+
 	param = op->param;
 	result = op->result;
 
 	CHECK_NNTP();
-	
+
 	if (param->beg == param->end) {
 		r = newsnntp_xhdr_single(param->nntp, param->header, param->beg, param->hdrlist);
 	} else {
 		r = newsnntp_xhdr_range(param->nntp, param->header, param->beg, param->end, param->hdrlist);
 	}
-	
+
 	result->error = r;
-	debug_print("nntp xhdr '%s %d-%d' run - end %i\n",
-			param->header, param->beg, param->end, r);
+	debug_print("nntp xhdr '%s %d-%d' run - end %i\n", param->header, param->beg, param->end, r);
 }
 
-int nntp_threaded_xhdr(Folder * folder, const char *header, guint32 beg, guint32 end, clist **hdrlist)
+int nntp_threaded_xhdr(Folder *folder, const char *header, guint32 beg, guint32 end, clist **hdrlist)
 {
 	struct xhdr_param param;
 	struct xhdr_result result;
@@ -1044,7 +1015,7 @@ int nntp_threaded_xhdr(Folder * folder, const char *header, guint32 beg, guint32
 		/* Handle errors */
 		if (result.error != NEWSNNTP_NO_ERROR) {
 			log_warning(LOG_PROTOCOL, _("couldn't get xhdr range\n"));
-			debug_print("couldn't get xhdr %s %d-%d\n",	header, cbeg, cend);
+			debug_print("couldn't get xhdr %s %d-%d\n", header, cbeg, cend);
 			if (l != NULL)
 				newsnntp_xhdr_free(l);
 			newsnntp_xhdr_free(h);
@@ -1054,8 +1025,7 @@ int nntp_threaded_xhdr(Folder * folder, const char *header, guint32 beg, guint32
 
 		/* Append the new data (l) to list of results (h). */
 		if (l != NULL) {
-			debug_print("total items so far %d, items this batch %d\n",
-					clist_count(h), clist_count(l));
+			debug_print("total items so far %d, items this batch %d\n", clist_count(h), clist_count(l));
 			clist_concat(h, l);
 			clist_free(l);
 			l = NULL;
@@ -1065,7 +1035,7 @@ int nntp_threaded_xhdr(Folder * folder, const char *header, guint32 beg, guint32
 	}
 
 	statusbar_progress_all(0, 0, 0);
-	
+
 	debug_print("nntp xhdr %s - end (%d-%d)\n", header, beg, end);
 
 	*hdrlist = h;
@@ -1084,15 +1054,21 @@ void nntp_main_set_timeout(int sec)
 void nntp_main_init(void)
 {
 }
+
 void nntp_main_done(gboolean have_connectivity)
 {
 }
+
 void nntp_main_set_timeout(int sec)
 {
 }
 
-void nntp_threaded_cancel(Folder * folder);
+void nntp_threaded_cancel(Folder *folder);
 {
 }
 
 #endif
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

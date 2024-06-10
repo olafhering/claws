@@ -24,7 +24,7 @@
 #include "advsearch.h"
 
 typedef struct _QuickSearch QuickSearch;
-typedef void (*QuickSearchExecuteCallback) (QuickSearch *quicksearch, gpointer data);
+typedef void (*QuickSearchExecuteCallback)(QuickSearch *quicksearch, gpointer data);
 
 #include "procmsg.h"
 
@@ -36,13 +36,10 @@ void quicksearch_hide(QuickSearch *quicksearch);
 void quicksearch_set(QuickSearch *quicksearch, AdvancedSearchType type, const gchar *matchstring);
 void quicksearch_set_recursive(QuickSearch *quicksearch, gboolean recursive);
 gboolean quicksearch_has_sat_predicate(QuickSearch *quicksearch);
-void quicksearch_set_execute_callback(QuickSearch *quicksearch,
-				      QuickSearchExecuteCallback callback,
-				      gpointer data);
-void quicksearch_set_on_progress_cb(QuickSearch* search,
-		gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data);
+void quicksearch_set_execute_callback(QuickSearch *quicksearch, QuickSearchExecuteCallback callback, gpointer data);
+void quicksearch_set_on_progress_cb(QuickSearch *search, gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data);
 
-gboolean quicksearch_run_on_folder(QuickSearch* quicksearch, FolderItem *folderItem, MsgInfoList **result);
+gboolean quicksearch_run_on_folder(QuickSearch *quicksearch, FolderItem *folderItem, MsgInfoList **result);
 
 gboolean quicksearch_is_running(QuickSearch *quicksearch);
 gboolean quicksearch_has_focus(QuickSearch *quicksearch);

@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -51,7 +51,8 @@
  * \return List of Base DN's, or NULL if could not read. List should be
  *         g_free() when done.
  */
-static GList *ldaputil_test_v3( LDAP *ld, gint tov, gint *errcode ) {
+static GList *ldaputil_test_v3(LDAP *ld, gint tov, gint *errcode)
+{
 	GList *baseDN = NULL;
 	gint rc, i;
 	LDAPMessage *result = NULL, *e;
@@ -63,61 +64,48 @@ static GList *ldaputil_test_v3( LDAP *ld, gint tov, gint *errcode ) {
 
 	/* Set timeout */
 	timeout.tv_usec = 0L;
-	if( tov > 0 ) {
+	if (tov > 0) {
 		timeout.tv_sec = tov;
-	}
-	else {
+	} else {
 		timeout.tv_sec = 30L;
 	}
 
 	/* Test for LDAP version 3 */
 	attribs[0] = SYLDAP_V3_TEST_ATTR;
 	attribs[1] = NULL;
-	rc = ldap_search_ext_s(
-		ld, SYLDAP_SEARCHBASE_V3, LDAP_SCOPE_BASE, SYLDAP_TEST_FILTER,
-		attribs, 0, NULL, NULL, &timeout, 0, &result );
+	rc = ldap_search_ext_s(ld, SYLDAP_SEARCHBASE_V3, LDAP_SCOPE_BASE, SYLDAP_TEST_FILTER, attribs, 0, NULL, NULL, &timeout, 0, &result);
 
-	if( rc == LDAP_SUCCESS ) {
+	if (rc == LDAP_SUCCESS) {
 		log_print(LOG_PROTOCOL, _("LDAP (search): successful\n"));
 		/* Process entries */
-		for( e = ldap_first_entry( ld, result );
-		     e != NULL;
-		     e = ldap_next_entry( ld, e ) ) 
-		{
+		for (e = ldap_first_entry(ld, result); e != NULL; e = ldap_next_entry(ld, e)) {
 			/* Process attributes */
-			for( attribute = ldap_first_attribute( ld, e, &ber );
-			     attribute != NULL;
-			     attribute = ldap_next_attribute( ld, e, ber ) )
-			{
-				if( strcasecmp(
-					attribute, SYLDAP_V3_TEST_ATTR ) == 0 )
-				{
-					vals = ldap_get_values_len( ld, e, attribute );
-					if( vals != NULL ) {
-						for( i = 0; vals[i] != NULL; i++ ) {
-							baseDN = g_list_append(
-								baseDN, g_strndup( vals[i]->bv_val, vals[i]->bv_len ) );
+			for (attribute = ldap_first_attribute(ld, e, &ber); attribute != NULL; attribute = ldap_next_attribute(ld, e, ber)) {
+				if (strcasecmp(attribute, SYLDAP_V3_TEST_ATTR) == 0) {
+					vals = ldap_get_values_len(ld, e, attribute);
+					if (vals != NULL) {
+						for (i = 0; vals[i] != NULL; i++) {
+							baseDN = g_list_append(baseDN, g_strndup(vals[i]->bv_val, vals[i]->bv_len));
 						}
 					}
-					ldap_value_free_len( vals );
+					ldap_value_free_len(vals);
 				}
-				ldap_memfree( attribute );
+				ldap_memfree(attribute);
 			}
-			if( ber != NULL ) {
-				ber_free( ber, 0 );
+			if (ber != NULL) {
+				ber_free(ber, 0);
 			}
 			ber = NULL;
 		}
 	} else {
-		log_error(LOG_PROTOCOL, _("LDAP error (search): %d (%s)\n"),
-				rc, ldaputil_get_error(ld));
+		log_error(LOG_PROTOCOL, _("LDAP error (search): %d (%s)\n"), rc, ldaputil_get_error(ld));
 		debug_print("LDAP: Error %d (%s)\n", rc, ldaputil_get_error(ld));
 	}
-	
+
 	if (errcode)
 		*errcode = rc;
 	if (result)
-		ldap_msgfree( result );
+		ldap_msgfree(result);
 	return baseDN;
 }
 
@@ -128,7 +116,8 @@ static GList *ldaputil_test_v3( LDAP *ld, gint tov, gint *errcode ) {
  * \return List of Base DN's, or NULL if could not read. List should be
  *         g_free() when done.
  */
-static GList *ldaputil_test_v2( LDAP *ld, gint tov ) {
+static GList *ldaputil_test_v2(LDAP *ld, gint tov)
+{
 	GList *baseDN = NULL;
 	gint rc, i;
 	LDAPMessage *result = NULL, *e;
@@ -140,90 +129,76 @@ static GList *ldaputil_test_v2( LDAP *ld, gint tov ) {
 
 	/* Set timeout */
 	timeout.tv_usec = 0L;
-	if( tov > 0 ) {
+	if (tov > 0) {
 		timeout.tv_sec = tov;
-	}
-	else {
+	} else {
 		timeout.tv_sec = 30L;
 	}
 
 	attribs[0] = NULL;
-	rc = ldap_search_ext_s(
-		ld, SYLDAP_SEARCHBASE_V2, LDAP_SCOPE_BASE, SYLDAP_TEST_FILTER,
-		attribs, 0, NULL, NULL, &timeout, 0, &result );
+	rc = ldap_search_ext_s(ld, SYLDAP_SEARCHBASE_V2, LDAP_SCOPE_BASE, SYLDAP_TEST_FILTER, attribs, 0, NULL, NULL, &timeout, 0, &result);
 
-	if( rc == LDAP_SUCCESS ) {
+	if (rc == LDAP_SUCCESS) {
 		log_print(LOG_PROTOCOL, _("LDAP (search): successful\n"));
 		/* Process entries */
-		for( e = ldap_first_entry( ld, result );
-		     e != NULL;
-		     e = ldap_next_entry( ld, e ) )
-		{
+		for (e = ldap_first_entry(ld, result); e != NULL; e = ldap_next_entry(ld, e)) {
 			/* Process attributes */
-			for( attribute = ldap_first_attribute( ld, e, &ber );
-			     attribute != NULL;
-			     attribute = ldap_next_attribute( ld, e, ber ) )
-			{
-				if( strcasecmp(
-					attribute,
-					SYLDAP_V2_TEST_ATTR ) == 0 ) {
-					vals = ldap_get_values_len( ld, e, attribute );
-					if( vals != NULL ) {
-						for( i = 0; vals[i] != NULL; i++ ) {
+			for (attribute = ldap_first_attribute(ld, e, &ber); attribute != NULL; attribute = ldap_next_attribute(ld, e, ber)) {
+				if (strcasecmp(attribute, SYLDAP_V2_TEST_ATTR) == 0) {
+					vals = ldap_get_values_len(ld, e, attribute);
+					if (vals != NULL) {
+						for (i = 0; vals[i] != NULL; i++) {
 							char *ch, *tmp;
 							/*
 							 * Strip the 'ldb:' from the
 							 * front of the value.
 							 */
-							tmp = g_strndup( vals[i]->bv_val, vals[i]->bv_len);
-							ch = ( char * ) strchr( tmp, ':' );
-							if( ch ) {
-								gchar *bn = g_strdup( ++ch );
-								g_strstrip( bn );
-								baseDN = g_list_append(
-									baseDN, g_strdup( bn ) );
-								g_free( bn );
+							tmp = g_strndup(vals[i]->bv_val, vals[i]->bv_len);
+							ch = (char *)strchr(tmp, ':');
+							if (ch) {
+								gchar *bn = g_strdup(++ch);
+								g_strstrip(bn);
+								baseDN = g_list_append(baseDN, g_strdup(bn));
+								g_free(bn);
 							}
 							g_free(tmp);
 						}
 					}
-					ldap_value_free_len( vals );
+					ldap_value_free_len(vals);
 				}
-				ldap_memfree( attribute );
+				ldap_memfree(attribute);
 			}
-			if( ber != NULL ) {
-				ber_free( ber, 0 );
+			if (ber != NULL) {
+				ber_free(ber, 0);
 			}
 			ber = NULL;
 		}
 	} else {
-		log_error(LOG_PROTOCOL, _("LDAP error (search): %d (%s)\n"),
-				rc, ldaputil_get_error(ld));
+		log_error(LOG_PROTOCOL, _("LDAP error (search): %d (%s)\n"), rc, ldaputil_get_error(ld));
 		debug_print("LDAP: Error %d (%s)\n", rc, ldaputil_get_error(ld));
 	}
 	if (result)
-		ldap_msgfree( result );
+		ldap_msgfree(result);
 	return baseDN;
 }
 
-int claws_ldap_simple_bind_s( LDAP *ld, LDAP_CONST char *dn, LDAP_CONST char *passwd )
+int claws_ldap_simple_bind_s(LDAP *ld, LDAP_CONST char *dn, LDAP_CONST char *passwd)
 {
-	debug_print("binding: DN->%s\n", dn?dn:"null");
+	debug_print("binding: DN->%s\n", dn ? dn : "null");
 #ifdef G_OS_UNIX
 	struct berval cred;
 
-	if ( passwd != NULL ) {
-		cred.bv_val = (char *) passwd;
-		cred.bv_len = strlen( passwd );
+	if (passwd != NULL) {
+		cred.bv_val = (char *)passwd;
+		cred.bv_len = strlen(passwd);
 	} else {
 		cred.bv_val = "";
 		cred.bv_len = 0;
 	}
 
-	return ldap_sasl_bind_s( ld, dn, LDAP_SASL_SIMPLE, &cred,
-		NULL, NULL, NULL );
+	return ldap_sasl_bind_s(ld, dn, LDAP_SASL_SIMPLE, &cred, NULL, NULL, NULL);
 #else
-	return ldap_simple_bind_s(ld, (PCHAR)dn, (PCHAR)passwd);
+	return ldap_simple_bind_s(ld, (PCHAR) dn, (PCHAR) passwd);
 #endif
 }
 
@@ -237,21 +212,19 @@ int claws_ldap_simple_bind_s( LDAP *ld, LDAP_CONST char *dn, LDAP_CONST char *pa
  * \return List of Base DN's, or NULL if could not read. This list should be
  *         g_free() when done.
  */
-GList *ldaputil_read_basedn(
-		const gchar *host, const gint port, const gchar *bindDN,
-		const gchar *bindPW, const gint tov, int ssl, int tls )
+GList *ldaputil_read_basedn(const gchar *host, const gint port, const gchar *bindDN, const gchar *bindPW, const gint tov, int ssl, int tls)
 {
 	GList *baseDN = NULL;
 	LDAP *ld = NULL;
 	LdapControl *ctl;
 	gint rc;
 
-	if( host == NULL ) 
+	if (host == NULL)
 		return NULL;
-	if( port < 1 ) 
+	if (port < 1)
 		return NULL;
 
-    ctl = ldapctl_create();
+	ctl = ldapctl_create();
 	ldapctl_set_tls(ctl, tls);
 	ldapctl_set_ssl(ctl, ssl);
 	ldapctl_set_port(ctl, port);
@@ -264,16 +237,16 @@ GList *ldaputil_read_basedn(
 		ldapctl_free(ctl);
 		return NULL;
 	}
-	baseDN = ldaputil_test_v3( ld, tov, &rc );
+	baseDN = ldaputil_test_v3(ld, tov, &rc);
 	if (baseDN)
 		debug_print("Using LDAP v3\n");
 
 #ifdef G_OS_UNIX
-	if( baseDN == NULL && !LDAP_API_ERROR(rc) ) {
+	if (baseDN == NULL && !LDAP_API_ERROR(rc)) {
 #else
-	if( baseDN == NULL) {
+	if (baseDN == NULL) {
 #endif
-		baseDN = ldaputil_test_v2( ld, tov );
+		baseDN = ldaputil_test_v2(ld, tov);
 		if (baseDN)
 			debug_print("Using LDAP v2\n");
 	}
@@ -281,7 +254,7 @@ GList *ldaputil_read_basedn(
 		ldapsvr_disconnect(ld);
 
 	ldapctl_free(ctl);
-	
+
 	return baseDN;
 }
 
@@ -292,7 +265,8 @@ GList *ldaputil_read_basedn(
  * \param  port Port number.
  * \return <i>TRUE</i> if connected successfully.
  */
-gboolean ldaputil_test_connect( const gchar *host, const gint port, int ssl, int tls, int secs ) {
+gboolean ldaputil_test_connect(const gchar *host, const gint port, int ssl, int tls, int secs)
+{
 	gboolean retVal = FALSE;
 	LdapControl *ctl = ldapctl_create();
 	LDAP *ld;
@@ -304,7 +278,7 @@ gboolean ldaputil_test_connect( const gchar *host, const gint port, int ssl, int
 	ldapctl_set_timeout(ctl, secs);
 
 	ld = ldapsvr_connect(ctl);
-	if( ld != NULL ) {
+	if (ld != NULL) {
 		ldapsvr_disconnect(ld);
 		debug_print("ld != NULL\n");
 		retVal = TRUE;
@@ -318,7 +292,8 @@ gboolean ldaputil_test_connect( const gchar *host, const gint port, int ssl, int
  * Test whether LDAP libraries installed.
  * Return: TRUE if library available.
  */
-gboolean ldaputil_test_ldap_lib( void ) {
+gboolean ldaputil_test_ldap_lib(void)
+{
 	return TRUE;
 }
 
@@ -327,7 +302,7 @@ const gchar *ldaputil_get_error(LDAP *ld)
 	gchar *ld_error = NULL;
 	static gchar error[512];
 
-	ldap_get_option( ld, LDAP_OPT_ERROR_STRING, &ld_error);
+	ldap_get_option(ld, LDAP_OPT_ERROR_STRING, &ld_error);
 	if (ld_error != NULL)
 		strncpy2(error, ld_error, sizeof(error));
 	else
@@ -343,8 +318,12 @@ const gchar *ldaputil_get_error(LDAP *ld)
 
 	return error;
 }
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 /*
  * End of Source.
 */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

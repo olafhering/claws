@@ -29,19 +29,11 @@
 #define SSMTP_PORT	465
 #endif
 
-gint send_message		(const gchar	*file,
-				 PrefsAccount	*ac_prefs,
-				 GSList		*to_list);
-gint send_message_local		(const gchar *command,
-				 FILE *fp);
-gint send_message_smtp		(PrefsAccount *ac_prefs,
-				 GSList *to_list,
-				 FILE *fp);
-gint send_message_smtp_full	(PrefsAccount *ac_prefs, 
-				 GSList *to_list, 
-				 FILE *fp, 
-				 gboolean keep_session);
-void send_cancel	(void);
-gboolean send_is_active	(void);
+gint send_message(const gchar *file, PrefsAccount *ac_prefs, GSList *to_list);
+gint send_message_local(const gchar *command, FILE *fp);
+gint send_message_smtp(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp);
+gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, gboolean keep_session);
+void send_cancel(void);
+gboolean send_is_active(void);
 
 #endif /* __SEND_H__ */

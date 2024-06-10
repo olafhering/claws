@@ -43,15 +43,14 @@ typedef enum {
 
 /* Data structures */
 typedef struct {
-	gint           queryID;
+	gint queryID;
 	AddrSearchType searchType;
-	gchar          *searchTerm;
-	time_t         timeStart;
-	void           ( *callBackEnd ) ( void * );
-	void           ( *callBackEntry ) ( void * );
-	GList          *queryList;
-}
-QueryRequest;
+	gchar *searchTerm;
+	time_t timeStart;
+	void (*callBackEnd) (void *);
+	void (*callBackEntry) (void *);
+	GList *queryList;
+} QueryRequest;
 
 /* Some macros */
 #define ADDRQUERY_OBJECT(obj)		((AddrQueryObject *)obj)
@@ -66,39 +65,31 @@ QueryRequest;
 /* Generic address query (base class) */
 typedef struct _AddrQueryObject AddrQueryObject;
 struct _AddrQueryObject {
-	gint           queryType;
-	gint           queryID;
+	gint queryType;
+	gint queryID;
 	AddrSearchType searchType;
-	gchar          *queryName;
-	gint           retVal;
-	ItemFolder     *folder;		/* Reference to folder in cache */
-	gchar          *searchValue;
+	gchar *queryName;
+	gint retVal;
+	ItemFolder *folder; /* Reference to folder in cache */
+	gchar *searchValue;
 };
 
 /* Address search call back functions */
-typedef gint ( AddrSearchCallbackEntry ) ( gpointer sender,
-				  	   gint queryID,
-					   GList *listEMail,
-					   gpointer data );
+typedef gint (AddrSearchCallbackEntry) (gpointer sender, gint queryID, GList *listEMail, gpointer data);
 
-typedef void ( AddrSearchCallbackEnd ) ( gpointer sender,
-					 gint queryID,
-					 gint status,
-	       				 gpointer data );
+typedef void (AddrSearchCallbackEnd) (gpointer sender, gint queryID, gint status, gpointer data);
 
 /* Function prototypes */
-QueryRequest *qryreq_create	( void );
-void qryreq_set_search_type	( QueryRequest *req, const AddrSearchType value );
-void qryreq_add_query		( QueryRequest *req, AddrQueryObject *aqo );
+QueryRequest *qryreq_create(void);
+void qryreq_set_search_type(QueryRequest *req, const AddrSearchType value);
+void qryreq_add_query(QueryRequest *req, AddrQueryObject *aqo);
 
-void qrymgr_initialize		( void );
-void qrymgr_teardown		( void );
-QueryRequest *qrymgr_add_request( const gchar *searchTerm,
-				  void *callBackEnd,
-				  void *callBackEntry );
+void qrymgr_initialize(void);
+void qrymgr_teardown(void);
+QueryRequest *qrymgr_add_request(const gchar *searchTerm, void *callBackEnd, void *callBackEntry);
 
-QueryRequest *qrymgr_find_request( const gint queryID );
-void qrymgr_delete_request	( const gint queryID );
+QueryRequest *qrymgr_find_request(const gint queryID);
+void qrymgr_delete_request(const gint queryID);
 
 #endif /* __ADDRQUERY_H__ */
 

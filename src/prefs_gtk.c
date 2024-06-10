@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -49,21 +49,17 @@
 	 (CL(c.green) << (gulong)  8) | \
 	 (CL(c.blue)))
 
-typedef enum
-{
+typedef enum {
 	DUMMY_PARAM
 } DummyEnum;
 
 static GHashTable *whole_cache = NULL;
 
-static gboolean prefs_read_config_from_cache(PrefParam *param, const gchar *label,
-			       const gchar *rcfile);
+static gboolean prefs_read_config_from_cache(PrefParam *param, const gchar *label, const gchar *rcfile);
 
-static void prefs_config_parse_one_line(PrefParam	*param,
-					 const gchar	*buf);
+static void prefs_config_parse_one_line(PrefParam *param, const gchar *buf);
 
-void prefs_read_config(PrefParam *param, const gchar *label,
-		       const gchar *rcfile, const gchar *encoding)
+void prefs_read_config(PrefParam *param, const gchar *label, const gchar *rcfile, const gchar *encoding)
 {
 	FILE *fp;
 	gchar buf[PREFSBUFSIZE];
@@ -86,7 +82,8 @@ void prefs_read_config(PrefParam *param, const gchar *label,
 	}
 
 	if ((fp = claws_fopen(rcfile, "rb")) == NULL) {
-		if (ENOENT != errno) FILE_OP_ERROR(rcfile, "claws_fopen");
+		if (ENOENT != errno)
+			FILE_OP_ERROR(rcfile, "claws_fopen");
 		return;
 	}
 
@@ -99,12 +96,10 @@ void prefs_read_config(PrefParam *param, const gchar *label,
 		if (encoding) {
 			gchar *conv_str;
 
-			conv_str = conv_codeset_strdup
-				(buf, encoding, CS_INTERNAL);
+			conv_str = conv_codeset_strdup(buf, encoding, CS_INTERNAL);
 			if (!conv_str)
 				conv_str = g_strdup(buf);
-			val = strncmp
-				(conv_str, block_label, strlen(block_label));
+			val = strncmp(conv_str, block_label, strlen(block_label));
 			g_free(conv_str);
 		} else
 			val = strncmp(buf, block_label, strlen(block_label));
@@ -118,14 +113,15 @@ void prefs_read_config(PrefParam *param, const gchar *label,
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		strretchomp(buf);
 		/* reached next block */
-		if (buf[0] == '[') break;
-		if (buf[0] == '#') continue;
+		if (buf[0] == '[')
+			break;
+		if (buf[0] == '#')
+			continue;
 
 		if (encoding) {
 			gchar *conv_str;
 
-			conv_str = conv_codeset_strdup
-				(buf, encoding, CS_INTERNAL);
+			conv_str = conv_codeset_strdup(buf, encoding, CS_INTERNAL);
 			if (!conv_str)
 				conv_str = g_strdup(buf);
 			prefs_config_parse_one_line(param, conv_str);
@@ -157,52 +153,45 @@ static void prefs_config_parse_one_line(PrefParam *param, const gchar *buf)
 		switch (param[i].type) {
 		case P_STRING:
 		case P_PASSWORD:
-		{
-			gchar *tmp = NULL;
+			{
+				gchar *tmp = NULL;
 
-			if (*value) {
-				if (g_utf8_validate(value, -1, NULL))
-					tmp = g_strdup(value);
-				else {
-					tmp = conv_codeset_strdup(value,
-						    conv_get_locale_charset_str_no_utf8(),
-						    CS_INTERNAL);
+				if (*value) {
+					if (g_utf8_validate(value, -1, NULL))
+						tmp = g_strdup(value);
+					else {
+						tmp = conv_codeset_strdup(value, conv_get_locale_charset_str_no_utf8(), CS_INTERNAL);
+					}
+				} else {
+					tmp = g_strdup("");
 				}
-			} else {
-				tmp = g_strdup("");
+				if (!tmp) {
+					g_warning("failed to convert character set");
+					tmp = g_strdup(value);
+				}
+				g_free(*((gchar **)param[i].data));
+				*((gchar **)param[i].data) = tmp;
+				break;
 			}
-			if (!tmp) {
-				g_warning("failed to convert character set");
-				tmp = g_strdup(value);
-			}
-			g_free(*((gchar **)param[i].data));
-			*((gchar **)param[i].data) = tmp;
-			break;
-		}
 		case P_INT:
-			*((gint *)param[i].data) =
-				(gint)atoi(value);
+			*((gint *)param[i].data) = (gint)atoi(value);
 			break;
 		case P_BOOL:
-			*((gboolean *)param[i].data) =
-				(*value == '0' || *value == '\0')
-					? FALSE : TRUE;
+			*((gboolean *)param[i].data) = (*value == '0' || *value == '\0')
+			    ? FALSE : TRUE;
 			break;
 		case P_ENUM:
-			*((DummyEnum *)param[i].data) =
-				(DummyEnum)atoi(value);
+			*((DummyEnum *) param[i].data) = (DummyEnum) atoi(value);
 			break;
 		case P_USHORT:
-			*((gushort *)param[i].data) =
-				(gushort)atoi(value);
+			*((gushort *) param[i].data) = (gushort) atoi(value);
 			break;
 		case P_COLOR:
 			if (gdk_color_parse(value, &color)) {
-				*((gulong *)param[i].data) = RGB_FROM_GDK_COLOR(color); 
-			}
-			else 
+				*((gulong *) param[i].data) = RGB_FROM_GDK_COLOR(color);
+			} else
 				/* be compatible and accept ints */
-				*((gulong *)param[i].data) = strtoul(value, 0, 10); 
+				*((gulong *) param[i].data) = strtoul(value, 0, 10);
 			break;
 		default:
 			break;
@@ -221,8 +210,7 @@ if (!(func)) \
 	return; \
 } \
 
-void prefs_write_config(PrefParam *param, const gchar *label,
-		        const gchar *rcfile)
+void prefs_write_config(PrefParam *param, const gchar *label, const gchar *rcfile)
 {
 	FILE *orig_fp;
 	PrefFile *pfile;
@@ -237,12 +225,14 @@ void prefs_write_config(PrefParam *param, const gchar *label,
 
 	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, rcfile, NULL);
 	if ((orig_fp = claws_fopen(rcpath, "rb")) == NULL) {
-		if (ENOENT != errno) FILE_OP_ERROR(rcpath, "claws_fopen");
+		if (ENOENT != errno)
+			FILE_OP_ERROR(rcpath, "claws_fopen");
 	}
 
 	if ((pfile = prefs_write_open(rcpath)) == NULL) {
 		g_warning("failed to write configuration to file");
-		if (orig_fp) claws_fclose(orig_fp);
+		if (orig_fp)
+			claws_fclose(orig_fp);
 		g_free(rcpath);
 		return;
 	}
@@ -274,15 +264,13 @@ void prefs_write_config(PrefParam *param, const gchar *label,
 		while (claws_fgets(buf, sizeof(buf), orig_fp) != NULL) {
 			/* next block */
 			if (buf[0] == '[') {
-				TRY(claws_fputc('\n', pfile->fp) != EOF &&
-				    claws_fputs(buf, pfile->fp)  != EOF);
+				TRY(claws_fputc('\n', pfile->fp) != EOF && claws_fputs(buf, pfile->fp) != EOF);
 				break;
 			}
 		}
 		while (claws_fgets(buf, sizeof(buf), orig_fp) != NULL) {
 			if (buf[0] == '[') {
-				if (!strncmp(buf, block_label,
-						strlen(block_label)))
+				if (!strncmp(buf, block_label, strlen(block_label)))
 					in_dup_block = TRUE;
 				else
 					in_dup_block = FALSE;
@@ -295,7 +283,8 @@ void prefs_write_config(PrefParam *param, const gchar *label,
 	g_free(block_label);
 	block_label = NULL;
 
-	if (orig_fp) claws_fclose(orig_fp);
+	if (orig_fp)
+		claws_fclose(orig_fp);
 	if (prefs_file_close(pfile) < 0)
 		g_warning("failed to write configuration to file");
 	g_free(rcpath);
@@ -311,49 +300,41 @@ gint prefs_write_param(PrefParam *param, FILE *fp)
 	for (i = 0; param[i].name != NULL; i++) {
 		switch (param[i].type) {
 		case P_STRING:
-		{
-			gchar *tmp = NULL;
+			{
+				gchar *tmp = NULL;
 
-			if (*((gchar **)param[i].data)) {
-				if (g_utf8_validate(*((gchar **)param[i].data), -1, NULL))
-					tmp = g_strdup(*((gchar **)param[i].data));
-				else {
-					tmp = conv_codeset_strdup(*((gchar **)param[i].data),
-						conv_get_locale_charset_str_no_utf8(),
-						CS_INTERNAL);
-					if (!tmp)
+				if (*((gchar **)param[i].data)) {
+					if (g_utf8_validate(*((gchar **)param[i].data), -1, NULL))
 						tmp = g_strdup(*((gchar **)param[i].data));
+					else {
+						tmp = conv_codeset_strdup(*((gchar **)param[i].data), conv_get_locale_charset_str_no_utf8(), CS_INTERNAL);
+						if (!tmp)
+							tmp = g_strdup(*((gchar **)param[i].data));
+					}
 				}
+
+				g_snprintf(buf, sizeof(buf), "%s=%s\n", param[i].name, tmp ? tmp : "");
+
+				g_free(tmp);
+				break;
 			}
-
-			g_snprintf(buf, sizeof(buf), "%s=%s\n", param[i].name,
-				   tmp ? tmp : "");
-
-			g_free(tmp);
-			break;
-		}
 		case P_PASSWORD:
 			buf[0] = '\0'; /* Passwords are written to password store. */
 			break;
 		case P_INT:
-			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name,
-				   *((gint *)param[i].data));
+			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name, *((gint *)param[i].data));
 			break;
 		case P_BOOL:
-			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name,
-				   *((gboolean *)param[i].data));
+			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name, *((gboolean *)param[i].data));
 			break;
 		case P_ENUM:
-			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name,
-				   *((DummyEnum *)param[i].data));
+			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name, *((DummyEnum *) param[i].data));
 			break;
 		case P_USHORT:
-			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name,
-				   *((gushort *)param[i].data));
+			g_snprintf(buf, sizeof(buf), "%s=%d\n", param[i].name, *((gushort *) param[i].data));
 			break;
 		case P_COLOR:
-			g_snprintf(buf, sizeof buf,  "%s=#%6.6lx\n", param[i].name,
-				   *((gulong *) param[i].data));
+			g_snprintf(buf, sizeof buf, "%s=#%6.6lx\n", param[i].name, *((gulong *) param[i].data));
 			break;
 		default:
 			/* unrecognized, fail */
@@ -380,7 +361,8 @@ void prefs_set_default(PrefParam *param)
 	cm_return_if_fail(param != NULL);
 
 	for (i = 0; param[i].name != NULL; i++) {
-		if (!param[i].data) continue;
+		if (!param[i].data)
+			continue;
 
 		switch (param[i].type) {
 		case P_STRING:
@@ -391,24 +373,17 @@ void prefs_set_default(PrefParam *param)
 					gchar *tmp;
 
 					envstr = g_getenv(param[i].defval + 4);
-					tmp = envstr && *envstr ?
-						conv_codeset_strdup(envstr,
-								    conv_get_locale_charset_str(),
-								    CS_INTERNAL)
-						: g_strdup("");
+					tmp = envstr && *envstr ? conv_codeset_strdup(envstr, conv_get_locale_charset_str(), CS_INTERNAL)
+					    : g_strdup("");
 					if (!tmp) {
 						g_warning("failed to convert character set");
 						tmp = g_strdup(envstr);
 					}
 					*((gchar **)param[i].data) = tmp;
 				} else if (param[i].defval[0] == '~')
-					*((gchar **)param[i].data) =
-						g_strconcat(get_home_dir(),
-							    param[i].defval + 1,
-							    NULL);
-				else 
-					*((gchar **)param[i].data) =
-						g_strdup(param[i].defval);
+					*((gchar **)param[i].data) = g_strconcat(get_home_dir(), param[i].defval + 1, NULL);
+				else
+					*((gchar **)param[i].data) = g_strdup(param[i].defval);
 			} else
 				*((gchar **)param[i].data) = NULL;
 			break;
@@ -416,8 +391,7 @@ void prefs_set_default(PrefParam *param)
 			g_free(*((gchar **)param[i].data));
 			if (param[i].defval != NULL) {
 				if (param[i].defval[0] != '\0')
-					*((gchar **)param[i].data) =
-						g_strdup(param[i].defval);
+					*((gchar **)param[i].data) = g_strdup(param[i].defval);
 				else
 					*((gchar **)param[i].data) = NULL;
 			} else
@@ -425,8 +399,7 @@ void prefs_set_default(PrefParam *param)
 			break;
 		case P_INT:
 			if (param[i].defval != NULL)
-				*((gint *)param[i].data) =
-					(gint)atoi(param[i].defval);
+				*((gint *)param[i].data) = (gint)atoi(param[i].defval);
 			else if (!strcmp(param[i].name, "config_version"))
 				*((gint *)param[i].data) = CLAWS_CONFIG_VERSION;
 			else
@@ -443,25 +416,24 @@ void prefs_set_default(PrefParam *param)
 			break;
 		case P_ENUM:
 			if (param[i].defval != NULL)
-				*((DummyEnum*)param[i].data) =
-					(DummyEnum)atoi(param[i].defval);
+				*((DummyEnum *) param[i].data) = (DummyEnum) atoi(param[i].defval);
 			else
-				*((DummyEnum *)param[i].data) = 0;
+				*((DummyEnum *) param[i].data) = 0;
 			break;
 		case P_USHORT:
 			if (param[i].defval != NULL)
-				*((gushort *)param[i].data) = (gushort)atoi(param[i].defval);
+				*((gushort *) param[i].data) = (gushort) atoi(param[i].defval);
 			else
-				*((gushort *)param[i].data) = 0;
+				*((gushort *) param[i].data) = 0;
 			break;
 		case P_COLOR:
 			if (param[i].defval != NULL && gdk_color_parse(param[i].defval, &color))
-				*((gulong *)param[i].data) = RGB_FROM_GDK_COLOR(color);
+				*((gulong *) param[i].data) = RGB_FROM_GDK_COLOR(color);
 			else if (param[i].defval)
 				/* be compatible and accept ints */
-				*((gulong *)param[i].data) = strtoul(param[i].defval, 0, 10); 
+				*((gulong *) param[i].data) = strtoul(param[i].defval, 0, 10);
 			else
-				*((gulong *)param[i].data) = 0; 
+				*((gulong *) param[i].data) = 0;
 			break;
 		default:
 			break;
@@ -476,7 +448,8 @@ void prefs_free(PrefParam *param)
 	cm_return_if_fail(param != NULL);
 
 	for (i = 0; param[i].name != NULL; i++) {
-		if (!param[i].data) continue;
+		if (!param[i].data)
+			continue;
 
 		switch (param[i].type) {
 		case P_STRING:
@@ -527,16 +500,17 @@ void prefs_set_data_from_dialog(PrefParam *param)
 
 void prefs_set_dialog_to_default(PrefParam *param)
 {
-	gint	   i;
-	PrefParam  tmpparam;
-	gchar	  *str_data = NULL;
-	gint	   int_data;
-	gushort    ushort_data;
-	gboolean   bool_data;
-	DummyEnum  enum_data;
+	gint i;
+	PrefParam tmpparam;
+	gchar *str_data = NULL;
+	gint int_data;
+	gushort ushort_data;
+	gboolean bool_data;
+	DummyEnum enum_data;
 
 	for (i = 0; param[i].name != NULL; i++) {
-		if (!param[i].widget_set_func) continue;
+		if (!param[i].widget_set_func)
+			continue;
 
 		tmpparam = param[i];
 
@@ -548,10 +522,7 @@ void prefs_set_dialog_to_default(PrefParam *param)
 					tmpparam.data = &str_data;
 					break;
 				} else if (tmpparam.defval[0] == '~') {
-					str_data =
-						g_strconcat(get_home_dir(),
-							    param[i].defval + 1,
-							    NULL);
+					str_data = g_strconcat(get_home_dir(), param[i].defval + 1, NULL);
 					tmpparam.data = &str_data;
 					break;
 				}
@@ -581,14 +552,14 @@ void prefs_set_dialog_to_default(PrefParam *param)
 					bool_data = TRUE;
 				else
 					bool_data = atoi(tmpparam.defval)
-						? TRUE : FALSE;
+					    ? TRUE : FALSE;
 			} else
 				bool_data = FALSE;
 			tmpparam.data = &bool_data;
 			break;
 		case P_ENUM:
 			if (tmpparam.defval)
-				enum_data = (DummyEnum)atoi(tmpparam.defval);
+				enum_data = (DummyEnum) atoi(tmpparam.defval);
 			else
 				enum_data = 0;
 			tmpparam.data = &enum_data;
@@ -619,14 +590,13 @@ void prefs_set_data_from_entry(PrefParam *pparam)
 		*str = entry_str[0] ? g_strdup(entry_str) : NULL;
 		break;
 	case P_USHORT:
-		*((gushort *)pparam->data) = atoi(entry_str);
+		*((gushort *) pparam->data) = atoi(entry_str);
 		break;
 	case P_INT:
 		*((gint *)pparam->data) = atoi(entry_str);
 		break;
 	default:
-		g_warning("invalid PrefType for GtkEntry widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkEntry widget: %d", pparam->type);
 	}
 }
 
@@ -643,8 +613,7 @@ void prefs_set_escaped_data_from_entry(PrefParam *pparam)
 		*str = pref_get_pref_from_entry(GTK_ENTRY(*pparam->widget));
 		break;
 	default:
-		g_warning("invalid escaped PrefType for GtkEntry widget: %d",
-			  pparam->type);
+		g_warning("invalid escaped PrefType for GtkEntry widget: %d", pparam->type);
 	}
 }
 
@@ -656,20 +625,16 @@ void prefs_set_entry(PrefParam *pparam)
 	switch (pparam->type) {
 	case P_STRING:
 		str = (gchar **)pparam->data;
-		gtk_entry_set_text(GTK_ENTRY(*pparam->widget),
-				   *str ? *str : "");
+		gtk_entry_set_text(GTK_ENTRY(*pparam->widget), *str ? *str : "");
 		break;
 	case P_INT:
-		gtk_entry_set_text(GTK_ENTRY(*pparam->widget),
-				   itos(*((gint *)pparam->data)));
+		gtk_entry_set_text(GTK_ENTRY(*pparam->widget), itos(*((gint *)pparam->data)));
 		break;
 	case P_USHORT:
-		gtk_entry_set_text(GTK_ENTRY(*pparam->widget),
-				   itos(*((gushort *)pparam->data)));
+		gtk_entry_set_text(GTK_ENTRY(*pparam->widget), itos(*((gushort *) pparam->data)));
 		break;
 	default:
-		g_warning("invalid PrefType for GtkEntry widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkEntry widget: %d", pparam->type);
 	}
 }
 
@@ -682,12 +647,10 @@ void prefs_set_entry_from_escaped(PrefParam *pparam)
 	switch (pparam->type) {
 	case P_STRING:
 		str = (gchar **)pparam->data;
-		pref_set_entry_from_pref(GTK_ENTRY(*pparam->widget),
-				   *str ? *str : "");
+		pref_set_entry_from_pref(GTK_ENTRY(*pparam->widget), *str ? *str : "");
 		break;
 	default:
-		g_warning("invalid escaped PrefType for GtkEntry widget: %d",
-			  pparam->type);
+		g_warning("invalid escaped PrefType for GtkEntry widget: %d", pparam->type);
 	}
 }
 
@@ -703,9 +666,8 @@ void prefs_set_data_from_text(PrefParam *pparam)
 	case P_STRING:
 		str = (gchar **)pparam->data;
 		g_free(*str);
-		if (GTK_IS_EDITABLE(*pparam->widget)) {   /* need? */
-			tp = text = gtk_editable_get_chars
-					(GTK_EDITABLE(*pparam->widget), 0, -1);
+		if (GTK_IS_EDITABLE(*pparam->widget)) {	/* need? */
+			tp = text = gtk_editable_get_chars(GTK_EDITABLE(*pparam->widget), 0, -1);
 		} else if (GTK_IS_TEXT_VIEW(*pparam->widget)) {
 			GtkTextView *textview = GTK_TEXT_VIEW(*pparam->widget);
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer(textview);
@@ -715,7 +677,7 @@ void prefs_set_data_from_text(PrefParam *pparam)
 			tp = text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
 		}
 
-		cm_return_if_fail (tp && text);
+		cm_return_if_fail(tp && text);
 
 		if (text[0] == '\0') {
 			*str = NULL;
@@ -723,8 +685,11 @@ void prefs_set_data_from_text(PrefParam *pparam)
 			break;
 		}
 
-		Xalloca(tmpp = tmp, strlen(text) * 2 + 1,
-			{ *str = NULL; break; });
+		Xalloca(tmpp = tmp, strlen(text) * 2 + 1, {
+			*str = NULL;
+			break;
+			}
+		);
 		while (*tp) {
 			if (*tp == '\n') {
 				*tmpp++ = '\\';
@@ -738,8 +703,7 @@ void prefs_set_data_from_text(PrefParam *pparam)
 		g_free(text);
 		break;
 	default:
-		g_warning("invalid PrefType for GtkText widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkText widget: %d", pparam->type);
 	}
 }
 
@@ -756,8 +720,7 @@ void prefs_set_escaped_data_from_text(PrefParam *pparam)
 		*str = pref_get_pref_from_textview(GTK_TEXT_VIEW(*pparam->widget));
 		break;
 	default:
-		g_warning("invalid escaped PrefType for GtkText widget: %d",
-			  pparam->type);
+		g_warning("invalid escaped PrefType for GtkText widget: %d", pparam->type);
 	}
 }
 
@@ -776,7 +739,8 @@ void prefs_set_text(PrefParam *pparam)
 		str = (gchar **)pparam->data;
 		if (*str) {
 			bufp = buf = alloca(strlen(*str) + 1);
-			if (!buf) buf = "";
+			if (!buf)
+				buf = "";
 			else {
 				sp = *str;
 				while (*sp) {
@@ -798,8 +762,7 @@ void prefs_set_text(PrefParam *pparam)
 		gtk_text_buffer_insert(buffer, &iter, buf, -1);
 		break;
 	default:
-		g_warning("invalid PrefType for GtkTextView widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkTextView widget: %d", pparam->type);
 	}
 }
 
@@ -812,12 +775,10 @@ void prefs_set_text_from_escaped(PrefParam *pparam)
 	switch (pparam->type) {
 	case P_STRING:
 		str = (gchar **)pparam->data;
-		pref_set_textview_from_pref(GTK_TEXT_VIEW(*pparam->widget),
-				 *str ? *str : "");
+		pref_set_textview_from_pref(GTK_TEXT_VIEW(*pparam->widget), *str ? *str : "");
 		break;
 	default:
-		g_warning("invalid escaped PrefType for GtkTextView widget: %d",
-			  pparam->type);
+		g_warning("invalid escaped PrefType for GtkTextView widget: %d", pparam->type);
 	}
 }
 
@@ -825,9 +786,8 @@ void prefs_set_data_from_toggle(PrefParam *pparam)
 {
 	cm_return_if_fail(pparam->type == P_BOOL);
 	cm_return_if_fail(*pparam->widget != NULL);
-	
-	*((gboolean *)pparam->data) =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(*pparam->widget));
+
+	*((gboolean *)pparam->data) = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(*pparam->widget));
 }
 
 void prefs_set_toggle(PrefParam *pparam)
@@ -835,8 +795,7 @@ void prefs_set_toggle(PrefParam *pparam)
 	cm_return_if_fail(pparam->type == P_BOOL);
 	cm_return_if_fail(*pparam->widget != NULL);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(*pparam->widget),
-				     *((gboolean *)pparam->data));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(*pparam->widget), *((gboolean *)pparam->data));
 }
 
 void prefs_set_data_from_spinbtn(PrefParam *pparam)
@@ -845,18 +804,13 @@ void prefs_set_data_from_spinbtn(PrefParam *pparam)
 
 	switch (pparam->type) {
 	case P_INT:
-		*((gint *)pparam->data) =
-			gtk_spin_button_get_value_as_int
-			(GTK_SPIN_BUTTON(*pparam->widget));
+		*((gint *)pparam->data) = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(*pparam->widget));
 		break;
 	case P_USHORT:
-		*((gushort *)pparam->data) =
-			(gushort)gtk_spin_button_get_value_as_int
-			(GTK_SPIN_BUTTON(*pparam->widget));
+		*((gushort *) pparam->data) = (gushort) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(*pparam->widget));
 		break;
 	default:
-		g_warning("invalid PrefType for GtkSpinButton widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkSpinButton widget: %d", pparam->type);
 	}
 }
 
@@ -866,16 +820,13 @@ void prefs_set_spinbtn(PrefParam *pparam)
 
 	switch (pparam->type) {
 	case P_INT:
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(*pparam->widget),
-					  (gfloat)*((gint *)pparam->data));
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(*pparam->widget), (gfloat) * ((gint *)pparam->data));
 		break;
 	case P_USHORT:
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(*pparam->widget),
-					  (gfloat)*((gushort *)pparam->data));
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(*pparam->widget), (gfloat) * ((gushort *) pparam->data));
 		break;
 	default:
-		g_warning("invalid PrefType for GtkSpinButton widget: %d",
-			  pparam->type);
+		g_warning("invalid PrefType for GtkSpinButton widget: %d", pparam->type);
 	}
 }
 
@@ -892,9 +843,7 @@ static void prefs_gtk_window_closed_cb(PrefsWindow *prefswindow)
 
 void prefs_gtk_open(void)
 {
-	prefswindow_open(_("Preferences"), prefs_pages, NULL,
-			&prefs_common.prefswin_width, &prefs_common.prefswin_height,
-			NULL, prefs_gtk_window_closed_cb, prefs_gtk_window_closed_cb);
+	prefswindow_open(_("Preferences"), prefs_pages, NULL, &prefs_common.prefswin_width, &prefs_common.prefswin_height, NULL, prefs_gtk_window_closed_cb, prefs_gtk_window_closed_cb);
 }
 
 void prefs_gtk_register_page(PrefsPage *page)
@@ -908,13 +857,13 @@ void prefs_gtk_unregister_page(PrefsPage *page)
 }
 
 static void prefs_destroy_whole_cache(gpointer to_free)
-{	
+{
 	GHashTable *table = (GHashTable *)to_free;
 	g_hash_table_destroy(table);
 }
 
 static void prefs_destroy_file_cache(gpointer to_free)
-{	
+{
 	GHashTable *table = (GHashTable *)to_free;
 	g_hash_table_destroy(table);
 }
@@ -928,10 +877,10 @@ static int prefs_cache_sections(GHashTable *file_cache, const gchar *rcfile)
 	if (rcfile)
 		fp = claws_fopen(rcfile, "rb");
 	if (!fp) {
-		debug_print("cache: %s: %s\n", rcfile?rcfile:"(null)", g_strerror(errno));
+		debug_print("cache: %s: %s\n", rcfile ? rcfile : "(null)", g_strerror(errno));
 		return -1;
 	}
-		
+
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		strretchomp(buf);
 		if (buf[0] == '\0')
@@ -939,17 +888,15 @@ static int prefs_cache_sections(GHashTable *file_cache, const gchar *rcfile)
 		if (buf[0] == '#')
 			continue; /* comment */
 		if (buf[0] == '[') { /* new section */
-			gchar *blockname = g_strdup(buf+1);
+			gchar *blockname = g_strdup(buf + 1);
 
 			if (strrchr(blockname, ']'))
 				*strrchr(blockname, ']') = '\0';
 
 			if ((section_cache = g_hash_table_lookup(file_cache, blockname)) == NULL) {
 				debug_print("new section '%s'\n", blockname);
-				section_cache = g_hash_table_new_full(g_str_hash, g_str_equal,
-						g_free, NULL);
-				g_hash_table_insert(file_cache, 
-					blockname, section_cache);
+				section_cache = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+				g_hash_table_insert(file_cache, blockname, section_cache);
 			} else {
 				debug_print("section '%s' already done\n", blockname);
 				g_free(blockname);
@@ -962,13 +909,13 @@ static int prefs_cache_sections(GHashTable *file_cache, const gchar *rcfile)
 				continue;
 			} else {
 				gchar *pref;
-				
+
 				if (!strchr(buf, '=')) {
 					/* plugins do differently */
 					continue;
 				}
 				pref = g_strdup(buf);
-				
+
 				//debug_print("new pref '%s'\n", pref);
 				g_hash_table_insert(section_cache, pref, GINT_TO_POINTER(1));
 			}
@@ -980,12 +927,12 @@ static int prefs_cache_sections(GHashTable *file_cache, const gchar *rcfile)
 
 static int prefs_cache(const gchar *rcfile)
 {
-	GHashTable *file_cache = g_hash_table_new_full(g_str_hash, g_str_equal, 
-					g_free, prefs_destroy_file_cache);
-	
-	debug_print("new file '%s'\n", rcfile?rcfile:"(null)");
+	GHashTable *file_cache = g_hash_table_new_full(g_str_hash, g_str_equal,
+						       g_free, prefs_destroy_file_cache);
+
+	debug_print("new file '%s'\n", rcfile ? rcfile : "(null)");
 	g_hash_table_insert(whole_cache, g_strdup(rcfile), file_cache);
-	
+
 	return prefs_cache_sections(file_cache, rcfile);
 }
 
@@ -994,10 +941,9 @@ void prefs_prepare_cache(void)
 	gchar *clawsrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);
 	gchar *folderitemrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDERITEM_RC, NULL);
 	gchar *accountrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, ACCOUNT_RC, NULL);
-	
+
 	if (whole_cache == NULL) {
-		whole_cache = g_hash_table_new_full(g_str_hash, g_str_equal,
-				g_free, prefs_destroy_whole_cache);
+		whole_cache = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, prefs_destroy_whole_cache);
 	} else {
 		debug_print("already cached\n");
 		g_free(clawsrc);
@@ -1005,9 +951,7 @@ void prefs_prepare_cache(void)
 		g_free(accountrc);
 		return;
 	}
-	if (prefs_cache(clawsrc) < 0 ||
-	    prefs_cache(folderitemrc) < 0 ||
-	    prefs_cache(accountrc) < 0)
+	if (prefs_cache(clawsrc) < 0 || prefs_cache(folderitemrc) < 0 || prefs_cache(accountrc) < 0)
 		prefs_destroy_cache();
 
 	g_free(clawsrc);
@@ -1032,27 +976,30 @@ static void prefs_parse_cache(gpointer key, gpointer value, gpointer user_data)
 	gchar *pref = (gchar *)key;
 
 	PrefParam *param = (PrefParam *)user_data;
-	
+
 	prefs_config_parse_one_line(param, pref);
 }
 
-static gboolean prefs_read_config_from_cache(PrefParam *param, const gchar *label,
-			       const gchar *rcfile) 
+static gboolean prefs_read_config_from_cache(PrefParam *param, const gchar *label, const gchar *rcfile)
 {
 	GHashTable *sections_table = NULL;
 	GHashTable *values_table = NULL;
 	sections_table = g_hash_table_lookup(whole_cache, rcfile);
-	
+
 	if (sections_table == NULL) {
-		g_warning("can't find %s in the whole cache", rcfile?rcfile:"(null)");
+		g_warning("can't find %s in the whole cache", rcfile ? rcfile : "(null)");
 		return FALSE;
 	}
 	values_table = g_hash_table_lookup(sections_table, label);
-	
+
 	if (values_table == NULL) {
-		debug_print("no '%s' section in '%s' cache\n", label?label:"(null)", rcfile?rcfile:"(null)");
+		debug_print("no '%s' section in '%s' cache\n", label ? label : "(null)", rcfile ? rcfile : "(null)");
 		return TRUE;
 	}
 	g_hash_table_foreach(values_table, prefs_parse_cache, param);
 	return TRUE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

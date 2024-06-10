@@ -33,17 +33,11 @@
 #include "prefs_common.h"
 #include "file-utils.h"
 
-static void source_window_size_alloc_cb	(GtkWidget	*widget,
-					 GtkAllocation	*allocation);
-static gint source_window_delete_cb	(GtkWidget	*widget,
-					 GdkEventAny	*event,
-					 SourceWindow	*sourcewin);
-static gboolean key_pressed		(GtkWidget	*widget,
-					 GdkEventKey	*event,
-					 SourceWindow	*sourcewin);
-static void source_window_append	(SourceWindow	*sourcewin,
-					 const gchar	*str);
-static void source_window_destroy	(SourceWindow	*sourcewin);
+static void source_window_size_alloc_cb(GtkWidget *widget, GtkAllocation *allocation);
+static gint source_window_delete_cb(GtkWidget *widget, GdkEventAny *event, SourceWindow *sourcewin);
+static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, SourceWindow *sourcewin);
+static void source_window_append(SourceWindow *sourcewin, const gchar *str);
+static void source_window_destroy(SourceWindow *sourcewin);
 
 static void source_window_init()
 {
@@ -58,7 +52,7 @@ SourceWindow *source_window_create(void)
 	static PangoFontDescription *font_desc = NULL;
 
 	static GdkGeometry geometry;
-	
+
 	debug_print("Creating source window...\n");
 	sourcewin = g_new0(SourceWindow, 1);
 
@@ -66,31 +60,22 @@ SourceWindow *source_window_create(void)
 	gtk_window_set_title(GTK_WINDOW(window), _("Source of the message"));
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_widget_set_size_request(window, prefs_common.sourcewin_width,
-				    prefs_common.sourcewin_height);
-	
+	gtk_widget_set_size_request(window, prefs_common.sourcewin_width, prefs_common.sourcewin_height);
+
 	if (!geometry.min_height) {
 		geometry.min_width = 400;
 		geometry.min_height = 320;
 	}
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
 
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(source_window_size_alloc_cb),
-			 sourcewin);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(source_window_delete_cb), sourcewin);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(key_pressed), sourcewin);
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(source_window_size_alloc_cb), sourcewin);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(source_window_delete_cb), sourcewin);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(key_pressed), sourcewin);
 	gtk_widget_realize(window);
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
-					    GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(window), scrolledwin);
 	gtk_widget_show(scrolledwin);
 
@@ -98,8 +83,7 @@ SourceWindow *source_window_create(void)
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD_CHAR);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
 	if (!font_desc && prefs_common.textfont)
-		font_desc = pango_font_description_from_string
-					(prefs_common.textfont);
+		font_desc = pango_font_description_from_string(prefs_common.textfont);
 	if (font_desc)
 		gtk_widget_modify_font(text, font_desc);
 	gtk_container_add(GTK_CONTAINER(scrolledwin), text);
@@ -142,7 +126,7 @@ void source_window_show_msg(SourceWindow *sourcewin, MsgInfo *msginfo)
 	sourcewin->updating = TRUE;
 	file = procmsg_get_message_file(msginfo);
 	sourcewin->updating = FALSE;
-	
+
 	if (sourcewin->deferred_destroy) {
 		g_free(file);
 		source_window_destroy(sourcewin);
@@ -186,26 +170,24 @@ static void source_window_append(SourceWindow *sourcewin, const gchar *str)
 	gtk_text_buffer_insert(buffer, &iter, out, -1);
 }
 
-static void source_window_size_alloc_cb(GtkWidget *widget,
-					GtkAllocation *allocation)
+static void source_window_size_alloc_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
-	prefs_common.sourcewin_width  = allocation->width;
+	prefs_common.sourcewin_width = allocation->width;
 	prefs_common.sourcewin_height = allocation->height;
 }
 
-static gint source_window_delete_cb(GtkWidget *widget, GdkEventAny *event,
-				    SourceWindow *sourcewin)
+static gint source_window_delete_cb(GtkWidget *widget, GdkEventAny *event, SourceWindow *sourcewin)
 {
 	source_window_destroy(sourcewin);
 	return TRUE;
 }
 
-static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event,
-			    SourceWindow *sourcewin)
+static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, SourceWindow *sourcewin)
 {
-	if (!event || !sourcewin) return FALSE;
+	if (!event || !sourcewin)
+		return FALSE;
 
 	switch (event->keyval) {
 	case GDK_KEY_W:
@@ -221,3 +203,7 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

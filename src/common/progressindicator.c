@@ -54,3 +54,7 @@ void progressindicator_stop(ProgressType type)
 
 	hooks_invoke(PROGRESSINDICATOR_HOOKLIST, &data);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

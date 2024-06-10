@@ -23,8 +23,8 @@
 #ifdef USE_GNUTLS
 #include "mainwindow.h"
 
-void ssl_manager_create (void); 
-void ssl_manager_open 	(MainWindow *mainwin); 
+void ssl_manager_create(void);
+void ssl_manager_open(MainWindow *mainwin);
 
 #endif
 #endif

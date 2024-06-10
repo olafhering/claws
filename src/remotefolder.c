@@ -24,8 +24,7 @@
 #include "utils.h"
 #include "remotefolder.h"
 
-void folder_remote_folder_init(Folder *folder, const gchar *name,
-			       const gchar *path)
+void folder_remote_folder_init(Folder *folder, const gchar *name, const gchar *path)
 {
 	folder_init(folder, name);
 	REMOTE_FOLDER(folder)->session = NULL;
@@ -38,3 +37,7 @@ void folder_remote_folder_destroy(RemoteFolder *rfolder)
 	if (rfolder->session)
 		session_destroy(rfolder->session);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

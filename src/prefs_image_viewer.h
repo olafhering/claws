@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-void prefs_image_viewer_init	(void);
-void prefs_image_viewer_done	(void);
+void prefs_image_viewer_init(void);
+void prefs_image_viewer_done(void);
 
 #endif

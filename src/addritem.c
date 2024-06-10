@@ -37,9 +37,10 @@
  * Create new email address item.
  * \return Initialized email item.
  */
-ItemEMail *addritem_create_item_email( void ) {
+ItemEMail *addritem_create_item_email(void)
+{
 	ItemEMail *item;
-	item = g_new0( ItemEMail, 1 );
+	item = g_new0(ItemEMail, 1);
 	ADDRITEM_TYPE(item) = ITEMTYPE_EMAIL;
 	ADDRITEM_ID(item) = NULL;
 	ADDRITEM_NAME(item) = NULL;
@@ -55,13 +56,14 @@ ItemEMail *addritem_create_item_email( void ) {
  * \param  item E-Mail to copy.
  * \return Copy of email, or <i>NULL</i> if null argument supplied.
  */
-ItemEMail *addritem_copy_item_email( ItemEMail *item ) {
+ItemEMail *addritem_copy_item_email(ItemEMail *item)
+{
 	ItemEMail *itemNew = NULL;
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_item_email();
-		ADDRITEM_NAME(itemNew) = g_strdup( ADDRITEM_NAME(item) );
-		itemNew->address = g_strdup( item->address );
-		itemNew->remarks = g_strdup( item->remarks );
+		ADDRITEM_NAME(itemNew) = g_strdup(ADDRITEM_NAME(item));
+		itemNew->address = g_strdup(item->address);
+		itemNew->remarks = g_strdup(item->remarks);
 	}
 	return itemNew;
 }
@@ -71,15 +73,16 @@ ItemEMail *addritem_copy_item_email( ItemEMail *item ) {
  * \param  item E-Mail to copy.
  * \return Copy of email.
  */
-ItemEMail *addritem_copyfull_item_email( ItemEMail *item ) {
+ItemEMail *addritem_copyfull_item_email(ItemEMail *item)
+{
 	ItemEMail *itemNew = NULL;
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_item_email();
-		ADDRITEM_ID(itemNew) = g_strdup( ADDRITEM_ID(item) );
-		ADDRITEM_NAME(itemNew) = g_strdup( ADDRITEM_NAME(item) );
+		ADDRITEM_ID(itemNew) = g_strdup(ADDRITEM_ID(item));
+		ADDRITEM_NAME(itemNew) = g_strdup(ADDRITEM_NAME(item));
 		ADDRITEM_PARENT(itemNew) = ADDRITEM_PARENT(item);
-		itemNew->address = g_strdup( item->address );
-		itemNew->remarks = g_strdup( item->remarks );
+		itemNew->address = g_strdup(item->address);
+		itemNew->remarks = g_strdup(item->remarks);
 	}
 	return itemNew;
 }
@@ -89,8 +92,9 @@ ItemEMail *addritem_copyfull_item_email( ItemEMail *item ) {
  * \param email E-Mail item.
  * \param value Alias.
  */
-void addritem_email_set_alias( ItemEMail *email, const gchar *value ) {
-	ADDRITEM_NAME(email) = mgu_replace_string( ADDRITEM_NAME(email), value );
+void addritem_email_set_alias(ItemEMail *email, const gchar *value)
+{
+	ADDRITEM_NAME(email) = mgu_replace_string(ADDRITEM_NAME(email), value);
 }
 
 /**
@@ -98,8 +102,9 @@ void addritem_email_set_alias( ItemEMail *email, const gchar *value ) {
  * \param email E-Mail item.
  * \param value Address.
  */
-void addritem_email_set_address( ItemEMail *email, const gchar *value ) {
-	email->address = mgu_replace_string( email->address, value );
+void addritem_email_set_address(ItemEMail *email, const gchar *value)
+{
+	email->address = mgu_replace_string(email->address, value);
 }
 
 /**
@@ -107,22 +112,24 @@ void addritem_email_set_address( ItemEMail *email, const gchar *value ) {
  * \param email E-Mail item.
  * \param value Remarks.
  */
-void addritem_email_set_remarks( ItemEMail *email, const gchar *value ) {
-	email->remarks = mgu_replace_string( email->remarks, value );
+void addritem_email_set_remarks(ItemEMail *email, const gchar *value)
+{
+	email->remarks = mgu_replace_string(email->remarks, value);
 }
 
 /**
  * Free address item email object.
  * \param item E-Mail item to free.
  */
-void addritem_free_item_email( ItemEMail *item ) {
-	cm_return_if_fail( item != NULL );
+void addritem_free_item_email(ItemEMail *item)
+{
+	cm_return_if_fail(item != NULL);
 
 	/* Free internal stuff */
-	g_free( ADDRITEM_ID(item) );
-	g_free( ADDRITEM_NAME(item) );
-	g_free( item->address );
-	g_free( item->remarks );
+	g_free(ADDRITEM_ID(item));
+	g_free(ADDRITEM_NAME(item));
+	g_free(item->address);
+	g_free(item->remarks);
 
 	ADDRITEM_OBJECT(item)->type = ITEMTYPE_NONE;
 	ADDRITEM_ID(item) = NULL;
@@ -131,16 +138,17 @@ void addritem_free_item_email( ItemEMail *item ) {
 	ADDRITEM_SUBTYPE(item) = 0;
 	item->address = NULL;
 	item->remarks = NULL;
-	g_free( item );
+	g_free(item);
 }
 
 /**
  * Create new attribute object.
  * \return Initialized attribute object.
  */
-UserAttribute *addritem_create_attribute( void ) {
+UserAttribute *addritem_create_attribute(void)
+{
 	UserAttribute *item;
-	item = g_new0( UserAttribute, 1 );
+	item = g_new0(UserAttribute, 1);
 	item->uid = NULL;
 	item->name = NULL;
 	item->value = NULL;
@@ -152,13 +160,14 @@ UserAttribute *addritem_create_attribute( void ) {
  * \param  item Attribute to copy.
  * \return Copy of attribute, or <i>NULL</i> if null argument supplied.
  */
-UserAttribute *addritem_copy_attribute( UserAttribute *item ) {
+UserAttribute *addritem_copy_attribute(UserAttribute *item)
+{
 	UserAttribute *itemNew = NULL;
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_attribute();
-		itemNew->uid = g_strdup( item->uid );
-		itemNew->name = g_strdup( item->name );
-		itemNew->value = g_strdup( item->value );
+		itemNew->uid = g_strdup(item->uid);
+		itemNew->name = g_strdup(item->name);
+		itemNew->value = g_strdup(item->value);
 	}
 	return itemNew;
 }
@@ -168,9 +177,10 @@ UserAttribute *addritem_copy_attribute( UserAttribute *item ) {
  * \param item Attribute object.
  * \param value ID.
  */
-void addritem_attrib_set_id( UserAttribute *item, const gchar *value ) {
-	cm_return_if_fail( item != NULL );
-	item->uid = mgu_replace_string( item->uid, value );
+void addritem_attrib_set_id(UserAttribute *item, const gchar *value)
+{
+	cm_return_if_fail(item != NULL);
+	item->uid = mgu_replace_string(item->uid, value);
 }
 
 /**
@@ -178,9 +188,10 @@ void addritem_attrib_set_id( UserAttribute *item, const gchar *value ) {
  * \param item Attribute object.
  * \param value Name.
  */
-void addritem_attrib_set_name( UserAttribute *item, const gchar *value ) {
-	cm_return_if_fail( item != NULL );
-	item->name = mgu_replace_string( item->name, value );
+void addritem_attrib_set_name(UserAttribute *item, const gchar *value)
+{
+	cm_return_if_fail(item != NULL);
+	item->name = mgu_replace_string(item->name, value);
 }
 
 /**
@@ -188,33 +199,36 @@ void addritem_attrib_set_name( UserAttribute *item, const gchar *value ) {
  * \param item Attribute object.
  * \param value Value.
  */
-void addritem_attrib_set_value( UserAttribute *item, const gchar *value ) {
-	cm_return_if_fail( item != NULL );
-	item->value = mgu_replace_string( item->value, value );
+void addritem_attrib_set_value(UserAttribute *item, const gchar *value)
+{
+	cm_return_if_fail(item != NULL);
+	item->value = mgu_replace_string(item->value, value);
 }
 
 /**
  * Free user attribute.
  * \param item Attribute object to free.
  */
-void addritem_free_attribute( UserAttribute *item ) {
-	cm_return_if_fail( item != NULL );
-	g_free( item->uid );
-	g_free( item->name );
-	g_free( item->value );
+void addritem_free_attribute(UserAttribute *item)
+{
+	cm_return_if_fail(item != NULL);
+	g_free(item->uid);
+	g_free(item->name);
+	g_free(item->value);
 	item->uid = NULL;
 	item->name = NULL;
 	item->value = NULL;
-	g_free( item );
+	g_free(item);
 }
 
 /**
  * Create new address book person.
  * \return Initialized person object.
  */
-ItemPerson *addritem_create_item_person( void ) {
+ItemPerson *addritem_create_item_person(void)
+{
 	ItemPerson *person;
-	person = g_new0( ItemPerson, 1 );
+	person = g_new0(ItemPerson, 1);
 	ADDRITEM_TYPE(person) = ITEMTYPE_PERSON;
 	ADDRITEM_ID(person) = NULL;
 	ADDRITEM_NAME(person) = NULL;
@@ -237,18 +251,19 @@ ItemPerson *addritem_create_item_person( void ) {
  * \param  item Person to copy.
  * \return Copy of person, or <i>NULL</i> if null argument supplied.
  */
-ItemPerson *addritem_copy_item_person( ItemPerson *item ) {
+ItemPerson *addritem_copy_item_person(ItemPerson *item)
+{
 	ItemPerson *itemNew;
 
 	itemNew = NULL;
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_item_person();
-		ADDRITEM_NAME(itemNew) = g_strdup( ADDRITEM_NAME(item) );
-		itemNew->picture = g_strdup( ADDRITEM_ID(itemNew) );
-		itemNew->firstName = g_strdup( item->firstName );
-		itemNew->lastName = g_strdup( item->lastName );
-		itemNew->nickName = g_strdup( item->nickName );
-		itemNew->externalID = g_strdup( item->externalID );
+		ADDRITEM_NAME(itemNew) = g_strdup(ADDRITEM_NAME(item));
+		itemNew->picture = g_strdup(ADDRITEM_ID(itemNew));
+		itemNew->firstName = g_strdup(item->firstName);
+		itemNew->lastName = g_strdup(item->lastName);
+		itemNew->nickName = g_strdup(item->nickName);
+		itemNew->externalID = g_strdup(item->externalID);
 		itemNew->status = item->status;
 	}
 	return itemNew;
@@ -259,15 +274,16 @@ ItemPerson *addritem_copy_item_person( ItemPerson *item ) {
  * \param person Person object.
  * \param value Picture.
  */
-void addritem_person_set_picture( ItemPerson *person, const gchar *value ) {
+void addritem_person_set_picture(ItemPerson *person, const gchar *value)
+{
 	if (!value || g_utf8_validate(value, -1, NULL))
-		person->picture = mgu_replace_string( person->picture, value );
+		person->picture = mgu_replace_string(person->picture, value);
 	else {
-		gchar *out = conv_codeset_strdup(value, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		gchar *out = conv_codeset_strdup(value,
+						 conv_get_locale_charset_str_no_utf8(),
+						 CS_INTERNAL);
 		if (out)
-			person->picture = mgu_replace_string( person->picture, out );
+			person->picture = mgu_replace_string(person->picture, out);
 		g_free(out);
 	}
 }
@@ -278,11 +294,10 @@ void addritem_person_set_picture( ItemPerson *person, const gchar *value ) {
  * \return copy of picture file path string (to be freed by caller - and there is
  *         no guarantee that path does exist, or NULL.
  */
-gchar *addritem_person_get_picture( ItemPerson *person) {
+gchar *addritem_person_get_picture(ItemPerson *person)
+{
 	if (person->picture)
-		return g_strconcat( get_rc_dir(), G_DIR_SEPARATOR_S,
-			ADDRBOOK_DIR, G_DIR_SEPARATOR_S, person->picture,
-			".png", NULL );
+		return g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, ADDRBOOK_DIR, G_DIR_SEPARATOR_S, person->picture, ".png", NULL);
 	return NULL;
 }
 
@@ -290,14 +305,14 @@ gchar *addritem_person_get_picture( ItemPerson *person) {
  * Delete picture for person object.
  * \param person Person object.
  */
-void addritem_person_remove_picture( ItemPerson *person) {
+void addritem_person_remove_picture(ItemPerson *person)
+{
 	if (person->picture) {
-		gchar *filename = g_strconcat( get_rc_dir(), G_DIR_SEPARATOR_S,
-			ADDRBOOK_DIR, G_DIR_SEPARATOR_S, person->picture,
-			".png", NULL );
+		gchar *filename = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
+					      ADDRBOOK_DIR, G_DIR_SEPARATOR_S, person->picture,
+					      ".png", NULL);
 		if (is_file_exist(filename)) {
-			debug_print("removing addressbook picture %s\n",
-				filename);
+			debug_print("removing addressbook picture %s\n", filename);
 			if (claws_unlink(filename) < 0) {
 				FILE_OP_ERROR(filename, "remove");
 				g_free(filename);
@@ -315,15 +330,16 @@ void addritem_person_remove_picture( ItemPerson *person) {
  * \param person Person object.
  * \param value Name.
  */
-void addritem_person_set_first_name( ItemPerson *person, const gchar *value ) {
+void addritem_person_set_first_name(ItemPerson *person, const gchar *value)
+{
 	if (!value || g_utf8_validate(value, -1, NULL))
-		person->firstName = mgu_replace_string( person->firstName, value );
+		person->firstName = mgu_replace_string(person->firstName, value);
 	else {
-		gchar *out = conv_codeset_strdup(value, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		gchar *out = conv_codeset_strdup(value,
+						 conv_get_locale_charset_str_no_utf8(),
+						 CS_INTERNAL);
 		if (out)
-			person->firstName = mgu_replace_string( person->firstName, out );
+			person->firstName = mgu_replace_string(person->firstName, out);
 		g_free(out);
 	}
 }
@@ -333,15 +349,16 @@ void addritem_person_set_first_name( ItemPerson *person, const gchar *value ) {
  * \param person Person object.
  * \param value name.
  */
-void addritem_person_set_last_name( ItemPerson *person, const gchar *value ) {
+void addritem_person_set_last_name(ItemPerson *person, const gchar *value)
+{
 	if (!value || g_utf8_validate(value, -1, NULL))
-		person->lastName = mgu_replace_string( person->lastName, value );
+		person->lastName = mgu_replace_string(person->lastName, value);
 	else {
-		gchar *out = conv_codeset_strdup(value, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		gchar *out = conv_codeset_strdup(value,
+						 conv_get_locale_charset_str_no_utf8(),
+						 CS_INTERNAL);
 		if (out)
-			person->lastName = mgu_replace_string( person->lastName, out );
+			person->lastName = mgu_replace_string(person->lastName, out);
 		g_free(out);
 	}
 }
@@ -351,15 +368,16 @@ void addritem_person_set_last_name( ItemPerson *person, const gchar *value ) {
  * \param person Person object.
  * \param value name.
  */
-void addritem_person_set_nick_name( ItemPerson *person, const gchar *value ) {
+void addritem_person_set_nick_name(ItemPerson *person, const gchar *value)
+{
 	if (!value || g_utf8_validate(value, -1, NULL))
-		person->nickName = mgu_replace_string( person->nickName, value );
+		person->nickName = mgu_replace_string(person->nickName, value);
 	else {
-		gchar *out = conv_codeset_strdup(value, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		gchar *out = conv_codeset_strdup(value,
+						 conv_get_locale_charset_str_no_utf8(),
+						 CS_INTERNAL);
 		if (out)
-			person->nickName = mgu_replace_string( person->nickName, out );
+			person->nickName = mgu_replace_string(person->nickName, out);
 		g_free(out);
 	}
 }
@@ -369,15 +387,16 @@ void addritem_person_set_nick_name( ItemPerson *person, const gchar *value ) {
  * \param person Person object.
  * \param value name.
  */
-void addritem_person_set_common_name( ItemPerson *person, const gchar *value ) {
+void addritem_person_set_common_name(ItemPerson *person, const gchar *value)
+{
 	if (!value || g_utf8_validate(value, -1, NULL))
-		ADDRITEM_NAME(person) = mgu_replace_string( ADDRITEM_NAME(person), value );
+		ADDRITEM_NAME(person) = mgu_replace_string(ADDRITEM_NAME(person), value);
 	else {
-		gchar *out = conv_codeset_strdup(value, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		gchar *out = conv_codeset_strdup(value,
+						 conv_get_locale_charset_str_no_utf8(),
+						 CS_INTERNAL);
 		if (out)
-			ADDRITEM_NAME(person) = mgu_replace_string( ADDRITEM_NAME(person), out );
+			ADDRITEM_NAME(person) = mgu_replace_string(ADDRITEM_NAME(person), out);
 		g_free(out);
 	}
 }
@@ -387,8 +406,9 @@ void addritem_person_set_common_name( ItemPerson *person, const gchar *value ) {
  * \param person Person object.
  * \param value ID.
  */
-void addritem_person_set_external_id( ItemPerson *person, const gchar *value ) {
-	person->externalID = mgu_replace_string( person->externalID, value );
+void addritem_person_set_external_id(ItemPerson *person, const gchar *value)
+{
+	person->externalID = mgu_replace_string(person->externalID, value);
 }
 
 /**
@@ -397,7 +417,8 @@ void addritem_person_set_external_id( ItemPerson *person, const gchar *value ) {
  * \param person Person object.
  * \param value  Value for indicator. Set to <i>TRUE</i> if opened.
  */
-void addritem_person_set_opened( ItemPerson *person, const gboolean value ) {
+void addritem_person_set_opened(ItemPerson *person, const gboolean value)
+{
 	person->isOpened = value;
 }
 
@@ -407,16 +428,17 @@ void addritem_person_set_opened( ItemPerson *person, const gboolean value ) {
  * container.
  * \param list List of addresses to be freed.
  */
-void addritem_free_list_email( GList *list ) {
+void addritem_free_list_email(GList *list)
+{
 	GList *node = list;
-	while( node ) {
+	while (node) {
 		ItemEMail *email = node->data;
 
-		addritem_free_item_email( email );
+		addritem_free_item_email(email);
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	g_list_free( list );
+	g_list_free(list);
 	list = NULL;
 }
 
@@ -426,33 +448,35 @@ void addritem_free_list_email( GList *list ) {
  * container.
  * \param list List of attributes to be freed.
  */
-void addritem_free_list_attribute( GList *list ) {
+void addritem_free_list_attribute(GList *list)
+{
 	GList *node = list;
-	while( node ) {
-		addritem_free_attribute( node->data );
+	while (node) {
+		addritem_free_attribute(node->data);
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	g_list_free( list );
+	g_list_free(list);
 }
 
 /**
  * Free address person object.
  * \param person Person object to free.
  */
-void addritem_free_item_person( ItemPerson *person ) {
-	cm_return_if_fail( person != NULL );
+void addritem_free_item_person(ItemPerson *person)
+{
+	cm_return_if_fail(person != NULL);
 
 	/* Free internal stuff */
-	g_free( ADDRITEM_ID(person) );
-	g_free( ADDRITEM_NAME(person) );
-	g_free( person->picture );
-	g_free( person->firstName );
-	g_free( person->lastName );
-	g_free( person->nickName );
-	g_free( person->externalID );
-	g_list_free( person->listEMail );
-	addritem_free_list_attribute( person->listAttrib );
+	g_free(ADDRITEM_ID(person));
+	g_free(ADDRITEM_NAME(person));
+	g_free(person->picture);
+	g_free(person->firstName);
+	g_free(person->lastName);
+	g_free(person->nickName);
+	g_free(person->externalID);
+	g_list_free(person->listEMail);
+	addritem_free_list_attribute(person->listAttrib);
 
 	ADDRITEM_OBJECT(person)->type = ITEMTYPE_NONE;
 	ADDRITEM_ID(person) = NULL;
@@ -467,7 +491,7 @@ void addritem_free_item_person( ItemPerson *person ) {
 	person->listEMail = NULL;
 	person->listAttrib = NULL;
 
-	g_free( person );
+	g_free(person);
 }
 
 /**
@@ -475,14 +499,15 @@ void addritem_free_item_person( ItemPerson *person ) {
  * \param item   Item to print.
  * \param stream Output stream.
  */
-void addritem_print_item_email( ItemEMail *item, FILE *stream ) {
-	cm_return_if_fail( item != NULL );
-	fprintf( stream, "\t\tt/id: %d : '%s'\n", ADDRITEM_TYPE(item), ADDRITEM_ID(item) );
-	fprintf( stream, "\t\tsubty: %d\n", ADDRITEM_SUBTYPE(item) );
-	fprintf( stream, "\t\talis: '%s'\n", ADDRITEM_NAME(item) );
-	fprintf( stream, "\t\taddr: '%s'\n", item->address );
-	fprintf( stream, "\t\trems: '%s'\n", item->remarks );
-	fprintf( stream, "\t\t---\n" );
+void addritem_print_item_email(ItemEMail *item, FILE *stream)
+{
+	cm_return_if_fail(item != NULL);
+	fprintf(stream, "\t\tt/id: %d : '%s'\n", ADDRITEM_TYPE(item), ADDRITEM_ID(item));
+	fprintf(stream, "\t\tsubty: %d\n", ADDRITEM_SUBTYPE(item));
+	fprintf(stream, "\t\talis: '%s'\n", ADDRITEM_NAME(item));
+	fprintf(stream, "\t\taddr: '%s'\n", item->address);
+	fprintf(stream, "\t\trems: '%s'\n", item->remarks);
+	fprintf(stream, "\t\t---\n");
 }
 
 /**
@@ -490,12 +515,13 @@ void addritem_print_item_email( ItemEMail *item, FILE *stream ) {
  * \param item   Attribute to print.
  * \param stream Output stream.
  */
-static void addritem_print_attribute( UserAttribute *item, FILE *stream ) {
-	cm_return_if_fail( item != NULL );
-	fprintf( stream, "\t\tuid  : '%s'\n", item->uid );
-	fprintf( stream, "\t\tname : '%s'\n", item->name );
-	fprintf( stream, "\t\tvalue: '%s'\n", item->value );
-	fprintf( stream, "\t\t---\n" );
+static void addritem_print_attribute(UserAttribute *item, FILE *stream)
+{
+	cm_return_if_fail(item != NULL);
+	fprintf(stream, "\t\tuid  : '%s'\n", item->uid);
+	fprintf(stream, "\t\tname : '%s'\n", item->name);
+	fprintf(stream, "\t\tvalue: '%s'\n", item->value);
+	fprintf(stream, "\t\t---\n");
 }
 
 /**
@@ -503,44 +529,54 @@ static void addritem_print_attribute( UserAttribute *item, FILE *stream ) {
  * \param person Person to print.
  * \param stream Output stream.
  */
-void addritem_print_item_person( ItemPerson *person, FILE *stream ) {
+void addritem_print_item_person(ItemPerson *person, FILE *stream)
+{
 	GList *node;
-	cm_return_if_fail( person != NULL );
-	fprintf( stream, "Person:\n" );
-	fprintf( stream, "\tt/uid: %d : '%s'\n", ADDRITEM_TYPE(person), ADDRITEM_ID(person) );
-	fprintf( stream, "\tsubty: %d\n", ADDRITEM_SUBTYPE(person) );
-	fprintf( stream, "\tcommn: '%s'\n", ADDRITEM_NAME(person) );
-	fprintf( stream, "\tphoto: '%s'\n", person->picture );
-	fprintf( stream, "\tfirst: '%s'\n", person->firstName );
-	fprintf( stream, "\tlast : '%s'\n", person->lastName );
-	fprintf( stream, "\tnick : '%s'\n", person->nickName );
-	fprintf( stream, "\textID: '%s'\n", person->externalID );
-	fprintf( stream, "\teMail:\n" );
-	fprintf( stream, "\t---\n" );
+	cm_return_if_fail(person != NULL);
+	fprintf(stream, "Person:\n");
+	fprintf(stream, "\tt/uid: %d : '%s'\n", ADDRITEM_TYPE(person), ADDRITEM_ID(person));
+	fprintf(stream, "\tsubty: %d\n", ADDRITEM_SUBTYPE(person));
+	fprintf(stream, "\tcommn: '%s'\n", ADDRITEM_NAME(person));
+	fprintf(stream, "\tphoto: '%s'\n", person->picture);
+	fprintf(stream, "\tfirst: '%s'\n", person->firstName);
+	fprintf(stream, "\tlast : '%s'\n", person->lastName);
+	fprintf(stream, "\tnick : '%s'\n", person->nickName);
+	fprintf(stream, "\textID: '%s'\n", person->externalID);
+	fprintf(stream, "\teMail:\n");
+	fprintf(stream, "\t---\n");
 	node = person->listEMail;
-	while( node ) {
-		addritem_print_item_email( node->data, stream );
-		node = g_list_next( node );
+	while (node) {
+		addritem_print_item_email(node->data, stream);
+		node = g_list_next(node);
 	}
-	fprintf( stream, "\tuAttr:\n" );
-	fprintf( stream, "\t---\n" );
+	fprintf(stream, "\tuAttr:\n");
+	fprintf(stream, "\t---\n");
 	node = person->listAttrib;
-	while( node ) {
-		addritem_print_attribute( node->data, stream );
-		node = g_list_next( node );
+	while (node) {
+		addritem_print_attribute(node->data, stream);
+		node = g_list_next(node);
 	}
 	gchar *current_status;
 	switch (person->status) {
-		case NONE: current_status = g_strdup("Unchanged"); break;
-		case ADD_ENTRY: current_status = g_strdup("New"); break;
-		case UPDATE_ENTRY: current_status = g_strdup("Updated"); break;
-		case DELETE_ENTRY: current_status = g_strdup("Deleted"); break;
-		default: current_status = g_strdup("Unknown");
+	case NONE:
+		current_status = g_strdup("Unchanged");
+		break;
+	case ADD_ENTRY:
+		current_status = g_strdup("New");
+		break;
+	case UPDATE_ENTRY:
+		current_status = g_strdup("Updated");
+		break;
+	case DELETE_ENTRY:
+		current_status = g_strdup("Deleted");
+		break;
+	default:
+		current_status = g_strdup("Unknown");
 	}
-	fprintf( stream, "\t\tStatus: %s\n", current_status );
-	if ( current_status )
+	fprintf(stream, "\t\tStatus: %s\n", current_status);
+	if (current_status)
 		g_free(current_status);
-	fprintf( stream, "\t===\n" );
+	fprintf(stream, "\t===\n");
 }
 
 /**
@@ -549,18 +585,20 @@ void addritem_print_item_person( ItemPerson *person, FILE *stream ) {
  * \param  email  E-Mail object to add.
  * \return <i>TRUE</i> if E-Mail added.
  */
-gboolean addritem_person_add_email( ItemPerson *person, ItemEMail *email ) {
+gboolean addritem_person_add_email(ItemPerson *person, ItemEMail *email)
+{
 	GList *node;
 
-	cm_return_val_if_fail( person != NULL, FALSE );
-	cm_return_val_if_fail( email != NULL, FALSE );
+	cm_return_val_if_fail(person != NULL, FALSE);
+	cm_return_val_if_fail(email != NULL, FALSE);
 
 	node = person->listEMail;
-	while( node ) {
-		if( node->data == email ) return FALSE;
-		node = g_list_next( node );
+	while (node) {
+		if (node->data == email)
+			return FALSE;
+		node = g_list_next(node);
 	}
-	person->listEMail = g_list_append( person->listEMail, email );
+	person->listEMail = g_list_append(person->listEMail, email);
 	ADDRITEM_PARENT(email) = ADDRITEM_OBJECT(person);
 	return TRUE;
 }
@@ -572,27 +610,29 @@ gboolean addritem_person_add_email( ItemPerson *person, ItemEMail *email ) {
  * \return EMail object, or <i>NULL</i> if not found. Note that object should
  *         still be freed after calling this method.
  */
-ItemEMail *addritem_person_remove_email( ItemPerson *person, ItemEMail *email ) {
+ItemEMail *addritem_person_remove_email(ItemPerson *person, ItemEMail *email)
+{
 	gboolean found = FALSE;
 	GList *node;
 
-	cm_return_val_if_fail( person != NULL, NULL );
-	if( email == NULL ) return NULL;
+	cm_return_val_if_fail(person != NULL, NULL);
+	if (email == NULL)
+		return NULL;
 
 	/* Look for email */
 	node = person->listEMail;
-	while( node ) {
-		if( node-> data == email ) {
+	while (node) {
+		if (node->data == email) {
 			found = TRUE;
 			break;
 		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 
-	if( found ) {
+	if (found) {
 		/* Remove email from person's address list */
-		if( person->listEMail ) {
-			person->listEMail = g_list_remove( person->listEMail, email );
+		if (person->listEMail) {
+			person->listEMail = g_list_remove(person->listEMail, email);
 		}
 		/* Unlink reference to person. */
 		ADDRITEM_PARENT(email) = NULL;
@@ -607,11 +647,10 @@ ItemEMail *addritem_person_remove_email( ItemPerson *person, ItemEMail *email ) 
  * \param  attrib Attribute to add.
  * \return <i>TRUE</i> if item added.
  */
-void addritem_person_add_attribute(
-			ItemPerson *person, UserAttribute *attrib )
+void addritem_person_add_attribute(ItemPerson *person, UserAttribute *attrib)
 {
-	cm_return_if_fail( person != NULL );
-	person->listAttrib = g_list_append( person->listAttrib, attrib );
+	cm_return_if_fail(person != NULL);
+	person->listAttrib = g_list_append(person->listAttrib, attrib);
 }
 
 /**
@@ -619,8 +658,9 @@ void addritem_person_add_attribute(
  * \param  person Person.
  * \param  attrib Attribute to remove.
  */
-void addritem_person_remove_attribute(	ItemPerson *person, const gchar *attrib ) {
-	cm_return_if_fail( person != NULL && attrib != NULL );
+void addritem_person_remove_attribute(ItemPerson *person, const gchar *attrib)
+{
+	cm_return_if_fail(person != NULL && attrib != NULL);
 	GList *attrib_list;
 
 	attrib_list = person->listAttrib;
@@ -634,15 +674,15 @@ void addritem_person_remove_attribute(	ItemPerson *person, const gchar *attrib )
 	}
 }
 
-
 /**
  * Create new address book group object.
  * \return Initialized group object.
  */
-ItemGroup *addritem_create_item_group( void ) {
+ItemGroup *addritem_create_item_group(void)
+{
 	ItemGroup *group;
 
-	group = g_new0( ItemGroup, 1 );
+	group = g_new0(ItemGroup, 1);
 	ADDRITEM_TYPE(group) = ITEMTYPE_GROUP;
 	ADDRITEM_ID(group) = NULL;
 	ADDRITEM_NAME(group) = NULL;
@@ -658,14 +698,15 @@ ItemGroup *addritem_create_item_group( void ) {
  * \param  item Group to copy.
  * \return Copy of the group object, or <i>NULL</i> if null argument supplied.
  */
-ItemGroup *addritem_copy_item_group( ItemGroup *item ) {
+ItemGroup *addritem_copy_item_group(ItemGroup *item)
+{
 	ItemGroup *itemNew;
 
 	itemNew = NULL;
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_item_group();
-		ADDRITEM_NAME(itemNew) = g_strdup( ADDRITEM_NAME(item) );
-		itemNew->remarks = g_strdup( item->remarks );
+		ADDRITEM_NAME(itemNew) = g_strdup(ADDRITEM_NAME(item));
+		itemNew->remarks = g_strdup(item->remarks);
 	}
 	return itemNew;
 }
@@ -675,22 +716,24 @@ ItemGroup *addritem_copy_item_group( ItemGroup *item ) {
  * \param group Group object.
  * \param value Name of group.
  */
-void addritem_group_set_name( ItemGroup *group, const gchar *value ) {
-	ADDRITEM_NAME(group) = mgu_replace_string( ADDRITEM_NAME(group), value );
+void addritem_group_set_name(ItemGroup *group, const gchar *value)
+{
+	ADDRITEM_NAME(group) = mgu_replace_string(ADDRITEM_NAME(group), value);
 }
 
 /**
  * Free address group object.
  * \param group Group to free.
  */
-void addritem_free_item_group( ItemGroup *group ) {
-	cm_return_if_fail( group != NULL );
+void addritem_free_item_group(ItemGroup *group)
+{
+	cm_return_if_fail(group != NULL);
 
 	/* Free internal stuff */
-	g_free( ADDRITEM_ID(group) );
-	g_free( ADDRITEM_NAME(group) );
-	g_free( group->remarks );
-	g_list_free( group->listEMail );
+	g_free(ADDRITEM_ID(group));
+	g_free(ADDRITEM_NAME(group));
+	g_free(group->remarks);
+	g_list_free(group->listEMail);
 
 	ADDRITEM_TYPE(group) = ITEMTYPE_NONE;
 	ADDRITEM_ID(group) = NULL;
@@ -700,7 +743,7 @@ void addritem_free_item_group( ItemGroup *group ) {
 	group->remarks = NULL;
 	group->listEMail = NULL;
 
-	g_free( group );
+	g_free(group);
 }
 
 /**
@@ -711,18 +754,20 @@ void addritem_free_item_group( ItemGroup *group ) {
  * \param  email E-Mail object.
  * \return <i>TRUE</i> if email item added.
  */
-gboolean addritem_group_add_email( ItemGroup *group, ItemEMail *email ) {
+gboolean addritem_group_add_email(ItemGroup *group, ItemEMail *email)
+{
 	GList *node;
 
-	cm_return_val_if_fail( group != NULL, FALSE );
-	cm_return_val_if_fail( email != NULL, FALSE );
+	cm_return_val_if_fail(group != NULL, FALSE);
+	cm_return_val_if_fail(email != NULL, FALSE);
 
 	node = group->listEMail;
-	while( node ) {
-		if( node->data == email ) return FALSE;
-		node = g_list_next( node );
+	while (node) {
+		if (node->data == email)
+			return FALSE;
+		node = g_list_next(node);
 	}
-	group->listEMail = g_list_append( group->listEMail, email );
+	group->listEMail = g_list_append(group->listEMail, email);
 	return TRUE;
 }
 
@@ -735,15 +780,16 @@ gboolean addritem_group_add_email( ItemGroup *group, ItemEMail *email ) {
  *         be freed. An E-Mail object object should only be freed after
  *         removing from a person.
  */
-ItemPerson *addritem_folder_remove_person( ItemFolder *group, ItemPerson *person ) {
-	if( group && person ) {
+ItemPerson *addritem_folder_remove_person(ItemFolder *group, ItemPerson *person)
+{
+	if (group && person) {
 		GList *node = group->listPerson;
-		while( node ) {
-			if( node->data == person ) {
-				group->listPerson = g_list_remove( group->listPerson, person );
+		while (node) {
+			if (node->data == person) {
+				group->listPerson = g_list_remove(group->listPerson, person);
 				return person;
 			}
-			node = g_list_next( node );
+			node = g_list_next(node);
 		}
 	}
 	return NULL;
@@ -754,42 +800,43 @@ ItemPerson *addritem_folder_remove_person( ItemFolder *group, ItemPerson *person
  * \param group  Group to print.
  * \param stream Output stream.
  */
-void addritem_print_item_group( ItemGroup *group, FILE *stream ) {
+void addritem_print_item_group(ItemGroup *group, FILE *stream)
+{
 	GList *node;
 	ItemPerson *person;
 	ItemEMail *item;
-	cm_return_if_fail( group != NULL );
-	fprintf( stream, "Group:\n" );
-	fprintf( stream, "\tt/u: %d : '%s'\n", ADDRITEM_TYPE(group), ADDRITEM_ID(group) );
-	fprintf( stream, "\tsub: %d\n", ADDRITEM_SUBTYPE(group) );
-	fprintf( stream, "\tgrp: '%s'\n", ADDRITEM_NAME(group) );
-	fprintf( stream, "\trem: '%s'\n", group->remarks );
-	fprintf( stream, "\t---\n" );
+	cm_return_if_fail(group != NULL);
+	fprintf(stream, "Group:\n");
+	fprintf(stream, "\tt/u: %d : '%s'\n", ADDRITEM_TYPE(group), ADDRITEM_ID(group));
+	fprintf(stream, "\tsub: %d\n", ADDRITEM_SUBTYPE(group));
+	fprintf(stream, "\tgrp: '%s'\n", ADDRITEM_NAME(group));
+	fprintf(stream, "\trem: '%s'\n", group->remarks);
+	fprintf(stream, "\t---\n");
 	node = group->listEMail;
-	while( node ) {
+	while (node) {
 		item = node->data;
-		person = ( ItemPerson * ) ADDRITEM_PARENT(item);
-		if( person ) {
-			fprintf( stream, "\t\tpid : '%s'\n", ADDRITEM_ID(person) );
-			fprintf( stream, "\t\tcomn: '%s'\n", ADDRITEM_NAME(person) );
+		person = (ItemPerson *)ADDRITEM_PARENT(item);
+		if (person) {
+			fprintf(stream, "\t\tpid : '%s'\n", ADDRITEM_ID(person));
+			fprintf(stream, "\t\tcomn: '%s'\n", ADDRITEM_NAME(person));
+		} else {
+			fprintf(stream, "\t\tpid : ???\n");
+			fprintf(stream, "\t\tcomn: ???\n");
 		}
-		else {
-			fprintf( stream, "\t\tpid : ???\n" );
-			fprintf( stream, "\t\tcomn: ???\n" );
-		}
-		addritem_print_item_email( item, stream );
-		node = g_list_next( node );
+		addritem_print_item_email(item, stream);
+		node = g_list_next(node);
 	}
-	fprintf( stream, "\t***\n" );
+	fprintf(stream, "\t***\n");
 }
 
 /**
  * Create new address folder.
  * \return Initialized address folder object.
  */
-ItemFolder *addritem_create_item_folder( void ) {
+ItemFolder *addritem_create_item_folder(void)
+{
 	ItemFolder *folder;
-	folder = g_new0( ItemFolder, 1 );
+	folder = g_new0(ItemFolder, 1);
 	if (!folder)
 		g_error("could not create new itemFolder");
 	ADDRITEM_TYPE(folder) = ITEMTYPE_FOLDER;
@@ -815,12 +862,13 @@ ItemFolder *addritem_create_item_folder( void ) {
  * \param  item Folder to copy.
  * \return A copy of the folder, or <i>NULL</i> if null argument supplied.
  */
-ItemFolder *addritem_copy_item_folder( ItemFolder *item ) {
+ItemFolder *addritem_copy_item_folder(ItemFolder *item)
+{
 	ItemFolder *itemNew = NULL;
 
-	if( item ) {
+	if (item) {
 		itemNew = addritem_create_item_folder();
-		ADDRITEM_NAME(itemNew) = g_strdup( ADDRITEM_NAME(item) );
+		ADDRITEM_NAME(itemNew) = g_strdup(ADDRITEM_NAME(item));
 		itemNew->folderType = item->folderType;
 	} else
 		g_error("could not create a copy of a null itemFolder");
@@ -832,8 +880,9 @@ ItemFolder *addritem_copy_item_folder( ItemFolder *item ) {
  * \param folder Folder.
  * \param value  Name.
  */
-void addritem_folder_set_name( ItemFolder *folder, const gchar *value ) {
-	ADDRITEM_NAME(folder) = mgu_replace_string( ADDRITEM_NAME(folder), value );
+void addritem_folder_set_name(ItemFolder *folder, const gchar *value)
+{
+	ADDRITEM_NAME(folder) = mgu_replace_string(ADDRITEM_NAME(folder), value);
 }
 
 /**
@@ -841,8 +890,9 @@ void addritem_folder_set_name( ItemFolder *folder, const gchar *value ) {
  * \param folder Folder.
  * \param value  Remarks.
  */
-void addritem_folder_set_remarks( ItemFolder *folder, const gchar *value ) {
-	folder->remarks = mgu_replace_string( folder->remarks, value );
+void addritem_folder_set_remarks(ItemFolder *folder, const gchar *value)
+{
+	folder->remarks = mgu_replace_string(folder->remarks, value);
 }
 
 /**
@@ -850,7 +900,8 @@ void addritem_folder_set_remarks( ItemFolder *folder, const gchar *value ) {
  * \param folder Folder.
  * \param value  Set to <code>TRUE</code> to hide folder.
  */
-void addritem_folder_set_hidden( ItemFolder *folder, const gboolean value ) {
+void addritem_folder_set_hidden(ItemFolder *folder, const gboolean value)
+{
 	folder->isHidden = value;
 }
 
@@ -860,14 +911,15 @@ void addritem_folder_set_hidden( ItemFolder *folder, const gboolean value ) {
  * function.
  * \param folder Folder to free.
  */
-void addritem_free_item_folder( ItemFolder *folder ) {
-	cm_return_if_fail( folder != NULL );
+void addritem_free_item_folder(ItemFolder *folder)
+{
+	cm_return_if_fail(folder != NULL);
 
 	/* Free internal stuff */
-	g_free( ADDRITEM_ID(folder) );
-	g_free( ADDRITEM_NAME(folder) );
-	g_free( folder->remarks );
-	g_list_free( folder->listItems );
+	g_free(ADDRITEM_ID(folder));
+	g_free(ADDRITEM_NAME(folder));
+	g_free(folder->remarks);
+	g_list_free(folder->listItems);
 
 	ADDRITEM_TYPE(folder) = ITEMTYPE_NONE;
 	ADDRITEM_ID(folder) = NULL;
@@ -884,7 +936,7 @@ void addritem_free_item_folder( ItemFolder *folder ) {
 	folder->folderData = NULL;
 	folder->isHidden = FALSE;
 
-	g_free( folder );
+	g_free(folder);
 }
 
 /**
@@ -893,11 +945,12 @@ void addritem_free_item_folder( ItemFolder *folder ) {
  * \param  item   Person to add.
  * \return <i>TRUE</i> if person added.
  */
-gboolean addritem_folder_add_person( ItemFolder *folder, ItemPerson *item ) {
-	cm_return_val_if_fail( folder != NULL, FALSE );
-	cm_return_val_if_fail( item != NULL, FALSE );
+gboolean addritem_folder_add_person(ItemFolder *folder, ItemPerson *item)
+{
+	cm_return_val_if_fail(folder != NULL, FALSE);
+	cm_return_val_if_fail(item != NULL, FALSE);
 
-	folder->listPerson = g_list_append( folder->listPerson, item );
+	folder->listPerson = g_list_append(folder->listPerson, item);
 	ADDRITEM_PARENT(item) = ADDRITEM_OBJECT(folder);
 	return TRUE;
 }
@@ -908,11 +961,12 @@ gboolean addritem_folder_add_person( ItemFolder *folder, ItemPerson *item ) {
  * \param  item   Folder to add.
  * \return <i>TRUE</i> if folder added.
  */
-gboolean addritem_folder_add_folder( ItemFolder *folder, ItemFolder *item ) {
-	cm_return_val_if_fail( folder != NULL, FALSE );
-	cm_return_val_if_fail( item != NULL, FALSE );
+gboolean addritem_folder_add_folder(ItemFolder *folder, ItemFolder *item)
+{
+	cm_return_val_if_fail(folder != NULL, FALSE);
+	cm_return_val_if_fail(item != NULL, FALSE);
 
-	folder->listFolder = g_list_append( folder->listFolder, item );
+	folder->listFolder = g_list_append(folder->listFolder, item);
 	ADDRITEM_PARENT(item) = ADDRITEM_OBJECT(folder);
 	return TRUE;
 }
@@ -923,11 +977,12 @@ gboolean addritem_folder_add_folder( ItemFolder *folder, ItemFolder *item ) {
  * \param  item   Group to add.
  * \return <i>TRUE</i> if group added.
  */
-gboolean addritem_folder_add_group( ItemFolder *folder, ItemGroup *item ) {
-	cm_return_val_if_fail( folder != NULL, FALSE );
-	cm_return_val_if_fail( item != NULL, FALSE );
+gboolean addritem_folder_add_group(ItemFolder *folder, ItemGroup *item)
+{
+	cm_return_val_if_fail(folder != NULL, FALSE);
+	cm_return_val_if_fail(item != NULL, FALSE);
 
-	folder->listGroup = g_list_append( folder->listGroup, item );
+	folder->listGroup = g_list_append(folder->listGroup, item);
 	ADDRITEM_PARENT(item) = ADDRITEM_OBJECT(folder);
 	return TRUE;
 }
@@ -937,75 +992,72 @@ gboolean addritem_folder_add_group( ItemFolder *folder, ItemGroup *item ) {
  * \param folder Folder to process.
  * \param stream Output stream.
  */
-void addritem_print_item_folder( ItemFolder *folder, FILE *stream ) {
+void addritem_print_item_folder(ItemFolder *folder, FILE *stream)
+{
 	GList *node;
 	/* ItemPerson *person; */
 	ItemFolder *parent;
 
-	cm_return_if_fail( folder != NULL );
+	cm_return_if_fail(folder != NULL);
 
-	fprintf( stream, "Folder:\n" );
-	fprintf( stream, "\tt/u: %d : '%s'\n", ADDRITEM_TYPE(folder), ADDRITEM_ID(folder) );
-	fprintf( stream, "\tsub: %d\n", ADDRITEM_SUBTYPE(folder) );
-	fprintf( stream, "\tnam: '%s'\n", ADDRITEM_NAME(folder) );
-	fprintf( stream, "\trem: '%s'\n", folder->remarks );
-	fprintf( stream, "\ttyp: %d\n", folder->folderType );
-	fprintf( stream, "\thid: %s\n", folder->isHidden ? "hidden" : "visible" );
-	fprintf( stream, "\t---\n" );
-	parent = ( ItemFolder * ) ADDRITEM_PARENT(folder);
-	if( parent ) {
-		fprintf( stream, "\tpar: %s : %s\n", ADDRITEM_ID(parent), ADDRITEM_NAME(parent) );
-	}
-	else {
-		fprintf( stream, "\tpar: NULL\n" );
+	fprintf(stream, "Folder:\n");
+	fprintf(stream, "\tt/u: %d : '%s'\n", ADDRITEM_TYPE(folder), ADDRITEM_ID(folder));
+	fprintf(stream, "\tsub: %d\n", ADDRITEM_SUBTYPE(folder));
+	fprintf(stream, "\tnam: '%s'\n", ADDRITEM_NAME(folder));
+	fprintf(stream, "\trem: '%s'\n", folder->remarks);
+	fprintf(stream, "\ttyp: %d\n", folder->folderType);
+	fprintf(stream, "\thid: %s\n", folder->isHidden ? "hidden" : "visible");
+	fprintf(stream, "\t---\n");
+	parent = (ItemFolder *)ADDRITEM_PARENT(folder);
+	if (parent) {
+		fprintf(stream, "\tpar: %s : %s\n", ADDRITEM_ID(parent), ADDRITEM_NAME(parent));
+	} else {
+		fprintf(stream, "\tpar: NULL\n");
 	}
 	node = folder->listFolder;
-	while( node ) {
+	while (node) {
 		AddrItemObject *aio = node->data;
-		if( aio ) {
-			if( aio->type == ITEMTYPE_FOLDER ) {
-				ItemFolder *item = ( ItemFolder * ) aio;
-				addritem_print_item_folder( item, stream );
+		if (aio) {
+			if (aio->type == ITEMTYPE_FOLDER) {
+				ItemFolder *item = (ItemFolder *)aio;
+				addritem_print_item_folder(item, stream);
 			}
-		}
-		else {
-			fprintf( stream, "\t\tpid : ???\n" );
+		} else {
+			fprintf(stream, "\t\tpid : ???\n");
 		}
 
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 
 	node = folder->listPerson;
-	while( node ) {
+	while (node) {
 		AddrItemObject *aio = node->data;
-		if( aio ) {
-			if( aio->type == ITEMTYPE_PERSON ) {
-				ItemPerson *item = ( ItemPerson * ) aio;
-				addritem_print_item_person( item, stream );
+		if (aio) {
+			if (aio->type == ITEMTYPE_PERSON) {
+				ItemPerson *item = (ItemPerson *)aio;
+				addritem_print_item_person(item, stream);
 			}
-		}
-		else {
-			fprintf( stream, "\t\tpid : ???\n" );
+		} else {
+			fprintf(stream, "\t\tpid : ???\n");
 		}
 
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 
 	node = folder->listGroup;
-	while( node ) {
+	while (node) {
 		AddrItemObject *aio = node->data;
-		if( aio ) {
-			if( aio->type == ITEMTYPE_GROUP ) {
-				ItemGroup *item = ( ItemGroup * ) aio;
-				addritem_print_item_group( item, stream );
+		if (aio) {
+			if (aio->type == ITEMTYPE_GROUP) {
+				ItemGroup *item = (ItemGroup *)aio;
+				addritem_print_item_group(item, stream);
 			}
+		} else {
+			fprintf(stream, "\t\tpid : ???\n");
 		}
-		else {
-			fprintf( stream, "\t\tpid : ???\n" );
-		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	fprintf( stream, "\t###\n" );
+	fprintf(stream, "\t###\n");
 }
 
 /**
@@ -1016,17 +1068,18 @@ void addritem_print_item_folder( ItemFolder *folder, FILE *stream ) {
  * \param  folder Folder to process.
  * \return List of items, or <i>NULL</i> if none.
  */
-GList *addritem_folder_get_person_list( ItemFolder *folder ) {
+GList *addritem_folder_get_person_list(ItemFolder *folder)
+{
 	GList *list = NULL;
 	GList *node = NULL;
 
-	cm_return_val_if_fail( folder != NULL, NULL );
+	cm_return_val_if_fail(folder != NULL, NULL);
 
 	node = folder->listPerson;
-	while( node ) {
+	while (node) {
 		ItemPerson *person = node->data;
-		list = g_list_prepend( list, person );
-		node = g_list_next( node );
+		list = g_list_prepend(list, person);
+		node = g_list_next(node);
 	}
 	return g_list_reverse(list);
 }
@@ -1039,17 +1092,18 @@ GList *addritem_folder_get_person_list( ItemFolder *folder ) {
  * \param  folder Folder to process.
  * \return List of items, or <i>NULL</i> if none.
  */
-GList *addritem_folder_get_group_list( ItemFolder *folder ) {
+GList *addritem_folder_get_group_list(ItemFolder *folder)
+{
 	GList *list = NULL;
 	GList *node = NULL;
 
-	cm_return_val_if_fail( folder != NULL, NULL );
+	cm_return_val_if_fail(folder != NULL, NULL);
 
 	node = folder->listGroup;
-	while( node ) {
+	while (node) {
 		ItemGroup *group = node->data;
-		list = g_list_prepend( list, group );
-		node = g_list_next( node );
+		list = g_list_prepend(list, group);
+		node = g_list_next(node);
 	}
 	return g_list_reverse(list);
 }
@@ -1058,50 +1112,51 @@ GList *addritem_folder_get_group_list( ItemFolder *folder ) {
  * Parse first and last names for person from common name.
  * \param person Person to process.
  */
-void addritem_parse_first_last( ItemPerson *person ) {
+void addritem_parse_first_last(ItemPerson *person)
+{
 	gchar *name;
 	gchar *fName, *lName;
 	gchar *p;
 	gint len, i;
 
-	cm_return_if_fail( person != NULL );
+	cm_return_if_fail(person != NULL);
 
 	name = ADDRITEM_NAME(person);
-	if( name == NULL ) return;
+	if (name == NULL)
+		return;
 
 	fName = NULL;
 	lName = NULL;
-	p = strchr( name, ',' );
-	if( p ) {
-		len = ( size_t ) ( p - name );
-		lName = g_strndup( name, len );
-		fName = g_strdup( p + 1 );
-	}
-	else {
+	p = strchr(name, ',');
+	if (p) {
+		len = (size_t)(p - name);
+		lName = g_strndup(name, len);
+		fName = g_strdup(p + 1);
+	} else {
 		/* Other way around */
-		i = strlen( name );
-		while( i >= 0 ) {
-			if( name[i] == ' ' ) {
-				fName = g_strndup( name, i );
-				lName = g_strdup( &name[i] );
+		i = strlen(name);
+		while (i >= 0) {
+			if (name[i] == ' ') {
+				fName = g_strndup(name, i);
+				lName = g_strdup(&name[i]);
 				break;
 			}
 			i--;
 		}
-		if( fName == NULL ) {
-			fName = g_strdup( name );
+		if (fName == NULL) {
+			fName = g_strdup(name);
 		}
 	}
 
-	g_free( person->firstName );
+	g_free(person->firstName);
 	person->firstName = fName;
-	if( person->firstName )
-		g_strstrip( person->firstName );
+	if (person->firstName)
+		g_strstrip(person->firstName);
 
-	g_free( person->lastName );
+	g_free(person->lastName);
 	person->lastName = lName;
-	if( person->lastName )
-		g_strstrip( person->lastName );
+	if (person->lastName)
+		g_strstrip(person->lastName);
 }
 
 /**
@@ -1110,22 +1165,22 @@ void addritem_parse_first_last( ItemPerson *person ) {
  * \param  seq    Path sequence, FALSE top down, TRUE bottom up.
  * \return List of folders from the top down.
  */
-GList *addritem_folder_path( const ItemFolder *folder, const gboolean seq ) {
+GList *addritem_folder_path(const ItemFolder *folder, const gboolean seq)
+{
 	GList *list;
 	AddrItemObject *item;
 
 	list = NULL;
-	item = ( AddrItemObject * ) folder;
-	if( seq ) {
-		while( item ) {
-			list = g_list_prepend( list, item );
-			item = ADDRITEM_PARENT( item );
+	item = (AddrItemObject *)folder;
+	if (seq) {
+		while (item) {
+			list = g_list_prepend(list, item);
+			item = ADDRITEM_PARENT(item);
 		}
-	}
-	else {
-		while( item ) {
-			list = g_list_append( list, item );
-			item = ADDRITEM_PARENT( item );
+	} else {
+		while (item) {
+			list = g_list_append(list, item);
+			item = ADDRITEM_PARENT(item);
 		}
 	}
 	return list;
@@ -1136,33 +1191,32 @@ GList *addritem_folder_path( const ItemFolder *folder, const gboolean seq ) {
  * \param email EMail item to format.
  * \return Formatted string. Should be freed after use.
  */
-gchar *addritem_format_email( ItemEMail *email ) {
+gchar *addritem_format_email(ItemEMail *email)
+{
 	gchar *address;
 	gchar *name;
 	ItemPerson *person;
 
 	address = NULL;
 	name = NULL;
-	if( ADDRITEM_NAME( email ) ) {
-		if( strlen( ADDRITEM_NAME( email ) ) ) {
-			name = ADDRITEM_NAME( email );
+	if (ADDRITEM_NAME(email)) {
+		if (strlen(ADDRITEM_NAME(email))) {
+			name = ADDRITEM_NAME(email);
 		}
 	}
-	if( ! name ) {
-		person = ( ItemPerson * ) ADDRITEM_PARENT( email );
-		name = ADDRITEM_NAME( person );
+	if (!name) {
+		person = (ItemPerson *)ADDRITEM_PARENT(email);
+		name = ADDRITEM_NAME(person);
 	}
 
-	if( name ) {
-		if( strchr_with_skip_quote( name, '"', ',' ) ) {
-			address = g_strdup_printf( "\"%s\" <%s>", name, email->address );
+	if (name) {
+		if (strchr_with_skip_quote(name, '"', ',')) {
+			address = g_strdup_printf("\"%s\" <%s>", name, email->address);
+		} else {
+			address = g_strdup_printf("%s <%s>", name, email->address);
 		}
-		else {
-			address = g_strdup_printf( "%s <%s>", name, email->address );
-		}
-	}
-	else {
-		address = g_strdup_printf( "%s", email->address );
+	} else {
+		address = g_strdup_printf("%s", email->address);
 	}
 	return address;
 }
@@ -1170,3 +1224,7 @@ gchar *addritem_format_email( ItemEMail *email ) {
 /*
 * End of Source.
 */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

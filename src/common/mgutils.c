@@ -32,64 +32,68 @@
 /*
 * Dump linked list of character strings (for debug).
 */
-void mgu_print_list( GSList *list, FILE *stream ) {
+void mgu_print_list(GSList *list, FILE *stream)
+{
 	GSList *node = list;
-	while( node ) {
-		int r = fprintf( stream, "\t- >%s<\n", (gchar *)node->data );
+	while (node) {
+		int r = fprintf(stream, "\t- >%s<\n", (gchar *)node->data);
 		if (r < 0) {
 			perror("fprintf");
 			break;
 		}
-		node = g_slist_next( node );
+		node = g_slist_next(node);
 	}
 }
 
 /*
 * Dump linked list of character strings (for debug).
 */
-void mgu_print_dlist( GList *list, FILE *stream ) {
+void mgu_print_dlist(GList *list, FILE *stream)
+{
 	GList *node = list;
-	while( node ) {
-		int r = fprintf( stream, "\t- >%s<\n", (gchar *)node->data );
+	while (node) {
+		int r = fprintf(stream, "\t- >%s<\n", (gchar *)node->data);
 		if (r < 0) {
 			perror("fprintf");
 			break;
 		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 }
 
 /*
 * Coalesce linked list of characaters into one long string.
 */
-gchar *mgu_list_coalesce( GSList *list ) {
+gchar *mgu_list_coalesce(GSList *list)
+{
 	gchar *str = NULL;
 	gchar *buf = NULL;
 	gchar *start = NULL;
 	GSList *node = NULL;
 	gint len;
 
-	if( ! list ) return NULL;
+	if (!list)
+		return NULL;
 
 	/* Calculate maximum length of text */
 	len = 0;
 	node = list;
-	while( node ) {
+	while (node) {
 		str = node->data;
-		len += 1 + strlen( str );
-		node = g_slist_next( node );
+		len += 1 + strlen(str);
+		node = g_slist_next(node);
 	}
 
 	/* Create new buffer. */
-	buf = g_new0( gchar, len+1 );
+	buf = g_new0(gchar, len + 1);
 	start = buf;
 	node = list;
-	while( node ) {
+	while (node) {
 		str = node->data;
-		len = strlen( str );
-		strcpy( start, str );
+		len = strlen(str);
+		strcpy(start, str);
 		start += len;
-		node = g_slist_next( node );
+		node = g_slist_next(node);
 	}
 	return buf;
 }
@@ -97,13 +101,13 @@ gchar *mgu_list_coalesce( GSList *list ) {
 /*
 * Replace existing string with new string.
 */
-gchar *mgu_replace_string( gchar *str, const gchar *value ) {
-	g_free( str );
-	if( value ) {
-		str = g_strdup( value );
-		g_strstrip( str );
-	}
-	else {
+gchar *mgu_replace_string(gchar *str, const gchar *value)
+{
+	g_free(str);
+	if (value) {
+		str = g_strdup(value);
+		g_strstrip(str);
+	} else {
 		str = NULL;
 	}
 	return str;
@@ -115,13 +119,14 @@ gchar *mgu_replace_string( gchar *str, const gchar *value ) {
 * Return: Address, or NULL if address is empty.
 * Note: Leading and trailing white space is removed.
 */
-gchar *mgu_email_check_empty( gchar *address ) {
+gchar *mgu_email_check_empty(gchar *address)
+{
 	gchar *retVal = NULL;
-	if( address ) {
-		retVal = g_strdup( address );
-		retVal = g_strstrip( retVal );
-		if( *retVal == '\0' ) {
-			g_free( retVal );
+	if (address) {
+		retVal = g_strdup(address);
+		retVal = g_strstrip(retVal);
+		if (*retVal == '\0') {
+			g_free(retVal);
 			retVal = NULL;
 		}
 	}
@@ -138,55 +143,59 @@ gchar *mgu_email_check_empty( gchar *address ) {
 * Return: Linked list. The list contents should be g_free'd and list should
 * freed when done.
 */
-GList *mgu_parse_string( gchar *line, const gint maxTokens, gint *tokenCnt ) {
+GList *mgu_parse_string(gchar *line, const gint maxTokens, gint *tokenCnt)
+{
 	gchar *ptr, *pStart, *pFound, *str;
-	gint  args = 0;
+	gint args = 0;
 	GList *list = NULL;
 	gboolean done = FALSE;
 
-	if( tokenCnt ) *tokenCnt = 0;
-	if( line == NULL ) return NULL;
-	if( maxTokens < 1 ) return NULL;
+	if (tokenCnt)
+		*tokenCnt = 0;
+	if (line == NULL)
+		return NULL;
+	if (maxTokens < 1)
+		return NULL;
 
 	ptr = line;
-	while( ! done ) {
+	while (!done) {
 		args++;
 		/* Skip over leading spaces */
-		while( *ptr ) {
-			if( ! isspace( *ptr ) ) break;
-			ptr++;	
+		while (*ptr) {
+			if (!isspace(*ptr))
+				break;
+			ptr++;
 		}
 
 		/* Find terminating space */
 		pFound = NULL;
 		pStart = ptr;
-		while( *ptr ) {
-			if( isspace( *ptr ) ) {
+		while (*ptr) {
+			if (isspace(*ptr)) {
 				pFound = pStart;
 				break;
 			}
 			ptr++;
 		}
 
-		if( pFound ) {
-			if( args == maxTokens ) {
+		if (pFound) {
+			if (args == maxTokens) {
 				/* Rest of string */
-				str = g_strdup( pStart );
+				str = g_strdup(pStart);
 				done = TRUE;
-			}
-			else {
+			} else {
 				/* Extract part of string */
-				str = g_strndup( pStart, ptr - pFound );
+				str = g_strndup(pStart, ptr - pFound);
 			}
-		}
-		else {
+		} else {
 			/* Nothing there - treat as rest of string */
-			str = g_strdup( pStart );
+			str = g_strdup(pStart);
 			done = TRUE;
 		}
-		list = g_list_append( list, str );
+		list = g_list_append(list, str);
 	}
-	if( tokenCnt ) *tokenCnt = args;
+	if (tokenCnt)
+		*tokenCnt = args;
 	return list;
 }
 
@@ -194,15 +203,16 @@ GList *mgu_parse_string( gchar *line, const gint maxTokens, gint *tokenCnt ) {
  * Unescape characters by removing backslash character from input string.
  * Enter: str String to process.
  */
-void mgu_str_unescape( gchar *str ) {
+void mgu_str_unescape(gchar *str)
+{
 	gchar *p;
 	gint ilen;
 
 	p = str;
-	while( *p ) {
-		if( *p == '\\' ) {
-			ilen = strlen( p + 1 );
-			memmove( p, p + 1, ilen );
+	while (*p) {
+		if (*p == '\\') {
+			ilen = strlen(p + 1);
+			memmove(p, p + 1, ilen);
 		}
 		p++;
 	}
@@ -217,44 +227,41 @@ void mgu_str_unescape( gchar *str ) {
  *        chlea  Lead character to remove.
  *        chtail Matching trailing character.
  */
-void mgu_str_ltc2space( gchar *str, gchar chlead, gchar chtail ) {
+void mgu_str_ltc2space(gchar *str, gchar chlead, gchar chtail)
+{
 	gchar *as;
 	gchar *ae;
 
 	/* Search forwards for first non-space match */
 	as = str;
-	ae = -1 + str + strlen( str );
-	while( as < ae ) {
-		if( *as != ' ' ) {
-			if( *as == chlead ) {
+	ae = -1 + str + strlen(str);
+	while (as < ae) {
+		if (*as != ' ') {
+			if (*as == chlead) {
 				/* Search backwards from end for match */
-				while( ae > as ) {
-					if( *ae != ' ' ) {
-						if( *ae == chtail ) {
+				while (ae > as) {
+					if (*ae != ' ') {
+						if (*ae == chtail) {
 							*as = ' ';
 							*ae = ' ';
 							return;
 						}
-						if( *ae < 32 ) {
+						if (*ae < 32) {
 							*ae = ' ';
-						}
-						else if( *ae == 127 ) {
+						} else if (*ae == 127) {
 							*ae = ' ';
-						}
-						else {
+						} else {
 							return;
 						}
 					}
 					ae--;
 				}
 			}
-			if( *as < 32 ) {
+			if (*as < 32) {
 				*as = ' ';
-			}
-			else if( *as == 127 ) {
+			} else if (*as == 127) {
 				*as = ' ';
-			}
-			else {
+			} else {
 				return;
 			}
 		}
@@ -269,29 +276,33 @@ void mgu_str_ltc2space( gchar *str, gchar chlead, gchar chtail ) {
  * Enter:  list List of gchar strings to examine.
  * Return: Reference to longest entry, or NULL if nothing found.
  */
-gchar *mgu_slist_longest_entry( GSList *list ) {
+gchar *mgu_slist_longest_entry(GSList *list)
+{
 	GSList *node;
 	gchar *name = NULL;
 	gint iLen = 0, iLenT = 0;
 
 	node = list;
-	while( node ) {
-		if( name == NULL ) {
+	while (node) {
+		if (name == NULL) {
 			name = node->data;
-			iLen = strlen( name );
-		}
-		else {
-			iLenT = strlen( node->data );
-			if( iLenT > iLen ) {
+			iLen = strlen(name);
+		} else {
+			iLenT = strlen(node->data);
+			if (iLenT > iLen) {
 				name = node->data;
 				iLen = iLenT;
 			}
 		}
-		node = g_slist_next( node );
+		node = g_slist_next(node);
 	}
 	return name;
-}	
+}
 
 /*
 * End of Source.
 */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

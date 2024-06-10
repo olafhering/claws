@@ -25,15 +25,14 @@
 #include "folder.h"
 #include "localfolder.h"
 
-typedef struct _MAILMBOXFolder	MAILMBOXFolder;
+typedef struct _MAILMBOXFolder MAILMBOXFolder;
 
 #define MAILMBOX_FOLDER(obj)		((MAILMBOXFolder *)obj)
 
-struct _MAILMBOXFolder
-{
+struct _MAILMBOXFolder {
 	LocalFolder lfolder;
 };
 
-FolderClass *claws_mailmbox_get_class	(void);
+FolderClass *claws_mailmbox_get_class(void);
 
 #endif /* __MH_H__ */

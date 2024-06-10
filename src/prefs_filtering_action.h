@@ -22,9 +22,8 @@
 
 #include "matcher.h"
 
-typedef void PrefsFilteringActionSignal	(GSList *action_list);
+typedef void PrefsFilteringActionSignal (GSList *action_list);
 
-void prefs_filtering_action_open		(GSList *action_list,
-				 PrefsFilteringActionSignal *cb);
+void prefs_filtering_action_open(GSList *action_list, PrefsFilteringActionSignal *cb);
 
 #endif /* __PREFS_FILTER_H__ */

@@ -26,8 +26,6 @@
 
 #include "addrindex.h"
 
-gboolean addressbook_foldersel_selection( AddressIndex *addrIndex,
-				AddressBookFile **book, ItemFolder **folder, 
-				const gchar *path );
+gboolean addressbook_foldersel_selection(AddressIndex *addrIndex, AddressBookFile **book, ItemFolder **folder, const gchar *path);
 
 #endif /* __ADDRESSBOOK_FOLDERSEL_H__ */

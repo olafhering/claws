@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -63,7 +63,6 @@ static gint smtp_eom(SMTPSession *session);
 static gint smtp_session_recv_msg(Session *session, const gchar *msg);
 static gint smtp_session_send_data_finished(Session *session, guint len);
 
-
 Session *smtp_session_new(void *prefs_account)
 {
 	SMTPSession *session;
@@ -72,39 +71,39 @@ Session *smtp_session_new(void *prefs_account)
 
 	session_init(SESSION(session), prefs_account, TRUE);
 
-	SESSION(session)->type             = SESSION_SMTP;
+	SESSION(session)->type = SESSION_SMTP;
 
-	SESSION(session)->recv_msg         = smtp_session_recv_msg;
+	SESSION(session)->recv_msg = smtp_session_recv_msg;
 
 	SESSION(session)->recv_data_finished = NULL;
 	SESSION(session)->send_data_finished = smtp_session_send_data_finished;
 
-	SESSION(session)->destroy          = smtp_session_destroy;
+	SESSION(session)->destroy = smtp_session_destroy;
 
-	session->state                     = SMTP_READY;
+	session->state = SMTP_READY;
 
 #ifdef USE_GNUTLS
-	session->tls_init_done             = FALSE;
+	session->tls_init_done = FALSE;
 #endif
 
-	session->hostname                  = NULL;
-	session->user                      = NULL;
-	session->pass                      = NULL;
+	session->hostname = NULL;
+	session->user = NULL;
+	session->pass = NULL;
 
-	session->from                      = NULL;
-	session->to_list                   = NULL;
-	session->cur_to                    = NULL;
+	session->from = NULL;
+	session->to_list = NULL;
+	session->cur_to = NULL;
 
-	session->send_data                 = NULL;
-	session->send_data_len             = 0;
+	session->send_data = NULL;
+	session->send_data_len = 0;
 
-	session->avail_auth_type           = 0;
-	session->forced_auth_type          = 0;
-	session->auth_type                 = 0;
-	session->esmtp_flags               = 0;
+	session->avail_auth_type = 0;
+	session->forced_auth_type = 0;
+	session->auth_type = 0;
+	session->esmtp_flags = 0;
 
-	session->error_val                 = SM_OK;
-	session->error_msg                 = NULL;
+	session->error_val = SM_OK;
+	session->error_msg = NULL;
 
 	return SESSION(session);
 }
@@ -131,25 +130,22 @@ gint smtp_from(SMTPSession *session)
 	cm_return_val_if_fail(session->from != NULL, SM_ERROR);
 
 	session->state = SMTP_FROM;
-	
-	if (session->is_esmtp && (session->esmtp_flags & ESMTP_SIZE)!=0)
+
+	if (session->is_esmtp && (session->esmtp_flags & ESMTP_SIZE) != 0)
 		mail_size = g_strdup_printf(" SIZE=%d", session->send_data_len);
 	else
 		mail_size = g_strdup("");
-		
 
 	if (strchr(session->from, '<'))
-		g_snprintf(buf, sizeof(buf), "MAIL FROM:%s%s", session->from,
-			   mail_size);
+		g_snprintf(buf, sizeof(buf), "MAIL FROM:%s%s", session->from, mail_size);
 	else
-		g_snprintf(buf, sizeof(buf), "MAIL FROM:<%s>%s", session->from,
-			   mail_size);
+		g_snprintf(buf, sizeof(buf), "MAIL FROM:<%s>%s", session->from, mail_size);
 
 	g_free(mail_size);
 
 	if (session_send_msg(SESSION(session), buf) < 0)
 		return SM_ERROR;
-	log_print(LOG_PROTOCOL, "%sSMTP> %s\n", (session->is_esmtp?"E":""), buf);
+	log_print(LOG_PROTOCOL, "%sSMTP> %s\n", (session->is_esmtp ? "E" : ""), buf);
 
 	return SM_OK;
 }
@@ -161,26 +157,18 @@ static gint smtp_auth(SMTPSession *session)
 
 	session->state = SMTP_AUTH;
 
-	if ((session->forced_auth_type == SMTPAUTH_CRAM_MD5
-	     || session->forced_auth_type == 0)
-            &&
-	     (session->avail_auth_type & SMTPAUTH_CRAM_MD5) != 0)
+	if ((session->forced_auth_type == SMTPAUTH_CRAM_MD5 || session->forced_auth_type == 0)
+	    && (session->avail_auth_type & SMTPAUTH_CRAM_MD5) != 0)
 		smtp_auth_cram_md5(session);
-	else if ((session->forced_auth_type == SMTPAUTH_LOGIN
-		  || session->forced_auth_type == 0)
-                 &&
-		  (session->avail_auth_type & SMTPAUTH_LOGIN) != 0)
+	else if ((session->forced_auth_type == SMTPAUTH_LOGIN || session->forced_auth_type == 0)
+		 && (session->avail_auth_type & SMTPAUTH_LOGIN) != 0)
 		smtp_auth_login(session);
-	else if ((session->forced_auth_type == SMTPAUTH_PLAIN
-		  || session->forced_auth_type == 0)
-                 &&
-		  (session->avail_auth_type & SMTPAUTH_PLAIN) != 0)
+	else if ((session->forced_auth_type == SMTPAUTH_PLAIN || session->forced_auth_type == 0)
+		 && (session->avail_auth_type & SMTPAUTH_PLAIN) != 0)
 		smtp_auth_plain(session);
 #ifdef USE_OAUTH2
-	else if ((session->forced_auth_type == SMTPAUTH_OAUTH2
-		  || session->forced_auth_type == 0)
-                 &&
-		  (session->avail_auth_type & SMTPAUTH_OAUTH2) != 0)
+	else if ((session->forced_auth_type == SMTPAUTH_OAUTH2 || session->forced_auth_type == 0)
+		 && (session->avail_auth_type & SMTPAUTH_OAUTH2) != 0)
 		smtp_auth_oauth2(session);
 #endif
 	else if (session->forced_auth_type == 0) {
@@ -232,12 +220,10 @@ static gint smtp_auth_recv(SMTPSession *session, const gchar *msg)
 			log_print(LOG_PROTOCOL, "ESMTP< [Decoded: %s]\n", challenge);
 
 			g_snprintf(buf, sizeof(buf), "%s", session->pass);
-			md5_hex_hmac(hexdigest, challenge, challengelen,
-				     buf, strlen(session->pass));
+			md5_hex_hmac(hexdigest, challenge, challengelen, buf, strlen(session->pass));
 			g_free(challenge);
 
-			response = g_strdup_printf
-				("%s %s", session->user, hexdigest);
+			response = g_strdup_printf("%s %s", session->user, hexdigest);
 			log_print(LOG_PROTOCOL, "ESMTP> [Encoded: %s]\n", response);
 
 			response64 = g_base64_encode(response, strlen(response));
@@ -257,8 +243,8 @@ static gint smtp_auth_recv(SMTPSession *session, const gchar *msg)
 		}
 		break;
 	case SMTPAUTH_DIGEST_MD5:
-        default:
-        	/* stop smtp_auth when no correct authtype */
+	default:
+		/* stop smtp_auth when no correct authtype */
 		if (session_send_msg(SESSION(session), "*") < 0)
 			return SM_ERROR;
 		log_print(LOG_PROTOCOL, "ESMTP> *\n");
@@ -300,8 +286,7 @@ static gint smtp_ehlo(SMTPSession *session)
 
 	session->avail_auth_type = 0;
 
-	g_snprintf(buf, sizeof(buf), "EHLO %s",
-		   session->hostname ? session->hostname : get_domain_name());
+	g_snprintf(buf, sizeof(buf), "EHLO %s", session->hostname ? session->hostname : get_domain_name());
 	if (session_send_msg(SESSION(session), buf) < 0)
 		return SM_ERROR;
 	log_print(LOG_PROTOCOL, "ESMTP> %s\n", buf);
@@ -314,7 +299,8 @@ static gint smtp_ehlo_recv(SMTPSession *session, const gchar *msg)
 	if (strncmp(msg, "250", 3) == 0) {
 		const gchar *p = msg;
 		p += 3;
-		if (*p == '-' || *p == ' ') p++;
+		if (*p == '-' || *p == ' ')
+			p++;
 		if (g_ascii_strncasecmp(p, "AUTH", 4) == 0) {
 			p += 5;
 			if (strcasestr(p, "PLAIN"))
@@ -340,11 +326,9 @@ static gint smtp_ehlo_recv(SMTPSession *session, const gchar *msg)
 			session->avail_auth_type |= SMTPAUTH_TLS_AVAILABLE;
 		}
 		return SM_OK;
-	} else if ((msg[0] == '1' || msg[0] == '2' || msg[0] == '3') &&
-	    (msg[3] == ' ' || msg[3] == '\0'))
+	} else if ((msg[0] == '1' || msg[0] == '2' || msg[0] == '3') && (msg[3] == ' ' || msg[3] == '\0'))
 		return SM_OK;
-	else if (msg[0] == '5' && msg[1] == '0' &&
-		 (msg[2] == '4' || msg[2] == '3' || msg[2] == '1'))
+	else if (msg[0] == '5' && msg[1] == '0' && (msg[2] == '4' || msg[2] == '3' || msg[2] == '1'))
 		return SM_ERROR;
 
 	return SM_ERROR;
@@ -414,8 +398,8 @@ static gint smtp_auth_oauth2(SMTPSession *session)
 
 	memset(buf, 0, sizeof buf);
 
-	/* "user=" {User} "^Aauth=Bearer " {Access Token} "^A^A"*/
-        /* session->pass contains the OAUTH2 Access Token*/
+	/* "user=" {User} "^Aauth=Bearer " {Access Token} "^A^A" */
+	/* session->pass contains the OAUTH2 Access Token */
 	len = sprintf(buf, "user=%s\1auth=Bearer %s\1\1", session->user, session->pass);
 	b64buf = g_base64_encode(buf, len);
 	out = g_strconcat("AUTH XOAUTH2 ", b64buf, NULL);
@@ -452,8 +436,7 @@ static gint smtp_helo(SMTPSession *session)
 
 	session->state = SMTP_HELO;
 
-	g_snprintf(buf, sizeof(buf), "HELO %s",
-		   session->hostname ? session->hostname : get_domain_name());
+	g_snprintf(buf, sizeof(buf), "HELO %s", session->hostname ? session->hostname : get_domain_name());
 	if (session_send_msg(SESSION(session), buf) < 0)
 		return SM_ERROR;
 	log_print(LOG_PROTOCOL, "SMTP> %s\n", buf);
@@ -500,8 +483,7 @@ static gint smtp_send_data(SMTPSession *session)
 {
 	session->state = SMTP_SEND_DATA;
 
-	session_send_data(SESSION(session), session->send_data,
-			  session->send_data_len);
+	session_send_data(SESSION(session), session->send_data, session->send_data_len);
 
 	return SM_OK;
 }
@@ -539,7 +521,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 	SMTPSession *smtp_session = SMTP_SESSION(session);
 	gboolean cont = FALSE;
 	gint ret = 0;
-	
+
 	if (strlen(msg) < 4) {
 		log_warning(LOG_PROTOCOL, _("bad SMTP response\n"));
 		return -1;
@@ -553,7 +535,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 	case SMTP_AUTH_LOGIN_USER:
 	case SMTP_AUTH_LOGIN_PASS:
 #ifdef USE_GNUTLS
-        case SMTP_AUTH_OAUTH2:
+	case SMTP_AUTH_OAUTH2:
 #endif
 	case SMTP_AUTH_CRAM_MD5:
 		log_print(LOG_PROTOCOL, "ESMTP< %s\n", msg);
@@ -567,8 +549,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 	if (msg[3] == '-' && smtp_session->state != SMTP_EHLO)
 		return session_recv_msg(session);
 
-	if (msg[0] == '5' && msg[1] == '0' &&
-	    (msg[2] == '4' || msg[2] == '3' || msg[2] == '1')) {
+	if (msg[0] == '5' && msg[1] == '0' && (msg[2] == '4' || msg[2] == '3' || msg[2] == '1')) {
 		log_warning(LOG_PROTOCOL, _("error occurred on SMTP session\n"));
 		smtp_session->state = SMTP_ERROR;
 		smtp_session->error_val = SM_ERROR;
@@ -609,8 +590,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 		if (strstr(msg, "ESMTP"))
 			smtp_session->is_esmtp = TRUE;
 #ifdef USE_GNUTLS
-		if (smtp_session->user || session->ssl_type != SSL_NONE ||
-		    smtp_session->is_esmtp)
+		if (smtp_session->user || session->ssl_type != SSL_NONE || smtp_session->is_esmtp)
 #else
 		if (smtp_session->user || smtp_session->is_esmtp)
 #endif
@@ -625,20 +605,14 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 		ret = smtp_ehlo_recv(smtp_session, msg);
 		if (cont == TRUE)
 			break;
-		if (smtp_session->max_message_size > 0
-		&& smtp_session->max_message_size < 
-		   smtp_session->send_data_len) {
-			log_warning(LOG_PROTOCOL, _("Message is too big "
-			      "(Maximum size is %s)\n"),
-			      to_human_readable(
-			       (goffset)(smtp_session->max_message_size)));
+		if (smtp_session->max_message_size > 0 && smtp_session->max_message_size < smtp_session->send_data_len) {
+			log_warning(LOG_PROTOCOL, _("Message is too big " "(Maximum size is %s)\n"), to_human_readable((goffset) (smtp_session->max_message_size)));
 			smtp_session->state = SMTP_ERROR;
 			smtp_session->error_val = SM_ERROR;
 			return -1;
 		}
 #ifdef USE_GNUTLS
-		if (session->ssl_type == SSL_STARTTLS &&
-		    smtp_session->tls_init_done == FALSE) {
+		if (session->ssl_type == SSL_STARTTLS && smtp_session->tls_init_done == FALSE) {
 			ret = smtp_starttls(smtp_session);
 			break;
 		}
@@ -646,9 +620,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 		if (smtp_session->user) {
 			if (smtp_auth(smtp_session) != SM_OK) {
 #ifdef USE_GNUTLS
-				if (session->ssl_type == SSL_NONE
-				&&  smtp_session->tls_init_done == FALSE
-				&&  (smtp_session->avail_auth_type & SMTPAUTH_TLS_AVAILABLE))
+				if (session->ssl_type == SSL_NONE && smtp_session->tls_init_done == FALSE && (smtp_session->avail_auth_type & SMTPAUTH_TLS_AVAILABLE))
 					ret = smtp_starttls(smtp_session);
 				else
 #endif
@@ -678,7 +650,7 @@ static gint smtp_session_recv_msg(Session *session, const gchar *msg)
 	case SMTP_AUTH_PLAIN:
 	case SMTP_AUTH_LOGIN_PASS:
 #ifdef USE_GNUTLS
-        case SMTP_AUTH_OAUTH2:
+	case SMTP_AUTH_OAUTH2:
 #endif
 	case SMTP_AUTH_CRAM_MD5:
 		ret = smtp_from(smtp_session);
@@ -722,3 +694,7 @@ static gint smtp_session_send_data_finished(Session *session, guint len)
 {
 	return smtp_eom(SMTP_SESSION(session));
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

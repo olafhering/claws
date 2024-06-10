@@ -37,9 +37,9 @@ typedef enum {
 } ProgressType;
 
 struct _ProgressData {
-	ProgressCommand	cmd;
-	ProgressType	type;
-	gfloat		value;
+	ProgressCommand cmd;
+	ProgressType type;
+	gfloat value;
 };
 
 void progressindicator_start(ProgressType type);

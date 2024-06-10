@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -32,7 +32,7 @@
 #include <errno.h>
 
 #if HAVE_LOCALE_H
-#  include <locale.h>
+#include <locale.h>
 #endif
 
 #include "codeconv.h"
@@ -46,8 +46,7 @@
 #define ICONV_CONST
 #endif
 
-typedef enum
-{
+typedef enum {
 	JIS_ASCII,
 	JIS_KANJI,
 	JIS_HWKANA,
@@ -107,20 +106,16 @@ typedef enum
 		state = JIS_AUXKANJI;	\
 	}
 
-static CodeConvFunc conv_get_code_conv_func	(const gchar	*src_charset_str,
-					 const gchar	*dest_charset_str);
+static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str, const gchar *dest_charset_str);
 
-static gchar *conv_iconv_strdup_with_cd	(const gchar	*inbuf,
-					 iconv_t	 cd);
+static gchar *conv_iconv_strdup_with_cd(const gchar *inbuf, iconv_t cd);
 
-static gchar *conv_iconv_strdup		(const gchar	*inbuf,
-					 const gchar	*src_code,
-					 const gchar	*dest_code);
+static gchar *conv_iconv_strdup(const gchar *inbuf, const gchar *src_code, const gchar *dest_code);
 
-static CharSet conv_get_locale_charset			(void);
-static CharSet conv_get_outgoing_charset		(void);
+static CharSet conv_get_locale_charset(void);
+static CharSet conv_get_outgoing_charset(void);
 static CharSet conv_guess_ja_encoding(const gchar *str);
-static gboolean conv_is_ja_locale			(void);
+static gboolean conv_is_ja_locale(void);
 
 static gint conv_jistoeuc(gchar *outbuf, gint outlen, const gchar *inbuf);
 static gint conv_euctojis(gchar *outbuf, gint outlen, const gchar *inbuf);
@@ -182,8 +177,7 @@ static gint conv_jistoeuc(gchar *outbuf, gint outlen, const gchar *inbuf)
 				if (*(in + 1) == '@' || *(in + 1) == 'B') {
 					state = JIS_KANJI;
 					in += 2;
-				} else if (*(in + 1) == '(' &&
-					   *(in + 2) == 'D') {
+				} else if (*(in + 1) == '(' && *(in + 2) == 'D') {
 					state = JIS_AUXKANJI;
 					in += 3;
 				} else {
@@ -218,7 +212,8 @@ static gint conv_jistoeuc(gchar *outbuf, gint outlen, const gchar *inbuf)
 				break;
 			case JIS_KANJI:
 				*out++ = *in++ | 0x80;
-				if (*in == '\0') break;
+				if (*in == '\0')
+					break;
 				*out++ = *in++ | 0x80;
 				break;
 			case JIS_HWKANA:
@@ -228,7 +223,8 @@ static gint conv_jistoeuc(gchar *outbuf, gint outlen, const gchar *inbuf)
 			case JIS_AUXKANJI:
 				*out++ = 0x8f;
 				*out++ = *in++ | 0x80;
-				if (*in == '\0') break;
+				if (*in == '\0')
+					break;
 				*out++ = *in++ | 0x80;
 				break;
 			}
@@ -283,8 +279,7 @@ static gint conv_jis_hantozen(guchar *outbuf, guchar jis_code, guchar sound_sym)
 	if (jis_code < 0x21 || jis_code > 0x5f)
 		return 0;
 
-	if (sound_sym == JIS_HWDAKUTEN &&
-	    jis_code >= 0x36 && jis_code <= 0x4e) {
+	if (sound_sym == JIS_HWDAKUTEN && jis_code >= 0x36 && jis_code <= 0x4e) {
 		out_code = dakuten_tbl[jis_code - 0x30];
 		if (out_code != 0) {
 			*outbuf = out_code >> 8;
@@ -293,8 +288,7 @@ static gint conv_jis_hantozen(guchar *outbuf, guchar jis_code, guchar sound_sym)
 		}
 	}
 
-	if (sound_sym == JIS_HWHANDAKUTEN &&
-	    jis_code >= 0x4a && jis_code <= 0x4e) {
+	if (sound_sym == JIS_HWHANDAKUTEN && jis_code >= 0x4a && jis_code <= 0x4e) {
 		out_code = handakuten_tbl[jis_code - 0x4a];
 		*outbuf = out_code >> 8;
 		*(outbuf + 1) = out_code & 0xff;
@@ -348,15 +342,10 @@ static gint conv_euctojis(gchar *outbuf, gint outlen, const gchar *inbuf)
 					guchar jis_ch[2];
 					gint len;
 
-					if (iseuchwkana1(*(in + 2)) &&
-					    iseuchwkana2(*(in + 3)))
-						len = conv_jis_hantozen
-							(jis_ch,
-							 *(in + 1), *(in + 3));
+					if (iseuchwkana1(*(in + 2)) && iseuchwkana2(*(in + 3)))
+						len = conv_jis_hantozen(jis_ch, *(in + 1), *(in + 3));
 					else
-						len = conv_jis_hantozen
-							(jis_ch,
-							 *(in + 1), '\0');
+						len = conv_jis_hantozen(jis_ch, *(in + 1), '\0');
 					if (len == 0)
 						in += 2;
 					else {
@@ -465,7 +454,7 @@ static gint conv_jistoutf8(gchar *outbuf, gint outlen, const gchar *inbuf)
 
 	Xalloca(eucstr, outlen, return -1);
 
-	if (conv_jistoeuc(eucstr, outlen, inbuf) <0)
+	if (conv_jistoeuc(eucstr, outlen, inbuf) < 0)
 		return -1;
 	if (conv_euctoutf8(outbuf, outlen, eucstr) < 0)
 		return -1;
@@ -492,24 +481,23 @@ static gint conv_sjistoutf8(gchar *outbuf, gint outlen, const gchar *inbuf)
 
 static gint conv_euctoutf8(gchar *outbuf, gint outlen, const gchar *inbuf)
 {
-	static iconv_t cd = (iconv_t)-1;
+	static iconv_t cd = (iconv_t) - 1;
 	static gboolean iconv_ok = TRUE;
 	gchar *tmpstr;
 
 	cm_return_val_if_fail(inbuf != NULL, 0);
 	cm_return_val_if_fail(outbuf != NULL, 0);
 
-	if (cd == (iconv_t)-1) {
+	if (cd == (iconv_t) - 1) {
 		if (!iconv_ok) {
 			strncpy2(outbuf, inbuf, outlen);
 			return -1;
 		}
 		cd = iconv_open(CS_UTF_8, CS_EUC_JP_MS);
-		if (cd == (iconv_t)-1) {
+		if (cd == (iconv_t) - 1) {
 			cd = iconv_open(CS_UTF_8, CS_EUC_JP);
-			if (cd == (iconv_t)-1) {
-				g_warning("conv_euctoutf8(): %s",
-					  g_strerror(errno));
+			if (cd == (iconv_t) - 1) {
+				g_warning("conv_euctoutf8(): %s", g_strerror(errno));
 				iconv_ok = FALSE;
 				strncpy2(outbuf, inbuf, outlen);
 				return -1;
@@ -550,30 +538,29 @@ static gint conv_anytoutf8(gchar *outbuf, gint outlen, const gchar *inbuf)
 		strncpy2(outbuf, inbuf, outlen);
 		break;
 	}
-	
+
 	return r;
 }
 
 static gint conv_utf8toeuc(gchar *outbuf, gint outlen, const gchar *inbuf)
 {
-	static iconv_t cd = (iconv_t)-1;
+	static iconv_t cd = (iconv_t) - 1;
 	static gboolean iconv_ok = TRUE;
 	gchar *tmpstr;
 
 	cm_return_val_if_fail(inbuf != NULL, 0);
 	cm_return_val_if_fail(outbuf != NULL, 0);
 
-	if (cd == (iconv_t)-1) {
+	if (cd == (iconv_t) - 1) {
 		if (!iconv_ok) {
 			strncpy2(outbuf, inbuf, outlen);
 			return -1;
 		}
 		cd = iconv_open(CS_EUC_JP_MS, CS_UTF_8);
-		if (cd == (iconv_t)-1) {
+		if (cd == (iconv_t) - 1) {
 			cd = iconv_open(CS_EUC_JP, CS_UTF_8);
-			if (cd == (iconv_t)-1) {
-				g_warning("conv_utf8toeuc(): %s",
-					  g_strerror(errno));
+			if (cd == (iconv_t) - 1) {
+				g_warning("conv_utf8toeuc(): %s", g_strerror(errno));
 				iconv_ok = FALSE;
 				strncpy2(outbuf, inbuf, outlen);
 				return -1;
@@ -605,7 +592,7 @@ static gint conv_utf8tojis(gchar *outbuf, gint outlen, const gchar *inbuf)
 		return -1;
 	if (conv_euctojis(outbuf, outlen, eucstr) < 0)
 		return -1;
-		
+
 	return 0;
 }
 
@@ -617,7 +604,8 @@ static void conv_unreadable_8bit(gchar *str)
 		/* convert CR+LF -> LF */
 		if (*p == '\r' && *(p + 1) == '\n')
 			memmove(p, p + 1, strlen(p));
-		else if (!IS_ASCII(*p)) *p = SUBST_CHAR;
+		else if (!IS_ASCII(*p))
+			*p = SUBST_CHAR;
 		p++;
 	}
 }
@@ -638,9 +626,7 @@ static CharSet conv_guess_ja_encoding(const gchar *str)
 			if (*p >= 0xfd && *p <= 0xfe)
 				return C_EUC_JP;
 			else if (guessed == C_SHIFT_JIS) {
-				if ((issjiskanji1(*p) &&
-				     issjiskanji2(*(p + 1))) ||
-				    issjishwkana(*p))
+				if ((issjiskanji1(*p) && issjiskanji2(*(p + 1))) || issjishwkana(*p))
 					guessed = C_SHIFT_JIS;
 				else
 					guessed = C_EUC_JP;
@@ -720,7 +706,7 @@ static gint conv_ustodisp(gchar *outbuf, gint outlen, const gchar *inbuf)
 
 	strncpy2(outbuf, inbuf, outlen);
 	conv_unreadable_8bit(outbuf);
-	
+
 	return 0;
 }
 
@@ -732,8 +718,7 @@ void conv_localetodisp(gchar *outbuf, gint outlen, const gchar *inbuf)
 	cm_return_if_fail(outbuf != NULL);
 
 	codeconv_set_strict(TRUE);
-	tmpstr = conv_iconv_strdup(inbuf, conv_get_locale_charset_str(),
-				   CS_INTERNAL);
+	tmpstr = conv_iconv_strdup(inbuf, conv_get_locale_charset_str(), CS_INTERNAL);
 	codeconv_set_strict(FALSE);
 	if (tmpstr && g_utf8_validate(tmpstr, -1, NULL)) {
 		strncpy2(outbuf, tmpstr, outlen);
@@ -742,9 +727,7 @@ void conv_localetodisp(gchar *outbuf, gint outlen, const gchar *inbuf)
 	} else if (tmpstr && !g_utf8_validate(tmpstr, -1, NULL)) {
 		g_free(tmpstr);
 		codeconv_set_strict(TRUE);
-		tmpstr = conv_iconv_strdup(inbuf, 
-				conv_get_locale_charset_str_no_utf8(),
-				CS_INTERNAL);
+		tmpstr = conv_iconv_strdup(inbuf, conv_get_locale_charset_str_no_utf8(), CS_INTERNAL);
 		codeconv_set_strict(FALSE);
 	}
 	if (tmpstr && g_utf8_validate(tmpstr, -1, NULL)) {
@@ -766,18 +749,15 @@ static gint conv_noconv(gchar *outbuf, gint outlen, const gchar *inbuf)
 	return 0;
 }
 
-static const gchar *
-conv_get_fallback_for_private_encoding(const gchar *encoding)
+static const gchar *conv_get_fallback_for_private_encoding(const gchar *encoding)
 {
 	if (encoding) {
-		if ((encoding[0] == 'X' || encoding[0] == 'x') &&
-		    encoding[1] == '-') {
+		if ((encoding[0] == 'X' || encoding[0] == 'x') && encoding[1] == '-') {
 			if (!g_ascii_strcasecmp(encoding, CS_X_MACCYR))
 				return CS_MACCYR;
 			if (!g_ascii_strcasecmp(encoding, CS_X_GBK))
 				return CS_GBK;
-		}
-		else if(!g_ascii_strcasecmp(encoding, CS_ISO_8859_8_I)) {
+		} else if (!g_ascii_strcasecmp(encoding, CS_ISO_8859_8_I)) {
 			/*
 			 * ISO-8859-8-I is a variant which fully
 			 * agrees with ISO-8859-8 on character
@@ -812,8 +792,7 @@ void conv_code_converter_destroy(CodeConverter *conv)
 	g_free(conv);
 }
 
-gint conv_convert(CodeConverter *conv, gchar *outbuf, gint outlen,
-		  const gchar *inbuf)
+gint conv_convert(CodeConverter *conv, gchar *outbuf, gint outlen, const gchar *inbuf)
 {
 	cm_return_val_if_fail(inbuf != NULL, -1);
 	cm_return_val_if_fail(outbuf != NULL, -1);
@@ -835,8 +814,7 @@ gint conv_convert(CodeConverter *conv, gchar *outbuf, gint outlen,
 	return 0;
 }
 
-gchar *conv_codeset_strdup(const gchar *inbuf,
-			   const gchar *src_code, const gchar *dest_code)
+gchar *conv_codeset_strdup(const gchar *inbuf, const gchar *src_code, const gchar *dest_code)
 {
 	gchar *buf;
 	size_t len;
@@ -858,9 +836,7 @@ gchar *conv_codeset_strdup(const gchar *inbuf,
 
 	src_code = conv_get_fallback_for_private_encoding(src_code);
 	conv_func = conv_get_code_conv_func(src_code, dest_code);
-	if (conv_func == conv_ustodisp
-			&& codeconv_strict_mode
-			&& !is_ascii_str(inbuf))
+	if (conv_func == conv_ustodisp && codeconv_strict_mode && !is_ascii_str(inbuf))
 		return NULL;
 
 	if (conv_func != conv_noconv) {
@@ -878,8 +854,7 @@ gchar *conv_codeset_strdup(const gchar *inbuf,
 	return conv_iconv_strdup(inbuf, src_code, dest_code);
 }
 
-static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str,
-				     const gchar *dest_charset_str)
+static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str, const gchar *dest_charset_str)
 {
 	CodeConvFunc code_conv = conv_noconv;
 	CharSet src_charset;
@@ -941,9 +916,7 @@ static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str,
 	case C_EUC_JP:
 		if (dest_charset == C_AUTO)
 			code_conv = conv_euctodisp;
-		else if (dest_charset == C_ISO_2022_JP   ||
-			 dest_charset == C_ISO_2022_JP_2 ||
-			 dest_charset == C_ISO_2022_JP_3)
+		else if (dest_charset == C_ISO_2022_JP || dest_charset == C_ISO_2022_JP_2 || dest_charset == C_ISO_2022_JP_3)
 			code_conv = conv_euctojis;
 		else if (dest_charset == C_UTF_8)
 			code_conv = conv_euctoutf8;
@@ -951,9 +924,7 @@ static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str,
 	case C_UTF_8:
 		if (dest_charset == C_EUC_JP)
 			code_conv = conv_utf8toeuc;
-		else if (dest_charset == C_ISO_2022_JP   ||
-			 dest_charset == C_ISO_2022_JP_2 ||
-			 dest_charset == C_ISO_2022_JP_3)
+		else if (dest_charset == C_ISO_2022_JP || dest_charset == C_ISO_2022_JP_2 || dest_charset == C_ISO_2022_JP_3)
 			code_conv = conv_utf8tojis;
 		break;
 	default:
@@ -963,17 +934,15 @@ static CodeConvFunc conv_get_code_conv_func(const gchar *src_charset_str,
 	return code_conv;
 }
 
-static gchar *conv_iconv_strdup(const gchar *inbuf,
-			 const gchar *src_code, const gchar *dest_code)
+static gchar *conv_iconv_strdup(const gchar *inbuf, const gchar *src_code, const gchar *dest_code)
 {
 	iconv_t cd;
 	gchar *outbuf;
 
 	cm_return_val_if_fail(inbuf != NULL, NULL);
 
-	if (!src_code && !dest_code && 
-	    g_utf8_validate(inbuf, -1, NULL))
-	    	return g_strdup(inbuf);
+	if (!src_code && !dest_code && g_utf8_validate(inbuf, -1, NULL))
+		return g_strdup(inbuf);
 
 	if (!src_code)
 		src_code = conv_get_outgoing_charset_str();
@@ -993,7 +962,7 @@ static gchar *conv_iconv_strdup(const gchar *inbuf,
 		return g_strdup(inbuf);
 
 	cd = iconv_open(dest_code, src_code);
-	if (cd == (iconv_t)-1)
+	if (cd == (iconv_t) - 1)
 		return NULL;
 
 	outbuf = conv_iconv_strdup_with_cd(inbuf, cd);
@@ -1034,8 +1003,7 @@ gchar *conv_iconv_strdup_with_cd(const gchar *inbuf, iconv_t cd)
 	out_left = out_size - len;		\
 }
 
-	while ((n_conv = iconv(cd, (ICONV_CONST gchar **)&inbuf_p, &in_left,
-			       &outbuf_p, &out_left)) == (size_t)-1) {
+	while ((n_conv = iconv(cd, (ICONV_CONST gchar **)&inbuf_p, &in_left, &outbuf_p, &out_left)) == (size_t)-1) {
 		if (EILSEQ == errno) {
 			if (codeconv_strict_mode) {
 				g_free(outbuf);
@@ -1054,19 +1022,16 @@ gchar *conv_iconv_strdup_with_cd(const gchar *inbuf, iconv_t cd)
 		} else if (E2BIG == errno) {
 			EXPAND_BUF();
 		} else {
-			g_warning("conv_iconv_strdup(): %s",
-				  g_strerror(errno));
+			g_warning("conv_iconv_strdup(): %s", g_strerror(errno));
 			break;
 		}
 	}
 
-	while ((n_conv = iconv(cd, NULL, NULL, &outbuf_p, &out_left)) ==
-	       (size_t)-1) {
+	while ((n_conv = iconv(cd, NULL, NULL, &outbuf_p, &out_left)) == (size_t)-1) {
 		if (E2BIG == errno) {
 			EXPAND_BUF();
 		} else {
-			g_warning("conv_iconv_strdup(): %s",
-				  g_strerror(errno));
+			g_warning("conv_iconv_strdup(): %s", g_strerror(errno));
 			break;
 		}
 	}
@@ -1084,70 +1049,70 @@ static const struct {
 	CharSet charset;
 	gchar *const name;
 } charsets[] = {
-	{C_US_ASCII,		CS_US_ASCII},
-	{C_US_ASCII,		CS_ANSI_X3_4_1968},
-	{C_UTF_8,		CS_UTF_8},
-	{C_UTF_7,		CS_UTF_7},
-	{C_ISO_8859_1,		CS_ISO_8859_1},
-	{C_ISO_8859_2,		CS_ISO_8859_2},
-	{C_ISO_8859_3,		CS_ISO_8859_3},
-	{C_ISO_8859_4,		CS_ISO_8859_4},
-	{C_ISO_8859_5,		CS_ISO_8859_5},
-	{C_ISO_8859_6,		CS_ISO_8859_6},
-	{C_ISO_8859_7,		CS_ISO_8859_7},
-	{C_ISO_8859_8,		CS_ISO_8859_8},
-	{C_ISO_8859_9,		CS_ISO_8859_9},
-	{C_ISO_8859_10,		CS_ISO_8859_10},
-	{C_ISO_8859_11,		CS_ISO_8859_11},
-	{C_ISO_8859_13,		CS_ISO_8859_13},
-	{C_ISO_8859_14,		CS_ISO_8859_14},
-	{C_ISO_8859_15,		CS_ISO_8859_15},
-	{C_BALTIC,		CS_BALTIC},
-	{C_CP1250,		CS_CP1250},
-	{C_CP1251,		CS_CP1251},
-	{C_CP1252,		CS_CP1252},
-	{C_CP1253,		CS_CP1253},
-	{C_CP1254,		CS_CP1254},
-	{C_CP1255,		CS_CP1255},
-	{C_CP1256,		CS_CP1256},
-	{C_CP1257,		CS_CP1257},
-	{C_CP1258,		CS_CP1258},
-	{C_WINDOWS_1250,	CS_WINDOWS_1250},
-	{C_WINDOWS_1251,	CS_WINDOWS_1251},
-	{C_WINDOWS_1252,	CS_WINDOWS_1252},
-	{C_WINDOWS_1253,	CS_WINDOWS_1253},
-	{C_WINDOWS_1254,	CS_WINDOWS_1254},
-	{C_WINDOWS_1255,	CS_WINDOWS_1255},
-	{C_WINDOWS_1256,	CS_WINDOWS_1256},
-	{C_WINDOWS_1257,	CS_WINDOWS_1257},
-	{C_WINDOWS_1258,	CS_WINDOWS_1258},
-	{C_KOI8_R,		CS_KOI8_R},
-	{C_MACCYR,		CS_MACCYR},
-	{C_KOI8_T,		CS_KOI8_T},
-	{C_KOI8_U,		CS_KOI8_U},
-	{C_ISO_2022_JP,		CS_ISO_2022_JP},
-	{C_ISO_2022_JP_2,	CS_ISO_2022_JP_2},
-	{C_ISO_2022_JP_3,	CS_ISO_2022_JP_3},
-	{C_EUC_JP,		CS_EUC_JP},
-	{C_EUC_JP,		CS_EUCJP},
-	{C_EUC_JP_MS,		CS_EUC_JP_MS},
-	{C_SHIFT_JIS,		CS_SHIFT_JIS},
-	{C_SHIFT_JIS,		CS_SHIFT__JIS},
-	{C_SHIFT_JIS,		CS_SJIS},
-	{C_ISO_2022_KR,		CS_ISO_2022_KR},
-	{C_EUC_KR,		CS_EUC_KR},
-	{C_ISO_2022_CN,		CS_ISO_2022_CN},
-	{C_EUC_CN,		CS_EUC_CN},
-	{C_GB18030,		CS_GB18030},
-	{C_GB2312,		CS_GB2312},
-	{C_GBK,			CS_GBK},
-	{C_EUC_TW,		CS_EUC_TW},
-	{C_BIG5,		CS_BIG5},
-	{C_BIG5_HKSCS,		CS_BIG5_HKSCS},
-	{C_TIS_620,		CS_TIS_620},
-	{C_WINDOWS_874,		CS_WINDOWS_874},
-	{C_GEORGIAN_PS,		CS_GEORGIAN_PS},
-	{C_TCVN5712_1,		CS_TCVN5712_1},
+	{C_US_ASCII, CS_US_ASCII},
+	{C_US_ASCII, CS_ANSI_X3_4_1968},
+	{C_UTF_8, CS_UTF_8},
+	{C_UTF_7, CS_UTF_7},
+	{C_ISO_8859_1, CS_ISO_8859_1},
+	{C_ISO_8859_2, CS_ISO_8859_2},
+	{C_ISO_8859_3, CS_ISO_8859_3},
+	{C_ISO_8859_4, CS_ISO_8859_4},
+	{C_ISO_8859_5, CS_ISO_8859_5},
+	{C_ISO_8859_6, CS_ISO_8859_6},
+	{C_ISO_8859_7, CS_ISO_8859_7},
+	{C_ISO_8859_8, CS_ISO_8859_8},
+	{C_ISO_8859_9, CS_ISO_8859_9},
+	{C_ISO_8859_10, CS_ISO_8859_10},
+	{C_ISO_8859_11, CS_ISO_8859_11},
+	{C_ISO_8859_13, CS_ISO_8859_13},
+	{C_ISO_8859_14, CS_ISO_8859_14},
+	{C_ISO_8859_15, CS_ISO_8859_15},
+	{C_BALTIC, CS_BALTIC},
+	{C_CP1250, CS_CP1250},
+	{C_CP1251, CS_CP1251},
+	{C_CP1252, CS_CP1252},
+	{C_CP1253, CS_CP1253},
+	{C_CP1254, CS_CP1254},
+	{C_CP1255, CS_CP1255},
+	{C_CP1256, CS_CP1256},
+	{C_CP1257, CS_CP1257},
+	{C_CP1258, CS_CP1258},
+	{C_WINDOWS_1250, CS_WINDOWS_1250},
+	{C_WINDOWS_1251, CS_WINDOWS_1251},
+	{C_WINDOWS_1252, CS_WINDOWS_1252},
+	{C_WINDOWS_1253, CS_WINDOWS_1253},
+	{C_WINDOWS_1254, CS_WINDOWS_1254},
+	{C_WINDOWS_1255, CS_WINDOWS_1255},
+	{C_WINDOWS_1256, CS_WINDOWS_1256},
+	{C_WINDOWS_1257, CS_WINDOWS_1257},
+	{C_WINDOWS_1258, CS_WINDOWS_1258},
+	{C_KOI8_R, CS_KOI8_R},
+	{C_MACCYR, CS_MACCYR},
+	{C_KOI8_T, CS_KOI8_T},
+	{C_KOI8_U, CS_KOI8_U},
+	{C_ISO_2022_JP, CS_ISO_2022_JP},
+	{C_ISO_2022_JP_2, CS_ISO_2022_JP_2},
+	{C_ISO_2022_JP_3, CS_ISO_2022_JP_3},
+	{C_EUC_JP, CS_EUC_JP},
+	{C_EUC_JP, CS_EUCJP},
+	{C_EUC_JP_MS, CS_EUC_JP_MS},
+	{C_SHIFT_JIS, CS_SHIFT_JIS},
+	{C_SHIFT_JIS, CS_SHIFT__JIS},
+	{C_SHIFT_JIS, CS_SJIS},
+	{C_ISO_2022_KR, CS_ISO_2022_KR},
+	{C_EUC_KR, CS_EUC_KR},
+	{C_ISO_2022_CN, CS_ISO_2022_CN},
+	{C_EUC_CN, CS_EUC_CN},
+	{C_GB18030, CS_GB18030},
+	{C_GB2312, CS_GB2312},
+	{C_GBK, CS_GBK},
+	{C_EUC_TW, CS_EUC_TW},
+	{C_BIG5, CS_BIG5},
+	{C_BIG5_HKSCS, CS_BIG5_HKSCS},
+	{C_TIS_620, CS_TIS_620},
+	{C_WINDOWS_874, CS_WINDOWS_874},
+	{C_GEORGIAN_PS, CS_GEORGIAN_PS},
+	{C_TCVN5712_1, CS_TCVN5712_1},
 };
 
 static const struct {
@@ -1155,189 +1120,189 @@ static const struct {
 	CharSet charset;
 	CharSet out_charset;
 } locale_table[] = {
-	{"ja_JP.eucJP"		, C_EUC_JP	, C_ISO_2022_JP},
-	{"ja_JP.EUC-JP"		, C_EUC_JP	, C_ISO_2022_JP},
-	{"ja_JP.EUC"		, C_EUC_JP	, C_ISO_2022_JP},
-	{"ja_JP.ujis"		, C_EUC_JP	, C_ISO_2022_JP},
-	{"ja_JP.SJIS"		, C_SHIFT_JIS	, C_ISO_2022_JP},
-	{"ja_JP.JIS"		, C_ISO_2022_JP	, C_ISO_2022_JP},
+	{"ja_JP.eucJP", C_EUC_JP, C_ISO_2022_JP},
+	{"ja_JP.EUC-JP", C_EUC_JP, C_ISO_2022_JP},
+	{"ja_JP.EUC", C_EUC_JP, C_ISO_2022_JP},
+	{"ja_JP.ujis", C_EUC_JP, C_ISO_2022_JP},
+	{"ja_JP.SJIS", C_SHIFT_JIS, C_ISO_2022_JP},
+	{"ja_JP.JIS", C_ISO_2022_JP, C_ISO_2022_JP},
 #ifdef G_OS_WIN32
-	{"ja_JP"		, C_SHIFT_JIS	, C_ISO_2022_JP},
+	{"ja_JP", C_SHIFT_JIS, C_ISO_2022_JP},
 #else
-	{"ja_JP"		, C_EUC_JP	, C_ISO_2022_JP},
+	{"ja_JP", C_EUC_JP, C_ISO_2022_JP},
 #endif
-	{"ko_KR.EUC-KR"		, C_EUC_KR	, C_EUC_KR},
-	{"ko_KR"		, C_EUC_KR	, C_EUC_KR},
-	{"zh_CN.GB18030"	, C_GB18030	, C_GB18030},
-	{"zh_CN.GB2312"		, C_GB2312	, C_GB2312},
-	{"zh_CN.GBK"		, C_GBK		, C_GBK},
-	{"zh_CN"		, C_GB18030	, C_GB18030},
-	{"zh_HK"		, C_BIG5_HKSCS	, C_BIG5_HKSCS},
-	{"zh_TW.eucTW"		, C_EUC_TW	, C_BIG5},
-	{"zh_TW.EUC-TW"		, C_EUC_TW	, C_BIG5},
-	{"zh_TW.Big5"		, C_BIG5	, C_BIG5},
-	{"zh_TW"		, C_BIG5	, C_BIG5},
+	{"ko_KR.EUC-KR", C_EUC_KR, C_EUC_KR},
+	{"ko_KR", C_EUC_KR, C_EUC_KR},
+	{"zh_CN.GB18030", C_GB18030, C_GB18030},
+	{"zh_CN.GB2312", C_GB2312, C_GB2312},
+	{"zh_CN.GBK", C_GBK, C_GBK},
+	{"zh_CN", C_GB18030, C_GB18030},
+	{"zh_HK", C_BIG5_HKSCS, C_BIG5_HKSCS},
+	{"zh_TW.eucTW", C_EUC_TW, C_BIG5},
+	{"zh_TW.EUC-TW", C_EUC_TW, C_BIG5},
+	{"zh_TW.Big5", C_BIG5, C_BIG5},
+	{"zh_TW", C_BIG5, C_BIG5},
 
-	{"ru_RU.KOI8-R"		, C_KOI8_R	, C_KOI8_R},
-	{"ru_RU.KOI8R"		, C_KOI8_R	, C_KOI8_R},
-	{"ru_RU.CP1251"		, C_WINDOWS_1251, C_KOI8_R},
+	{"ru_RU.KOI8-R", C_KOI8_R, C_KOI8_R},
+	{"ru_RU.KOI8R", C_KOI8_R, C_KOI8_R},
+	{"ru_RU.CP1251", C_WINDOWS_1251, C_KOI8_R},
 #ifdef G_OS_WIN32
-	{"ru_RU"		, C_WINDOWS_1251, C_KOI8_R},
+	{"ru_RU", C_WINDOWS_1251, C_KOI8_R},
 #else
-	{"ru_RU"		, C_ISO_8859_5	, C_KOI8_R},
+	{"ru_RU", C_ISO_8859_5, C_KOI8_R},
 #endif
-	{"tg_TJ"		, C_KOI8_T	, C_KOI8_T},
-	{"ru_UA"		, C_KOI8_U	, C_KOI8_U},
-	{"uk_UA.CP1251"		, C_WINDOWS_1251, C_KOI8_U},
-	{"uk_UA"		, C_KOI8_U	, C_KOI8_U},
+	{"tg_TJ", C_KOI8_T, C_KOI8_T},
+	{"ru_UA", C_KOI8_U, C_KOI8_U},
+	{"uk_UA.CP1251", C_WINDOWS_1251, C_KOI8_U},
+	{"uk_UA", C_KOI8_U, C_KOI8_U},
 
-	{"be_BY"		, C_WINDOWS_1251, C_WINDOWS_1251},
-	{"bg_BG"		, C_WINDOWS_1251, C_WINDOWS_1251},
+	{"be_BY", C_WINDOWS_1251, C_WINDOWS_1251},
+	{"bg_BG", C_WINDOWS_1251, C_WINDOWS_1251},
 
-	{"yi_US"		, C_WINDOWS_1255, C_WINDOWS_1255},
+	{"yi_US", C_WINDOWS_1255, C_WINDOWS_1255},
 
-	{"af_ZA"		, C_ISO_8859_1  , C_ISO_8859_1},
-	{"br_FR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"ca_ES"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"da_DK"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"de_AT"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"de_BE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"de_CH"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"de_DE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"de_LU"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_AU"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_BW"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_CA"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_DK"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_GB"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_HK"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_IE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_NZ"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_PH"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_SG"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_US"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_ZA"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"en_ZW"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_AR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_BO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_CL"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_CO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_CR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_DO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_EC"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_ES"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_GT"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_HN"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_MX"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_NI"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_PA"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_PE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_PR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_PY"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_SV"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_US"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_UY"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"es_VE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"et_EE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"eu_ES"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fi_FI"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fo_FO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fr_BE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fr_CA"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fr_CH"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fr_FR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"fr_LU"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"ga_IE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"gl_ES"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"gv_GB"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"id_ID"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"is_IS"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"it_CH"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"it_IT"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"kl_GL"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"kw_GB"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"ms_MY"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"nl_BE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"nl_NL"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"nb_NO"		, C_ISO_8859_1  , C_ISO_8859_1},
-	{"nn_NO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"no_NO"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"oc_FR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"pt_BR"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"pt_PT"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"sq_AL"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"sv_FI"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"sv_SE"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"tl_PH"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"uz_UZ"		, C_ISO_8859_1	, C_ISO_8859_1},
-	{"wa_BE"		, C_ISO_8859_1	, C_ISO_8859_1},
+	{"af_ZA", C_ISO_8859_1, C_ISO_8859_1},
+	{"br_FR", C_ISO_8859_1, C_ISO_8859_1},
+	{"ca_ES", C_ISO_8859_1, C_ISO_8859_1},
+	{"da_DK", C_ISO_8859_1, C_ISO_8859_1},
+	{"de_AT", C_ISO_8859_1, C_ISO_8859_1},
+	{"de_BE", C_ISO_8859_1, C_ISO_8859_1},
+	{"de_CH", C_ISO_8859_1, C_ISO_8859_1},
+	{"de_DE", C_ISO_8859_1, C_ISO_8859_1},
+	{"de_LU", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_AU", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_BW", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_CA", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_DK", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_GB", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_HK", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_IE", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_NZ", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_PH", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_SG", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_US", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_ZA", C_ISO_8859_1, C_ISO_8859_1},
+	{"en_ZW", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_AR", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_BO", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_CL", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_CO", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_CR", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_DO", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_EC", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_ES", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_GT", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_HN", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_MX", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_NI", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_PA", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_PE", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_PR", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_PY", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_SV", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_US", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_UY", C_ISO_8859_1, C_ISO_8859_1},
+	{"es_VE", C_ISO_8859_1, C_ISO_8859_1},
+	{"et_EE", C_ISO_8859_1, C_ISO_8859_1},
+	{"eu_ES", C_ISO_8859_1, C_ISO_8859_1},
+	{"fi_FI", C_ISO_8859_1, C_ISO_8859_1},
+	{"fo_FO", C_ISO_8859_1, C_ISO_8859_1},
+	{"fr_BE", C_ISO_8859_1, C_ISO_8859_1},
+	{"fr_CA", C_ISO_8859_1, C_ISO_8859_1},
+	{"fr_CH", C_ISO_8859_1, C_ISO_8859_1},
+	{"fr_FR", C_ISO_8859_1, C_ISO_8859_1},
+	{"fr_LU", C_ISO_8859_1, C_ISO_8859_1},
+	{"ga_IE", C_ISO_8859_1, C_ISO_8859_1},
+	{"gl_ES", C_ISO_8859_1, C_ISO_8859_1},
+	{"gv_GB", C_ISO_8859_1, C_ISO_8859_1},
+	{"id_ID", C_ISO_8859_1, C_ISO_8859_1},
+	{"is_IS", C_ISO_8859_1, C_ISO_8859_1},
+	{"it_CH", C_ISO_8859_1, C_ISO_8859_1},
+	{"it_IT", C_ISO_8859_1, C_ISO_8859_1},
+	{"kl_GL", C_ISO_8859_1, C_ISO_8859_1},
+	{"kw_GB", C_ISO_8859_1, C_ISO_8859_1},
+	{"ms_MY", C_ISO_8859_1, C_ISO_8859_1},
+	{"nl_BE", C_ISO_8859_1, C_ISO_8859_1},
+	{"nl_NL", C_ISO_8859_1, C_ISO_8859_1},
+	{"nb_NO", C_ISO_8859_1, C_ISO_8859_1},
+	{"nn_NO", C_ISO_8859_1, C_ISO_8859_1},
+	{"no_NO", C_ISO_8859_1, C_ISO_8859_1},
+	{"oc_FR", C_ISO_8859_1, C_ISO_8859_1},
+	{"pt_BR", C_ISO_8859_1, C_ISO_8859_1},
+	{"pt_PT", C_ISO_8859_1, C_ISO_8859_1},
+	{"sq_AL", C_ISO_8859_1, C_ISO_8859_1},
+	{"sv_FI", C_ISO_8859_1, C_ISO_8859_1},
+	{"sv_SE", C_ISO_8859_1, C_ISO_8859_1},
+	{"tl_PH", C_ISO_8859_1, C_ISO_8859_1},
+	{"uz_UZ", C_ISO_8859_1, C_ISO_8859_1},
+	{"wa_BE", C_ISO_8859_1, C_ISO_8859_1},
 
-	{"bs_BA"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"cs_CZ"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"hr_HR"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"hu_HU"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"pl_PL"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"ro_RO"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"sk_SK"		, C_ISO_8859_2	, C_ISO_8859_2},
-	{"sl_SI"		, C_ISO_8859_2	, C_ISO_8859_2},
+	{"bs_BA", C_ISO_8859_2, C_ISO_8859_2},
+	{"cs_CZ", C_ISO_8859_2, C_ISO_8859_2},
+	{"hr_HR", C_ISO_8859_2, C_ISO_8859_2},
+	{"hu_HU", C_ISO_8859_2, C_ISO_8859_2},
+	{"pl_PL", C_ISO_8859_2, C_ISO_8859_2},
+	{"ro_RO", C_ISO_8859_2, C_ISO_8859_2},
+	{"sk_SK", C_ISO_8859_2, C_ISO_8859_2},
+	{"sl_SI", C_ISO_8859_2, C_ISO_8859_2},
 
-	{"sr_YU@cyrillic"	, C_ISO_8859_5	, C_ISO_8859_5},
-	{"sr_YU"		, C_ISO_8859_2	, C_ISO_8859_2},
+	{"sr_YU@cyrillic", C_ISO_8859_5, C_ISO_8859_5},
+	{"sr_YU", C_ISO_8859_2, C_ISO_8859_2},
 
-	{"mt_MT"		, C_ISO_8859_3	, C_ISO_8859_3},
+	{"mt_MT", C_ISO_8859_3, C_ISO_8859_3},
 
-	{"lt_LT.iso88594"	, C_ISO_8859_4	, C_ISO_8859_4},
-	{"lt_LT.ISO8859-4"	, C_ISO_8859_4	, C_ISO_8859_4},
-	{"lt_LT.ISO_8859-4"	, C_ISO_8859_4	, C_ISO_8859_4},
-	{"lt_LT"		, C_ISO_8859_13	, C_ISO_8859_13},
+	{"lt_LT.iso88594", C_ISO_8859_4, C_ISO_8859_4},
+	{"lt_LT.ISO8859-4", C_ISO_8859_4, C_ISO_8859_4},
+	{"lt_LT.ISO_8859-4", C_ISO_8859_4, C_ISO_8859_4},
+	{"lt_LT", C_ISO_8859_13, C_ISO_8859_13},
 
-	{"mk_MK"		, C_ISO_8859_5	, C_ISO_8859_5},
+	{"mk_MK", C_ISO_8859_5, C_ISO_8859_5},
 
-	{"ar_AE"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_BH"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_DZ"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_EG"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_IQ"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_JO"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_KW"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_LB"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_LY"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_MA"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_OM"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_QA"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_SA"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_SD"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_SY"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_TN"		, C_ISO_8859_6	, C_ISO_8859_6},
-	{"ar_YE"		, C_ISO_8859_6	, C_ISO_8859_6},
+	{"ar_AE", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_BH", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_DZ", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_EG", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_IQ", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_JO", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_KW", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_LB", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_LY", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_MA", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_OM", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_QA", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_SA", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_SD", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_SY", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_TN", C_ISO_8859_6, C_ISO_8859_6},
+	{"ar_YE", C_ISO_8859_6, C_ISO_8859_6},
 
-	{"el_GR"		, C_ISO_8859_7	, C_ISO_8859_7},
-	{"he_IL"		, C_ISO_8859_8	, C_ISO_8859_8},
-	{"iw_IL"		, C_ISO_8859_8	, C_ISO_8859_8},
-	{"tr_TR"		, C_ISO_8859_9	, C_ISO_8859_9},
+	{"el_GR", C_ISO_8859_7, C_ISO_8859_7},
+	{"he_IL", C_ISO_8859_8, C_ISO_8859_8},
+	{"iw_IL", C_ISO_8859_8, C_ISO_8859_8},
+	{"tr_TR", C_ISO_8859_9, C_ISO_8859_9},
 
-	{"lv_LV"		, C_ISO_8859_13	, C_ISO_8859_13},
-	{"mi_NZ"		, C_ISO_8859_13	, C_ISO_8859_13},
+	{"lv_LV", C_ISO_8859_13, C_ISO_8859_13},
+	{"mi_NZ", C_ISO_8859_13, C_ISO_8859_13},
 
-	{"cy_GB"		, C_ISO_8859_14	, C_ISO_8859_14},
+	{"cy_GB", C_ISO_8859_14, C_ISO_8859_14},
 
-	{"ar_IN"		, C_UTF_8	, C_UTF_8},
-	{"en_IN"		, C_UTF_8	, C_UTF_8},
-	{"se_NO"		, C_UTF_8	, C_UTF_8},
-	{"ta_IN"		, C_UTF_8	, C_UTF_8},
-	{"te_IN"		, C_UTF_8	, C_UTF_8},
-	{"ur_PK"		, C_UTF_8	, C_UTF_8},
+	{"ar_IN", C_UTF_8, C_UTF_8},
+	{"en_IN", C_UTF_8, C_UTF_8},
+	{"se_NO", C_UTF_8, C_UTF_8},
+	{"ta_IN", C_UTF_8, C_UTF_8},
+	{"te_IN", C_UTF_8, C_UTF_8},
+	{"ur_PK", C_UTF_8, C_UTF_8},
 
-	{"th_TH"		, C_TIS_620	, C_TIS_620},
-	/* {"th_TH"		, C_WINDOWS_874}, */
-	/* {"th_TH"		, C_ISO_8859_11}, */
+	{"th_TH", C_TIS_620, C_TIS_620},
+	/* {"th_TH"             , C_WINDOWS_874}, */
+	/* {"th_TH"             , C_ISO_8859_11}, */
 
-	{"ka_GE"		, C_GEORGIAN_PS	, C_GEORGIAN_PS},
-	{"vi_VN.TCVN"		, C_TCVN5712_1	, C_TCVN5712_1},
+	{"ka_GE", C_GEORGIAN_PS, C_GEORGIAN_PS},
+	{"vi_VN.TCVN", C_TCVN5712_1, C_TCVN5712_1},
 
-	{"C"			, C_US_ASCII	, C_US_ASCII},
-	{"POSIX"		, C_US_ASCII	, C_US_ASCII},
-	{"ANSI_X3.4-1968"	, C_US_ASCII	, C_US_ASCII},
+	{"C", C_US_ASCII, C_US_ASCII},
+	{"POSIX", C_US_ASCII, C_US_ASCII},
+	{"ANSI_X3.4-1968", C_US_ASCII, C_US_ASCII},
 };
 
 static GHashTable *conv_get_charset_to_str_table(void)
@@ -1353,9 +1318,7 @@ static GHashTable *conv_get_charset_to_str_table(void)
 	for (i = 0; i < sizeof(charsets) / sizeof(charsets[0]); i++) {
 		if (g_hash_table_lookup(table, GUINT_TO_POINTER(charsets[i].charset))
 		    == NULL) {
-			g_hash_table_insert
-				(table, GUINT_TO_POINTER(charsets[i].charset),
-				 charsets[i].name);
+			g_hash_table_insert(table, GUINT_TO_POINTER(charsets[i].charset), charsets[i].name);
 		}
 	}
 
@@ -1373,8 +1336,7 @@ static GHashTable *conv_get_charset_from_str_table(void)
 	table = g_hash_table_new(str_case_hash, str_case_equal);
 
 	for (i = 0; i < sizeof(charsets) / sizeof(charsets[0]); i++) {
-		g_hash_table_insert(table, charsets[i].name,
-				    GUINT_TO_POINTER(charsets[i].charset));
+		g_hash_table_insert(table, charsets[i].name, GUINT_TO_POINTER(charsets[i].charset));
 	}
 
 	return table;
@@ -1392,7 +1354,8 @@ CharSet conv_get_charset_from_str(const gchar *charset)
 {
 	GHashTable *table;
 
-	if (!charset) return C_AUTO;
+	if (!charset)
+		return C_AUTO;
 
 	table = conv_get_charset_from_str_table();
 	return GPOINTER_TO_UINT(g_hash_table_lookup(table, charset));
@@ -1414,8 +1377,7 @@ static CharSet conv_get_locale_charset(void)
 		return cur_charset;
 	}
 
-	if (strcasestr(cur_locale, "UTF-8") ||
-	    strcasestr(cur_locale, "utf8")) {
+	if (strcasestr(cur_locale, "UTF-8") || strcasestr(cur_locale, "utf8")) {
 		cur_charset = C_UTF_8;
 		return cur_charset;
 	}
@@ -1430,14 +1392,11 @@ static CharSet conv_get_locale_charset(void)
 
 		/* "ja_JP.EUC" matches with "ja_JP.eucJP", "ja_JP.EUC" and
 		   "ja_JP". "ja_JP" matches with "ja_JP.xxxx" and "ja" */
-		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale,
-				 strlen(locale_table[i].locale))) {
+		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale, strlen(locale_table[i].locale))) {
 			cur_charset = locale_table[i].charset;
 			return cur_charset;
-		} else if ((p = strchr(locale_table[i].locale, '_')) &&
-			 !strchr(p + 1, '.')) {
-			if (strlen(cur_locale) == 2 &&
-			    !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
+		} else if ((p = strchr(locale_table[i].locale, '_')) && !strchr(p + 1, '.')) {
+			if (strlen(cur_locale) == 2 && !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
 				cur_charset = locale_table[i].charset;
 				return cur_charset;
 			}
@@ -1466,8 +1425,7 @@ static CharSet conv_get_locale_charset_no_utf8(void)
 		return cur_charset;
 	}
 
-	if (strcasestr(cur_locale, "UTF-8") ||
-	    strcasestr(cur_locale, "utf8")) {
+	if (strcasestr(cur_locale, "UTF-8") || strcasestr(cur_locale, "utf8")) {
 		cur_charset = C_UTF_8;
 		return cur_charset;
 	}
@@ -1482,14 +1440,11 @@ static CharSet conv_get_locale_charset_no_utf8(void)
 
 		/* "ja_JP.EUC" matches with "ja_JP.eucJP", "ja_JP.EUC" and
 		   "ja_JP". "ja_JP" matches with "ja_JP.xxxx" and "ja" */
-		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale,
-				 strlen(locale_table[i].locale))) {
+		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale, strlen(locale_table[i].locale))) {
 			cur_charset = locale_table[i].charset;
 			return cur_charset;
-		} else if ((p = strchr(locale_table[i].locale, '_')) &&
-			 !strchr(p + 1, '.')) {
-			if (strlen(cur_locale) == 2 &&
-			    !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
+		} else if ((p = strchr(locale_table[i].locale, '_')) && !strchr(p + 1, '.')) {
+			if (strlen(cur_locale) == 2 && !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
 				cur_charset = locale_table[i].charset;
 				return cur_charset;
 			}
@@ -1536,8 +1491,7 @@ static CharSet conv_get_outgoing_charset(void)
 		return out_charset;
 	}
 
-	if (strcasestr(cur_locale, "UTF-8") ||
-	    strcasestr(cur_locale, "utf8")) {
+	if (strcasestr(cur_locale, "UTF-8") || strcasestr(cur_locale, "utf8")) {
 		out_charset = C_UTF_8;
 		return out_charset;
 	}
@@ -1550,14 +1504,11 @@ static CharSet conv_get_outgoing_charset(void)
 	for (i = 0; i < sizeof(locale_table) / sizeof(locale_table[0]); i++) {
 		const gchar *p;
 
-		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale,
-				 strlen(locale_table[i].locale))) {
+		if (!g_ascii_strncasecmp(cur_locale, locale_table[i].locale, strlen(locale_table[i].locale))) {
 			out_charset = locale_table[i].out_charset;
 			break;
-		} else if ((p = strchr(locale_table[i].locale, '_')) &&
-			 !strchr(p + 1, '.')) {
-			if (strlen(cur_locale) == 2 &&
-			    !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
+		} else if ((p = strchr(locale_table[i].locale, '_')) && !strchr(p + 1, '.')) {
+			if (strlen(cur_locale) == 2 && !g_ascii_strncasecmp(cur_locale, locale_table[i].locale, 2)) {
 				out_charset = locale_table[i].out_charset;
 				break;
 			}
@@ -1586,13 +1537,15 @@ const gchar *conv_get_current_locale(void)
 	cur_locale = g_win32_getlocale();
 #else
 	cur_locale = g_getenv("LC_ALL");
-	if (!cur_locale) cur_locale = g_getenv("LC_CTYPE");
-	if (!cur_locale) cur_locale = g_getenv("LANG");
-	if (!cur_locale) cur_locale = setlocale(LC_CTYPE, NULL);
+	if (!cur_locale)
+		cur_locale = g_getenv("LC_CTYPE");
+	if (!cur_locale)
+		cur_locale = g_getenv("LANG");
+	if (!cur_locale)
+		cur_locale = setlocale(LC_CTYPE, NULL);
 #endif /* G_OS_WIN32 */
 
-	debug_print("current locale: %s\n",
-		    cur_locale ? cur_locale : "(none)");
+	debug_print("current locale: %s\n", cur_locale ? cur_locale : "(none)");
 
 	return cur_locale;
 }
@@ -1615,8 +1568,7 @@ static gboolean conv_is_ja_locale(void)
 	return is_ja_locale != 0;
 }
 
-gchar *conv_unmime_header(const gchar *str, const gchar *default_encoding,
-			   gboolean addr_field)
+gchar *conv_unmime_header(const gchar *str, const gchar *default_encoding, gboolean addr_field)
 {
 	gchar buf[BUFFSIZE];
 
@@ -1628,8 +1580,7 @@ gchar *conv_unmime_header(const gchar *str, const gchar *default_encoding,
 	if (default_encoding) {
 		gchar *utf8_buf;
 
-		utf8_buf = conv_codeset_strdup
-			(str, default_encoding, CS_INTERNAL);
+		utf8_buf = conv_codeset_strdup(str, default_encoding, CS_INTERNAL);
 		if (utf8_buf) {
 			gchar *decoded_str;
 
@@ -1684,9 +1635,7 @@ gchar *conv_unmime_header(const gchar *str, const gchar *default_encoding,
 
 #define B64LEN(len) ((len) / 3 * 4 + ((len) % 3 ? 4 : 0))
 
-void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
-			gint header_len, gboolean addr_field,
-			const gchar *out_encoding_)
+void conv_encode_header_full(gchar *dest, gint len, const gchar *src, gint header_len, gboolean addr_field, const gchar *out_encoding_)
 {
 	const gchar *cur_encoding;
 	const gchar *out_encoding;
@@ -1718,8 +1667,7 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 	if (!strcmp(out_encoding, CS_US_ASCII))
 		out_encoding = CS_ISO_8859_1;
 
-	mimestr_len = strlen(MIMESEP_BEGIN) + strlen(out_encoding) +
-		strlen(mimesep_enc) + strlen(MIMESEP_END);
+	mimestr_len = strlen(MIMESEP_BEGIN) + strlen(out_encoding) + strlen(mimesep_enc) + strlen(MIMESEP_END);
 
 	left = MAX_LINELEN - header_len;
 
@@ -1740,7 +1688,7 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 			LBREAK_IF_REQUIRED(left < word_len, TRUE);
 			while (word_len > 0) {
 				LBREAK_IF_REQUIRED(left + (MAX_HARD_LINELEN - MAX_LINELEN) <= 0, TRUE)
-				*destp++ = *srcp++;
+				    * destp++ = *srcp++;
 				left--;
 				word_len--;
 			}
@@ -1777,9 +1725,8 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 
 				mb_len = g_utf8_skip[*p];
 
-				Xstrndup_a(part_str, srcp, cur_len + mb_len, );
-				out_str = conv_codeset_strdup
-					(part_str, cur_encoding, out_encoding);
+				Xstrndup_a(part_str, srcp, cur_len + mb_len,);
+				out_str = conv_codeset_strdup(part_str, cur_encoding, out_encoding);
 				if (!out_str) {
 					if (codeconv_strict_mode) {
 						*dest = '\0';
@@ -1795,8 +1742,7 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 				if (use_base64)
 					out_enc_str_len = B64LEN(out_str_len);
 				else
-					out_enc_str_len =
-						qp_get_q_encoding_len(out_str);
+					out_enc_str_len = qp_get_q_encoding_len(out_str);
 
 				g_free(out_str);
 
@@ -1814,9 +1760,8 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 			}
 
 			if (cur_len > 0) {
-				Xstrndup_a(part_str, srcp, cur_len, );
-				out_str = conv_codeset_strdup
-					(part_str, cur_encoding, out_encoding);
+				Xstrndup_a(part_str, srcp, cur_len,);
+				out_str = conv_codeset_strdup(part_str, cur_encoding, out_encoding);
 				if (!out_str) {
 					g_warning("conv_encode_header_full(): code conversion failed");
 					conv_unreadable_8bit(part_str);
@@ -1827,13 +1772,12 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 				if (use_base64)
 					out_enc_str_len = B64LEN(out_str_len);
 				else
-					out_enc_str_len =
-						qp_get_q_encoding_len(out_str);
+					out_enc_str_len = qp_get_q_encoding_len(out_str);
 
 				if (use_base64)
 					enc_str = g_base64_encode(out_str, out_str_len);
 				else {
-					Xalloca(enc_str, out_enc_str_len + 1, );
+					Xalloca(enc_str, out_enc_str_len + 1,);
 					qp_q_encode(enc_str, out_str);
 				}
 
@@ -1841,9 +1785,7 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 
 				/* output MIME-encoded string block */
 				mime_block_len = mimestr_len + strlen(enc_str);
-				g_snprintf(destp, mime_block_len + 1,
-					   MIMESEP_BEGIN "%s%s%s" MIMESEP_END,
-					   out_encoding, mimesep_enc, enc_str);
+				g_snprintf(destp, mime_block_len + 1, MIMESEP_BEGIN "%s%s%s" MIMESEP_END, out_encoding, mimesep_enc, enc_str);
 
 				if (use_base64)
 					g_free(enc_str);
@@ -1864,10 +1806,9 @@ void conv_encode_header_full(gchar *dest, gint len, const gchar *src,
 	*destp = '\0';
 }
 
-void conv_encode_header(gchar *dest, gint len, const gchar *src,
-			gint header_len, gboolean addr_field)
+void conv_encode_header(gchar *dest, gint len, const gchar *src, gint header_len, gboolean addr_field)
 {
-	conv_encode_header_full(dest,len,src,header_len,addr_field,NULL);
+	conv_encode_header_full(dest, len, src, header_len, addr_field, NULL);
 }
 
 #undef LBREAK_IF_REQUIRED
@@ -1882,8 +1823,7 @@ gchar *conv_filename_from_utf8(const gchar *utf8_file)
 
 	fs_file = g_filename_from_utf8(utf8_file, -1, NULL, NULL, &error);
 	if (error) {
-		debug_print("failed to convert encoding of file name: %s\n",
-			  error->message);
+		debug_print("failed to convert encoding of file name: %s\n", error->message);
 		g_error_free(error);
 	}
 	if (!fs_file)
@@ -1901,8 +1841,7 @@ gchar *conv_filename_to_utf8(const gchar *fs_file)
 
 	utf8_file = g_filename_to_utf8(fs_file, -1, NULL, NULL, &error);
 	if (error) {
-		g_warning("failed to convert encoding of file name: %s",
-			  error->message);
+		g_warning("failed to convert encoding of file name: %s", error->message);
 		g_error_free(error);
 	}
 
@@ -1914,3 +1853,7 @@ gchar *conv_filename_to_utf8(const gchar *fs_file)
 
 	return utf8_file;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

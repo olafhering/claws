@@ -26,8 +26,7 @@
 
 #define GPGERR_BUFSIZE 128
 
-typedef struct _DetachedSigTaskData
-{
+typedef struct _DetachedSigTaskData {
 	gpgme_protocol_t protocol;
 	gchar *boundary;
 	gchar *text_filename;
@@ -43,37 +42,18 @@ void sgpgme_done(void);
 
 void cm_free_detached_sig_task_data(gpointer data);
 
-void cm_check_detached_sig(GTask *task,
-	gpointer source_object,
-	gpointer _task_data,
-	GCancellable *cancellable);
+void cm_check_detached_sig(GTask *task, gpointer source_object, gpointer _task_data, GCancellable *cancellable);
 
-gint cm_check_detached_sig_async(MimeInfo *mimeinfo,
-	GCancellable *cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data,
-	gpgme_protocol_t protocol,
-	gchar *(*get_canonical_content)(FILE *, const gchar *));
+gint cm_check_detached_sig_async(MimeInfo *mimeinfo, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data, gpgme_protocol_t protocol, gchar *(*get_canonical_content)(FILE *, const gchar *));
 
-gpgme_verify_result_t sgpgme_verify_signature	(gpgme_ctx_t ctx,
-				    	 gpgme_data_t sig,
-				    	 gpgme_data_t plain,
-					 gpgme_data_t dummy);
-SignatureStatus sgpgme_sigstat_gpgme_to_privacy
-					(gpgme_ctx_t ctx,
-					 gpgme_verify_result_t status);
-gchar *sgpgme_sigstat_info_short	(gpgme_ctx_t ctx,
-					 gpgme_verify_result_t status);
-gchar *sgpgme_sigstat_info_full		(gpgme_ctx_t ctx,
-					 gpgme_verify_result_t status);
-gpgme_data_t sgpgme_data_from_mimeinfo	(MimeInfo *mimeinfo);
-gpgme_data_t sgpgme_decrypt_verify	(gpgme_data_t cipher, 
-					 gpgme_verify_result_t *status,
-					 gpgme_ctx_t ctx);
-gchar *sgpgme_get_encrypt_data		(GSList *recp_names,
-					 gpgme_protocol_t proto);
-gboolean sgpgme_setup_signers(gpgme_ctx_t ctx, PrefsAccount *account,
-			      const gchar *from_addr);
+gpgme_verify_result_t sgpgme_verify_signature(gpgme_ctx_t ctx, gpgme_data_t sig, gpgme_data_t plain, gpgme_data_t dummy);
+SignatureStatus sgpgme_sigstat_gpgme_to_privacy(gpgme_ctx_t ctx, gpgme_verify_result_t status);
+gchar *sgpgme_sigstat_info_short(gpgme_ctx_t ctx, gpgme_verify_result_t status);
+gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status);
+gpgme_data_t sgpgme_data_from_mimeinfo(MimeInfo *mimeinfo);
+gpgme_data_t sgpgme_decrypt_verify(gpgme_data_t cipher, gpgme_verify_result_t *status, gpgme_ctx_t ctx);
+gchar *sgpgme_get_encrypt_data(GSList *recp_names, gpgme_protocol_t proto);
+gboolean sgpgme_setup_signers(gpgme_ctx_t ctx, PrefsAccount *account, const gchar *from_addr);
 void sgpgme_check_create_key(void);
 gboolean sgpgme_has_secret_key(void);
 void sgpgme_create_secret_key(PrefsAccount *account, gboolean ask_create);

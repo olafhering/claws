@@ -21,6 +21,6 @@
 #ifndef __ICON_LEGEND_H__
 #define __ICON_LEGEND_H__
 
-void legend_show	(void);
+void legend_show(void);
 
 #endif /* __ICON_LEGEND_H__ */

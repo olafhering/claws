@@ -30,16 +30,13 @@
 #include <string.h>
 
 G_BEGIN_DECLS
-
-
 #define GTK_HOTKEY_TYPE_INFO (gtk_hotkey_info_get_type ())
 #define GTK_HOTKEY_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_HOTKEY_TYPE_INFO, GtkHotkeyInfo))
 #define GTK_HOTKEY_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_HOTKEY_TYPE_INFO, GtkHotkeyInfoClass))
 #define GTK_HOTKEY_IS_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_HOTKEY_TYPE_INFO))
 #define GTK_HOTKEY_IS_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_HOTKEY_TYPE_INFO))
 #define GTK_HOTKEY_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_HOTKEY_TYPE_INFO, GtkHotkeyInfoClass))
-
-typedef struct _GtkHotkeyInfo GtkHotkeyInfo;
+    typedef struct _GtkHotkeyInfo GtkHotkeyInfo;
 typedef struct _GtkHotkeyInfoClass GtkHotkeyInfoClass;
 
 struct _GtkHotkeyInfo {
@@ -49,39 +46,35 @@ struct _GtkHotkeyInfoClass {
 	GObjectClass parent_class;
 };
 
-gboolean		gtk_hotkey_info_bind (GtkHotkeyInfo* self, GError **error);
+gboolean gtk_hotkey_info_bind(GtkHotkeyInfo *self, GError **error);
 
-gboolean		gtk_hotkey_info_unbind (GtkHotkeyInfo* self, GError **error);
+gboolean gtk_hotkey_info_unbind(GtkHotkeyInfo *self, GError **error);
 
-gboolean		gtk_hotkey_info_is_bound (GtkHotkeyInfo* self);
+gboolean gtk_hotkey_info_is_bound(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_application_id (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_application_id(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_key_id (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_key_id(GtkHotkeyInfo *self);
 
-GAppInfo*		gtk_hotkey_info_get_app_info (GtkHotkeyInfo* self);
+GAppInfo *gtk_hotkey_info_get_app_info(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_application_id (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_application_id(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_signature (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_signature(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_key_id (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_key_id(GtkHotkeyInfo *self);
 
-const gchar*	gtk_hotkey_info_get_description (GtkHotkeyInfo* self);
+const gchar *gtk_hotkey_info_get_description(GtkHotkeyInfo *self);
 
-void			gtk_hotkey_info_set_description (GtkHotkeyInfo* self, const gchar *description);
+void gtk_hotkey_info_set_description(GtkHotkeyInfo *self, const gchar *description);
 
-gboolean		gtk_hotkey_info_equals (GtkHotkeyInfo *hotkey1, GtkHotkeyInfo *hotkey2, gboolean sloppy_equals);
+gboolean gtk_hotkey_info_equals(GtkHotkeyInfo *hotkey1, GtkHotkeyInfo *hotkey2, gboolean sloppy_equals);
 
-void			gtk_hotkey_info_activated (GtkHotkeyInfo* self, guint event_time);
+void gtk_hotkey_info_activated(GtkHotkeyInfo *self, guint event_time);
 
-GtkHotkeyInfo*  gtk_hotkey_info_new						(const gchar	*app_id,
-														 const gchar	*key_id,
-														 const gchar	*signature,
-														 GAppInfo		*app_info);
+GtkHotkeyInfo *gtk_hotkey_info_new(const gchar *app_id, const gchar *key_id, const gchar *signature, GAppInfo * app_info);
 
-GType			gtk_hotkey_info_get_type (void);
+GType gtk_hotkey_info_get_type(void);
 
 G_END_DECLS
-
 #endif

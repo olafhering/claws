@@ -24,8 +24,7 @@
 
 #include "codeconv.h"
 
-typedef enum
-{
+typedef enum {
 	SC_HTML_NORMAL,
 	SC_HTML_PAR,
 	SC_HTML_BR,
@@ -41,12 +40,11 @@ typedef enum
 	SC_HTML_HREF_BEG
 } SC_HTMLState;
 
-typedef struct _SC_HTMLParser	SC_HTMLParser;
-typedef struct _SC_HTMLAttr		SC_HTMLAttr;
-typedef struct _SC_HTMLTag		SC_HTMLTag;
+typedef struct _SC_HTMLParser SC_HTMLParser;
+typedef struct _SC_HTMLAttr SC_HTMLAttr;
+typedef struct _SC_HTMLTag SC_HTMLTag;
 
-struct _SC_HTMLParser
-{
+struct _SC_HTMLParser {
 	FILE *fp;
 	CodeConverter *conv;
 
@@ -67,21 +65,18 @@ struct _SC_HTMLParser
 	gint indent;
 };
 
-struct _SC_HTMLAttr
-{
+struct _SC_HTMLAttr {
 	gchar *name;
 	gchar *value;
 };
 
-struct _SC_HTMLTag
-{
+struct _SC_HTMLTag {
 	gchar *name;
 	GList *attr;
 };
 
-SC_HTMLParser *sc_html_parser_new	(FILE		*fp,
-				 CodeConverter	*conv);
-void sc_html_parser_destroy	(SC_HTMLParser	*parser);
-gchar *sc_html_parse		(SC_HTMLParser	*parser);
+SC_HTMLParser *sc_html_parser_new(FILE *fp, CodeConverter *conv);
+void sc_html_parser_destroy(SC_HTMLParser *parser);
+gchar *sc_html_parse(SC_HTMLParser *parser);
 
 #endif /* __HTML_H__ */

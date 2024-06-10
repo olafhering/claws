@@ -17,19 +17,19 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 #include <glib.h>
 
 #ifdef G_OS_WIN32
-#  include <winsock2.h>
-#  include <ws2tcpip.h>
-#  include <stdint.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdint.h>
 #else
-#  include <sys/socket.h>
-#  include <netinet/in.h>
-#  include <netinet/ip.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
 #endif
 
 #include "proxy.h"
@@ -37,11 +37,9 @@
 #include "utils.h"
 
 gint socks4_connect(SockInfo *sock, const gchar *hostname, gushort port);
-gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port,
-		const gchar *proxy_name, const gchar *proxy_pass);
+gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port, const gchar *proxy_name, const gchar *proxy_pass);
 
-gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port,
-		   ProxyInfo *proxy_info)
+gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port, ProxyInfo *proxy_info)
 {
 	gint ret;
 
@@ -49,14 +47,10 @@ gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port,
 	g_return_val_if_fail(hostname != NULL, -1);
 	g_return_val_if_fail(proxy_info != NULL, -1);
 
-	debug_print("proxy_connect: connect to %s:%u via %s:%u\n",
-		    hostname, port,
-		    proxy_info->proxy_host, proxy_info->proxy_port);
+	debug_print("proxy_connect: connect to %s:%u via %s:%u\n", hostname, port, proxy_info->proxy_host, proxy_info->proxy_port);
 
 	if (proxy_info->proxy_type == PROXY_SOCKS5) {
-		ret = socks5_connect(sock, hostname, port,
-				      proxy_info->use_proxy_auth ? proxy_info->proxy_name : NULL,
-				      proxy_info->use_proxy_auth ? proxy_info->proxy_pass : NULL);
+		ret = socks5_connect(sock, hostname, port, proxy_info->use_proxy_auth ? proxy_info->proxy_name : NULL, proxy_info->use_proxy_auth ? proxy_info->proxy_pass : NULL);
 		/* Scrub the password before returning */
 		if (proxy_info->proxy_pass != NULL) {
 			memset(proxy_info->proxy_pass, 0, strlen(proxy_info->proxy_pass));
@@ -67,8 +61,7 @@ gint proxy_connect(SockInfo *sock, const gchar *hostname, gushort port,
 	} else if (proxy_info->proxy_type == PROXY_SOCKS4) {
 		return socks4_connect(sock, hostname, port);
 	} else {
-		g_warning("proxy_connect: unknown SOCKS type: %d",
-			  proxy_info->proxy_type);
+		g_warning("proxy_connect: unknown SOCKS type: %d", proxy_info->proxy_type);
 	}
 
 	return -1;
@@ -88,7 +81,7 @@ gint socks4_connect(SockInfo *sock, const gchar *hostname, gushort port)
 
 	socks_req[0] = 4;
 	socks_req[1] = 1;
-	*((gushort *)(socks_req + 2)) = htons(port);
+	*((gushort *) (socks_req + 2)) = htons(port);
 
 	/* lookup */
 	memset(&hints, 0, sizeof(struct addrinfo));
@@ -96,8 +89,7 @@ gint socks4_connect(SockInfo *sock, const gchar *hostname, gushort port)
 
 	s = getaddrinfo(hostname, NULL, &hints, &res);
 	if (s != 0) {
-		fprintf(stderr, "getaddrinfo for '%s' failed: %s\n",
-				hostname, gai_strerror(s));
+		fprintf(stderr, "getaddrinfo for '%s' failed: %s\n", hostname, gai_strerror(s));
 		return -1;
 	}
 
@@ -140,7 +132,7 @@ gint socks4_connect(SockInfo *sock, const gchar *hostname, gushort port)
 		return -1;
 	}
 	if (socks_req[1] != 90) {
-		g_warning("socks4_connect: SOCKS4 connection to %u.%u.%u.%u:%u failed. (%u)", socks_req[4], socks_req[5], socks_req[6], socks_req[7], ntohs(*(gushort *)(socks_req + 2)), socks_req[1]);
+		g_warning("socks4_connect: SOCKS4 connection to %u.%u.%u.%u:%u failed. (%u)", socks_req[4], socks_req[5], socks_req[6], socks_req[7], ntohs(*(gushort *) (socks_req + 2)), socks_req[1]);
 		return -1;
 	}
 
@@ -156,8 +148,7 @@ gint socks4_connect(SockInfo *sock, const gchar *hostname, gushort port)
 	return 0;
 }
 
-gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port,
-		    const gchar *proxy_name, const gchar *proxy_pass)
+gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port, const gchar *proxy_name, const gchar *proxy_pass)
 {
 	guchar socks_req[1024];
 	size_t len;
@@ -239,7 +230,7 @@ gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port,
 	socks_req[3] = 3;
 	socks_req[4] = (guchar)len;
 	memcpy(socks_req + 5, hostname, len);
-	*((gushort *)(socks_req + 5 + len)) = htons(port);
+	*((gushort *) (socks_req + 5 + len)) = htons(port);
 
 	if (sock_write_all(sock, (gchar *)socks_req, 5 + len + 2) != 5 + len + 2) {
 		g_warning("socks5_connect: SOCKS5 connect request write failed");
@@ -255,8 +246,7 @@ gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port,
 		return -1;
 	}
 	if (socks_req[1] != 0) {
-		g_warning("socks5_connect: SOCKS5 connection to %s:%u failed. (%u)",
-				hostname, port, socks_req[1]);
+		g_warning("socks5_connect: SOCKS5 connection to %s:%u failed. (%u)", hostname, port, socks_req[1]);
 		return -1;
 	}
 
@@ -284,3 +274,7 @@ gint socks5_connect(SockInfo *sock, const gchar *hostname, gushort port,
 
 	return 0;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

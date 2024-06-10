@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -35,7 +35,8 @@
 #include "libfeed/feed.h"
 #include "rssyl_subscribe_gtk.h"
 
-void rssyl_subscribe_dialog(RSubCtx *ctx) {
+void rssyl_subscribe_dialog(RSubCtx *ctx)
+{
 	GtkWidget *win, *vbox, *title, *titleframe, *titlelabel, *editprops;
 	gint ret;
 	gchar *newtitle;
@@ -44,12 +45,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 	g_return_if_fail(ctx->feed != NULL);
 
 	/* Create window */
-	win = gtk_dialog_new_with_buttons(_("Subscribe new feed?"),
-			GTK_WINDOW(mainwindow_get_mainwindow()->window),
-			GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-			GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-			NULL);
+	win = gtk_dialog_new_with_buttons(_("Subscribe new feed?"), GTK_WINDOW(mainwindow_get_mainwindow()->window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
 	gtk_dialog_set_default_response(GTK_DIALOG(win), GTK_RESPONSE_ACCEPT);
 
 	vbox = gtk_dialog_get_content_area(GTK_DIALOG(win));
@@ -61,7 +57,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 	gtk_frame_set_shadow_type(GTK_FRAME(titleframe), GTK_SHADOW_ETCHED_OUT);
 	gtk_box_pack_start(GTK_BOX(vbox), titleframe, FALSE, FALSE, 0);
 
-	titlelabel = gtk_label_new(g_strconcat("<b>",_("Feed folder:"),"</b>", NULL));
+	titlelabel = gtk_label_new(g_strconcat("<b>", _("Feed folder:"), "</b>", NULL));
 	gtk_label_set_use_markup(GTK_LABEL(titlelabel), TRUE);
 	gtk_misc_set_padding(GTK_MISC(titlelabel), 5, 0);
 	gtk_frame_set_label_widget(GTK_FRAME(titleframe), titlelabel);
@@ -69,9 +65,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 	title = gtk_entry_new();
 	gtk_entry_set_text(GTK_ENTRY(title), feed_get_title(ctx->feed));
 	gtk_entry_set_activates_default(GTK_ENTRY(title), TRUE);
-	gtk_widget_set_tooltip_text(title,
-			_("Instead of using official title, you can enter a different folder "
-				"name for the feed."));
+	gtk_widget_set_tooltip_text(title, _("Instead of using official title, you can enter a different folder " "name for the feed."));
 	gtk_container_add(GTK_CONTAINER(titleframe), title);
 
 	editprops = gtk_check_button_new_with_mnemonic(_("_Edit feed properties after subscribing"));
@@ -90,8 +84,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 			ctx->official_title = g_strdup(feed_get_title(ctx->feed));
 			feed_set_title(ctx->feed, newtitle);
 		}
-		ctx->edit_properties =
-			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(editprops));
+		ctx->edit_properties = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(editprops));
 	} else {
 		/* Destroy the feed to signal outside that user cancelled subscribing */
 		feed_free(ctx->feed);
@@ -100,3 +93,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 
 	gtk_widget_destroy(win);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

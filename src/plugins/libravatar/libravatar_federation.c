@@ -44,11 +44,11 @@ static gchar *get_federated_url_for_domain(const gchar *domain)
 		return NULL;
 	}
 
-	found = (gchar *) g_hash_table_lookup(federated, domain);
+	found = (gchar *)g_hash_table_lookup(federated, domain);
 
 	if (found != NULL)
 		debug_print("cached avatar url for domain %s found: %s\n", domain, found);
-	else	
+	else
 		debug_print("cached avatar url for domain %s not found\n", domain);
 
 	return found;
@@ -69,7 +69,7 @@ static void add_federated_url_for_domain(const gchar *url, const gchar *domain)
 		federated = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
 	debug_print("new cached avatar url for domain %s: %s\n", domain, url);
-	g_hash_table_insert(federated, g_strdup(domain), g_strdup(url)); 
+	g_hash_table_insert(federated, g_strdup(domain), g_strdup(url));
 }
 #endif
 
@@ -91,12 +91,12 @@ gchar *federated_url_for_address(const gchar *address)
 		goto invalid_addr;
 
 	addr = g_strdup(address);
-        domain = strchr(addr, '@');
+	domain = strchr(addr, '@');
 	if (domain == NULL)
 		goto invalid_addr;
- 
+
 	++domain;
-   	if (strlen(domain) < 5)
+	if (strlen(domain) < 5)
 		goto invalid_addr;
 
 	last = domain;
@@ -141,7 +141,7 @@ gchar *federated_url_for_address(const gchar *address)
 	g_free(addr);
 	return url;
 
-invalid_addr:
+ invalid_addr:
 	if (addr != NULL)
 		g_free(addr);
 
@@ -153,3 +153,6 @@ invalid_addr:
 #endif
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

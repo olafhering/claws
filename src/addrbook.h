@@ -37,74 +37,65 @@ typedef struct _AddressBookFile AddressBookFile;
 struct _AddressBookFile {
 	AddressBookType type;
 	AddressCache *addressCache;
-	gint       retVal;
-	gchar      *path;
-	gchar      *fileName;
-	gint       maxValue;
-	GList      *tempList;
+	gint retVal;
+	gchar *path;
+	gchar *fileName;
+	gint maxValue;
+	GList *tempList;
 	GHashTable *tempHash;
-	jmp_buf    jumper;
+	jmp_buf jumper;
 };
 
 /* Function prototypes */
 
-AddressBookFile *addrbook_create_book	( void );
+AddressBookFile *addrbook_create_book(void);
 
-void addrbook_free_book			( AddressBookFile *book );
+void addrbook_free_book(AddressBookFile *book);
 #ifdef DEBUG_ADDRBOOK
-void addrbook_dump_book			( AddressBookFile *book, FILE *stream );
+void addrbook_dump_book(AddressBookFile *book, FILE *stream);
 #endif
-void addrbook_set_name			( AddressBookFile *book, const gchar *value );
-void addrbook_set_path			( AddressBookFile *book, const gchar *value );
-void addrbook_set_file			( AddressBookFile *book, const gchar *value );
-gboolean addrbook_get_modified		( AddressBookFile *book );
-gboolean addrbook_get_accessed		( AddressBookFile *book );
-void addrbook_set_accessed		( AddressBookFile *book, const gboolean value );
-gboolean addrbook_get_read_flag		( AddressBookFile *book );
-gint addrbook_get_status		( AddressBookFile *book );
-ItemFolder *addrbook_get_root_folder	( AddressBookFile *book );
-GList *addrbook_get_list_folder		( AddressBookFile *book );
-GList *addrbook_get_list_person		( AddressBookFile *book );
-gchar *addrbook_get_name		( AddressBookFile *book );
-gboolean addrbook_get_dirty		( AddressBookFile *book );
-void addrbook_set_dirty			( AddressBookFile *book, const gboolean value );
+void addrbook_set_name(AddressBookFile *book, const gchar *value);
+void addrbook_set_path(AddressBookFile *book, const gchar *value);
+void addrbook_set_file(AddressBookFile *book, const gchar *value);
+gboolean addrbook_get_modified(AddressBookFile *book);
+gboolean addrbook_get_accessed(AddressBookFile *book);
+void addrbook_set_accessed(AddressBookFile *book, const gboolean value);
+gboolean addrbook_get_read_flag(AddressBookFile *book);
+gint addrbook_get_status(AddressBookFile *book);
+ItemFolder *addrbook_get_root_folder(AddressBookFile *book);
+GList *addrbook_get_list_folder(AddressBookFile *book);
+GList *addrbook_get_list_person(AddressBookFile *book);
+gchar *addrbook_get_name(AddressBookFile *book);
+gboolean addrbook_get_dirty(AddressBookFile *book);
+void addrbook_set_dirty(AddressBookFile *book, const gboolean value);
 
-ItemPerson *addrbook_remove_person	( AddressBookFile *book, ItemPerson *person );
-ItemGroup *addrbook_remove_group	( AddressBookFile *book, ItemGroup *group );
-ItemEMail *addrbook_person_remove_email	( AddressBookFile *book, ItemPerson *person,
-					  ItemEMail *email );
+ItemPerson *addrbook_remove_person(AddressBookFile *book, ItemPerson *person);
+ItemGroup *addrbook_remove_group(AddressBookFile *book, ItemGroup *group);
+ItemEMail *addrbook_person_remove_email(AddressBookFile *book, ItemPerson *person, ItemEMail *email);
 
-gint addrbook_read_data			( AddressBookFile *book );
-gint addrbook_save_data			( AddressBookFile *book );
+gint addrbook_read_data(AddressBookFile *book);
+gint addrbook_save_data(AddressBookFile *book);
 
-void addrbook_update_address_list	( AddressBookFile *book, ItemPerson *person,
-					  GList *listEMail );
-ItemPerson *addrbook_add_address_list	( AddressBookFile *book, ItemFolder *folder,
-					  GList *listEMail );
-GList *addrbook_get_available_email_list( AddressBookFile *book, ItemGroup *group );
-void addrbook_update_group_list		( AddressBookFile *book, ItemGroup *group,
-					  GList *listEMail );
-ItemGroup *addrbook_add_group_list	( AddressBookFile *book, ItemFolder *folder,
-					  GList *listEMail );
-ItemFolder *addrbook_add_new_folder	( AddressBookFile *book, ItemFolder *parent );
+void addrbook_update_address_list(AddressBookFile *book, ItemPerson *person, GList *listEMail);
+ItemPerson *addrbook_add_address_list(AddressBookFile *book, ItemFolder *folder, GList *listEMail);
+GList *addrbook_get_available_email_list(AddressBookFile *book, ItemGroup *group);
+void addrbook_update_group_list(AddressBookFile *book, ItemGroup *group, GList *listEMail);
+ItemGroup *addrbook_add_group_list(AddressBookFile *book, ItemFolder *folder, GList *listEMail);
+ItemFolder *addrbook_add_new_folder(AddressBookFile *book, ItemFolder *parent);
 
-void addrbook_update_attrib_list	( AddressBookFile *book, ItemPerson *person,
-					  GList *listAttrib );
-void addrbook_add_attrib_list		( AddressBookFile *book, ItemPerson *person,
-					  GList *listAttrib );
+void addrbook_update_attrib_list(AddressBookFile *book, ItemPerson *person, GList *listAttrib);
+void addrbook_add_attrib_list(AddressBookFile *book, ItemPerson *person, GList *listAttrib);
 
-GList *addrbook_get_bookfile_list	( AddressBookFile *book );
-gchar *addrbook_gen_new_file_name	( gint fileNum );
-gint addrbook_test_read_file		( AddressBookFile *book, gchar *fileName );
+GList *addrbook_get_bookfile_list(AddressBookFile *book);
+gchar *addrbook_gen_new_file_name(gint fileNum);
+gint addrbook_test_read_file(AddressBookFile *book, gchar *fileName);
 
-GList *addrbook_get_all_persons		( AddressBookFile *book );
-GList *addrbook_get_all_groups		( AddressBookFile *book );
+GList *addrbook_get_all_persons(AddressBookFile *book);
+GList *addrbook_get_all_groups(AddressBookFile *book);
 
-ItemPerson *addrbook_add_contact	( AddressBookFile *book, ItemFolder *folder,
-					  const gchar *name, const gchar *address,
-					  const gchar *remarks );
+ItemPerson *addrbook_add_contact(AddressBookFile *book, ItemFolder *folder, const gchar *name, const gchar *address, const gchar *remarks);
 
-gchar *addrbook_guess_next_file		( AddressBookFile *book );
-void addrbook_delete_book_file		( AddressBookFile *book );
+gchar *addrbook_guess_next_file(AddressBookFile *book);
+void addrbook_delete_book_file(AddressBookFile *book);
 
 #endif /* __ADDRBOOK_H__ */

@@ -20,14 +20,16 @@
 
 #include "gtk-hotkey-error.h"
 
-GQuark
-gtk_hotkey_listener_error_quark (void)
+GQuark gtk_hotkey_listener_error_quark(void)
 {
-  return g_quark_from_static_string ("gtk-hotkey-listener-error-quark");
+	return g_quark_from_static_string("gtk-hotkey-listener-error-quark");
 }
 
-GQuark
-gtk_hotkey_registry_error_quark (void)
+GQuark gtk_hotkey_registry_error_quark(void)
 {
-  return g_quark_from_static_string ("gtk-hotkey-storage-error-quark");
+	return g_quark_from_static_string("gtk-hotkey-storage-error-quark");
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

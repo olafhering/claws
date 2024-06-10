@@ -52,7 +52,7 @@ static Template *template_load(gchar *filename)
 	tmpl->subject = NULL;
 	tmpl->from = NULL;
 	tmpl->to = NULL;
-	tmpl->cc = NULL;	
+	tmpl->cc = NULL;
 	tmpl->bcc = NULL;
 	tmpl->replyto = NULL;
 	tmpl->value = NULL;
@@ -69,9 +69,9 @@ static Template *template_load(gchar *filename)
 		else if (!g_ascii_strncasecmp(buf, "Cc:", 3))
 			tmpl->cc = g_strdup(g_strstrip(buf + 3));
 		else if (!g_ascii_strncasecmp(buf, "Bcc:", 4))
-			tmpl->bcc = g_strdup(g_strstrip(buf + 4));						
+			tmpl->bcc = g_strdup(g_strstrip(buf + 4));
 		else if (!g_ascii_strncasecmp(buf, "Reply-To:", 9))
-			tmpl->replyto = g_strdup(g_strstrip(buf + 9));						
+			tmpl->replyto = g_strdup(g_strstrip(buf + 9));
 		else if (!g_ascii_strncasecmp(buf, "Subject:", 8))
 			tmpl->subject = g_strdup(g_strstrip(buf + 8));
 	}
@@ -105,8 +105,8 @@ void template_free(Template *tmpl)
 	g_free(tmpl->from);
 	g_free(tmpl->to);
 	g_free(tmpl->cc);
-	g_free(tmpl->bcc);		
-	g_free(tmpl->replyto);		
+	g_free(tmpl->bcc);
+	g_free(tmpl->replyto);
 	g_free(tmpl->value);
 	g_free(tmpl);
 }
@@ -147,10 +147,9 @@ static gint tmpl_compare(gconstpointer tmpl1, gconstpointer tmpl2)
 
 	if (filenum1 < filenum2)
 		ret = -1;
-	else
-		if (filenum1 > filenum2)
-			ret = 1;
-			
+	else if (filenum1 > filenum2)
+		ret = 1;
+
 	return ret;
 }
 
@@ -162,8 +161,7 @@ GSList *template_read_config(void)
 	GSList *tmpl_list = NULL;
 
 	path = get_template_dir();
-	debug_print("%s:%d reading templates dir %s\n",
-		    __FILE__, __LINE__, path);
+	debug_print("%s:%d reading templates dir %s\n", __FILE__, __LINE__, path);
 
 	if (!is_dir_exist(path)) {
 		if (make_dir(path) < 0)
@@ -179,11 +177,10 @@ GSList *template_read_config(void)
 		Template *tmpl;
 		GStatBuf s;
 		gchar *filename = g_strconcat(path, G_DIR_SEPARATOR_S,
-				       dir_name, NULL);
+					      dir_name, NULL);
 
-		if (g_stat(filename, &s) != 0 || !S_ISREG(s.st_mode) ) {
-			debug_print("%s:%d %s is not an ordinary file\n",
-				    __FILE__, __LINE__, filename);
+		if (g_stat(filename, &s) != 0 || !S_ISREG(s.st_mode)) {
+			debug_print("%s:%d %s is not an ordinary file\n", __FILE__, __LINE__, filename);
 			g_free(filename);
 			continue;
 		}
@@ -244,21 +241,19 @@ static void template_write_config(GSList *tmpl_list)
 			return;
 	}
 
-	for (cur = tmpl_list, tmpl_num = 1; cur != NULL;
-	     cur = cur->next, tmpl_num++) {
+	for (cur = tmpl_list, tmpl_num = 1; cur != NULL; cur = cur->next, tmpl_num++) {
 		gchar *filename, *new = NULL;
 
 		tmpl = cur->data;
 
-		filename = g_strconcat(path, G_DIR_SEPARATOR_S,
-				       itos(tmpl_num), NULL);
+		filename = g_strconcat(path, G_DIR_SEPARATOR_S, itos(tmpl_num), NULL);
 
 		if (is_file_exist(filename)) {
 			new = g_strconcat(filename, ".new", NULL);
 		}
 
-		if ((fp = claws_fopen(new?new:filename, "wb")) == NULL) {
-			FILE_OP_ERROR(new?new:filename, "claws_fopen");
+		if ((fp = claws_fopen(new ? new : filename, "wb")) == NULL) {
+			FILE_OP_ERROR(new ? new : filename, "claws_fopen");
 			g_free(new);
 			g_free(filename);
 			return;
@@ -295,11 +290,11 @@ static void template_write_config(GSList *tmpl_list)
 		g_free(new);
 		g_free(filename);
 	}
-	
+
 	/* remove other templates */
 	while (TRUE) {
 		gchar *filename = g_strconcat(path, G_DIR_SEPARATOR_S,
-				       itos(tmpl_num), NULL);
+					      itos(tmpl_num), NULL);
 		if (is_file_exist(filename)) {
 			debug_print("removing old template %d\n", tmpl_num);
 			claws_unlink(filename);
@@ -326,3 +321,7 @@ void template_set_config(GSList *tmpl_list)
 	template_write_config(tmpl_list);
 	template_list = tmpl_list;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -32,8 +32,7 @@
 
 #define OAUTH2BUFSIZE		8192
 
-typedef enum
-{
+typedef enum {
 	OA2_BASE_URL,
 	OA2_CLIENT_ID,
 	OA2_CLIENT_SECRET,
@@ -53,8 +52,7 @@ typedef enum
 	OA2_HEADER_AUTH_BASIC
 } Oauth2Params;
 
-typedef enum
-{
+typedef enum {
 	OAUTH2AUTH_NONE,
 	OAUTH2AUTH_GOOGLE,
 	OAUTH2AUTH_OUTLOOK,
@@ -65,22 +63,21 @@ typedef enum
 } Oauth2Service;
 
 typedef struct _OAUTH2Data OAUTH2Data;
-struct _OAUTH2Data
-{
+struct _OAUTH2Data {
 	gchar *refresh_token;
 	gchar *access_token;
-        gint expiry;
-        gchar *expiry_str;
-        gchar *custom_client_id;
-        gchar *custom_client_secret;
+	gint expiry;
+	gchar *expiry_str;
+	gchar *custom_client_id;
+	gchar *custom_client_secret;
 };
 
-gint oauth2_init (OAUTH2Data *OAUTH2Data);
-gint oauth2_check_passwds (PrefsAccount *ac_prefs);
-gint oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
-gint oauth2_authorisation_url (Oauth2Service provider, gchar **url, const gchar *custom_client_id);
-gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data);
-guchar* oauth2_decode(const gchar *in);
+gint oauth2_init(OAUTH2Data *OAUTH2Data);
+gint oauth2_check_passwds(PrefsAccount *ac_prefs);
+gint oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
+gint oauth2_authorisation_url(Oauth2Service provider, gchar **url, const gchar *custom_client_id);
+gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data);
+guchar *oauth2_decode(const gchar *in);
 void oauth2_encode(const gchar *in);
 
-#endif	/* USE_GNUTLS */
+#endif /* USE_GNUTLS */

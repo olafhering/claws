@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef GDK_WINDOWING_X11
-#  include <gdk/gdkx.h>
+#include <gdk/gdkx.h>
 #endif /* GDK_WINDOWING_X11 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
+#include <sys/wait.h>
 #endif
 #include <signal.h>
 #include <unistd.h>
@@ -61,138 +61,94 @@
 #include <windows.h>
 #endif
 
-typedef struct _Children		Children;
-typedef struct _ChildInfo		ChildInfo;
-typedef struct _UserStringDialog	UserStringDialog;
+typedef struct _Children Children;
+typedef struct _ChildInfo ChildInfo;
+typedef struct _UserStringDialog UserStringDialog;
 
-struct _Children
-{
-	GtkWidget	*dialog;
-	GtkWidget	*text;
-	GtkWidget	*input_entry;
-	GtkWidget	*input_hbox;
-	GtkWidget	*progress_bar;
-	GtkWidget	*abort_btn;
-	GtkWidget	*close_btn;
-	GtkWidget	*scrolledwin;
+struct _Children {
+	GtkWidget *dialog;
+	GtkWidget *text;
+	GtkWidget *input_entry;
+	GtkWidget *input_hbox;
+	GtkWidget *progress_bar;
+	GtkWidget *abort_btn;
+	GtkWidget *close_btn;
+	GtkWidget *scrolledwin;
 
-	gchar		*action;
-	ActionType	 action_type;
-	GSList		*list;
-	gint		 nb;
-	gint		 initial_nb;
-	gint		 open_in;
-	gboolean	 output;
+	gchar *action;
+	ActionType action_type;
+	GSList *list;
+	gint nb;
+	gint initial_nb;
+	gint open_in;
+	gboolean output;
 
-	GtkWidget	*msg_text;
+	GtkWidget *msg_text;
 
- 	gboolean	 is_selection;
+	gboolean is_selection;
 };
 
-struct _ChildInfo
-{
-	Children	*children;
-	gchar		*cmd;
-	GPid		 pid;
-	gint		 next_sig;
-	gint		 chld_in;
-	gint		 chld_out;
-	gint		 chld_err;
-	gint		 tag_in;
-	gint		 tag_out;
-	gint		 tag_err;
-	gint		 tag_status;
-	gint		 new_out;
+struct _ChildInfo {
+	Children *children;
+	gchar *cmd;
+	GPid pid;
+	gint next_sig;
+	gint chld_in;
+	gint chld_out;
+	gint chld_err;
+	gint tag_in;
+	gint tag_out;
+	gint tag_err;
+	gint tag_status;
+	gint new_out;
 
-	GString		*output;
+	GString *output;
 	void (*callback)(void *data);
 	void *data;
 
-	GSList		*msginfo_list;
+	GSList *msginfo_list;
 };
 
-static void action_update_menu		(GtkUIManager   *ui_manager,
-					 const gchar	*accel_group,
-					 gchar		*branch_path,
-					 gpointer	 callback,
-					 gpointer	 data);
-static void compose_actions_execute_cb	(GtkWidget 	*widget, 
-					 gpointer 	 data);
-static void compose_actions_execute 	(Compose	*compose,
-					 guint		 action_nb,
-					 GtkWidget 	*widget);
+static void action_update_menu(GtkUIManager *ui_manager, const gchar *accel_group, gchar *branch_path, gpointer callback, gpointer data);
+static void compose_actions_execute_cb(GtkWidget *widget, gpointer data);
+static void compose_actions_execute(Compose *compose, guint action_nb, GtkWidget *widget);
 
-static void mainwin_actions_execute_cb	(GtkWidget 	*widget, 
-					 gpointer 	 data);
-static void mainwin_actions_execute 	(MainWindow	*mainwin,
-					 guint		 action_nb,
-					 GtkWidget 	*widget);
+static void mainwin_actions_execute_cb(GtkWidget *widget, gpointer data);
+static void mainwin_actions_execute(MainWindow *mainwin, guint action_nb, GtkWidget *widget);
 
-static void msgview_actions_execute_cb	(GtkWidget 	*widget, 
-					 gpointer 	 data);
-static void msgview_actions_execute 	(MessageView	*msgview,
-					 guint		 action_nb,
-					 GtkWidget 	*widget);
+static void msgview_actions_execute_cb(GtkWidget *widget, gpointer data);
+static void msgview_actions_execute(MessageView *msgview, guint action_nb, GtkWidget *widget);
 
-static void message_actions_execute	(MessageView	*msgview,
-					 guint		 action_nb,
-					 GSList		*msg_list);
+static void message_actions_execute(MessageView *msgview, guint action_nb, GSList *msg_list);
 
-static gboolean execute_filtering_actions(gchar		*action, 
-					  GSList	*msglist);
+static gboolean execute_filtering_actions(gchar *action, GSList *msglist);
 
-static gboolean execute_actions		(gchar		*action, 
-					 GSList		*msg_list, 
-					 GtkWidget	*text,
-					 gint		 body_pos,
-					 MimeInfo	*partinfo, 
-					 void (*callback)(void *data),
-					 void *data);
+static gboolean execute_actions(gchar *action, GSList *msg_list, GtkWidget *text, gint body_pos, MimeInfo *partinfo, void (*callback)(void *data), void *data);
 
-static gchar *parse_action_cmd		(gchar		*action,
-					 MsgInfo	*msginfo,
-					 GSList		*msg_list,
-					 MimeInfo	*partinfo,
-					 const gchar	*user_str,
-					 const gchar	*user_hidden_str,
-					 const gchar	*sel_str);
-static gboolean parse_append_filename	(GString	*cmd,
-					 MsgInfo	*msginfo);
+static gchar *parse_action_cmd(gchar *action, MsgInfo *msginfo, GSList *msg_list, MimeInfo *partinfo, const gchar *user_str, const gchar *user_hidden_str, const gchar *sel_str);
+static gboolean parse_append_filename(GString *cmd, MsgInfo *msginfo);
 
-static gboolean parse_append_msgpart	(GString	*cmd,
-					 MsgInfo	*msginfo,
-					 MimeInfo	*partinfo);
+static gboolean parse_append_msgpart(GString *cmd, MsgInfo *msginfo, MimeInfo *partinfo);
 
-static ChildInfo *fork_child		(gchar		*cmd,
-					 const gchar	*msg_str,
-					 Children	*children);
+static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str, Children *children);
 
-static gint wait_for_children		(Children	*children);
+static gint wait_for_children(Children *children);
 
-static void free_children		(Children	*children);
+static void free_children(Children *children);
 
-static void childinfo_close_pipes	(ChildInfo	*child_info);
+static void childinfo_close_pipes(ChildInfo *child_info);
 
-static void create_io_dialog		(Children	*children);
-static void update_io_dialog		(Children	*children);
+static void create_io_dialog(Children *children);
+static void update_io_dialog(Children *children);
 
-static void hide_io_dialog_cb		(GtkWidget	*widget,
-					 gpointer	 data);
-static gint io_dialog_key_pressed_cb	(GtkWidget	*widget,
-					 GdkEventKey	*event,
-					 gpointer	 data);
+static void hide_io_dialog_cb(GtkWidget *widget, gpointer data);
+static gint io_dialog_key_pressed_cb(GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-static void catch_output		(gpointer		 data,
-					 gint			 source,
-					 GIOCondition		 cond);
-static void catch_input			(gpointer		 data, 
-					 gint			 source,
-					 GIOCondition		 cond);
-static void catch_status		(GPid pid, gint status, gpointer data);
+static void catch_output(gpointer data, gint source, GIOCondition cond);
+static void catch_input(gpointer data, gint source, GIOCondition cond);
+static void catch_status(GPid pid, gint status, gpointer data);
 
-static gchar *get_user_string		(const gchar	*action,
-					 ActionType	 type);
-
+static gchar *get_user_string(const gchar *action, ActionType type);
 
 ActionType action_get_type(const gchar *action_str)
 {
@@ -200,7 +156,7 @@ ActionType action_get_type(const gchar *action_str)
 	gboolean in_filtering_action = FALSE;
 	ActionType action_type = ACTION_NONE;
 
-	cm_return_val_if_fail(action_str,  ACTION_ERROR);
+	cm_return_val_if_fail(action_str, ACTION_ERROR);
 	cm_return_val_if_fail(*action_str, ACTION_ERROR);
 
 	p = action_str;
@@ -225,13 +181,11 @@ ActionType action_get_type(const gchar *action_str)
 				switch (p[1]) {
 				case 'a':
 					/* CLAWS: filtering action is a mutually exclusive
-					* action. we can enable others if needed later. we
-					* add ACTION_SINGLE | ACTION_MULTIPLE so it will
-					* only be executed from the main window toolbar */
-					if (p[2] == 's')  /* source messages */
-						action_type = ACTION_FILTERING_ACTION 
-								| ACTION_SINGLE 
-								| ACTION_MULTIPLE;
+					 * action. we can enable others if needed later. we
+					 * add ACTION_SINGLE | ACTION_MULTIPLE so it will
+					 * only be executed from the main window toolbar */
+					if (p[2] == 's') /* source messages */
+						action_type = ACTION_FILTERING_ACTION | ACTION_SINGLE | ACTION_MULTIPLE;
 					in_filtering_action = TRUE;
 					break;
 				case 'f':
@@ -273,31 +227,26 @@ ActionType action_get_type(const gchar *action_str)
 				in_filtering_action = FALSE;
 			}
 		}
-			p++;
+		p++;
 	}
 
 	return action_type;
 }
 
-static gchar *parse_action_cmd(gchar *action, MsgInfo *msginfo,
-			       GSList *msg_list, MimeInfo *partinfo,
-			       const gchar *user_str,
-			       const gchar *user_hidden_str,
-			       const gchar *sel_str)
+static gchar *parse_action_cmd(gchar *action, MsgInfo *msginfo, GSList *msg_list, MimeInfo *partinfo, const gchar *user_str, const gchar *user_hidden_str, const gchar *sel_str)
 {
 	GString *cmd;
 	gchar *p;
 	GSList *cur;
-	
+
 	p = action;
-	
+
 	if (p[0] == '|' || p[0] == '>' || p[0] == '*')
 		p++;
 
 	cmd = g_string_sized_new(strlen(action));
 
-	while (p[0] &&
-	       !((p[0] == '|' || p[0] == '>' || p[0] == '&') && !p[1])) {
+	while (p[0] && !((p[0] == '|' || p[0] == '>' || p[0] == '&') && !p[1])) {
 		if (p[0] == '%' && p[1]) {
 			switch (p[1]) {
 			case 'f':
@@ -308,8 +257,7 @@ static gchar *parse_action_cmd(gchar *action, MsgInfo *msginfo,
 				p++;
 				break;
 			case 'F':
-				for (cur = msg_list; cur != NULL;
-				     cur = cur->next) {
+				for (cur = msg_list; cur != NULL; cur = cur->next) {
 					MsgInfo *msg = (MsgInfo *)cur->data;
 
 					if (!parse_append_filename(cmd, msg)) {
@@ -322,8 +270,7 @@ static gchar *parse_action_cmd(gchar *action, MsgInfo *msginfo,
 				p++;
 				break;
 			case 'p':
-				if (!parse_append_msgpart(cmd, msginfo,
-							  partinfo)) {
+				if (!parse_append_msgpart(cmd, msginfo, partinfo)) {
 					g_string_free(cmd, TRUE);
 					return NULL;
 				}
@@ -375,8 +322,7 @@ static gboolean parse_append_filename(GString *cmd, MsgInfo *msginfo)
 	filename = procmsg_get_message_file(msginfo);
 
 	if (!filename) {
-		alertpanel_error(_("Could not get message file %d"),
-				 msginfo->msgnum);
+		alertpanel_error(_("Could not get message file %d"), msginfo->msgnum);
 		return FALSE;
 	}
 
@@ -402,8 +348,7 @@ static gboolean parse_append_filename(GString *cmd, MsgInfo *msginfo)
 	return TRUE;
 }
 
-static gboolean parse_append_msgpart(GString *cmd, MsgInfo *msginfo,
-				     MimeInfo *partinfo)
+static gboolean parse_append_msgpart(GString *cmd, MsgInfo *msginfo, MimeInfo *partinfo)
 {
 	gboolean single_part = FALSE;
 	gchar *filename;
@@ -442,41 +387,29 @@ static gboolean parse_append_msgpart(GString *cmd, MsgInfo *msginfo,
 	return TRUE;
 }
 
-void actions_execute(gpointer data, 
-		     guint action_nb,
-		     GtkWidget *widget,
-		     gint source)
+void actions_execute(gpointer data, guint action_nb, GtkWidget *widget, gint source)
 {
-	if (source == TOOLBAR_MAIN) 
-		mainwin_actions_execute((MainWindow*)data, action_nb, widget);
+	if (source == TOOLBAR_MAIN)
+		mainwin_actions_execute((MainWindow *)data, action_nb, widget);
 	else if (source == TOOLBAR_COMPOSE)
-		compose_actions_execute((Compose*)data, action_nb, widget);
+		compose_actions_execute((Compose *)data, action_nb, widget);
 	else if (source == TOOLBAR_MSGVIEW)
-		msgview_actions_execute((MessageView*)data, action_nb, widget);	
+		msgview_actions_execute((MessageView *)data, action_nb, widget);
 }
 
-void action_update_mainwin_menu(GtkUIManager *ui_manager,
-				gchar *branch_path,
-				MainWindow *mainwin)
+void action_update_mainwin_menu(GtkUIManager *ui_manager, gchar *branch_path, MainWindow *mainwin)
 {
-	action_update_menu(ui_manager, "<MainwinActions>", branch_path,
-			   mainwin_actions_execute_cb, mainwin);
+	action_update_menu(ui_manager, "<MainwinActions>", branch_path, mainwin_actions_execute_cb, mainwin);
 }
 
-void action_update_msgview_menu(GtkUIManager 	*ui_manager,
-				gchar *branch_path,
-				MessageView *msgview)
+void action_update_msgview_menu(GtkUIManager *ui_manager, gchar *branch_path, MessageView *msgview)
 {
-	action_update_menu(ui_manager, "<MsgviewActions>", branch_path,
-			   msgview_actions_execute_cb, msgview);
+	action_update_menu(ui_manager, "<MsgviewActions>", branch_path, msgview_actions_execute_cb, msgview);
 }
 
-void action_update_compose_menu(GtkUIManager *ui_manager, 
-				gchar *branch_path,
-				Compose *compose)
+void action_update_compose_menu(GtkUIManager *ui_manager, gchar *branch_path, Compose *compose)
 {
-	action_update_menu(ui_manager, "<ComposeActions>", branch_path,
-			   compose_actions_execute_cb, compose);
+	action_update_menu(ui_manager, "<ComposeActions>", branch_path, compose_actions_execute_cb, compose);
 }
 
 static GtkWidget *find_item_in_menu(GtkWidget *menu, gchar *name)
@@ -486,11 +419,9 @@ static GtkWidget *find_item_in_menu(GtkWidget *menu, gchar *name)
 	const gchar *existing_name;
 	while (amenu) {
 		GtkWidget *item = GTK_WIDGET(amenu->data);
-		if ((existing_name = g_object_get_data(G_OBJECT(item), "s_name")) != NULL &&
-		    !g_strcmp0(name, existing_name))
-		{
+		if ((existing_name = g_object_get_data(G_OBJECT(item), "s_name")) != NULL && !g_strcmp0(name, existing_name)) {
 			g_list_free(children);
-			 return item;
+			return item;
 		}
 		amenu = amenu->next;
 	}
@@ -504,9 +435,9 @@ static GtkWidget *create_submenus(GtkWidget *menu, const gchar *action)
 {
 	gchar *submenu = g_strdup(action);
 	GtkWidget *new_menu = NULL;
-	
+
 	if (strchr(submenu, '/')) {
-		const gchar *end = (strchr(submenu, '/')+1);
+		const gchar *end = (strchr(submenu, '/') + 1);
 		GtkWidget *menu_item = NULL;
 		if (end && *end) {
 			*strchr(submenu, '/') = '\0';
@@ -514,7 +445,7 @@ static GtkWidget *create_submenus(GtkWidget *menu, const gchar *action)
 				menu_item = gtk_menu_item_new_with_mnemonic(submenu);
 				g_object_set_data_full(G_OBJECT(menu_item), "s_name", g_strdup(submenu), g_free);
 				gtk_widget_show(menu_item);
-				gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);		
+				gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
 				new_menu = gtk_menu_new();
 				gtk_widget_show(new_menu);
 				gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), new_menu);
@@ -528,10 +459,7 @@ static GtkWidget *create_submenus(GtkWidget *menu, const gchar *action)
 	return new_menu ? new_menu : menu;
 }
 
-static void action_update_menu(GtkUIManager *ui_manager,
-			       const gchar *accel_group,
-			       gchar *branch_path,
-			       gpointer callback, gpointer data)
+static void action_update_menu(GtkUIManager *ui_manager, const gchar *accel_group, gchar *branch_path, gpointer callback, gpointer data)
 {
 	GSList *cur;
 	gchar *action, *action_p;
@@ -542,29 +470,25 @@ static void action_update_menu(GtkUIManager *ui_manager,
 	for (cur = prefs_common.actions_list; cur != NULL; cur = cur->next) {
 		GtkWidget *cur_menu = menu;
 		const gchar *action_name = NULL;
-		action   = g_strdup((gchar *)cur->data);
+		action = g_strdup((gchar *)cur->data);
 		action_p = strstr(action, ": ");
-		if (action_p && action_p[2] &&
-		    (action_get_type(&action_p[2]) != ACTION_ERROR) &&
-		    (action[0] != '/')) {
+		if (action_p && action_p[2] && (action_get_type(&action_p[2]) != ACTION_ERROR) && (action[0] != '/')) {
 			gchar *accel_path = NULL;
 
 			action_p[0] = '\0';
 			if (strchr(action, '/')) {
 				cur_menu = create_submenus(cur_menu, action);
-				action_name = strrchr(action, '/')+1;
+				action_name = strrchr(action, '/') + 1;
 			} else {
 				action_name = action;
 			}
-			gtk_menu_set_accel_group (GTK_MENU (cur_menu), 
-				gtk_ui_manager_get_accel_group(ui_manager));
+			gtk_menu_set_accel_group(GTK_MENU(cur_menu), gtk_ui_manager_get_accel_group(ui_manager));
 			item = gtk_menu_item_new_with_label(action_name);
 			gtk_menu_shell_append(GTK_MENU_SHELL(cur_menu), item);
-			g_signal_connect(G_OBJECT(item), "activate",
-					 G_CALLBACK(callback), data);
+			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(callback), data);
 			g_object_set_data(G_OBJECT(item), "action_num", GINT_TO_POINTER(callback_action));
 			gtk_widget_show(item);
-			accel_path = g_strconcat(accel_group,branch_path, "/", action, NULL);
+			accel_path = g_strconcat(accel_group, branch_path, "/", action, NULL);
 			gtk_menu_item_set_accel_path(GTK_MENU_ITEM(item), accel_path);
 			g_free(accel_path);
 
@@ -601,14 +525,11 @@ static void compose_actions_execute(Compose *compose, guint action_nb, GtkWidget
 
 	action_type = action_get_type(action);
 	if (action_type & (ACTION_SINGLE | ACTION_MULTIPLE)) {
-		alertpanel_warning
-			(_("The selected action cannot be used in the compose window\n"
-			   "because it contains %%f, %%F, %%as or %%p."));
+		alertpanel_warning(_("The selected action cannot be used in the compose window\n" "because it contains %%f, %%F, %%as or %%p."));
 		return;
 	}
 
-	execute_actions(action, NULL, compose->text, 0, NULL, 
-		compose_action_cb, compose);
+	execute_actions(action, NULL, compose->text, 0, NULL, compose_action_cb, compose);
 }
 
 static void mainwin_actions_execute_cb(GtkWidget *widget, gpointer data)
@@ -625,8 +546,7 @@ static void _free_msginfos(gpointer data, gpointer user_data)
 	procmsg_msginfo_free(&msginfo);
 }
 
-static void mainwin_actions_execute(MainWindow *mainwin, guint action_nb,
-				       GtkWidget *widget)
+static void mainwin_actions_execute(MainWindow *mainwin, guint action_nb, GtkWidget *widget)
 {
 	GSList *msg_list;
 
@@ -644,8 +564,7 @@ static void msgview_actions_execute_cb(GtkWidget *widget, gpointer data)
 	msgview_actions_execute(msgview, action_nb, NULL);
 }
 
-static void msgview_actions_execute(MessageView *msgview, guint action_nb,
-				       GtkWidget *widget)
+static void msgview_actions_execute(MessageView *msgview, guint action_nb, GtkWidget *widget)
 {
 	GSList *msg_list = NULL;
 
@@ -655,8 +574,7 @@ static void msgview_actions_execute(MessageView *msgview, guint action_nb,
 	g_slist_free(msg_list);
 }
 
-static void message_actions_execute(MessageView *msgview, guint action_nb,
-				    GSList *msg_list)
+static void message_actions_execute(MessageView *msgview, guint action_nb, GSList *msg_list)
 {
 	TextView *textview;
 	MimeInfo *partinfo;
@@ -665,7 +583,7 @@ static void message_actions_execute(MessageView *msgview, guint action_nb,
 	GtkWidget *text = NULL;
 	guint body_pos = 0;
 	ActionType action_type;
-	
+
 	cm_return_if_fail(action_nb < g_slist_length(prefs_common.actions_list));
 
 	buf = (gchar *)g_slist_nth_data(prefs_common.actions_list, action_nb);
@@ -678,7 +596,7 @@ static void message_actions_execute(MessageView *msgview, guint action_nb,
 
 	textview = messageview_get_current_textview(msgview);
 	if (textview) {
-		text     = textview->text;
+		text = textview->text;
 		body_pos = textview->body_pos;
 	}
 	partinfo = messageview_get_selected_mime_part(msgview);
@@ -688,13 +606,12 @@ static void message_actions_execute(MessageView *msgview, guint action_nb,
 	if (action_type & (ACTION_PIPE_OUT | ACTION_INSERT))
 		msgview->filtered = TRUE;
 
-	if (action_type & ACTION_FILTERING_ACTION) 
+	if (action_type & ACTION_FILTERING_ACTION)
 		/* CLAWS: most of the above code is not necessary for applying
 		 * filtering */
 		execute_filtering_actions(action, msg_list);
 	else
-		execute_actions(action, msg_list, text, body_pos, partinfo,
-			NULL, NULL);
+		execute_actions(action, msg_list, text, body_pos, partinfo, NULL, NULL);
 }
 
 static gboolean execute_filtering_actions(gchar *action, GSList *msglist)
@@ -716,7 +633,7 @@ static gboolean execute_filtering_actions(gchar *action, GSList *msglist)
 	if (NULL == (send = strrchr(sbegin, '}')))
 		return FALSE;
 	action_string = g_strndup(sbegin, send - sbegin);
-	
+
 	action_list = matcher_parser_get_action_list(action_string);
 	if (action_list == NULL) {
 		gchar *tmp = g_strdup(action_string);
@@ -731,41 +648,39 @@ static gboolean execute_filtering_actions(gchar *action, GSList *msglist)
 		return FALSE;
 	}
 	g_free(action_string);
-	
+
 	/* apply actions on each message info */
 	for (p = msglist; p && p->data; p = g_slist_next(p)) {
-		filteringaction_apply_action_list(action_list, (MsgInfo *) p->data);
+		filteringaction_apply_action_list(action_list, (MsgInfo *)p->data);
 	}
 
 	if (summaryview) {
-		summary_lock(summaryview);				
-		main_window_cursor_wait(mainwin);		
-		summary_freeze(summaryview);	
-		folder_item_update_freeze();				
+		summary_lock(summaryview);
+		main_window_cursor_wait(mainwin);
+		summary_freeze(summaryview);
+		folder_item_update_freeze();
 	}
 
 	filtering_move_and_copy_msgs(msglist);
 
 	if (summaryview) {
-		folder_item_update_thaw();				
-		summary_thaw(summaryview);		
-		main_window_cursor_normal(mainwin);	
-		summary_unlock(summaryview);				
+		folder_item_update_thaw();
+		summary_thaw(summaryview);
+		main_window_cursor_normal(mainwin);
+		summary_unlock(summaryview);
 		summary_show(summaryview, summaryview->folder_item, FALSE);
 	}
 	for (p = action_list; p; p = g_slist_next(p))
-		if (p->data) filteringaction_free(p->data);	
-	g_slist_free(action_list);		
-	return TRUE;	
+		if (p->data)
+			filteringaction_free(p->data);
+	g_slist_free(action_list);
+	return TRUE;
 }
 
-static gboolean execute_actions(gchar *action, GSList *msg_list,
-				GtkWidget *text,
-				gint body_pos, MimeInfo *partinfo,
-				void (*callback)(void *data), void *data)
+static gboolean execute_actions(gchar *action, GSList *msg_list, GtkWidget *text, gint body_pos, MimeInfo *partinfo, void (*callback)(void *data), void *data)
 {
 	GSList *children_list = NULL, *cur = NULL;
-	gint is_ok  = TRUE;
+	gint is_ok = TRUE;
 	gint msg_list_len;
 	Children *children;
 	ChildInfo *child_info;
@@ -784,10 +699,10 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 	action_type = action_get_type(action);
 
 	if (action_type == ACTION_ERROR)
-		return FALSE;         /* ERR: syntax error */
+		return FALSE; /* ERR: syntax error */
 
 	if (action_type & (ACTION_SINGLE | ACTION_MULTIPLE) && !msg_list)
-		return FALSE;         /* ERR: file command without selection */
+		return FALSE; /* ERR: file command without selection */
 
 	msg_list_len = g_slist_length(msg_list);
 
@@ -807,15 +722,12 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 		GtkTextBuffer *textbuf;
 
 		textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-		is_selection = gtk_text_buffer_get_selection_bounds
-			(textbuf, &start_iter, &end_iter);
+		is_selection = gtk_text_buffer_get_selection_bounds(textbuf, &start_iter, &end_iter);
 		if (!is_selection) {
-			gtk_text_buffer_get_iter_at_offset
-				(textbuf, &start_iter, body_pos);
+			gtk_text_buffer_get_iter_at_offset(textbuf, &start_iter, body_pos);
 			gtk_text_buffer_get_end_iter(textbuf, &end_iter);
 		}
-		msg_str = gtk_text_buffer_get_text
-			(textbuf, &start_iter, &end_iter, FALSE);
+		msg_str = gtk_text_buffer_get_text(textbuf, &start_iter, &end_iter, FALSE);
 		if (is_selection)
 			sel_str = g_strdup(msg_str);
 	}
@@ -829,8 +741,7 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 	}
 
 	if (action_type & ACTION_USER_HIDDEN_STR) {
-		if (!(user_hidden_str =
-			get_user_string(action, ACTION_USER_HIDDEN_STR))) {
+		if (!(user_hidden_str = get_user_string(action, ACTION_USER_HIDDEN_STR))) {
 			g_free(msg_str);
 			g_free(sel_str);
 			g_free(user_str);
@@ -838,22 +749,21 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 		}
 	}
 
- 	if (text && (action_type & ACTION_PIPE_OUT)) {
- 		GtkTextBuffer *textbuf;
- 		textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
- 		gtk_text_buffer_delete(textbuf, &start_iter, &end_iter);
+	if (text && (action_type & ACTION_PIPE_OUT)) {
+		GtkTextBuffer *textbuf;
+		textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+		gtk_text_buffer_delete(textbuf, &start_iter, &end_iter);
 	}
 
 	children = g_new0(Children, 1);
 
-	children->nb          = 0;
-	children->action      = g_strdup(action);
+	children->nb = 0;
+	children->action = g_strdup(action);
 	children->action_type = action_type;
-	children->msg_text    = text;
- 	children->is_selection = is_selection;
+	children->msg_text = text;
+	children->is_selection = is_selection;
 
-	if ((action_type & (ACTION_USER_IN | ACTION_USER_HIDDEN_IN)) &&
-	    ((action_type & ACTION_SINGLE) == 0 || msg_list_len == 1))
+	if ((action_type & (ACTION_USER_IN | ACTION_USER_HIDDEN_IN)) && ((action_type & ACTION_SINGLE) == 0 || msg_list_len == 1))
 		children->open_in = 1;
 
 	/* Pre-fetch bodies, makes it easier on IMAP (see bug #3011) */
@@ -872,43 +782,36 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 		for (cur = msg_list; cur && is_ok == TRUE; cur = cur->next) {
 			msginfo = (MsgInfo *)cur->data;
 			if (!msginfo) {
-				is_ok  = FALSE; /* ERR: msginfo missing */
+				is_ok = FALSE; /* ERR: msginfo missing */
 				break;
 			}
-			cmd = parse_action_cmd(action, msginfo, msg_list,
-					       partinfo, user_str,
-					       user_hidden_str, sel_str);
+			cmd = parse_action_cmd(action, msginfo, msg_list, partinfo, user_str, user_hidden_str, sel_str);
 			if (!cmd) {
 				debug_print("Action command error\n");
-				is_ok  = FALSE; /* ERR: incorrect command */
+				is_ok = FALSE; /* ERR: incorrect command */
 				break;
 			}
 			if ((child_info = fork_child(cmd, msg_str, children))) {
 				/* Pass msginfo to catch_status () */
 				if (!(action_type & (ACTION_PIPE_OUT | ACTION_INSERT)))
-					child_info->msginfo_list = 
-						g_slist_append (NULL, msginfo);
-				children_list = g_slist_append(children_list,
-							       child_info);
+					child_info->msginfo_list = g_slist_append(NULL, msginfo);
+				children_list = g_slist_append(children_list, child_info);
 				children->nb++;
 			}
 			g_free(cmd);
 		}
 	} else if (is_ok) {
-		cmd = parse_action_cmd(action, NULL, msg_list, partinfo,
-				       user_str, user_hidden_str, sel_str);
+		cmd = parse_action_cmd(action, NULL, msg_list, partinfo, user_str, user_hidden_str, sel_str);
 		if (cmd) {
 			if ((child_info = fork_child(cmd, msg_str, children))) {
 				if (!(action_type & (ACTION_PIPE_OUT | ACTION_INSERT)))
-					child_info->msginfo_list = 
-						g_slist_copy (msg_list);
-				children_list = g_slist_append(children_list,
-								child_info);
+					child_info->msginfo_list = g_slist_copy(msg_list);
+				children_list = g_slist_append(children_list, child_info);
 				children->nb++;
 			}
 			g_free(cmd);
 		} else
-			is_ok  = FALSE;         /* ERR: incorrect command */
+			is_ok = FALSE; /* ERR: incorrect command */
 	}
 
 	g_free(msg_str);
@@ -917,20 +820,19 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 	g_free(user_hidden_str);
 
 	if (!children_list) {
-		 /* If not waiting for children, return */
+		/* If not waiting for children, return */
 		free_children(children);
 	} else {
 		GSList *cur;
 
-		children->list	      = children_list;
-		children->initial_nb  = children->nb;
+		children->list = children_list;
+		children->initial_nb = children->nb;
 
 		for (cur = children_list; cur; cur = cur->next) {
-			child_info = (ChildInfo *) cur->data;
+			child_info = (ChildInfo *)cur->data;
 			child_info->callback = callback;
 			child_info->data = data;
-			child_info->tag_status = 
-				g_child_watch_add(child_info->pid, catch_status, child_info);
+			child_info->tag_status = g_child_watch_add(child_info->pid, catch_status, child_info);
 		}
 
 		create_io_dialog(children);
@@ -938,8 +840,7 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 	return is_ok;
 }
 
-static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
-			     Children *children)
+static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str, Children *children)
 {
 	gint chld_in, chld_out, chld_err;
 	gchar **argv, *ret_str, *trim_cmd;
@@ -954,15 +855,13 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 
 	chld_in = chld_out = chld_err = -1;
 
-	ret_str = g_locale_from_utf8(cmd, strlen(cmd),
-				     &by_read, &by_written,
-				     NULL);
+	ret_str = g_locale_from_utf8(cmd, strlen(cmd), &by_read, &by_written, NULL);
 	if (!ret_str || !by_written) {
 		if (ret_str)
 			g_free(ret_str);
 		ret_str = g_strdup(cmd);
 	}
-    
+
 	trim_cmd = ret_str;
 
 	while (g_ascii_isspace(trim_cmd[0]))
@@ -980,14 +879,9 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 	g_free(ret_str);
 
 	if (follow_child) {
-		result = g_spawn_async_with_pipes(NULL, argv, NULL,
-			  G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-			  NULL, NULL, &pid, &chld_in, &chld_out,
-			  &chld_err, &error);
+		result = g_spawn_async_with_pipes(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, &chld_in, &chld_out, &chld_err, &error);
 	} else {
-		result = g_spawn_async(NULL, argv, NULL, 
-			  G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL,
-			  &pid, &error);
+		result = g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, &error);
 	}
 
 	debug_print("spawning %s: %d\n", cmd, result);
@@ -995,16 +889,13 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 	g_strfreev(argv);
 
 	if (!result) {
-		alertpanel_error(_("Could not fork to execute the following "
-				"command:\n%s\n%s"),
-				 cmd, error ? error->message : _("Unknown error"));
+		alertpanel_error(_("Could not fork to execute the following " "command:\n%s\n%s"), cmd, error ? error->message : _("Unknown error"));
 		if (error)
 			g_error_free(error);
 		return NULL;
 	}
 
-	if (!(children->action_type &
-	      (ACTION_PIPE_IN | ACTION_USER_IN | ACTION_USER_HIDDEN_IN)))
+	if (!(children->action_type & (ACTION_PIPE_IN | ACTION_USER_IN | ACTION_USER_HIDDEN_IN)))
 		(void)close(chld_in);
 
 	if (!follow_child) {
@@ -1013,36 +904,30 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 	}
 	child_info = g_new0(ChildInfo, 1);
 
-	child_info->children    = children;
+	child_info->children = children;
 
-	child_info->pid         = pid;
+	child_info->pid = pid;
 #ifdef G_OS_UNIX
-	child_info->next_sig	= SIGTERM;
+	child_info->next_sig = SIGTERM;
 #endif
-	child_info->cmd         = g_strdup(cmd);
-	child_info->new_out     = FALSE;
-	child_info->output      = g_string_new(NULL);
-	child_info->chld_in     =
-		(children->action_type &
-		 (ACTION_PIPE_IN | ACTION_USER_IN | ACTION_USER_HIDDEN_IN))
-			? chld_in : -1;
-	child_info->chld_out    = chld_out;
-	child_info->chld_err    = chld_err;
-	child_info->tag_status  = -1;
-	child_info->tag_in      = -1;
-	child_info->tag_out     = claws_input_add(chld_out, G_IO_IN | G_IO_HUP | G_IO_ERR,
-						catch_output, child_info, FALSE);
-	child_info->tag_err     = claws_input_add(chld_err, G_IO_IN | G_IO_HUP | G_IO_ERR,
-						catch_output, child_info, FALSE);
+	child_info->cmd = g_strdup(cmd);
+	child_info->new_out = FALSE;
+	child_info->output = g_string_new(NULL);
+	child_info->chld_in = (children->action_type & (ACTION_PIPE_IN | ACTION_USER_IN | ACTION_USER_HIDDEN_IN))
+	    ? chld_in : -1;
+	child_info->chld_out = chld_out;
+	child_info->chld_err = chld_err;
+	child_info->tag_status = -1;
+	child_info->tag_in = -1;
+	child_info->tag_out = claws_input_add(chld_out, G_IO_IN | G_IO_HUP | G_IO_ERR, catch_output, child_info, FALSE);
+	child_info->tag_err = claws_input_add(chld_err, G_IO_IN | G_IO_HUP | G_IO_ERR, catch_output, child_info, FALSE);
 
-	if (!(children->action_type &
-	      (ACTION_PIPE_IN | ACTION_PIPE_OUT | ACTION_INSERT)))
+	if (!(children->action_type & (ACTION_PIPE_IN | ACTION_PIPE_OUT | ACTION_INSERT)))
 		return child_info;
 
 	if ((children->action_type & ACTION_PIPE_IN) && msg_str) {
 		int r;
-		ret_str = g_locale_from_utf8(msg_str, strlen(msg_str),
-					     &by_read, &by_written, NULL);
+		ret_str = g_locale_from_utf8(msg_str, strlen(msg_str), &by_read, &by_written, NULL);
 		if (ret_str && by_written)
 			r = write(chld_in, ret_str, strlen(ret_str));
 		else
@@ -1050,8 +935,7 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 		if (ret_str)
 			g_free(ret_str);
 
-		if (!(children->action_type &
-		      (ACTION_USER_IN | ACTION_USER_HIDDEN_IN)))
+		if (!(children->action_type & (ACTION_USER_IN | ACTION_USER_HIDDEN_IN)))
 			r = close(chld_in);
 		child_info->chld_in = -1; /* No more input */
 		if (r != 0)
@@ -1064,7 +948,7 @@ static ChildInfo *fork_child(gchar *cmd, const gchar *msg_str,
 static void kill_children_cb(GtkWidget *widget, gpointer data)
 {
 	GSList *cur;
-	Children *children = (Children *) data;
+	Children *children = (Children *)data;
 	ChildInfo *child_info;
 
 	for (cur = children->list; cur; cur = cur->next) {
@@ -1114,12 +998,10 @@ static gint wait_for_children(Children *children)
 
 static void send_input(GtkWidget *w, gpointer data)
 {
-	Children *children = (Children *) data;
-	ChildInfo *child_info = (ChildInfo *) children->list->data;
+	Children *children = (Children *)data;
+	ChildInfo *child_info = (ChildInfo *)children->list->data;
 
-	child_info->tag_in = claws_input_add(child_info->chld_in,
-					   G_IO_OUT | G_IO_ERR,
-					   catch_input, children, FALSE);
+	child_info->tag_in = claws_input_add(child_info->chld_in, G_IO_OUT | G_IO_ERR, catch_input, children, FALSE);
 }
 
 static gint delete_io_dialog_cb(GtkWidget *w, GdkEvent *e, gpointer data)
@@ -1134,20 +1016,15 @@ static void hide_io_dialog_cb(GtkWidget *w, gpointer data)
 	Children *children = (Children *)data;
 
 	if (!children->nb) {
-		g_signal_handlers_disconnect_matched
-			(G_OBJECT(children->dialog), G_SIGNAL_MATCH_DATA,
-			 0, 0, NULL, NULL, children);
+		g_signal_handlers_disconnect_matched(G_OBJECT(children->dialog), G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, children);
 		gtk_widget_destroy(children->dialog);
 		free_children(children);
 	}
 }
 
-static gint io_dialog_key_pressed_cb(GtkWidget *widget, GdkEventKey *event,
-				     gpointer data)
+static gint io_dialog_key_pressed_cb(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-	if (event && (event->keyval == GDK_KEY_Escape ||
-		      event->keyval == GDK_KEY_Return ||
-		      event->keyval == GDK_KEY_KP_Enter))
+	if (event && (event->keyval == GDK_KEY_Escape || event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter))
 		hide_io_dialog_cb(widget, data);
 	return TRUE;
 }
@@ -1195,7 +1072,7 @@ static void free_children(Children *children)
 
 	if (callback)
 		callback(data);
-	
+
 	g_free(children);
 }
 
@@ -1213,14 +1090,9 @@ static void update_io_dialog(Children *children)
 #else
 		const gchar *format = "%s %d / %d";
 #endif
-		
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(children->progress_bar),
-						  (children->initial_nb == 0) ? 0 :
-					      (gdouble) (children->initial_nb - children->nb) /
-					      (gdouble) children->initial_nb);
-		text = g_strdup_printf(format, _("Completed"), 
-				       children->initial_nb - children->nb,
-				       children->initial_nb);
+
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(children->progress_bar), (children->initial_nb == 0) ? 0 : (gdouble)(children->initial_nb - children->nb) / (gdouble)children->initial_nb);
+		text = g_strdup_printf(format, _("Completed"), children->initial_nb - children->nb, children->initial_nb);
 		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(children->progress_bar), text);
 		g_free(text);
 	}
@@ -1231,10 +1103,7 @@ static void update_io_dialog(Children *children)
 		if (children->input_hbox)
 			gtk_widget_set_sensitive(children->input_hbox, FALSE);
 		gtk_widget_grab_focus(children->close_btn);
-		g_signal_connect(G_OBJECT(children->dialog),
-				 "key_press_event",
-				 G_CALLBACK(io_dialog_key_pressed_cb),
-				 children);
+		g_signal_connect(G_OBJECT(children->dialog), "key_press_event", G_CALLBACK(io_dialog_key_pressed_cb), children);
 	}
 
 	if (children->output) {
@@ -1253,17 +1122,12 @@ static void update_io_dialog(Children *children)
 		for (cur = children->list; cur; cur = cur->next) {
 			child_info = (ChildInfo *)cur->data;
 			if (child_info->pid)
-				caption = g_strdup_printf
-					(_("--- Running: %s\n"),
-					 child_info->cmd);
+				caption = g_strdup_printf(_("--- Running: %s\n"), child_info->cmd);
 			else
-				caption = g_strdup_printf
-					(_("--- Ended: %s\n"),
-					 child_info->cmd);
+				caption = g_strdup_printf(_("--- Ended: %s\n"), child_info->cmd);
 
 			gtk_text_buffer_insert(textbuf, &iter, caption, -1);
-			gtk_text_buffer_insert(textbuf, &iter,
-					       child_info->output->str, -1);
+			gtk_text_buffer_insert(textbuf, &iter, child_info->output->str, -1);
 			g_free(caption);
 			child_info->new_out = FALSE;
 		}
@@ -1273,8 +1137,7 @@ static void update_io_dialog(Children *children)
 /*!
  *\brief	Save Gtk object size to prefs dataset
  */
-static void actions_io_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
+static void actions_io_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
@@ -1301,23 +1164,17 @@ static void create_io_dialog(Children *children)
 	debug_print("Creating action IO dialog\n");
 
 	dialog = gtk_dialog_new();
-	gtk_container_set_border_width
-		(GTK_CONTAINER(gtk_dialog_get_action_area(GTK_DIALOG(dialog))), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(gtk_dialog_get_action_area(GTK_DIALOG(dialog))), 5);
 	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(dialog), _("Action's input/output"));
 	gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
 	manage_window_set_transient(GTK_WINDOW(dialog));
-	g_signal_connect(G_OBJECT(dialog), "delete_event",
-			 G_CALLBACK(delete_io_dialog_cb), children);
-	g_signal_connect(G_OBJECT(dialog), "destroy",
-			 G_CALLBACK(hide_io_dialog_cb),
-			 children);
-	g_signal_connect(G_OBJECT(dialog), "size_allocate",
-			 G_CALLBACK(actions_io_size_allocate_cb), NULL);
+	g_signal_connect(G_OBJECT(dialog), "delete_event", G_CALLBACK(delete_io_dialog_cb), children);
+	g_signal_connect(G_OBJECT(dialog), "destroy", G_CALLBACK(hide_io_dialog_cb), children);
+	g_signal_connect(G_OBJECT(dialog), "size_allocate", G_CALLBACK(actions_io_size_allocate_cb), NULL);
 
 	vbox = gtk_vbox_new(FALSE, 8);
-	gtk_container_add(GTK_CONTAINER(
-				gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), vbox);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
 	gtk_widget_show(vbox);
 
@@ -1326,11 +1183,8 @@ static void create_io_dialog(Children *children)
 	gtk_widget_show(label);
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
-					    GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
 	gtk_box_pack_start(GTK_BOX(vbox), scrolledwin, TRUE, TRUE, 0);
 	gtk_widget_hide(scrolledwin);
 
@@ -1338,8 +1192,7 @@ static void create_io_dialog(Children *children)
 
 	if (prefs_common.textfont) {
 		PangoFontDescription *font_desc;
-		font_desc = pango_font_description_from_string
-			(prefs_common.textfont);
+		font_desc = pango_font_description_from_string(prefs_common.textfont);
 		if (font_desc) {
 			gtk_widget_modify_font(text, font_desc);
 			pango_font_description_free(font_desc);
@@ -1359,8 +1212,7 @@ static void create_io_dialog(Children *children)
 
 		entry = gtk_entry_new();
 		gtk_widget_set_size_request(entry, 320, -1);
-		g_signal_connect(G_OBJECT(entry), "activate",
-				 G_CALLBACK(send_input), children);
+		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(send_input), children);
 		gtk_box_pack_start(GTK_BOX(input_hbox), entry, TRUE, TRUE, 0);
 		if (children->action_type & ACTION_USER_HIDDEN_IN) {
 			gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
@@ -1368,10 +1220,8 @@ static void create_io_dialog(Children *children)
 		gtk_widget_show(entry);
 
 		send_button = gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
-		g_signal_connect(G_OBJECT(send_button), "clicked",
-				 G_CALLBACK(send_input), children);
-		gtk_box_pack_start(GTK_BOX(input_hbox), send_button, FALSE,
-				   FALSE, 0);
+		g_signal_connect(G_OBJECT(send_button), "clicked", G_CALLBACK(send_input), children);
+		gtk_box_pack_start(GTK_BOX(input_hbox), send_button, FALSE, FALSE, 0);
 		gtk_widget_show(send_button);
 
 		gtk_box_pack_start(GTK_BOX(vbox), input_hbox, FALSE, FALSE, 0);
@@ -1386,53 +1236,44 @@ static void create_io_dialog(Children *children)
 #else
 		const gchar *format = "%s 0 / %d\n";
 #endif
-		
+
 		progress_bar = gtk_progress_bar_new();
-		gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(progress_bar),
-				GTK_PROGRESS_LEFT_TO_RIGHT);
-		text = g_strdup_printf(format, _("Completed"), 
-		                       children->initial_nb);
-		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress_bar),
-					  text);
+		gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(progress_bar), GTK_PROGRESS_LEFT_TO_RIGHT);
+		text = g_strdup_printf(format, _("Completed"), children->initial_nb);
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress_bar), text);
 		g_free(text);
 		gtk_box_pack_start(GTK_BOX(vbox), progress_bar, FALSE, FALSE, 0);
 		gtk_widget_show(progress_bar);
 	}
 
-	gtkut_stock_button_set_create(&hbox, &abort_button, GTK_STOCK_STOP,
-				      &close_button, GTK_STOCK_CLOSE, NULL, NULL);
-	g_signal_connect(G_OBJECT(abort_button), "clicked",
-			 G_CALLBACK(kill_children_cb), children);
-	g_signal_connect(G_OBJECT(close_button), "clicked",
-			 G_CALLBACK(hide_io_dialog_cb), children);
+	gtkut_stock_button_set_create(&hbox, &abort_button, GTK_STOCK_STOP, &close_button, GTK_STOCK_CLOSE, NULL, NULL);
+	g_signal_connect(G_OBJECT(abort_button), "clicked", G_CALLBACK(kill_children_cb), children);
+	g_signal_connect(G_OBJECT(close_button), "clicked", G_CALLBACK(hide_io_dialog_cb), children);
 	gtk_widget_show(hbox);
 
 	if (children->nb)
 		gtk_widget_set_sensitive(close_button, FALSE);
 
-	gtk_container_add(GTK_CONTAINER(
-			gtk_dialog_get_action_area(GTK_DIALOG(dialog))), hbox);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_action_area(GTK_DIALOG(dialog))), hbox);
 
 	if (!geometry.min_height) {
 		geometry.min_width = 582;
 		geometry.min_height = 310;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(dialog), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(dialog, prefs_common.actionsiodialog_width,
-				    prefs_common.actionsiodialog_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(dialog), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(dialog, prefs_common.actionsiodialog_width, prefs_common.actionsiodialog_height);
 
 	gtk_widget_show(dialog);
 
-	children->dialog       = dialog;
-	children->scrolledwin  = scrolledwin;
-	children->text         = text;
-	children->input_hbox   = children->open_in ? input_hbox : NULL;
-	children->input_entry  = children->open_in ? entry : NULL;
+	children->dialog = dialog;
+	children->scrolledwin = scrolledwin;
+	children->text = text;
+	children->input_hbox = children->open_in ? input_hbox : NULL;
+	children->input_entry = children->open_in ? entry : NULL;
 	children->progress_bar = progress_bar;
-	children->abort_btn    = abort_button;
-	children->close_btn    = close_button;
+	children->abort_btn = abort_button;
+	children->close_btn = close_button;
 }
 
 static void catch_status(GPid pid, gint status, gpointer data)
@@ -1448,45 +1289,42 @@ static void catch_status(GPid pid, gint status, gpointer data)
 	if (child_info->children->action_type & (ACTION_SINGLE | ACTION_MULTIPLE)
 	    && child_info->msginfo_list) {
 		/* Actions on message *files* might change size and
-		* time stamp, and thus invalidate the cache */
-		SummaryView *summaryview  = NULL;
-		GSList      *cur;
-		MsgInfo     *msginfo, *nmi;	/* newmsginfo */
-		char        *file;
-		gboolean     modified_something = FALSE;
-		FolderItem  *last_item = NULL;
-		if (mainwindow_get_mainwindow ())
-			summaryview = mainwindow_get_mainwindow ()->summaryview;
+		 * time stamp, and thus invalidate the cache */
+		SummaryView *summaryview = NULL;
+		GSList *cur;
+		MsgInfo *msginfo, *nmi;	/* newmsginfo */
+		char *file;
+		gboolean modified_something = FALSE;
+		FolderItem *last_item = NULL;
+		if (mainwindow_get_mainwindow())
+			summaryview = mainwindow_get_mainwindow()->summaryview;
 		for (cur = child_info->msginfo_list; cur; cur = cur->next) {
 			msginfo = (MsgInfo *)cur->data;
 			if (!(msginfo && /* Stuff used valid? */
-			    msginfo->folder && msginfo->folder->cache)) 
+			      msginfo->folder && msginfo->folder->cache))
 				continue;
-			file = procmsg_get_message_file_path (msginfo);
-			if (!file) 
+			file = procmsg_get_message_file_path(msginfo);
+			if (!file)
 				continue;
-			nmi = procheader_parse_file (file, msginfo->flags, TRUE, FALSE);
-			if (!nmi) 
+			nmi = procheader_parse_file(file, msginfo->flags, TRUE, FALSE);
+			if (!nmi)
 				continue; /* Deleted? */
 			if (msginfo->mtime != nmi->mtime || msginfo->size != nmi->size) {
 				nmi->folder = msginfo->folder;
 				nmi->msgnum = msginfo->msgnum;
-				msgcache_update_msg (msginfo->folder->cache, nmi);
+				msgcache_update_msg(msginfo->folder->cache, nmi);
 				modified_something = TRUE;
 				last_item = nmi->folder;
 			}
-			procmsg_msginfo_free (&nmi);
-			if (summaryview && summaryview->displayed &&
-		    	    summaryview->folder_item == msginfo->folder &&
-			    summary_get_msgnum(summaryview, summaryview->displayed) == msginfo->msgnum)
+			procmsg_msginfo_free(&nmi);
+			if (summaryview && summaryview->displayed && summaryview->folder_item == msginfo->folder && summary_get_msgnum(summaryview, summaryview->displayed) == msginfo->msgnum)
 				summary_redisplay_msg(summaryview);
-					
+
 		}
-		if (modified_something && last_item && 
-		    summaryview && summaryview->folder_item == last_item) {
-			summary_show (summaryview, summaryview->folder_item, FALSE);
+		if (modified_something && last_item && summaryview && summaryview->folder_item == last_item) {
+			summary_show(summaryview, summaryview->folder_item, FALSE);
 		}
-		g_slist_free (child_info->msginfo_list);
+		g_slist_free(child_info->msginfo_list);
 		child_info->msginfo_list = NULL;
 	}
 
@@ -1495,7 +1333,7 @@ static void catch_status(GPid pid, gint status, gpointer data)
 
 	wait_for_children(child_info->children);
 }
-	
+
 static void catch_input(gpointer data, gint source, GIOCondition cond)
 {
 	Children *children = (Children *)data;
@@ -1514,10 +1352,8 @@ static void catch_input(gpointer data, gint source, GIOCondition cond)
 	g_source_remove(child_info->tag_in);
 	child_info->tag_in = -1;
 
-	input = gtk_editable_get_chars(GTK_EDITABLE(children->input_entry),
-				       0, -1);
-	ret_str = g_locale_from_utf8(input, strlen(input), &by_read,
-				     &by_written, NULL);
+	input = gtk_editable_get_chars(GTK_EDITABLE(children->input_entry), 0, -1);
+	ret_str = g_locale_from_utf8(input, strlen(input), &by_read, &by_written, NULL);
 	if (ret_str) {
 		if (by_written) {
 			g_free(input);
@@ -1555,11 +1391,9 @@ static void catch_output(gpointer data, gint source, GIOCondition cond)
 	gchar buf[BUFFSIZE];
 
 	debug_print("Catching grand child's output.\n");
-	if (child_info->children->action_type &
-	    (ACTION_PIPE_OUT | ACTION_INSERT)
+	if (child_info->children->action_type & (ACTION_PIPE_OUT | ACTION_INSERT)
 	    && source == child_info->chld_out) {
-		GtkTextView *text =
-			GTK_TEXT_VIEW(child_info->children->msg_text);
+		GtkTextView *text = GTK_TEXT_VIEW(child_info->children->msg_text);
 		GtkTextBuffer *textbuf = gtk_text_view_get_buffer(text);
 		GtkTextIter iter;
 		GtkTextMark *mark;
@@ -1578,8 +1412,7 @@ static void catch_output(gpointer data, gint source, GIOCondition cond)
 				break;
 
 			buf[c] = 0;
-			ret_str = g_locale_to_utf8
-				(buf, c, &bytes_read, &bytes_written, NULL);
+			ret_str = g_locale_to_utf8(buf, c, &bytes_read, &bytes_written, NULL);
 			if (ret_str && bytes_written > 0)
 				gtk_text_buffer_insert(textbuf, &iter, ret_str, -1);
 			else
@@ -1591,8 +1424,7 @@ static void catch_output(gpointer data, gint source, GIOCondition cond)
 		if (child_info->children->is_selection) {
 			GtkTextIter ins;
 
-			gtk_text_buffer_get_iter_at_offset
-				(textbuf, &ins, ins_pos);
+			gtk_text_buffer_get_iter_at_offset(textbuf, &ins, ins_pos);
 			gtk_text_buffer_select_range(textbuf, &ins, &iter);
 		}
 	} else {
@@ -1602,13 +1434,10 @@ static void catch_output(gpointer data, gint source, GIOCondition cond)
 			gchar *ret_str;
 
 			buf[c] = 0;
-			ret_str = g_locale_to_utf8
-				(buf, c, &bytes_read, &bytes_written, NULL);
+			ret_str = g_locale_to_utf8(buf, c, &bytes_read, &bytes_written, NULL);
 			if (ret_str) {
 				if (bytes_written) {
-					g_string_append_len
-						(child_info->output, ret_str,
-						bytes_written);
+					g_string_append_len(child_info->output, ret_str, bytes_written);
 				}
 				g_free(ret_str);
 			} else
@@ -1630,7 +1459,7 @@ static void catch_output(gpointer data, gint source, GIOCondition cond)
 			child_info->chld_err = -1;
 		}
 	}
-	
+
 	wait_for_children(child_info->children);
 }
 
@@ -1641,22 +1470,12 @@ static gchar *get_user_string(const gchar *action, ActionType type)
 
 	switch (type) {
 	case ACTION_USER_HIDDEN_STR:
-		message = g_strdup_printf
-			(_("Enter the argument for the following action:\n"
-			   "('%%h' will be replaced with the argument)\n"
-			   "  %s"),
-			 action);
-		user_str = input_dialog_with_invisible
-			(_("Action's hidden user argument"), message, NULL);
+		message = g_strdup_printf(_("Enter the argument for the following action:\n" "('%%h' will be replaced with the argument)\n" "  %s"), action);
+		user_str = input_dialog_with_invisible(_("Action's hidden user argument"), message, NULL);
 		break;
 	case ACTION_USER_STR:
-		message = g_strdup_printf
-			(_("Enter the argument for the following action:\n"
-			   "('%%u' will be replaced with the argument)\n"
-			   "  %s"),
-			 action);
-		user_str = input_dialog
-			(_("Action's user argument"), message, NULL);
+		message = g_strdup_printf(_("Enter the argument for the following action:\n" "('%%u' will be replaced with the argument)\n" "  %s"), action);
+		user_str = input_dialog(_("Action's user argument"), message, NULL);
 		break;
 	default:
 		g_warning("unsupported action type %d", type);
@@ -1664,3 +1483,7 @@ static gchar *get_user_string(const gchar *action, ActionType type)
 
 	return user_str;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

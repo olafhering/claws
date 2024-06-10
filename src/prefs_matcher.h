@@ -22,9 +22,8 @@
 
 #include "matcher.h"
 
-typedef void PrefsMatcherSignal	(MatcherList *matchers);
+typedef void PrefsMatcherSignal(MatcherList *matchers);
 
-void prefs_matcher_open		(MatcherList *matchers,
-				 PrefsMatcherSignal *cb);
+void prefs_matcher_open(MatcherList *matchers, PrefsMatcherSignal * cb);
 
 #endif /* __PREFS_FILTER_H__ */

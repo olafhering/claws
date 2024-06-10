@@ -23,8 +23,8 @@
 #endif
 
 #ifdef PASSWORD_CRYPTO_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/crypto.h>
+#include <gnutls/gnutls.h>
+#include <gnutls/crypto.h>
 #endif
 
 #include <glib.h>
@@ -45,8 +45,7 @@ static GSList *_password_store;
  * and returns a pointer to it, if it exists.
  * If link parameter is non-null, it is set to the linked list
  * element containing this block. */
-static PasswordBlock *_get_block(PasswordBlockType block_type,
-		const gchar *block_name, GSList **link)
+static PasswordBlock *_get_block(PasswordBlockType block_type, const gchar *block_name, GSList **link)
 {
 	GSList *item;
 	PasswordBlock *block;
@@ -56,8 +55,7 @@ static PasswordBlock *_get_block(PasswordBlockType block_type,
 
 	for (item = _password_store; item != NULL; item = item->next) {
 		block = (PasswordBlock *)item->data;
-		if (block->block_type == block_type &&
-				!strcmp(block->block_name, block_name)) {
+		if (block->block_type == block_type && !strcmp(block->block_name, block_name)) {
 			if (link != NULL)
 				*link = item;
 			return block;
@@ -75,8 +73,7 @@ static gboolean _hash_equal_func(gconstpointer a, gconstpointer b)
 }
 
 /* Creates a new, empty block and adds it to the pwdstore. */
-static PasswordBlock *_new_block(PasswordBlockType block_type,
-		const gchar *block_name)
+static PasswordBlock *_new_block(PasswordBlockType block_type, const gchar *block_name)
 {
 	PasswordBlock *block;
 
@@ -85,8 +82,7 @@ static PasswordBlock *_new_block(PasswordBlockType block_type,
 
 	/* First check to see if the block doesn't already exist. */
 	if (_get_block(block_type, block_name, NULL)) {
-		debug_print("Block (%d/%s) already exists.\n",
-				block_type, block_name);
+		debug_print("Block (%d/%s) already exists.\n", block_type, block_name);
 		return NULL;
 	}
 
@@ -94,11 +90,8 @@ static PasswordBlock *_new_block(PasswordBlockType block_type,
 	block = g_new0(PasswordBlock, 1);
 	block->block_type = block_type;
 	block->block_name = g_strdup(block_name);
-	block->entries = g_hash_table_new_full(g_str_hash,
-			(GEqualFunc)_hash_equal_func,
-			g_free, g_free);
-	debug_print("Created password block (%d/%s)\n",
-			block_type, block_name);
+	block->entries = g_hash_table_new_full(g_str_hash, (GEqualFunc) _hash_equal_func, g_free, g_free);
+	debug_print("Created password block (%d/%s)\n", block_type, block_name);
 
 	_password_store = g_slist_append(_password_store, block);
 
@@ -121,11 +114,7 @@ static void _delete_block(PasswordBlock *block)
 /*************************************************************/
 
 /* Stores a password. */
-gboolean passwd_store_set(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id,
-		const gchar *password,
-		gboolean encrypted)
+gboolean passwd_store_set(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id, const gchar *password, gboolean encrypted)
 {
 	const gchar *p;
 	PasswordBlock *block;
@@ -149,8 +138,7 @@ gboolean passwd_store_set(PasswordBlockType block_type,
 			return TRUE;
 
 		if ((block = _new_block(block_type, block_name)) == NULL) {
-			debug_print("Could not create password block (%d/%s)\n",
-					block_type, block_name);
+			debug_print("Could not create password block (%d/%s)\n", block_type, block_name);
 			return FALSE;
 		}
 	}
@@ -159,20 +147,15 @@ gboolean passwd_store_set(PasswordBlockType block_type,
 		/* NULL password was passed to us, so delete the entry with
 		 * corresponding id, if it exists */
 		if (g_hash_table_lookup(block->entries, password_id) != NULL) {
-			debug_print("Deleting password for '%s' in block (%d/%s)\n",
-					password_id, block_type, block_name);
+			debug_print("Deleting password for '%s' in block (%d/%s)\n", password_id, block_type, block_name);
 			g_hash_table_remove(block->entries, password_id);
 		}
 	} else {
-		debug_print("Setting password for '%s' in block (%d/%s)%s\n",
-				password_id, block_type, block_name,
-				(encrypted ? ", already encrypted" : ""));
+		debug_print("Setting password for '%s' in block (%d/%s)%s\n", password_id, block_type, block_name, (encrypted ? ", already encrypted" : ""));
 		if (!encrypted) {
 			/* encrypt password before saving it */
-			if ((encrypted_password =
-						password_encrypt(p, NULL)) == NULL) {
-				debug_print("Could not encrypt password '%s' for block (%d/%s).\n",
-						password_id, block_type, block_name);
+			if ((encrypted_password = password_encrypt(p, NULL)) == NULL) {
+				debug_print("Could not encrypt password '%s' for block (%d/%s).\n", password_id, block_type, block_name);
 				return FALSE;
 			}
 		} else {
@@ -181,18 +164,14 @@ gboolean passwd_store_set(PasswordBlockType block_type,
 		}
 
 		/* add encrypted password to the block */
-		g_hash_table_insert(block->entries,
-				g_strdup(password_id),
-				encrypted_password);
+		g_hash_table_insert(block->entries, g_strdup(password_id), encrypted_password);
 	}
 
 	return TRUE;
 }
 
 /* Retrieves a password. */
-gchar *passwd_store_get(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id)
+gchar *passwd_store_get(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id)
 {
 	PasswordBlock *block;
 	gchar *encrypted_password, *password;
@@ -201,8 +180,7 @@ gchar *passwd_store_get(PasswordBlockType block_type,
 	g_return_val_if_fail(block_name != NULL, NULL);
 	g_return_val_if_fail(password_id != NULL, NULL);
 
-	debug_print("Getting password '%s' from block (%d/%s)\n",
-			password_id, block_type, block_name);
+	debug_print("Getting password '%s' from block (%d/%s)\n", password_id, block_type, block_name);
 
 	/* find correct block */
 	if ((block = _get_block(block_type, block_name, NULL)) == NULL) {
@@ -211,18 +189,14 @@ gchar *passwd_store_get(PasswordBlockType block_type,
 	}
 
 	/* grab pointer to encrypted password */
-	if ((encrypted_password =
-				g_hash_table_lookup(block->entries, password_id)) == NULL) {
-		debug_print("Password '%s' in block (%d/%s) not found.\n",
-				password_id, block_type, block_name);
+	if ((encrypted_password = g_hash_table_lookup(block->entries, password_id)) == NULL) {
+		debug_print("Password '%s' in block (%d/%s) not found.\n", password_id, block_type, block_name);
 		return NULL;
 	}
 
 	/* decrypt password */
-	if ((password =
-				password_decrypt(encrypted_password, NULL)) == NULL) {
-		debug_print("Could not decrypt password '%s' for block (%d/%s).\n",
-				password_id, block_type, block_name);
+	if ((password = password_decrypt(encrypted_password, NULL)) == NULL) {
+		debug_print("Could not decrypt password '%s' for block (%d/%s).\n", password_id, block_type, block_name);
 		return NULL;
 	}
 
@@ -232,9 +206,7 @@ gchar *passwd_store_get(PasswordBlockType block_type,
 
 /* Checks if a password exists in the password store.
  * No decryption happens. */
-gboolean passwd_store_has_password(PasswordBlockType block_type,
-		const gchar *block_name,
-		const gchar *password_id)
+gboolean passwd_store_has_password(PasswordBlockType block_type, const gchar *block_name, const gchar *password_id)
 {
 	PasswordBlock *block;
 
@@ -256,9 +228,7 @@ gboolean passwd_store_has_password(PasswordBlockType block_type,
 	return FALSE; /* no */
 }
 
-
-gboolean passwd_store_delete_block(PasswordBlockType block_type,
-		const gchar *block_name)
+gboolean passwd_store_delete_block(PasswordBlockType block_type, const gchar *block_name)
 {
 	PasswordBlock *block;
 	GSList *link = NULL;
@@ -280,20 +250,16 @@ gboolean passwd_store_delete_block(PasswordBlockType block_type,
 	return TRUE;
 }
 
-gboolean passwd_store_set_account(gint account_id,
-		const gchar *password_id,
-		const gchar *password,
-		gboolean encrypted)
+gboolean passwd_store_set_account(gint account_id, const gchar *password_id, const gchar *password, gboolean encrypted)
 {
 	gchar *uid = g_strdup_printf("%d", account_id);
 	gboolean ret = passwd_store_set(PWS_ACCOUNT, uid,
-			password_id, password, encrypted);
+					password_id, password, encrypted);
 	g_free(uid);
 	return ret;
 }
 
-gchar *passwd_store_get_account(gint account_id,
-		const gchar *password_id)
+gchar *passwd_store_get_account(gint account_id, const gchar *password_id)
 {
 	gchar *uid = g_strdup_printf("%d", account_id);
 	gchar *ret = passwd_store_get(PWS_ACCOUNT, uid, password_id);
@@ -301,8 +267,7 @@ gchar *passwd_store_get_account(gint account_id,
 	return ret;
 }
 
-gboolean passwd_store_has_password_account(gint account_id,
-		const gchar *password_id)
+gboolean passwd_store_has_password_account(gint account_id, const gchar *password_id)
 {
 	gchar *uid = g_strdup_printf("%d", account_id);
 	gboolean ret = passwd_store_has_password(PWS_ACCOUNT, uid, password_id);
@@ -311,8 +276,7 @@ gboolean passwd_store_has_password_account(gint account_id,
 }
 
 /* Reencrypts all stored passwords. */
-void passwd_store_reencrypt_all(const gchar *old_mpwd,
-		const gchar *new_mpwd)
+void passwd_store_reencrypt_all(const gchar *old_mpwd, const gchar *new_mpwd)
 {
 	PasswordBlock *block;
 	GSList *item;
@@ -327,8 +291,7 @@ void passwd_store_reencrypt_all(const gchar *old_mpwd,
 		if (block == NULL)
 			continue; /* Just in case. */
 
-		debug_print("Reencrypting passwords in block (%d/%s).\n",
-				block->block_type, block->block_name);
+		debug_print("Reencrypting passwords in block (%d/%s).\n", block->block_type, block->block_name);
 
 		if (block->entries == NULL || g_hash_table_size(block->entries) == 0)
 			continue;
@@ -336,12 +299,10 @@ void passwd_store_reencrypt_all(const gchar *old_mpwd,
 		keys = g_hash_table_get_keys(block->entries);
 		for (eitem = keys; eitem != NULL; eitem = eitem->next) {
 			key = (gchar *)eitem->data;
-			if ((encrypted_password =
-						g_hash_table_lookup(block->entries, key)) == NULL)
+			if ((encrypted_password = g_hash_table_lookup(block->entries, key)) == NULL)
 				continue;
 
-			if ((decrypted_password =
-						password_decrypt(encrypted_password, old_mpwd)) == NULL) {
+			if ((decrypted_password = password_decrypt(encrypted_password, old_mpwd)) == NULL) {
 				debug_print("Reencrypt: couldn't decrypt password for '%s'.\n", key);
 				continue;
 			}
@@ -387,7 +348,7 @@ static gint _write_to_file(FILE *fp)
 
 	/* Write out each password store block */
 	for (item = _password_store; item != NULL; item = item->next) {
-		block = (PasswordBlock*)item->data;
+		block = (PasswordBlock *)item->data;
 		if (block == NULL)
 			continue; /* Just in case. */
 
@@ -448,8 +409,7 @@ void passwd_store_write_config(void)
 
 	debug_print("Writing password store...\n");
 
-	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			PASSWORD_STORE_RC, NULL);
+	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PASSWORD_STORE_RC, NULL);
 
 	if ((pfile = prefs_write_open(rcpath)) == NULL) {
 		g_warning("failed to open password store file for writing");
@@ -479,8 +439,7 @@ int passwd_store_read_config(void)
 
 	/* TODO: passwd_store_clear(); */
 
-	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			PASSWORD_STORE_RC, NULL);
+	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PASSWORD_STORE_RC, NULL);
 
 	debug_print("Reading password store from file '%s'\n", rcpath);
 
@@ -506,10 +465,7 @@ int passwd_store_read_config(void)
 		if (*lines[i] == '[') {
 			/* Beginning of a new block */
 			line = g_strsplit_set(lines[i], "[:]", -1);
-			if (line[0] != NULL && strlen(line[0]) == 0
-					&& line[1] != NULL && strlen(line[1]) > 0
-					&& line[2] != NULL && strlen(line[2]) > 0
-					&& line[3] != NULL && strlen(line[3]) == 0) {
+			if (line[0] != NULL && strlen(line[0]) == 0 && line[1] != NULL && strlen(line[1]) > 0 && line[2] != NULL && strlen(line[2]) > 0 && line[3] != NULL && strlen(line[3]) == 0) {
 				typestr = line[1];
 				name = line[2];
 				if (!strcmp(typestr, "core")) {
@@ -524,25 +480,26 @@ int passwd_store_read_config(void)
 				} else {
 					debug_print("Unknown password block type: '%s'\n", typestr);
 					g_strfreev(line);
-					i++; continue;
+					i++;
+					continue;
 				}
 
 				if (reading_config_version) {
 					if (config_version < 0) {
-						debug_print("config_version:%d looks invalid, ignoring it\n",
-								config_version);
+						debug_print("config_version:%d looks invalid, ignoring it\n", config_version);
 						config_version = -1; /* set to default value if missing */
 						g_strfreev(line);
-						i++; continue;
+						i++;
+						continue;
 					}
 					debug_print("config_version in file is %d\n", config_version);
 					reading_config_version = FALSE;
 				} else {
 					if ((block = _new_block(type, name)) == NULL) {
-						debug_print("Duplicate password block, ignoring: (%d/%s)\n",
-								type, name);
+						debug_print("Duplicate password block, ignoring: (%d/%s)\n", type, name);
 						g_strfreev(line);
-						i++; continue;
+						i++;
+						continue;
 					}
 				}
 			}
@@ -551,12 +508,9 @@ int passwd_store_read_config(void)
 			/* If we have started a password block, test for a
 			 * "password_id = password" line. */
 			line = g_strsplit(lines[i], " ", -1);
-			if (line[0] != NULL && strlen(line[0]) > 0
-					&& line[1] != NULL && strlen(line[1]) > 0
-					&& line[2] == NULL) {
+			if (line[0] != NULL && strlen(line[0]) > 0 && line[1] != NULL && strlen(line[1]) > 0 && line[2] == NULL) {
 				debug_print("Adding password '%s'\n", line[0]);
-				g_hash_table_insert(block->entries,
-						g_strdup(line[0]), g_strdup(line[1]));
+				g_hash_table_insert(block->entries, g_strdup(line[0]), g_strdup(line[1]));
 			}
 			g_strfreev(line);
 		}
@@ -571,3 +525,7 @@ int passwd_store_read_config(void)
 
 	return g_slist_length(_password_store);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

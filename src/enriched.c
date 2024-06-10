@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -33,33 +33,29 @@
 
 #define ERTFBUFSIZE	8192
 
+static ERTFState ertf_read_line(ERTFParser *parser);
+static void ertf_append_char(ERTFParser *parser, gchar ch);
 
-static ERTFState ertf_read_line		(ERTFParser	*parser);
-static void ertf_append_char		(ERTFParser	*parser,
-					 gchar		 ch);
-
-static ERTFState ertf_parse_tag		(ERTFParser	*parser);
-static void ertf_get_parenthesis	(ERTFParser	*parser, 
-					 gchar		*buf, 
-					 gint 		 len);
+static ERTFState ertf_parse_tag(ERTFParser *parser);
+static void ertf_get_parenthesis(ERTFParser *parser, gchar *buf, gint len);
 
 ERTFParser *ertf_parser_new(FILE *fp, CodeConverter *conv)
 {
 	ERTFParser *parser;
 
-	cm_return_val_if_fail(fp   != NULL, NULL);
+	cm_return_val_if_fail(fp != NULL, NULL);
 	cm_return_val_if_fail(conv != NULL, NULL);
 
-	parser             = g_new0(ERTFParser, 1);
-	parser->fp         = fp;
-	parser->conv       = conv;
-	parser->str        = g_string_new(NULL);
-	parser->buf        = g_string_new(NULL);
-	parser->bufp       = parser->buf->str;
-	parser->newline    = TRUE;
+	parser = g_new0(ERTFParser, 1);
+	parser->fp = fp;
+	parser->conv = conv;
+	parser->str = g_string_new(NULL);
+	parser->buf = g_string_new(NULL);
+	parser->bufp = parser->buf->str;
+	parser->newline = TRUE;
 	parser->empty_line = TRUE;
-	parser->space      = FALSE;
-	parser->pre        = FALSE;
+	parser->space = FALSE;
+	parser->pre = FALSE;
 
 	return parser;
 }
@@ -82,39 +78,38 @@ gchar *ertf_parse(ERTFParser *parser)
 		if (ertf_read_line(parser) == ERTF_EOF)
 			return NULL;
 	}
-	
+
 	while (*parser->bufp != '\0') {
 		switch (*parser->bufp) {
-			case '<':
-				if (parser->bufp[1]=='<') {
-					ertf_append_char(parser,'<');
-					parser->bufp+=2;
-				}
-				else if (parser->str->len == 0)
-					ertf_parse_tag(parser);
-				else
-					return parser->str->str;
-				break;
-			case '\n':
-			case '\r':	
-				if (parser->bufp[0] == '\r' && parser->bufp[1] == '\n') 
-						parser->bufp++;
+		case '<':
+			if (parser->bufp[1] == '<') {
+				ertf_append_char(parser, '<');
+				parser->bufp += 2;
+			} else if (parser->str->len == 0)
+				ertf_parse_tag(parser);
+			else
+				return parser->str->str;
+			break;
+		case '\n':
+		case '\r':
+			if (parser->bufp[0] == '\r' && parser->bufp[1] == '\n')
+				parser->bufp++;
 
-				if (!parser->pre) {
-					/* When not pre (not <nofill>), 1 CRLF = SPACE, N>1 CRLF = N-1 CRLF*/
-					if (!parser->newline) {
-						parser->newline = TRUE;
-						parser->space = TRUE;
+			if (!parser->pre) {
+				/* When not pre (not <nofill>), 1 CRLF = SPACE, N>1 CRLF = N-1 CRLF */
+				if (!parser->newline) {
+					parser->newline = TRUE;
+					parser->space = TRUE;
 					parser->bufp++;
 					break;
-					}
-
 				}
-			default:
-				ertf_append_char(parser, *parser->bufp++);
+
+			}
+		default:
+			ertf_append_char(parser, *parser->bufp++);
 		}
 	}
-	
+
 	return parser->str->str;
 }
 
@@ -177,33 +172,33 @@ static ERTFState ertf_parse_tag(ERTFParser *parser)
 	gchar buf[ERTFBUFSIZE];
 	gchar *p;
 	gchar *down;
-	
-	ertf_get_parenthesis (parser, buf, sizeof(buf));
-	
+
+	ertf_get_parenthesis(parser, buf, sizeof(buf));
+
 	for (p = buf; *p != '\0'; p++) {
-		if (isspace (*(guchar *)p)) {
+		if (isspace(*(guchar *)p)) {
 			*p = '\0';
 			break;
 		}
 	}
 
 	parser->state = ERTF_UNKNOWN;
-	if (buf[0] == '\0') return parser->state;
+	if (buf[0] == '\0')
+		return parser->state;
 
-	down = g_utf8_strdown (buf, -1);
+	down = g_utf8_strdown(buf, -1);
 
 	if (!strcmp(down, "nofill")) {
-		parser->pre   = TRUE;
+		parser->pre = TRUE;
 		parser->state = ERTF_NOFILL;
-	}
-	else if (!strcmp(down, "/nofill")) {
-		parser->pre   = FALSE;
+	} else if (!strcmp(down, "/nofill")) {
+		parser->pre = FALSE;
 		parser->state = ERTF_NORMAL;
 	}
 	g_free(down);
 	return parser->state;
 }
-		
+
 static void ertf_get_parenthesis(ERTFParser *parser, gchar *buf, gint len)
 {
 	gchar *p;
@@ -215,15 +210,20 @@ static void ertf_get_parenthesis(ERTFParser *parser, gchar *buf, gint len)
 	if (!g_ascii_strncasecmp(parser->bufp, "<param>", 4)) {
 		parser->bufp += 7;
 		while ((p = strstr(parser->bufp, "</param>")) == NULL)
-			if (ertf_read_line(parser) == ERTF_EOF) return;
+			if (ertf_read_line(parser) == ERTF_EOF)
+				return;
 		parser->bufp = p + 8;
 		return;
 	}
 	parser->bufp++;
 	while ((p = strchr(parser->bufp, '>')) == NULL)
-		if (ertf_read_line(parser) == ERTF_EOF) return;
+		if (ertf_read_line(parser) == ERTF_EOF)
+			return;
 
 	strncpy2(buf, parser->bufp, MIN(p - parser->bufp + 1, len));
 	parser->bufp = p + 1;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

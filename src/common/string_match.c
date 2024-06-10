@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -35,11 +35,11 @@
 #include "string_match.h"
 #include "utils.h"
 
-gchar *string_remove_match(gchar *buf, gint buflen, gchar * txt, regex_t *preg)
+gchar *string_remove_match(gchar *buf, gint buflen, gchar *txt, regex_t *preg)
 {
 	regmatch_t match;
 	int notfound;
-	gint i, j ,k;
+	gint i, j, k;
 
 	if (!preg)
 		return txt;
@@ -47,16 +47,16 @@ gchar *string_remove_match(gchar *buf, gint buflen, gchar * txt, regex_t *preg)
 		i = 0;
 		j = 0;
 		do {
-			notfound = regexec(preg, txt+j, 1, &match, (j ? REG_NOTBOL : 0));
+			notfound = regexec(preg, txt + j, 1, &match, (j ? REG_NOTBOL : 0));
 			if (notfound) {
-				while (txt[j] && i < buflen -1)
+				while (txt[j] && i < buflen - 1)
 					buf[i++] = txt[j++];
 			} else {
-				if ( match.rm_so == match.rm_eo)
+				if (match.rm_so == match.rm_eo)
 					buf[i++] = txt[j++];
 				else {
 					k = j;
-					while (txt[j] &&  j != k + match.rm_so)	
+					while (txt[j] && j != k + match.rm_so)
 						buf[i++] = txt[j++];
 					if (txt[j])
 						j = k + match.rm_eo;
@@ -65,12 +65,14 @@ gchar *string_remove_match(gchar *buf, gint buflen, gchar * txt, regex_t *preg)
 		} while (txt[j] && i < buflen - 1);
 		buf[i] = 0x00;
 		if (buf[0] == 0x00) {
-			strncpy(buf, _("(Subject cleared by RegExp)"),
-					buflen - 1);
+			strncpy(buf, _("(Subject cleared by RegExp)"), buflen - 1);
 			buf[buflen - 1] = 0x00;
 		}
-		return buf;		
+		return buf;
 	}
 	return txt;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

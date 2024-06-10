@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -33,7 +33,7 @@
 #endif
 
 #if HAVE_LOCALE_H
-#  include <locale.h>
+#include <locale.h>
 #endif
 
 #include "claws.h"
@@ -100,13 +100,13 @@ gboolean claws_init(int *argc, char ***argv)
 	parse_parameter(argc, argv);
 
 	debug_print("Starting Claws Mail version %s\n", VERSION);
-	
+
 	setlocale(LC_ALL, "");
 #ifdef ENABLE_NLS
-	bindtextdomain(PACKAGE, get_locale_dir () );
-	bind_textdomain_codeset (PACKAGE, "UTF-8");
+	bindtextdomain(PACKAGE, get_locale_dir());
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
-#endif /*ENABLE_NLS*/
+#endif /*ENABLE_NLS */
 	putenv("G_BROKEN_FILENAMES=1");
 	putenv("LIBOVERLAY_SCROLLBAR=0");
 
@@ -118,7 +118,7 @@ gboolean claws_init(int *argc, char ***argv)
 		}
 	}
 
-	srand((gint) time(NULL));
+	srand((gint)time(NULL));
 
 	claws_initialized = TRUE;
 
@@ -143,7 +143,7 @@ guint claws_get_version(void)
 	return VERSION_NUMERIC;
 }
 
-void claws_register_idle_function	(void (*idle_func)(void))
+void claws_register_idle_function(void (*idle_func)(void))
 {
 	claws_idle_function = idle_func;
 }
@@ -153,3 +153,7 @@ void claws_do_idle(void)
 	if (claws_idle_function != NULL)
 		claws_idle_function();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

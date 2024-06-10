@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -36,9 +36,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef G_OS_UNIX
-#  include <signal.h>
-#  include <errno.h>
-#  include <fcntl.h>
+#include <signal.h>
+#include <errno.h>
+#include <fcntl.h>
 #endif
 #ifdef HAVE_LIBSM
 #include <X11/SM/SMlib.h>
@@ -51,9 +51,9 @@
 #include "file_checker.h"
 #include "wizard.h"
 #ifdef HAVE_STARTUP_NOTIFICATION
-# define SN_API_NOT_YET_FROZEN
-# include <libsn/sn-launchee.h>
-# include <gdk/gdkx.h>
+#define SN_API_NOT_YET_FROZEN
+#include <libsn/sn-launchee.h>
+#include <gdk/gdkx.h>
 #endif
 
 #ifdef HAVE_DBUS_GLIB
@@ -107,9 +107,9 @@
 #include "alertpanel.h"
 #include "statusbar.h"
 #ifndef USE_ALT_ADDRBOOK
-	#include "addressbook.h"
+#include "addressbook.h"
 #else
-	#include "addressbook-dbus.h"
+#include "addressbook-dbus.h"
 #endif
 #include "compose.h"
 #include "folder.h"
@@ -140,7 +140,7 @@
 #endif
 #include "stock_pixmap.h"
 #ifdef USE_GNUTLS
-#  include "ssl.h"
+#include "ssl.h"
 #endif
 
 #include "version.h"
@@ -169,10 +169,9 @@ static gint lock_socket_tag = 0;
 #ifdef G_OS_UNIX
 static gchar *x_display = NULL;
 #endif
-typedef enum 
-{
+typedef enum {
 	ONLINE_MODE_DONT_CHANGE,
- 	ONLINE_MODE_ONLINE,
+	ONLINE_MODE_ONLINE,
 	ONLINE_MODE_OFFLINE
 } OnlineMode;
 
@@ -198,7 +197,7 @@ static struct RemoteCmd {
 	gboolean send;
 	gboolean crash;
 	int online_mode;
-	gchar   *crash_params;
+	gchar *crash_params;
 	gboolean exit;
 	gboolean subscribe;
 	const gchar *subscribe_uri;
@@ -211,30 +210,26 @@ static struct RemoteCmd {
 SessionStats session_stats;
 
 static void reset_statistics(void);
-		
+
 static void parse_cmd_opt(int argc, char *argv[]);
 
-static gint prohibit_duplicate_launch	(void);
-static gchar * get_crashfile_name	(void);
-static gint lock_socket_remove		(void);
-static void lock_socket_input_cb	(gpointer	   data,
-					 gint		   source,
-					 GIOCondition      condition);
+static gint prohibit_duplicate_launch(void);
+static gchar *get_crashfile_name(void);
+static gint lock_socket_remove(void);
+static void lock_socket_input_cb(gpointer data, gint source, GIOCondition condition);
 
-static void open_compose_new		(const gchar	*address,
-					 GList		*attach_files);
+static void open_compose_new(const gchar *address, GList *attach_files);
 
-static void send_queue			(void);
-static void initial_processing		(FolderItem *item, gpointer data);
+static void send_queue(void);
+static void initial_processing(FolderItem *item, gpointer data);
 #ifndef G_OS_WIN32
-static void quit_signal_handler         (int sig);
+static void quit_signal_handler(int sig);
 #endif
-static void install_basic_sighandlers   (void);
-static void exit_claws			(MainWindow *mainwin);
+static void install_basic_sighandlers(void);
+static void exit_claws(MainWindow *mainwin);
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
-																					 gpointer data);
+static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev, gpointer data);
 #endif
 
 #define MAKE_DIR_IF_NOT_EXIST(dir) \
@@ -288,13 +283,10 @@ static void startup_notification_complete(gboolean with_window)
 	}
 
 	xdisplay = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
-	sn_display = sn_display_new(xdisplay,
-				sn_error_trap_push,
-				sn_error_trap_pop);
-	sn_context = sn_launchee_context_new_from_environment(sn_display,
-						 DefaultScreen(xdisplay));
+	sn_display = sn_display_new(xdisplay, sn_error_trap_push, sn_error_trap_pop);
+	sn_context = sn_launchee_context_new_from_environment(sn_display, DefaultScreen(xdisplay));
 
-	if (sn_context != NULL)	{
+	if (sn_context != NULL) {
 		sn_launchee_context_complete(sn_context);
 		sn_launchee_context_unref(sn_context);
 		sn_display_unref(sn_display);
@@ -305,9 +297,9 @@ static void startup_notification_complete(gboolean with_window)
 }
 #endif /* HAVE_STARTUP_NOTIFICATION */
 
-static void claws_gtk_idle(void) 
+static void claws_gtk_idle(void)
 {
-	while(gtk_events_pending()) {
+	while (gtk_events_pending()) {
 		gtk_main_iteration();
 	}
 	g_usleep(50000);
@@ -320,13 +312,10 @@ static gboolean defer_check_all(void *data)
 	gboolean autochk = GPOINTER_TO_INT(data);
 
 	if (!sc_starting) {
-		inc_all_account_mail(static_mainwindow, autochk, FALSE,
-			prefs_common.newmail_notify_manu);
+		inc_all_account_mail(static_mainwindow, autochk, FALSE, prefs_common.newmail_notify_manu);
 
 	} else {
-		inc_all_account_mail(static_mainwindow, FALSE,
-				prefs_common.chk_on_startup,
-				prefs_common.newmail_notify_manu);
+		inc_all_account_mail(static_mainwindow, FALSE, prefs_common.chk_on_startup, prefs_common.newmail_notify_manu);
 		sc_starting = FALSE;
 		main_window_set_menu_sensitive(static_mainwindow);
 		toolbar_main_set_sensitive(static_mainwindow);
@@ -354,7 +343,7 @@ static gboolean defer_jump(void *data)
 		defer_check_all(GINT_TO_POINTER(TRUE));
 	} else if (cmd.receive) {
 		defer_check(NULL);
-	} 
+	}
 	mainwindow_jump_to(data, FALSE);
 	if (sc_starting) {
 		sc_starting = FALSE;
@@ -366,22 +355,20 @@ static gboolean defer_jump(void *data)
 
 static void chk_update_val(GtkWidget *widget, gpointer data)
 {
-        gboolean *val = (gboolean *)data;
+	gboolean *val = (gboolean *)data;
 	*val = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
 }
 
 static gboolean migrate_old_config(const gchar *old_cfg_dir, const gchar *new_cfg_dir, const gchar *oldversion)
 {
-	gchar *message = g_strdup_printf(_("Configuration for %s found.\n"
-			 "Do you want to migrate this configuration?"), oldversion);
+	gchar *message = g_strdup_printf(_("Configuration for %s found.\n" "Do you want to migrate this configuration?"), oldversion);
 
 	if (!strcmp(oldversion, "Sylpheed")) {
-		gchar *message2 = g_strdup_printf(_("\n\nYour Sylpheed filtering rules can be converted by a\n"
-			     "script available at %s."), TOOLS_URI);
+		gchar *message2 = g_strdup_printf(_("\n\nYour Sylpheed filtering rules can be converted by a\n" "script available at %s."), TOOLS_URI);
 		gchar *tmp = g_strconcat(message, message2, NULL);
 		g_free(message2);
 		g_free(message);
-        message = tmp;
+		message = tmp;
 	}
 
 	gint r = 0;
@@ -389,34 +376,27 @@ static gboolean migrate_old_config(const gchar *old_cfg_dir, const gchar *new_cf
 	GtkWidget *keep_backup_chk;
 	gboolean backup = TRUE;
 
-	keep_backup_chk = gtk_check_button_new_with_label (_("Keep old configuration"));
+	keep_backup_chk = gtk_check_button_new_with_label(_("Keep old configuration"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keep_backup_chk), TRUE);
-	CLAWS_SET_TIP(keep_backup_chk,
-			     _("Keeping a backup will allow you to go back to an "
-			       "older version, but may take a while if you have "
-			       "cached IMAP or News data, and will take some extra "
-			       "room on your disk."));
+	CLAWS_SET_TIP(keep_backup_chk, _("Keeping a backup will allow you to go back to an " "older version, but may take a while if you have " "cached IMAP or News data, and will take some extra " "room on your disk."));
 
-	g_signal_connect(G_OBJECT(keep_backup_chk), "toggled", 
-			G_CALLBACK(chk_update_val), &backup);
+	g_signal_connect(G_OBJECT(keep_backup_chk), "toggled", G_CALLBACK(chk_update_val), &backup);
 
-	if (alertpanel_full(_("Migration of configuration"), message,
-		 	GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_SECOND, FALSE,
-			keep_backup_chk, ALERT_QUESTION) != G_ALERTALTERNATE) {
+	if (alertpanel_full(_("Migration of configuration"), message, GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_SECOND, FALSE, keep_backup_chk, ALERT_QUESTION) != G_ALERTALTERNATE) {
 		return FALSE;
 	}
-	
+
 	/* we can either do a fast migration requiring not any extra disk
 	 * space, or a slow one that copies the old configuration and leaves
 	 * it in place. */
 	if (backup) {
-backup_mode:
+ backup_mode:
 		window = label_window_create(_("Copying configuration... This may take a while..."));
 		GTK_EVENTS_FLUSH();
-		
+
 		r = copy_dir(old_cfg_dir, new_cfg_dir);
 		label_window_destroy(window);
-		
+
 		/* if copy failed, we'll remove the partially copied
 		 * new directory */
 		if (r != 0) {
@@ -431,10 +411,10 @@ backup_mode:
 	} else {
 		window = label_window_create(_("Migrating configuration..."));
 		GTK_EVENTS_FLUSH();
-		
+
 		r = g_rename(old_cfg_dir, new_cfg_dir);
 		label_window_destroy(window);
-		
+
 		/* if g_rename failed, we'll try to copy */
 		if (r != 0) {
 			FILE_OP_ERROR(new_cfg_dir, "g_rename");
@@ -460,12 +440,12 @@ static int migrate_common_rc(const gchar *old_rc, const gchar *new_rc)
 		claws_fclose(oldfp);
 		return -1;
 	}
-	
+
 	plugin_path = g_strdup(get_plugin_dir());
 	new_plugin_path = g_strdup(plugin_path);
-	
+
 	if (strstr(plugin_path, "/claws-mail/")) {
-		gchar *end = g_strdup(strstr(plugin_path, "/claws-mail/")+strlen("/claws-mail/"));
+		gchar *end = g_strdup(strstr(plugin_path, "/claws-mail/") + strlen("/claws-mail/"));
 		*(strstr(plugin_path, "/claws-mail/")) = '\0';
 		old_plugin_path = g_strconcat(plugin_path, "/sylpheed-claws/", end, NULL);
 		g_free(end);
@@ -478,9 +458,9 @@ static int migrate_common_rc(const gchar *old_rc, const gchar *new_rc)
 			err |= (claws_fputs(buf, newfp) == EOF);
 		} else {
 			debug_print("->replacing %s\n", buf);
-			debug_print("  with %s%s\n", new_plugin_path, buf+strlen(old_plugin_path));
+			debug_print("  with %s%s\n", new_plugin_path, buf + strlen(old_plugin_path));
 			err |= (claws_fputs(new_plugin_path, newfp) == EOF);
-			err |= (claws_fputs(buf+strlen(old_plugin_path), newfp) == EOF);
+			err |= (claws_fputs(buf + strlen(old_plugin_path), newfp) == EOF);
 		}
 	}
 	g_free(plugin_path);
@@ -489,17 +469,12 @@ static int migrate_common_rc(const gchar *old_rc, const gchar *new_rc)
 	claws_fclose(oldfp);
 	if (claws_safe_fclose(newfp) == EOF)
 		err = TRUE;
-	
-	return (err ? -1:0);
+
+	return (err ? -1 : 0);
 }
 
 #ifdef HAVE_LIBSM
-static void
-sc_client_set_value (MainWindow *mainwin,
-		  gchar       *name,
-		  char        *type,
-		  int          num_vals,
-		  SmPropValue *vals)
+static void sc_client_set_value(MainWindow *mainwin, gchar *name, char *type, int num_vals, SmPropValue *vals)
 {
 	SmProp *proplist[1];
 	SmProp prop;
@@ -509,12 +484,12 @@ sc_client_set_value (MainWindow *mainwin,
 	prop.num_vals = num_vals;
 	prop.vals = vals;
 
-	proplist[0]= &prop;
+	proplist[0] = &prop;
 	if (mainwin->smc_conn)
-		SmcSetProperties ((SmcConn) mainwin->smc_conn, 1, proplist);
+		SmcSetProperties((SmcConn) mainwin->smc_conn, 1, proplist);
 }
 
-static void sc_die_callback (SmcConn smc_conn, SmPointer client_data)
+static void sc_die_callback(SmcConn smc_conn, SmPointer client_data)
 {
 	clean_quit(NULL);
 }
@@ -523,126 +498,104 @@ static void sc_save_complete_callback(SmcConn smc_conn, SmPointer client_data)
 {
 }
 
-static void sc_shutdown_cancelled_callback (SmcConn smc_conn, SmPointer client_data)
+static void sc_shutdown_cancelled_callback(SmcConn smc_conn, SmPointer client_data)
 {
 	MainWindow *mainwin = (MainWindow *)client_data;
 	if (mainwin->smc_conn)
-		SmcSaveYourselfDone ((SmcConn) mainwin->smc_conn, TRUE);
+		SmcSaveYourselfDone((SmcConn) mainwin->smc_conn, TRUE);
 }
 
-static void sc_save_yourself_callback (SmcConn   smc_conn,
-			       SmPointer client_data,
-			       int       save_style,
-			       gboolean  shutdown,
-			       int       interact_style,
-			       gboolean  fast) {
+static void sc_save_yourself_callback(SmcConn smc_conn, SmPointer client_data, int save_style, gboolean shutdown, int interact_style, gboolean fast)
+{
 
 	MainWindow *mainwin = (MainWindow *)client_data;
 	if (mainwin->smc_conn)
-		SmcSaveYourselfDone ((SmcConn) mainwin->smc_conn, TRUE);
+		SmcSaveYourselfDone((SmcConn) mainwin->smc_conn, TRUE);
 }
 
 static IceIOErrorHandler sc_ice_installed_handler;
 
-static void sc_ice_io_error_handler (IceConn connection)
+static void sc_ice_io_error_handler(IceConn connection)
 {
 	if (sc_ice_installed_handler)
 		(*sc_ice_installed_handler) (connection);
 }
-static gboolean sc_process_ice_messages (GIOChannel   *source,
-					 GIOCondition  condition,
-					 gpointer      data)
+
+static gboolean sc_process_ice_messages(GIOChannel *source, GIOCondition condition, gpointer data)
 {
 	IceConn connection = (IceConn) data;
 	IceProcessMessagesStatus status;
 
-	status = IceProcessMessages (connection, NULL, NULL);
+	status = IceProcessMessages(connection, NULL, NULL);
 
 	if (status == IceProcessMessagesIOError) {
-		IcePointer context = IceGetConnectionContext (connection);
+		IcePointer context = IceGetConnectionContext(connection);
 
 		if (context && G_IS_OBJECT(context)) {
-		guint disconnect_id = g_signal_lookup ("disconnect", G_OBJECT_TYPE (context));
+			guint disconnect_id = g_signal_lookup("disconnect", G_OBJECT_TYPE(context));
 
-		if (disconnect_id > 0)
-			g_signal_emit (context, disconnect_id, 0);
+			if (disconnect_id > 0)
+				g_signal_emit(context, disconnect_id, 0);
 		} else {
-			IceSetShutdownNegotiation (connection, False);
-			IceCloseConnection (connection);
+			IceSetShutdownNegotiation(connection, False);
+			IceCloseConnection(connection);
 		}
 	}
 
 	return TRUE;
 }
 
-static void new_ice_connection (IceConn connection, IcePointer client_data, Bool opening,
-		    IcePointer *watch_data)
+static void new_ice_connection(IceConn connection, IcePointer client_data, Bool opening, IcePointer *watch_data)
 {
 	guint input_id;
 
 	if (opening) {
 		GIOChannel *channel;
 		/* Make sure we don't pass on these file descriptors to any
-		exec'ed children */
-		fcntl(IceConnectionNumber(connection),F_SETFD,
-		fcntl(IceConnectionNumber(connection),F_GETFD,0) | FD_CLOEXEC);
+		   exec'ed children */
+		fcntl(IceConnectionNumber(connection), F_SETFD, fcntl(IceConnectionNumber(connection), F_GETFD, 0) | FD_CLOEXEC);
 
-		channel = g_io_channel_unix_new (IceConnectionNumber (connection));
-		input_id = g_io_add_watch (channel,
-		G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI,
-		sc_process_ice_messages,
-		connection);
-		g_io_channel_unref (channel);
+		channel = g_io_channel_unix_new(IceConnectionNumber(connection));
+		input_id = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI, sc_process_ice_messages, connection);
+		g_io_channel_unref(channel);
 
-		*watch_data = (IcePointer) GUINT_TO_POINTER (input_id);
+		*watch_data = (IcePointer)GUINT_TO_POINTER(input_id);
 	} else {
-		input_id = GPOINTER_TO_UINT ((gpointer) *watch_data);
-		g_source_remove (input_id);
+		input_id = GPOINTER_TO_UINT((gpointer)*watch_data);
+		g_source_remove(input_id);
 	}
 }
 
 static void sc_session_manager_connect(MainWindow *mainwin)
 {
 	static gboolean connected = FALSE;
-	SmcCallbacks      callbacks;
-	gchar            *client_id;
+	SmcCallbacks callbacks;
+	gchar *client_id;
 	IceIOErrorHandler default_handler;
 
 	if (connected)
 		return;
 	connected = TRUE;
 
-
-	sc_ice_installed_handler = IceSetIOErrorHandler (NULL);
-	default_handler = IceSetIOErrorHandler (sc_ice_io_error_handler);
+	sc_ice_installed_handler = IceSetIOErrorHandler(NULL);
+	default_handler = IceSetIOErrorHandler(sc_ice_io_error_handler);
 
 	if (sc_ice_installed_handler == default_handler)
 		sc_ice_installed_handler = NULL;
 
-	IceAddConnectionWatch (new_ice_connection, NULL);
-      
-      
-      	callbacks.save_yourself.callback      = sc_save_yourself_callback;
-	callbacks.die.callback                = sc_die_callback;
-	callbacks.save_complete.callback      = sc_save_complete_callback;
+	IceAddConnectionWatch(new_ice_connection, NULL);
+
+	callbacks.save_yourself.callback = sc_save_yourself_callback;
+	callbacks.die.callback = sc_die_callback;
+	callbacks.save_complete.callback = sc_save_complete_callback;
 	callbacks.shutdown_cancelled.callback = sc_shutdown_cancelled_callback;
 
-	callbacks.save_yourself.client_data =
-		callbacks.die.client_data =
-		callbacks.save_complete.client_data =
-		callbacks.shutdown_cancelled.client_data = (SmPointer) mainwin;
-	if (g_getenv ("SESSION_MANAGER")) {
+	callbacks.save_yourself.client_data = callbacks.die.client_data = callbacks.save_complete.client_data = callbacks.shutdown_cancelled.client_data = (SmPointer) mainwin;
+	if (g_getenv("SESSION_MANAGER")) {
 		gchar error_string_ret[256] = "";
 
 		mainwin->smc_conn = (gpointer)
-			SmcOpenConnection (NULL, mainwin,
-				SmProtoMajor, SmProtoMinor,
-				SmcSaveYourselfProcMask | SmcDieProcMask |
-				SmcSaveCompleteProcMask |
-				SmcShutdownCancelledProcMask,
-				&callbacks,
-				NULL, &client_id,
-				256, error_string_ret);
+		    SmcOpenConnection(NULL, mainwin, SmProtoMajor, SmProtoMinor, SmcSaveYourselfProcMask | SmcDieProcMask | SmcSaveCompleteProcMask | SmcShutdownCancelledProcMask, &callbacks, NULL, &client_id, 256, error_string_ret);
 
 		/* From https://www.x.org/releases/X11R7.7/doc/libSM/SMlib.txt:
 		 * If SmcOpenConnection succeeds, it returns an opaque connection
@@ -655,20 +608,19 @@ static void sc_session_manager_connect(MainWindow *mainwin)
 			g_free(client_id);
 
 		if (error_string_ret[0] || mainwin->smc_conn == NULL)
-			g_warning("while connecting to session manager: %s",
-				error_string_ret);
+			g_warning("while connecting to session manager: %s", error_string_ret);
 		else {
 			SmPropValue *vals;
-			vals = g_new (SmPropValue, 1);
+			vals = g_new(SmPropValue, 1);
 			vals[0].length = strlen(argv0);
 			vals[0].value = argv0;
-			sc_client_set_value (mainwin, SmCloneCommand, SmLISTofARRAY8, 1, vals);
-			sc_client_set_value (mainwin, SmRestartCommand, SmLISTofARRAY8, 1, vals);
-			sc_client_set_value (mainwin, SmProgram, SmARRAY8, 1, vals);
+			sc_client_set_value(mainwin, SmCloneCommand, SmLISTofARRAY8, 1, vals);
+			sc_client_set_value(mainwin, SmRestartCommand, SmLISTofARRAY8, 1, vals);
+			sc_client_set_value(mainwin, SmProgram, SmARRAY8, 1, vals);
 
-			vals[0].length = strlen(g_get_user_name()?g_get_user_name():"");
-			vals[0].value = g_strdup(g_get_user_name()?g_get_user_name():"");
-			sc_client_set_value (mainwin, SmUserID, SmARRAY8, 1, vals);
+			vals[0].length = strlen(g_get_user_name()? g_get_user_name() : "");
+			vals[0].value = g_strdup(g_get_user_name()? g_get_user_name() : "");
+			sc_client_set_value(mainwin, SmUserID, SmARRAY8, 1, vals);
 
 			g_free(vals[0].value);
 			g_free(vals);
@@ -681,7 +633,8 @@ static gboolean sc_exiting = FALSE;
 static gboolean show_at_startup = TRUE;
 static gboolean claws_crashed_bool = FALSE;
 
-gboolean claws_crashed(void) {
+gboolean claws_crashed(void)
+{
 	return claws_crashed_bool;
 }
 
@@ -739,35 +692,34 @@ GLogWriterOutput win32_log_writer(GLogLevelFlags log_level, const GLogField *fie
 	return G_LOG_WRITER_HANDLED;
 }
 
-static void win32_log(const gchar *log_domain, GLogLevelFlags log_level, const gchar* message, gpointer user_data)
+static void win32_log(const gchar *log_domain, GLogLevelFlags log_level, const gchar *message, gpointer user_data)
 {
 	gchar *out;
 
 	if (win32_debug_log) {
-		const gchar* type;
+		const gchar *type;
 
-		switch(log_level & G_LOG_LEVEL_MASK)
-		{
-			case G_LOG_LEVEL_ERROR:
-				type="error";
-				break;
-			case G_LOG_LEVEL_CRITICAL:
-				type="critical";
-				break;
-			case G_LOG_LEVEL_WARNING:
-				type="warning";
-				break;
-			case G_LOG_LEVEL_MESSAGE:
-				type="message";
-				break;
-			case G_LOG_LEVEL_INFO:
-				type="info";
-				break;
-			case G_LOG_LEVEL_DEBUG:
-				type="debug";
-				break;
-			default:
-				type="N/A";
+		switch (log_level & G_LOG_LEVEL_MASK) {
+		case G_LOG_LEVEL_ERROR:
+			type = "error";
+			break;
+		case G_LOG_LEVEL_CRITICAL:
+			type = "critical";
+			break;
+		case G_LOG_LEVEL_WARNING:
+			type = "warning";
+			break;
+		case G_LOG_LEVEL_MESSAGE:
+			type = "message";
+			break;
+		case G_LOG_LEVEL_INFO:
+			type = "info";
+			break;
+		case G_LOG_LEVEL_DEBUG:
+			type = "debug";
+			break;
+		default:
+			type = "N/A";
 		}
 
 		if (log_domain)
@@ -791,13 +743,7 @@ static void win32_open_log(void)
 			FILE_OP_ERROR(logfile, "rename");
 	}
 
-	win32_debug_log = CreateFile(logfile,
-		GENERIC_WRITE,
-		FILE_SHARE_READ,
-		NULL,
-		CREATE_NEW,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+	win32_debug_log = CreateFile(logfile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (win32_debug_log == INVALID_HANDLE_VALUE) {
 		win32_debug_log = NULL;
@@ -810,12 +756,9 @@ static void win32_open_log(void)
 		g_set_print_handler(win32_print_stdout);
 		g_set_printerr_handler(win32_print_stdout);
 
-		win32_log_handler_app_id = g_log_set_handler(NULL, G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
-                     | G_LOG_FLAG_RECURSION, win32_log, NULL);
-		win32_log_handler_glib_id = g_log_set_handler("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
-                     | G_LOG_FLAG_RECURSION, win32_log, NULL);
-		win32_log_handler_gtk_id = g_log_set_handler("Gtk", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL
-                     | G_LOG_FLAG_RECURSION, win32_log, NULL);
+		win32_log_handler_app_id = g_log_set_handler(NULL, G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, win32_log, NULL);
+		win32_log_handler_glib_id = g_log_set_handler("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, win32_log, NULL);
+		win32_log_handler_gtk_id = g_log_set_handler("Gtk", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, win32_log, NULL);
 
 		g_log_set_writer_func(&win32_log_writer, NULL, NULL);
 	}
@@ -830,7 +773,7 @@ static void win32_close_log(void)
 		CloseHandle(win32_debug_log);
 		win32_debug_log = NULL;
 	}
-}		
+}
 #endif
 
 static void main_dump_features_list(gboolean show_debug_only)
@@ -840,22 +783,14 @@ static void main_dump_features_list(gboolean show_debug_only)
 		return;
 
 	if (show_debug_only)
-		debug_print("runtime GTK+ %d.%d.%d / GLib %d.%d.%d\n",
-			   gtk_major_version, gtk_minor_version, gtk_micro_version,
-			   glib_major_version, glib_minor_version, glib_micro_version);
+		debug_print("runtime GTK+ %d.%d.%d / GLib %d.%d.%d\n", gtk_major_version, gtk_minor_version, gtk_micro_version, glib_major_version, glib_minor_version, glib_micro_version);
 	else
-		g_print("runtime GTK+ %d.%d.%d / GLib %d.%d.%d\n",
-			   gtk_major_version, gtk_minor_version, gtk_micro_version,
-			   glib_major_version, glib_minor_version, glib_micro_version);
+		g_print("runtime GTK+ %d.%d.%d / GLib %d.%d.%d\n", gtk_major_version, gtk_minor_version, gtk_micro_version, glib_major_version, glib_minor_version, glib_micro_version);
 	if (show_debug_only)
-		debug_print("buildtime GTK+ %d.%d.%d / GLib %d.%d.%d\n",
-			   GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION,
-			   GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
+		debug_print("buildtime GTK+ %d.%d.%d / GLib %d.%d.%d\n", GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION, GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
 	else
-		g_print("buildtime GTK+ %d.%d.%d / GLib %d.%d.%d\n",
-			   GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION,
-			   GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
-	
+		g_print("buildtime GTK+ %d.%d.%d / GLib %d.%d.%d\n", GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION, GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
+
 	if (show_debug_only)
 		debug_print("Compiled-in features:\n");
 	else
@@ -988,7 +923,7 @@ int main(int argc, char *argv[])
 	lock_socket = prohibit_duplicate_launch();
 	if (lock_socket < 0) {
 #ifdef HAVE_STARTUP_NOTIFICATION
-		if(gtk_init_check(&argc, &argv))
+		if (gtk_init_check(&argc, &argv))
 			startup_notification_complete(TRUE);
 #endif
 		return 0;
@@ -1011,36 +946,24 @@ int main(int argc, char *argv[])
 #endif
 	install_basic_sighandlers();
 
-	if (cmd.status || cmd.status_full || cmd.search ||
-		cmd.statistics || cmd.reset_statistics || 
-		cmd.cancel_receiving || cmd.cancel_sending ||
-		cmd.debug) {
+	if (cmd.status || cmd.status_full || cmd.search || cmd.statistics || cmd.reset_statistics || cmd.cancel_receiving || cmd.cancel_sending || cmd.debug) {
 		puts("0 Claws Mail not running.");
 		lock_socket_remove();
 		return 0;
 	}
-	
+
 	if (cmd.exit)
 		return 0;
 
 	reset_statistics();
-	
+
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
 
 #ifdef G_OS_WIN32
-	gtk_settings_set_string_property(gtk_settings_get_default(),
-			"gtk-theme-name",
-			"MS-Windows",
-			"XProperty");
-	gtk_settings_set_long_property(gtk_settings_get_default(),
-			"gtk-auto-mnemonics",
-			TRUE,
-			"XProperty");
-	gtk_settings_set_long_property(gtk_settings_get_default(),
-			"gtk-button-images",
-			TRUE,
-			"XProperty");
+	gtk_settings_set_string_property(gtk_settings_get_default(), "gtk-theme-name", "MS-Windows", "XProperty");
+	gtk_settings_set_long_property(gtk_settings_get_default(), "gtk-auto-mnemonics", TRUE, "XProperty");
+	gtk_settings_set_long_property(gtk_settings_get_default(), "gtk-button-images", TRUE, "XProperty");
 #endif
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
@@ -1051,29 +974,21 @@ int main(int argc, char *argv[])
 	error = NULL;
 	connection = dbus_g_bus_get(DBUS_BUS_SYSTEM, &error);
 
-	if(!connection) {
+	if (!connection) {
 		debug_print("Failed to open connection to system bus: %s\n", error->message);
 		g_error_free(error);
-	}
-	else {
+	} else {
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-		nm_proxy = dbus_g_proxy_new_for_name(connection,
-			"org.freedesktop.NetworkManager",
-			"/org/freedesktop/NetworkManager",
-			"org.freedesktop.NetworkManager");
+		nm_proxy = dbus_g_proxy_new_for_name(connection, "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager", "org.freedesktop.NetworkManager");
 		if (nm_proxy) {
 			dbus_g_proxy_add_signal(nm_proxy, "StateChanged", G_TYPE_UINT, G_TYPE_INVALID);
-			dbus_g_proxy_connect_signal(nm_proxy, "StateChanged",
-				G_CALLBACK(networkmanager_state_change_cb),
-				NULL,NULL);
+			dbus_g_proxy_connect_signal(nm_proxy, "StateChanged", G_CALLBACK(networkmanager_state_change_cb), NULL, NULL);
 		}
 #endif
 	}
 #endif
 
-	gtk_widget_set_default_colormap(
-		gdk_screen_get_system_colormap(
-			gdk_screen_get_default()));
+	gtk_widget_set_default_colormap(gdk_screen_get_system_colormap(gdk_screen_get_default()));
 
 	gtkut_create_ui_manager();
 
@@ -1081,37 +996,35 @@ int main(int argc, char *argv[])
 	MENUITEM_ADDUI("/", "Menus", NULL, GTK_UI_MANAGER_MENUBAR);
 
 #ifdef G_OS_WIN32
-	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_home_dir(), 1, win32_close_log(););
+	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_home_dir(), 1, win32_close_log();
+	    );
 #else
 	CHDIR_RETURN_VAL_IF_FAIL(get_home_dir(), 1);
 #endif
-	
+
 	/* no config dir exists. See if we can migrate an old config. */
 	if (!is_dir_exist(get_rc_dir())) {
 		prefs_destroy_cache();
 		gboolean r = FALSE;
-		
+
 		/* if one of the old dirs exist, we'll ask if the user 
 		 * want to migrates, and r will be TRUE if he said yes
 		 * and migration succeeded, and FALSE otherwise.
 		 */
 		if (is_dir_exist(OLD_GTK2_RC_DIR)) {
-			r = migrate_old_config(OLD_GTK2_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 2.6.0 ", _("(or older)"), NULL));
+			r = migrate_old_config(OLD_GTK2_RC_DIR, get_rc_dir(), g_strconcat("Sylpheed-Claws 2.6.0 ", _("(or older)"), NULL));
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(OLDER_GTK2_RC_DIR)) {
-			r = migrate_old_config(OLDER_GTK2_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 1.9.15 ",_("(or older)"), NULL));
+			r = migrate_old_config(OLDER_GTK2_RC_DIR, get_rc_dir(), g_strconcat("Sylpheed-Claws 1.9.15 ", _("(or older)"), NULL));
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(OLD_GTK1_RC_DIR)) {
-			r = migrate_old_config(OLD_GTK1_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 1.0.5 ",_("(or older)"), NULL));
+			r = migrate_old_config(OLD_GTK1_RC_DIR, get_rc_dir(), g_strconcat("Sylpheed-Claws 1.0.5 ", _("(or older)"), NULL));
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(SYLPHEED_RC_DIR)) {
 			r = migrate_old_config(SYLPHEED_RC_DIR, get_rc_dir(), "Sylpheed");
 			asked_for_migration = TRUE;
 		}
-		
+
 		/* If migration failed or the user didn't want to do it,
 		 * we create a new one (and we'll hit wizard later). 
 		 */
@@ -1130,13 +1043,10 @@ int main(int argc, char *argv[])
 #endif
 		}
 	}
-	
 
-	if (!is_file_exist(RC_DIR G_DIR_SEPARATOR_S COMMON_RC) &&
-	    is_file_exist(RC_DIR G_DIR_SEPARATOR_S OLD_COMMON_RC)) {
-	    	/* post 2.6 name change */
-		migrate_common_rc(RC_DIR G_DIR_SEPARATOR_S OLD_COMMON_RC,
-			  RC_DIR G_DIR_SEPARATOR_S COMMON_RC);
+	if (!is_file_exist(RC_DIR G_DIR_SEPARATOR_S COMMON_RC) && is_file_exist(RC_DIR G_DIR_SEPARATOR_S OLD_COMMON_RC)) {
+		/* post 2.6 name change */
+		migrate_common_rc(RC_DIR G_DIR_SEPARATOR_S OLD_COMMON_RC, RC_DIR G_DIR_SEPARATOR_S COMMON_RC);
 	}
 
 	if (!cmd.exit)
@@ -1149,15 +1059,15 @@ int main(int argc, char *argv[])
 	userrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, MENU_RC, NULL);
 
 	if (copy_file(userrc, userrc, TRUE) < 0) {
-		g_warning("can't copy %s to %s.bak",
-			  userrc, userrc);
+		g_warning("can't copy %s to %s.bak", userrc, userrc);
 	}
 
-	gtk_accel_map_load (userrc);
+	gtk_accel_map_load(userrc);
 	g_free(userrc);
 
 #ifdef G_OS_WIN32
-	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_rc_dir(), 1, win32_close_log(););
+	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_rc_dir(), 1, win32_close_log();
+	    );
 #else
 	CHDIR_RETURN_VAL_IF_FAIL(get_rc_dir(), 1);
 #endif
@@ -1190,7 +1100,8 @@ int main(int argc, char *argv[])
 	set_log_file(LOG_DEBUG_FILTERING, "filtering.log");
 
 #ifdef G_OS_WIN32
-	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_home_dir(), 1, win32_close_log(););
+	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_home_dir(), 1, win32_close_log();
+	    );
 #else
 	CHDIR_RETURN_VAL_IF_FAIL(get_home_dir(), 1);
 #endif
@@ -1233,13 +1144,9 @@ int main(int argc, char *argv[])
 	codeconv_set_broken_are_utf8(prefs_common.broken_are_utf8);
 
 #ifdef G_OS_WIN32
-	if(prefs_common.gtk_theme && strcmp(prefs_common.gtk_theme, DEFAULT_W32_GTK_THEME))
-		gtk_settings_set_string_property(gtk_settings_get_default(),
-			"gtk-theme-name",
-			prefs_common.gtk_theme,
-			"XProperty");
+	if (prefs_common.gtk_theme && strcmp(prefs_common.gtk_theme, DEFAULT_W32_GTK_THEME))
+		gtk_settings_set_string_property(gtk_settings_get_default(), "gtk-theme-name", prefs_common.gtk_theme, "XProperty");
 #endif
-
 
 	sock_set_io_timeout(prefs_common.io_timeout_secs);
 	prefs_actions_read_config();
@@ -1249,11 +1156,10 @@ int main(int argc, char *argv[])
 	addressbook_read_file();
 #else
 	g_clear_error(&error);
-	if (! addressbook_start_service(&error)) {
+	if (!addressbook_start_service(&error)) {
 		g_warning("%s", error->message);
 		g_clear_error(&error);
-	}
-	else {
+	} else {
 		addressbook_install_hooks(&error);
 	}
 #endif
@@ -1273,7 +1179,7 @@ int main(int argc, char *argv[])
 		exit(1);
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-	networkmanager_state_change_cb(nm_proxy,NULL,mainwin);
+	networkmanager_state_change_cb(nm_proxy, NULL, mainwin);
 #endif
 
 	manage_window_focus_in(mainwin->window, NULL, NULL);
@@ -1305,7 +1211,7 @@ int main(int argc, char *argv[])
 	imap_main_init(prefs_common.skip_ssl_cert_check);
 	imap_main_set_timeout(prefs_common.io_timeout_secs);
 	nntp_main_init(prefs_common.skip_ssl_cert_check);
-#endif	
+#endif
 	/* If we can't read a folder list or don't have accounts,
 	 * it means the configuration's not done. Either this is
 	 * a brand new install, a failed/refused migration,
@@ -1314,7 +1220,7 @@ int main(int argc, char *argv[])
 	if ((ret = folder_read_list()) < 0) {
 		debug_print("Folderlist read failed (%d)\n", ret);
 		prefs_destroy_cache();
-		
+
 		if (ret == -2) {
 			/* config_version update failed in folder_read_list(). We
 			 * do not want to run the wizard, just exit. */
@@ -1353,14 +1259,13 @@ int main(int argc, char *argv[])
 #endif
 			exit(1);
 		}
-		if(!account_get_list()) {
+		if (!account_get_list()) {
 			exit_claws(mainwin);
 			exit(1);
 		}
 		never_ran = TRUE;
 	}
 
-	
 	toolbar_main_set_sensitive(mainwin);
 	main_window_set_menu_sensitive(mainwin);
 
@@ -1431,7 +1336,7 @@ int main(int argc, char *argv[])
 		debug_print("new folders loaded, reloading processing rules\n");
 		prefs_matcher_read_config();
 	}
-	
+
 	if ((plug_list = plugin_get_unloaded_list()) != NULL) {
 		GSList *cur;
 		gchar *list = NULL;
@@ -1439,8 +1344,8 @@ int main(int argc, char *argv[])
 		for (cur = plug_list; cur; cur = cur->next) {
 			Plugin *plugin = (Plugin *)cur->data;
 			gchar *tmp = g_strdup_printf("%s\n%s",
-				list? list:"",
-				plugin_get_name(plugin));
+						     list ? list : "",
+						     plugin_get_name(plugin));
 			g_free(list);
 			list = tmp;
 			num_plugins++;
@@ -1448,15 +1353,7 @@ int main(int argc, char *argv[])
 		main_window_cursor_normal(mainwin);
 		main_window_popup(mainwin);
 		mainwin_shown = TRUE;
-		alertpanel_warning(ngettext(
-				     "The following plugin failed to load. "
-				     "Check the Plugins configuration "
-				     "for more information:\n%s",
-				     "The following plugins failed to load. "
-				     "Check the Plugins configuration "
-				     "for more information:\n%s", 
-				     num_plugins), 
-				     list);
+		alertpanel_warning(ngettext("The following plugin failed to load. " "Check the Plugins configuration " "for more information:\n%s", "The following plugins failed to load. " "Check the Plugins configuration " "for more information:\n%s", num_plugins), list);
 		main_window_cursor_wait(mainwin);
 		g_free(list);
 		g_slist_free(plug_list);
@@ -1464,7 +1361,7 @@ int main(int argc, char *argv[])
 
 	if (never_ran) {
 		prefs_common_write_config();
-	 	plugin_load_standard_plugins ();
+		plugin_load_standard_plugins();
 	}
 
 	/* if not crashed, show window now */
@@ -1491,22 +1388,14 @@ int main(int argc, char *argv[])
 		prefs_destroy_cache();
 		main_window_cursor_normal(mainwin);
 		if (folder_get_list() != NULL) {
-			alertpanel_error(_("Claws Mail has detected a configured "
-				   "mailbox, but it is incomplete. It is "
-				   "possibly due to a failing IMAP account. Use "
-				   "\"Rebuild folder tree\" on the mailbox parent "
-				   "folder's context menu to try to fix it."));
+			alertpanel_error(_("Claws Mail has detected a configured " "mailbox, but it is incomplete. It is " "possibly due to a failing IMAP account. Use " "\"Rebuild folder tree\" on the mailbox parent " "folder's context menu to try to fix it."));
 		} else {
-			alertpanel_error(_("Claws Mail has detected a configured "
-				   "mailbox, but could not load it. It is "
-				   "probably provided by an out-of-date "
-				   "external plugin. Please reinstall the "
-				   "plugin and try again."));
+			alertpanel_error(_("Claws Mail has detected a configured " "mailbox, but could not load it. It is " "probably provided by an out-of-date " "external plugin. Please reinstall the " "plugin and try again."));
 			exit_claws(mainwin);
 			exit(1);
 		}
 	}
-	
+
 	static_mainwindow = mainwin;
 
 #ifdef HAVE_STARTUP_NOTIFICATION
@@ -1524,13 +1413,9 @@ int main(int argc, char *argv[])
 		mainwindow_import_mbox(cmd.import_mbox);
 	}
 
-	if (!cmd.target && prefs_common.goto_folder_on_startup &&
-	    folder_find_item_from_identifier(prefs_common.startup_folder) != NULL &&
-	    !claws_crashed()) {
+	if (!cmd.target && prefs_common.goto_folder_on_startup && folder_find_item_from_identifier(prefs_common.startup_folder) != NULL && !claws_crashed()) {
 		cmd.target = prefs_common.startup_folder;
-	} else if (!cmd.target && prefs_common.goto_last_folder_on_startup &&
-	    folder_find_item_from_identifier(prefs_common.last_opened_folder) != NULL &&
-	    !claws_crashed()) {
+	} else if (!cmd.target && prefs_common.goto_last_folder_on_startup && folder_find_item_from_identifier(prefs_common.last_opened_folder) != NULL && !claws_crashed()) {
 		cmd.target = prefs_common.last_opened_folder;
 	}
 
@@ -1560,14 +1445,14 @@ int main(int argc, char *argv[])
 	if (cmd.send) {
 		send_queue();
 	}
-	
+
 	if (cmd.target) {
 		start_done = FALSE;
 		g_timeout_add(500, defer_jump, (gpointer)cmd.target);
 	}
 
 	prefs_destroy_cache();
-	
+
 	compose_reopen_exit_drafts();
 
 	if (start_done) {
@@ -1577,21 +1462,18 @@ int main(int argc, char *argv[])
 	}
 
 	/* register the callback of unix domain socket input */
-	lock_socket_tag = claws_input_add(lock_socket,
-					G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI,
-					lock_socket_input_cb,
-					mainwin, TRUE);
+	lock_socket_tag = claws_input_add(lock_socket, G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI, lock_socket_input_cb, mainwin, TRUE);
 
 	END_TIMING();
 
 	gtk_main();
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-	if(nm_proxy)
+	if (nm_proxy)
 		g_object_unref(nm_proxy);
 #endif
 #ifdef HAVE_DBUS_GLIB
-	if(connection)
+	if (connection)
 		dbus_g_connection_unref(connection);
 #endif
 	utils_free_regex();
@@ -1630,14 +1512,11 @@ static void exit_claws(MainWindow *mainwin)
 #endif
 
 	/* save prefs for opened folder */
-	if((item = folderview_get_opened_item(mainwin->folderview)) != NULL) {
-		summary_save_prefs_to_folderitem(
-			mainwin->summaryview, item);
+	if ((item = folderview_get_opened_item(mainwin->folderview)) != NULL) {
+		summary_save_prefs_to_folderitem(mainwin->summaryview, item);
 		if (prefs_common.last_opened_folder != NULL)
 			g_free(prefs_common.last_opened_folder);
-		prefs_common.last_opened_folder =
-			!prefs_common.goto_last_folder_on_startup ? NULL :
-			folder_item_get_identifier(item);
+		prefs_common.last_opened_folder = !prefs_common.goto_last_folder_on_startup ? NULL : folder_item_get_identifier(item);
 	}
 
 	/* save all state before exiting */
@@ -1665,7 +1544,7 @@ static void exit_claws(MainWindow *mainwin)
 	close_log_file(LOG_DEBUG_FILTERING);
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-	have_connectivity = networkmanager_is_online(NULL); 
+	have_connectivity = networkmanager_is_online(NULL);
 #else
 	have_connectivity = TRUE;
 #endif
@@ -1681,12 +1560,12 @@ static void exit_claws(MainWindow *mainwin)
 
 #ifdef HAVE_LIBSM
 	if (mainwin->smc_conn)
-		SmcCloseConnection ((SmcConn)mainwin->smc_conn, 0, NULL);
+		SmcCloseConnection((SmcConn) mainwin->smc_conn, 0, NULL);
 	mainwin->smc_conn = NULL;
 #endif
 
 	main_window_destroy_all();
-	
+
 	plugin_unload_all("GTK2");
 
 	matcher_done();
@@ -1713,7 +1592,7 @@ static void exit_claws(MainWindow *mainwin)
 	prefs_logging_done();
 	prefs_send_done();
 	tags_write_tags();
-#ifdef USE_ENCHANT       
+#ifdef USE_ENCHANT
 	prefs_spelling_done();
 	gtkaspell_checkers_quit();
 #endif
@@ -1752,16 +1631,20 @@ static void parse_cmd_compose_from_file(const gchar *fn, GString *body)
 	}
 
 	while (claws_fgets(fb, sizeof(fb), fp)) {
-		gchar *tmp;	
+		gchar *tmp;
 		strretchomp(fb);
 		if (*fb == '\0')
 			break;
 		h = fb;
-		while (*h && *h != ':') { ++h; } /* search colon */
-        	if (*h == '\0')
+		while (*h && *h != ':') {
+			++h;
+		} /* search colon */
+		if (*h == '\0')
 			G_PRINT_EXIT(_("Malformed header\n"));
 		v = h + 1;
-		while (*v && *v == ' ') { ++v; } /* trim value start */
+		while (*v && *v == ' ') {
+			++v;
+		} /* trim value start */
 		*h = '\0';
 		tmp = g_ascii_strdown(fb, -1); /* get header name */
 		if (!strcmp(tmp, "to")) {
@@ -1793,14 +1676,14 @@ static void parse_cmd_compose_from_file(const gchar *fn, GString *body)
 
 #undef G_PRINT_EXIT
 
-static void parse_cmd_opt_error(char *errstr, char* optstr)
+static void parse_cmd_opt_error(char *errstr, char *optstr)
 {
-    gchar tmp[BUFSIZ];
+	gchar tmp[BUFSIZ];
 
 	cm_return_if_fail(errstr != NULL);
 	cm_return_if_fail(optstr != NULL);
 
-    g_snprintf(tmp, sizeof(tmp), errstr, optstr);
+	g_snprintf(tmp, sizeof(tmp), errstr, optstr);
 	g_print(_("%s. Try -h or --help for usage.\n"), tmp);
 	exit(1);
 }
@@ -1822,18 +1705,18 @@ static void parse_cmd_opt(int argc, char *argv[])
 		} else if (!strcmp(argv[i], "--cancel-sending")) {
 			cmd.cancel_sending = TRUE;
 		} else if (!strcmp(argv[i], "--compose-from-file")) {
-		    if (i+1 < argc) {
-				const gchar *p = argv[i+1];
+			if (i + 1 < argc) {
+				const gchar *p = argv[i + 1];
 
 				parse_cmd_compose_from_file(p, &mailto);
 				cmd.compose = TRUE;
 				cmd.compose_mailto = mailto.str;
 				i++;
-		    } else {
-                parse_cmd_opt_error(_("Missing file argument for option %s"), argv[i]);
+			} else {
+				parse_cmd_opt_error(_("Missing file argument for option %s"), argv[i]);
 			}
 		} else if (!strcmp(argv[i], "--compose")) {
-			const gchar *p = (i+1 < argc)?argv[i+1]:NULL;
+			const gchar *p = (i + 1 < argc) ? argv[i + 1] : NULL;
 
 			cmd.compose = TRUE;
 			cmd.compose_mailto = NULL;
@@ -1846,21 +1729,20 @@ static void parse_cmd_opt(int argc, char *argv[])
 				i++;
 			}
 		} else if (!strcmp(argv[i], "--subscribe")) {
-		    if (i+1 < argc) {
-				const gchar *p = argv[i+1];
+			if (i + 1 < argc) {
+				const gchar *p = argv[i + 1];
 				if (p && *p != '\0' && *p != '-') {
 					cmd.subscribe = TRUE;
 					cmd.subscribe_uri = p;
 				} else {
-                    parse_cmd_opt_error(_("Missing or empty uri argument for option %s"), argv[i]);
+					parse_cmd_opt_error(_("Missing or empty uri argument for option %s"), argv[i]);
 				}
-		    } else {
-                parse_cmd_opt_error(_("Missing uri argument for option %s"), argv[i]);
+			} else {
+				parse_cmd_opt_error(_("Missing uri argument for option %s"), argv[i]);
 			}
-		} else if (!strcmp(argv[i], "--attach") || 
-                !strcmp(argv[i], "--insert")) {
-		    if (i+1 < argc) {
-				const gchar *p = argv[i+1];
+		} else if (!strcmp(argv[i], "--attach") || !strcmp(argv[i], "--insert")) {
+			if (i + 1 < argc) {
+				const gchar *p = argv[i + 1];
 				gint ii = i;
 				gchar *file = NULL;
 				gboolean insert = !strcmp(argv[i], "--insert");
@@ -1873,9 +1755,7 @@ static void parse_cmd_opt(int argc, char *argv[])
 						}
 					}
 					if (file == NULL && *p != G_DIR_SEPARATOR) {
-						file = g_strconcat(claws_get_startup_dir(),
-								   G_DIR_SEPARATOR_S,
-								   p, NULL);
+						file = g_strconcat(claws_get_startup_dir(), G_DIR_SEPARATOR_S, p, NULL);
 					} else if (file == NULL) {
 						file = g_strdup(p);
 					}
@@ -1885,86 +1765,81 @@ static void parse_cmd_opt(int argc, char *argv[])
 					ainfo->insert = insert;
 					cmd.attach_files = g_list_append(cmd.attach_files, ainfo);
 					ii++;
-					p = (ii+1 < argc)?argv[ii+1]:NULL;
+					p = (ii + 1 < argc) ? argv[ii + 1] : NULL;
 				}
-				if (ii==i) {
-                    parse_cmd_opt_error(_("Missing at least one non-empty file argument for option %s"), argv[i]);
+				if (ii == i) {
+					parse_cmd_opt_error(_("Missing at least one non-empty file argument for option %s"), argv[i]);
 				} else {
-                    i=ii;
-                }
-		    } else {
-                parse_cmd_opt_error(_("Missing file argument for option %s"), argv[i]);
+					i = ii;
+				}
+			} else {
+				parse_cmd_opt_error(_("Missing file argument for option %s"), argv[i]);
 			}
 		} else if (!strcmp(argv[i], "--send")) {
 			cmd.send = TRUE;
-		} else if (!strcmp(argv[i], "--version-full") ||
-			   !strcmp(argv[i], "-V")) {
+		} else if (!strcmp(argv[i], "--version-full") || !strcmp(argv[i], "-V")) {
 			g_print("Claws Mail version " VERSION_GIT_FULL "\n");
 			main_dump_features_list(FALSE);
 			exit(0);
-		} else if (!strcmp(argv[i], "--version") ||
-			   !strcmp(argv[i], "-v")) {
+		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
 			g_print("Claws Mail version " VERSION "\n");
 			exit(0);
- 		} else if (!strcmp(argv[i], "--status-full")) {
- 			const gchar *p = (i+1 < argc)?argv[i+1]:NULL;
- 
- 			cmd.status_full = TRUE;
- 			while (p && *p != '\0' && *p != '-') {
- 				if (!cmd.status_full_folders) {
- 					cmd.status_full_folders =
- 						g_ptr_array_new();
+		} else if (!strcmp(argv[i], "--status-full")) {
+			const gchar *p = (i + 1 < argc) ? argv[i + 1] : NULL;
+
+			cmd.status_full = TRUE;
+			while (p && *p != '\0' && *p != '-') {
+				if (!cmd.status_full_folders) {
+					cmd.status_full_folders = g_ptr_array_new();
 				}
- 				g_ptr_array_add(cmd.status_full_folders,
- 						g_strdup(p));
- 				i++;
- 				p = (i+1 < argc)?argv[i+1]:NULL;
- 			}
-  		} else if (!strcmp(argv[i], "--status")) {
- 			const gchar *p = (i+1 < argc)?argv[i+1]:NULL;
- 
-  			cmd.status = TRUE;
- 			while (p && *p != '\0' && *p != '-') {
- 				if (!cmd.status_folders)
- 					cmd.status_folders = g_ptr_array_new();
- 				g_ptr_array_add(cmd.status_folders,
- 						g_strdup(p));
- 				i++;
- 				p = (i+1 < argc)?argv[i+1]:NULL;
- 			}
+				g_ptr_array_add(cmd.status_full_folders, g_strdup(p));
+				i++;
+				p = (i + 1 < argc) ? argv[i + 1] : NULL;
+			}
+		} else if (!strcmp(argv[i], "--status")) {
+			const gchar *p = (i + 1 < argc) ? argv[i + 1] : NULL;
+
+			cmd.status = TRUE;
+			while (p && *p != '\0' && *p != '-') {
+				if (!cmd.status_folders)
+					cmd.status_folders = g_ptr_array_new();
+				g_ptr_array_add(cmd.status_folders, g_strdup(p));
+				i++;
+				p = (i + 1 < argc) ? argv[i + 1] : NULL;
+			}
 		} else if (!strcmp(argv[i], "--search")) {
-		    if (i+3 < argc) { /* 3 first arguments are mandatory */
-		    	const char* p;
-		    	/* only set search parameters if they are valid */
-		    	p = argv[i+1];
-				cmd.search_folder    = (p && *p != '\0' && *p != '-')?p:NULL;
-				p = argv[i+2];
-				cmd.search_type      = (p && *p != '\0' && *p != '-')?p:NULL;
-				p = argv[i+3];
-				cmd.search_request   = (p && *p != '\0' && *p != '-')?p:NULL;
-				p = (i+4 < argc)?argv[i+4]:NULL;
-				const char* rec      = (p && *p != '\0' && *p != '-')?p:NULL;
+			if (i + 3 < argc) { /* 3 first arguments are mandatory */
+				const char *p;
+				/* only set search parameters if they are valid */
+				p = argv[i + 1];
+				cmd.search_folder = (p && *p != '\0' && *p != '-') ? p : NULL;
+				p = argv[i + 2];
+				cmd.search_type = (p && *p != '\0' && *p != '-') ? p : NULL;
+				p = argv[i + 3];
+				cmd.search_request = (p && *p != '\0' && *p != '-') ? p : NULL;
+				p = (i + 4 < argc) ? argv[i + 4] : NULL;
+				const char *rec = (p && *p != '\0' && *p != '-') ? p : NULL;
 				cmd.search_recursive = TRUE;
 				if (rec) {
-                    i++;
-                    if (tolower(*rec)=='n' || tolower(*rec)=='f' || *rec=='0')
-    					cmd.search_recursive = FALSE;
-                }
+					i++;
+					if (tolower(*rec) == 'n' || tolower(*rec) == 'f' || *rec == '0')
+						cmd.search_recursive = FALSE;
+				}
 				if (cmd.search_folder && cmd.search_type && cmd.search_request) {
 					cmd.search = TRUE;
-                    i+=3;
-                }
-		    } else {
-                switch (argc-i-1) {
-                case 0:
-                    parse_cmd_opt_error(_("Missing folder, type and request arguments for option %s"), argv[i]);
-                    break;
-                case 1:
-                    parse_cmd_opt_error(_("Missing type and request arguments for option %s"), argv[i]);
-                    break;
-                case 2:
-                    parse_cmd_opt_error(_("Missing request argument for option %s"), argv[i]);
-                }
+					i += 3;
+				}
+			} else {
+				switch (argc - i - 1) {
+				case 0:
+					parse_cmd_opt_error(_("Missing folder, type and request arguments for option %s"), argv[i]);
+					break;
+				case 1:
+					parse_cmd_opt_error(_("Missing type and request arguments for option %s"), argv[i]);
+					break;
+				case 2:
+					parse_cmd_opt_error(_("Missing request argument for option %s"), argv[i]);
+				}
 			}
 		} else if (!strcmp(argv[i], "--online")) {
 			cmd.online_mode = ONLINE_MODE_ONLINE;
@@ -1976,43 +1851,27 @@ static void parse_cmd_opt(int argc, char *argv[])
 			cmd.statistics = TRUE;
 		} else if (!strcmp(argv[i], "--reset-statistics")) {
 			cmd.reset_statistics = TRUE;
-		} else if (!strcmp(argv[i], "--help") ||
-			   !strcmp(argv[i], "-h")) {
+		} else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h")) {
 			gchar *base = g_path_get_basename(argv[0]);
 			g_print(_("Usage: %s [OPTION]...\n"), base);
 
 			g_print("%s\n", _("  --compose [address]    open composition window"));
-			g_print("%s\n", _("  --compose-from-file file\n"
-				  	  "                         open composition window with data from given file;\n"
-			  	  	  "                         use - as file name for reading from standard input;\n"
-			  	  	  "                         content format: headers first (To: required) until an\n"
-				  	  "                         empty line, then mail body until end of file."));
+			g_print("%s\n", _("  --compose-from-file file\n" "                         open composition window with data from given file;\n" "                         use - as file name for reading from standard input;\n" "                         content format: headers first (To: required) until an\n" "                         empty line, then mail body until end of file."));
 			g_print("%s\n", _("  --subscribe uri        subscribe to the given URI if possible"));
-			g_print("%s\n", _("  --attach file1 [file2]...\n"
-					  "                         open composition window with specified files\n"
-					  "                         attached"));
-			g_print("%s\n", _("  --insert file1 [file2]...\n"
-					  "                         open composition window with specified files\n"
-					  "                         inserted"));
+			g_print("%s\n", _("  --attach file1 [file2]...\n" "                         open composition window with specified files\n" "                         attached"));
+			g_print("%s\n", _("  --insert file1 [file2]...\n" "                         open composition window with specified files\n" "                         inserted"));
 			g_print("%s\n", _("  --receive              receive new messages"));
 			g_print("%s\n", _("  --receive-all          receive new messages of all accounts"));
 			g_print("%s\n", _("  --cancel-receiving     cancel receiving of messages"));
 			g_print("%s\n", _("  --cancel-sending       cancel sending of messages"));
-			g_print("%s\n", _("  --search folder type request [recursive]\n"
-					  "                         searches mail\n"
-					  "                         folder ex.: \"#mh/Mailbox/inbox\" or \"Mail\"\n"
-					  "                         type: s[ubject],f[rom],t[o],e[xtended],m[ixed] or g: tag\n"
-					  "                         request: search string\n"
-					  "                         recursive: false if arg. starts with 0, n, N, f or F"));
+			g_print("%s\n", _("  --search folder type request [recursive]\n" "                         searches mail\n" "                         folder ex.: \"#mh/Mailbox/inbox\" or \"Mail\"\n" "                         type: s[ubject],f[rom],t[o],e[xtended],m[ixed] or g: tag\n" "                         request: search string\n" "                         recursive: false if arg. starts with 0, n, N, f or F"));
 
 			g_print("%s\n", _("  --send                 send all queued messages"));
- 			g_print("%s\n", _("  --status [folder]...   show the total number of messages"));
- 			g_print("%s\n", _("  --status-full [folder]...\n"
- 			                  "                         show the status of each folder"));
- 			g_print("%s\n", _("  --statistics           show session statistics"));
- 			g_print("%s\n", _("  --reset-statistics     reset session statistics"));
-			g_print("%s\n", _("  --select folder[/msg]  jump to the specified folder/message\n" 
-					  "                         folder is a folder id like 'folder/sub_folder', a file:// uri or an absolute path"));
+			g_print("%s\n", _("  --status [folder]...   show the total number of messages"));
+			g_print("%s\n", _("  --status-full [folder]...\n" "                         show the status of each folder"));
+			g_print("%s\n", _("  --statistics           show session statistics"));
+			g_print("%s\n", _("  --reset-statistics     reset session statistics"));
+			g_print("%s\n", _("  --select folder[/msg]  jump to the specified folder/message\n" "                         folder is a folder id like 'folder/sub_folder', a file:// uri or an absolute path"));
 			g_print("%s\n", _("  --import-mbox file     import the specified mbox file\n"));
 			g_print("%s\n", _("  --online               switch to online mode"));
 			g_print("%s\n", _("  --offline              switch to offline mode"));
@@ -2023,49 +1882,44 @@ static void parse_cmd_opt(int argc, char *argv[])
 			g_print("%s\n", _("  --version -v           output version information"));
 			g_print("%s\n", _("  --version-full -V      output version and built-in features information"));
 			g_print("%s\n", _("  --config-dir           output configuration directory"));
-			g_print("%s\n", _("  --alternate-config-dir directory\n"
-			                  "                         use specified configuration directory"));
-			g_print("%s\n", _("  --geometry -geometry [WxH][+X+Y]\n"
-					  "                         set geometry for main window"));
+			g_print("%s\n", _("  --alternate-config-dir directory\n" "                         use specified configuration directory"));
+			g_print("%s\n", _("  --geometry -geometry [WxH][+X+Y]\n" "                         set geometry for main window"));
 
 			g_free(base);
 			exit(1);
 		} else if (!strcmp(argv[i], "--crash")) {
 			cmd.crash = TRUE;
-			cmd.crash_params = g_strdup((i+1 < argc)?argv[i+1]:NULL);
+			cmd.crash_params = g_strdup((i + 1 < argc) ? argv[i + 1] : NULL);
 			i++;
 		} else if (!strcmp(argv[i], "--config-dir")) {
 			g_print(RC_DIR "\n");
 			exit(0);
 		} else if (!strcmp(argv[i], "--alternate-config-dir")) {
-		    if (i+1 < argc) {
-				set_rc_dir(argv[i+1]);
-                i++;
-		    } else {
-                parse_cmd_opt_error(_("Missing directory argument for option %s"), argv[i]);
+			if (i + 1 < argc) {
+				set_rc_dir(argv[i + 1]);
+				i++;
+			} else {
+				parse_cmd_opt_error(_("Missing directory argument for option %s"), argv[i]);
 			}
-		} else if (!strcmp(argv[i], "--geometry") ||
-		        !strcmp(argv[i], "-geometry")) {
-		    if (i+1 < argc) {
-				cmd.geometry = argv[i+1];
-                i++;
-		    } else {
-                parse_cmd_opt_error(_("Missing geometry argument for option %s"), argv[i]);
+		} else if (!strcmp(argv[i], "--geometry") || !strcmp(argv[i], "-geometry")) {
+			if (i + 1 < argc) {
+				cmd.geometry = argv[i + 1];
+				i++;
+			} else {
+				parse_cmd_opt_error(_("Missing geometry argument for option %s"), argv[i]);
 			}
-		} else if (!strcmp(argv[i], "--exit") ||
-			   !strcmp(argv[i], "--quit") ||
-			   !strcmp(argv[i], "-q")) {
+		} else if (!strcmp(argv[i], "--exit") || !strcmp(argv[i], "--quit") || !strcmp(argv[i], "-q")) {
 			cmd.exit = TRUE;
 		} else if (!strcmp(argv[i], "--select")) {
-		    if (i+1 < argc) {
-				cmd.target = argv[i+1];
-                i++;
-		    } else {
-                parse_cmd_opt_error(_("Missing folder argument for option %s"), argv[i]);
+			if (i + 1 < argc) {
+				cmd.target = argv[i + 1];
+				i++;
+			} else {
+				parse_cmd_opt_error(_("Missing folder argument for option %s"), argv[i]);
 			}
 		} else if (!strcmp(argv[i], "--import-mbox")) {
-			if (i+1 < argc) {
-				cmd.import_mbox = argv[i+1];
+			if (i + 1 < argc) {
+				cmd.import_mbox = argv[i + 1];
 				i++;
 			} else {
 				parse_cmd_opt_error(_("Missing file argument for option %s"), argv[i]);
@@ -2087,7 +1941,7 @@ static void parse_cmd_opt(int argc, char *argv[])
 			} else if (!STRNCMP(argv[i], "file://")) {
 				cmd.target = argv[i];
 			} else if (!STRNCMP(argv[i], "?attach=file://")) {
-                /* Thunar support as per 3.3.0cvs19 */
+				/* Thunar support as per 3.3.0cvs19 */
 				cmd.compose = TRUE;
 				cmd.compose_mailto = argv[i];
 			} else if (strstr(argv[i], "://")) {
@@ -2100,12 +1954,12 @@ static void parse_cmd_opt(int argc, char *argv[])
 				/* gtk debug */
 			} else if (is_dir_exist(argv[i]) || is_file_exist(argv[i])) {
 				cmd.target = argv[i];
-    		} else {
-                parse_cmd_opt_error(_("Unknown option %s"), argv[i]);
-            }
+			} else {
+				parse_cmd_opt_error(_("Unknown option %s"), argv[i]);
+			}
 		} else {
-            parse_cmd_opt_error(_("Unknown option %s"), argv[i]);
-        }
+			parse_cmd_opt_error(_("Unknown option %s"), argv[i]);
+		}
 	}
 
 	if (cmd.attach_files && cmd.compose == FALSE) {
@@ -2120,10 +1974,7 @@ static void initial_processing(FolderItem *item, gpointer data)
 	gchar *buf;
 
 	cm_return_if_fail(item);
-	buf = g_strdup_printf(_("Processing (%s)..."), 
-			      item->path 
-			      ? item->path 
-			      : _("top level folder"));
+	buf = g_strdup_printf(_("Processing (%s)..."), item->path ? item->path : _("top level folder"));
 	g_free(buf);
 
 	if (folder_item_parent(item) != NULL && item->prefs->enable_processing) {
@@ -2138,17 +1989,18 @@ static void initial_processing(FolderItem *item, gpointer data)
 static gboolean draft_all_messages(void)
 {
 	const GList *compose_list = NULL;
-	
+
 	compose_clear_exit_drafts();
 	compose_list = compose_get_compose_list();
 	while (compose_list != NULL) {
-		Compose *c = (Compose*)compose_list->data;
+		Compose *c = (Compose *)compose_list->data;
 		if (!compose_draft(c, COMPOSE_DRAFT_FOR_EXIT))
 			return FALSE;
 		compose_list = compose_get_compose_list();
 	}
 	return TRUE;
 }
+
 gboolean clean_quit(gpointer data)
 {
 	static gboolean firstrun = TRUE;
@@ -2173,7 +2025,7 @@ gboolean clean_quit(gpointer data)
 	if (!static_mainwindow) {
 		return FALSE;
 	}
-		
+
 	draft_all_messages();
 	emergency_exit = TRUE;
 	exit_claws(static_mainwindow);
@@ -2185,7 +2037,7 @@ gboolean clean_quit(gpointer data)
 void app_will_exit(GtkWidget *widget, gpointer data)
 {
 	MainWindow *mainwin = data;
-	
+
 	if (gtk_main_level() == 0) {
 		debug_print("not even started\n");
 		return;
@@ -2205,12 +2057,10 @@ void app_will_exit(GtkWidget *widget, gpointer data)
 	}
 
 	if (prefs_common.warn_queued_on_exit && procmsg_have_queued_mails_fast()) {
-		if (alertpanel(_("Queued messages"),
-			       _("Some unsent messages are queued. Exit now?"),
-			       GTK_STOCK_CANCEL, GTK_STOCK_OK, NULL, ALERTFOCUS_FIRST)
+		if (alertpanel(_("Queued messages"), _("Some unsent messages are queued. Exit now?"), GTK_STOCK_CANCEL, GTK_STOCK_OK, NULL, ALERTFOCUS_FIRST)
 		    != G_ALERTALTERNATE) {
 			main_window_popup(mainwin);
-		    	sc_exiting = FALSE;
+			sc_exiting = FALSE;
 			return;
 		}
 		manage_window_focus_in(mainwin->window, NULL, NULL);
@@ -2252,12 +2102,10 @@ gchar *claws_get_socket_name(void)
 		GStatBuf st;
 		gint stat_ok;
 
-		socket_dir = g_strdup_printf("%s%cclaws-mail",
-                                    g_get_user_runtime_dir(), G_DIR_SEPARATOR);
-        stat_ok = g_stat(socket_dir, &st);
+		socket_dir = g_strdup_printf("%s%cclaws-mail", g_get_user_runtime_dir(), G_DIR_SEPARATOR);
+		stat_ok = g_stat(socket_dir, &st);
 		if (stat_ok < 0 && errno != ENOENT) {
-			g_print("Error stat'ing socket_dir %s: %s\n",
-				socket_dir, g_strerror(errno));
+			g_print("Error stat'ing socket_dir %s: %s\n", socket_dir, g_strerror(errno));
 		} else if (stat_ok == 0 && S_ISSOCK(st.st_mode)) {
 			/* old versions used a sock in $TMPDIR/claws-mail-$UID */
 			debug_print("Using legacy socket %s\n", socket_dir);
@@ -2267,14 +2115,12 @@ gchar *claws_get_socket_name(void)
 		}
 
 		if (!is_dir_exist(socket_dir) && make_dir(socket_dir) < 0) {
-			g_print("Error creating socket_dir %s: %s\n",
-				socket_dir, g_strerror(errno));
+			g_print("Error creating socket_dir %s: %s\n", socket_dir, g_strerror(errno));
 		}
 
 		md5_hex_digest(md5sum, get_rc_dir());
 
-		filename = g_strdup_printf("%s%c%s", socket_dir, G_DIR_SEPARATOR,
-					   md5sum);
+		filename = g_strdup_printf("%s%c%s", socket_dir, G_DIR_SEPARATOR, md5sum);
 		g_free(socket_dir);
 		debug_print("Using control socket %s\n", filename);
 	}
@@ -2288,8 +2134,7 @@ static gchar *get_crashfile_name(void)
 	static gchar *filename = NULL;
 
 	if (filename == NULL) {
-		filename = g_strdup_printf("%s%cclaws-crashed",
-					   get_tmp_dir(), G_DIR_SEPARATOR);
+		filename = g_strdup_printf("%s%cclaws-crashed", get_tmp_dir(), G_DIR_SEPARATOR);
 	}
 
 	return filename;
@@ -2305,7 +2150,7 @@ static gint prohibit_duplicate_launch(void)
 	path = claws_get_socket_name();
 	/* Try to connect to the control socket */
 	sock = fd_connect_unix(path);
-	
+
 	if (x_display == NULL)
 		x_display = g_strdup(g_getenv("DISPLAY"));
 
@@ -2321,18 +2166,15 @@ static gint prohibit_duplicate_launch(void)
 		 * process could have created the socket just in
 		 * between.
 		 */
-		socket_lock = g_strconcat(path, ".lock",
-					  NULL);
-		lock_fd = g_open(socket_lock, O_RDWR|O_CREAT, 0);
+		socket_lock = g_strconcat(path, ".lock", NULL);
+		lock_fd = g_open(socket_lock, O_RDWR | O_CREAT, 0);
 		if (lock_fd < 0) {
-			debug_print("Couldn't open %s: %s (%d)\n", socket_lock,
-				g_strerror(errno), errno);
+			debug_print("Couldn't open %s: %s (%d)\n", socket_lock, g_strerror(errno), errno);
 			g_free(socket_lock);
 			return -1;
 		}
 		if (flock(lock_fd, LOCK_EX) < 0) {
-			debug_print("Couldn't lock %s: %s (%d)\n", socket_lock,
-				g_strerror(errno), errno);
+			debug_print("Couldn't lock %s: %s (%d)\n", socket_lock, g_strerror(errno), errno);
 			close(lock_fd);
 			g_free(socket_lock);
 			return -1;
@@ -2351,23 +2193,23 @@ static gint prohibit_duplicate_launch(void)
 		return ret;
 	}
 #else
-        HANDLE hmutex;
+	HANDLE hmutex;
 
-        hmutex = CreateMutexA(NULL, FALSE, "ClawsMail");
-        if (!hmutex) {
-                debug_print("cannot create Mutex\n");
-                return -1;
-        }
-        if (GetLastError() != ERROR_ALREADY_EXISTS) {
-                sock = fd_open_inet(50216);
-                if (sock < 0)
-                        return 0;
-                return sock;
-        }
+	hmutex = CreateMutexA(NULL, FALSE, "ClawsMail");
+	if (!hmutex) {
+		debug_print("cannot create Mutex\n");
+		return -1;
+	}
+	if (GetLastError() != ERROR_ALREADY_EXISTS) {
+		sock = fd_open_inet(50216);
+		if (sock < 0)
+			return 0;
+		return sock;
+	}
 
-        sock = fd_connect_inet(50216);
-        if (sock < 0)
-                return -1;
+	sock = fd_connect_inet(50216);
+	if (sock < 0)
+		return -1;
 #endif
 	/* remote command mode */
 
@@ -2385,8 +2227,7 @@ static gint prohibit_duplicate_launch(void)
 		gchar *str, *compose_str;
 
 		if (cmd.compose_mailto) {
-			compose_str = g_strdup_printf("compose_attach %s\n",
-						      cmd.compose_mailto);
+			compose_str = g_strdup_printf("compose_attach %s\n", cmd.compose_mailto);
 		} else {
 			compose_str = g_strdup("compose_attach\n");
 		}
@@ -2394,8 +2235,8 @@ static gint prohibit_duplicate_launch(void)
 		CM_FD_WRITE_ALL(compose_str);
 		g_free(compose_str);
 
-		for (curr = cmd.attach_files; curr != NULL ; curr = curr->next) {
-			str = (gchar *) ((AttachInfo *)curr->data)->file;
+		for (curr = cmd.attach_files; curr != NULL; curr = curr->next) {
+			str = (gchar *)((AttachInfo *)curr->data)->file;
 			if (((AttachInfo *)curr->data)->insert)
 				CM_FD_WRITE_ALL("insert ");
 			else
@@ -2409,8 +2250,7 @@ static gint prohibit_duplicate_launch(void)
 		gchar *compose_str;
 
 		if (cmd.compose_mailto) {
-			compose_str = g_strdup_printf
-				("compose %s\n", cmd.compose_mailto);
+			compose_str = g_strdup_printf("compose %s\n", cmd.compose_mailto);
 		} else {
 			compose_str = g_strdup("compose\n");
 		}
@@ -2429,47 +2269,48 @@ static gint prohibit_duplicate_launch(void)
 		CM_FD_WRITE("offline\n");
 	} else if (cmd.debug) {
 		CM_FD_WRITE("debug\n");
- 	} else if (cmd.status || cmd.status_full) {
-  		gchar buf[BUFFSIZE];
- 		gint i;
- 		const gchar *command;
- 		GPtrArray *folders;
- 		gchar *folder;
- 
- 		command = cmd.status_full ? "status-full\n" : "status\n";
- 		folders = cmd.status_full ? cmd.status_full_folders :
- 			cmd.status_folders;
- 
- 		CM_FD_WRITE_ALL(command);
- 		for (i = 0; folders && i < folders->len; ++i) {
- 			folder = g_ptr_array_index(folders, i);
- 			CM_FD_WRITE_ALL(folder);
- 			CM_FD_WRITE_ALL("\n");
- 		}
- 		CM_FD_WRITE_ALL(".\n");
- 		for (;;) {
- 			fd_gets(sock, buf, sizeof(buf) - 1);
+	} else if (cmd.status || cmd.status_full) {
+		gchar buf[BUFFSIZE];
+		gint i;
+		const gchar *command;
+		GPtrArray *folders;
+		gchar *folder;
+
+		command = cmd.status_full ? "status-full\n" : "status\n";
+		folders = cmd.status_full ? cmd.status_full_folders : cmd.status_folders;
+
+		CM_FD_WRITE_ALL(command);
+		for (i = 0; folders && i < folders->len; ++i) {
+			folder = g_ptr_array_index(folders, i);
+			CM_FD_WRITE_ALL(folder);
+			CM_FD_WRITE_ALL("\n");
+		}
+		CM_FD_WRITE_ALL(".\n");
+		for (;;) {
+			fd_gets(sock, buf, sizeof(buf) - 1);
 			buf[sizeof(buf) - 1] = '\0';
- 			if (!STRNCMP(buf, ".\n")) break;
+			if (!STRNCMP(buf, ".\n"))
+				break;
 			if (claws_fputs(buf, stdout) == EOF) {
 				g_warning("writing to stdout failed");
 				break;
 			}
- 		}
+		}
 	} else if (cmd.exit) {
 		CM_FD_WRITE_ALL("exit\n");
 	} else if (cmd.statistics) {
 		gchar buf[BUFSIZ];
 		CM_FD_WRITE("statistics\n");
- 		for (;;) {
- 			fd_gets(sock, buf, sizeof(buf) - 1);
+		for (;;) {
+			fd_gets(sock, buf, sizeof(buf) - 1);
 			buf[sizeof(buf) - 1] = '\0';
- 			if (!STRNCMP(buf, ".\n")) break;
+			if (!STRNCMP(buf, ".\n"))
+				break;
 			if (claws_fputs(buf, stdout) == EOF) {
 				g_warning("writing to stdout failed");
 				break;
 			}
- 		}
+		}
 	} else if (cmd.reset_statistics) {
 		CM_FD_WRITE("reset_statistics\n");
 	} else if (cmd.target) {
@@ -2482,16 +2323,16 @@ static gint prohibit_duplicate_launch(void)
 		g_free(str);
 	} else if (cmd.search) {
 		gchar buf[BUFFSIZE];
-		gchar *str =
-			g_strdup_printf("search %s\n%s\n%s\n%c\n",
-							cmd.search_folder, cmd.search_type, cmd.search_request,
-							(cmd.search_recursive==TRUE)?'1':'0');
+		gchar *str = g_strdup_printf("search %s\n%s\n%s\n%c\n",
+					     cmd.search_folder, cmd.search_type, cmd.search_request,
+					     (cmd.search_recursive == TRUE) ? '1' : '0');
 		CM_FD_WRITE_ALL(str);
 		g_free(str);
 		for (;;) {
 			fd_gets(sock, buf, sizeof(buf) - 1);
 			buf[sizeof(buf) - 1] = '\0';
-			if (!STRNCMP(buf, ".\n")) break;
+			if (!STRNCMP(buf, ".\n"))
+				break;
 			if (claws_fputs(buf, stdout) == EOF) {
 				g_warning("writing to stdout failed");
 				break;
@@ -2505,8 +2346,7 @@ static gint prohibit_duplicate_launch(void)
 		fd_gets(sock, buf, sizeof(buf) - 1);
 		buf[sizeof(buf) - 1] = '\0';
 		if (g_strcmp0(buf, x_display)) {
-			g_print("Claws Mail is already running on display %s.\n",
-				buf);
+			g_print("Claws Mail is already running on display %s.\n", buf);
 		} else {
 			fd_close(sock);
 			sock = fd_connect_unix(path);
@@ -2539,7 +2379,7 @@ static gint lock_socket_remove(void)
 	filename = claws_get_socket_name();
 	dirname = g_path_get_dirname(filename);
 	if (claws_unlink(filename) < 0)
-                FILE_OP_ERROR(filename, "claws_unlink");
+		FILE_OP_ERROR(filename, "claws_unlink");
 	g_rmdir(dirname);
 	g_free(dirname);
 #endif
@@ -2574,9 +2414,7 @@ static GPtrArray *get_folder_item_list(gint sock)
 	return folders;
 }
 
-static void lock_socket_input_cb(gpointer data,
-				 gint source,
-				 GIOCondition condition)
+static void lock_socket_input_cb(gpointer data, gint source, GIOCondition condition)
 {
 	MainWindow *mainwin = (MainWindow *)data;
 	gint sock;
@@ -2596,8 +2434,7 @@ static void lock_socket_input_cb(gpointer data,
 		CM_FD_WRITE_ALL(x_display);
 #endif
 	} else if (!STRNCMP(buf, "receive_all")) {
-		inc_all_account_mail(mainwin, FALSE, FALSE,
-				     prefs_common.newmail_notify_manu);
+		inc_all_account_mail(mainwin, FALSE, FALSE, prefs_common.newmail_notify_manu);
 	} else if (!STRNCMP(buf, "receive")) {
 		inc_mail(mainwin, prefs_common.newmail_notify_manu);
 	} else if (!STRNCMP(buf, "cancel_receiving")) {
@@ -2623,7 +2460,7 @@ static void lock_socket_input_cb(gpointer data,
 			files = g_list_append(files, ainfo);
 		}
 		open_compose_new(mailto, files);
-		
+
 		curr = g_list_first(files);
 		while (curr != NULL) {
 			ainfo = (AttachInfo *)curr->data;
@@ -2645,24 +2482,23 @@ static void lock_socket_input_cb(gpointer data,
 	} else if (!STRNCMP(buf, "offline")) {
 		main_window_toggle_work_offline(mainwin, TRUE, FALSE);
 	} else if (!STRNCMP(buf, "debug")) {
-		debug_set_mode(debug_get_mode() ? FALSE : TRUE);
- 	} else if (!STRNCMP(buf, "status-full") ||
- 		   !STRNCMP(buf, "status")) {
- 		gchar *status;
- 		GPtrArray *folders;
- 
- 		folders = get_folder_item_list(sock);
- 		status = folder_get_status
- 			(folders, !STRNCMP(buf, "status-full"));
- 		CM_FD_WRITE_ALL(status);
- 		CM_FD_WRITE_ALL(".\n");
- 		g_free(status);
- 		if (folders) g_ptr_array_free(folders, TRUE);
+		debug_set_mode(debug_get_mode()? FALSE : TRUE);
+	} else if (!STRNCMP(buf, "status-full") || !STRNCMP(buf, "status")) {
+		gchar *status;
+		GPtrArray *folders;
+
+		folders = get_folder_item_list(sock);
+		status = folder_get_status(folders, !STRNCMP(buf, "status-full"));
+		CM_FD_WRITE_ALL(status);
+		CM_FD_WRITE_ALL(".\n");
+		g_free(status);
+		if (folders)
+			g_ptr_array_free(folders, TRUE);
 	} else if (!STRNCMP(buf, "statistics")) {
 		gchar tmp[BUFSIZ];
 
 		g_snprintf(tmp, sizeof(tmp), _("Session statistics\n"));
- 		CM_FD_WRITE_ALL(tmp);
+		CM_FD_WRITE_ALL(tmp);
 
 		if (prefs_common.date_format) {
 			struct tm *lt;
@@ -2671,87 +2507,90 @@ static void lock_socket_input_cb(gpointer data,
 
 			lt = localtime(&session_stats.time_started);
 			fast_strftime(date, len, prefs_common.date_format, lt);
-			g_snprintf(tmp, sizeof(tmp), _("Started: %s\n"),
-					lt ? date : ctime(&session_stats.time_started));
+			g_snprintf(tmp, sizeof(tmp), _("Started: %s\n"), lt ? date : ctime(&session_stats.time_started));
 		} else
-			g_snprintf(tmp, sizeof(tmp), _("Started: %s\n"),
-					ctime(&session_stats.time_started));
- 		CM_FD_WRITE_ALL(tmp);
+			g_snprintf(tmp, sizeof(tmp), _("Started: %s\n"), ctime(&session_stats.time_started));
+		CM_FD_WRITE_ALL(tmp);
 
- 		CM_FD_WRITE_ALL("\n");
+		CM_FD_WRITE_ALL("\n");
 
 		g_snprintf(tmp, sizeof(tmp), _("Incoming traffic\n"));
- 		CM_FD_WRITE_ALL(tmp);
+		CM_FD_WRITE_ALL(tmp);
 
-		g_snprintf(tmp, sizeof(tmp), _("Received messages: %d\n"),
-				session_stats.received);
- 		CM_FD_WRITE_ALL(tmp);
+		g_snprintf(tmp, sizeof(tmp), _("Received messages: %d\n"), session_stats.received);
+		CM_FD_WRITE_ALL(tmp);
 
 		if (session_stats.spam > 0) {
-			g_snprintf(tmp, sizeof(tmp), _("Spam messages: %d\n"),
-					session_stats.spam);
+			g_snprintf(tmp, sizeof(tmp), _("Spam messages: %d\n"), session_stats.spam);
 			CM_FD_WRITE_ALL(tmp);
 		}
 
- 		CM_FD_WRITE_ALL("\n");
+		CM_FD_WRITE_ALL("\n");
 
 		g_snprintf(tmp, sizeof(tmp), _("Outgoing traffic\n"));
- 		CM_FD_WRITE_ALL(tmp);
+		CM_FD_WRITE_ALL(tmp);
 
-		g_snprintf(tmp, sizeof(tmp), _("New/redirected messages: %d\n"),
-				session_stats.sent);
- 		CM_FD_WRITE_ALL(tmp);
+		g_snprintf(tmp, sizeof(tmp), _("New/redirected messages: %d\n"), session_stats.sent);
+		CM_FD_WRITE_ALL(tmp);
 
-		g_snprintf(tmp, sizeof(tmp), _("Replied messages: %d\n"),
-				session_stats.replied);
- 		CM_FD_WRITE_ALL(tmp);
+		g_snprintf(tmp, sizeof(tmp), _("Replied messages: %d\n"), session_stats.replied);
+		CM_FD_WRITE_ALL(tmp);
 
-		g_snprintf(tmp, sizeof(tmp), _("Forwarded messages: %d\n"),
-				session_stats.forwarded);
- 		CM_FD_WRITE_ALL(tmp);
+		g_snprintf(tmp, sizeof(tmp), _("Forwarded messages: %d\n"), session_stats.forwarded);
+		CM_FD_WRITE_ALL(tmp);
 
-		g_snprintf(tmp, sizeof(tmp), _("Total outgoing messages: %d\n"),
-				(session_stats.sent + session_stats.replied +
-				 session_stats.forwarded));
- 		CM_FD_WRITE_ALL(tmp);
+		g_snprintf(tmp, sizeof(tmp), _("Total outgoing messages: %d\n"), (session_stats.sent + session_stats.replied + session_stats.forwarded));
+		CM_FD_WRITE_ALL(tmp);
 
- 		CM_FD_WRITE_ALL(".\n");
+		CM_FD_WRITE_ALL(".\n");
 	} else if (!STRNCMP(buf, "reset_statistics")) {
 		reset_statistics();
 	} else if (!STRNCMP(buf, "select ")) {
-		const gchar *target = buf+7;
+		const gchar *target = buf + 7;
 		mainwindow_jump_to(target, TRUE);
 	} else if (!STRNCMP(buf, "import ")) {
 		const gchar *mbox_file = buf + 7;
 		mainwindow_import_mbox(mbox_file);
 	} else if (!STRNCMP(buf, "search ")) {
-		FolderItem* folderItem = NULL;
+		FolderItem *folderItem = NULL;
 		GSList *messages = NULL;
 		gchar *folder_name = NULL;
 		gchar *request = NULL;
 		AdvancedSearch *search;
 		gboolean recursive;
 		AdvancedSearchType searchType = ADVANCED_SEARCH_EXTENDED;
-		
+
 		search = advsearch_new();
 
-		folder_name = g_strdup(buf+7);
+		folder_name = g_strdup(buf + 7);
 		strretchomp(folder_name);
 
-		if (fd_gets(sock, buf, sizeof(buf) - 1) <= 0) 
+		if (fd_gets(sock, buf, sizeof(buf) - 1) <= 0)
 			goto search_exit;
 		buf[sizeof(buf) - 1] = '\0';
 
 		switch (toupper(buf[0])) {
-		case 'S': searchType = ADVANCED_SEARCH_SUBJECT; break;
-		case 'F': searchType = ADVANCED_SEARCH_FROM; break;
-		case 'T': searchType = ADVANCED_SEARCH_TO; break;
-		case 'M': searchType = ADVANCED_SEARCH_MIXED; break;
-		case 'G': searchType = ADVANCED_SEARCH_TAG; break;
-		case 'E': searchType = ADVANCED_SEARCH_EXTENDED; break;
+		case 'S':
+			searchType = ADVANCED_SEARCH_SUBJECT;
+			break;
+		case 'F':
+			searchType = ADVANCED_SEARCH_FROM;
+			break;
+		case 'T':
+			searchType = ADVANCED_SEARCH_TO;
+			break;
+		case 'M':
+			searchType = ADVANCED_SEARCH_MIXED;
+			break;
+		case 'G':
+			searchType = ADVANCED_SEARCH_TAG;
+			break;
+		case 'E':
+			searchType = ADVANCED_SEARCH_EXTENDED;
+			break;
 		}
 
-		if (fd_gets(sock, buf, sizeof(buf) - 1) <= 0) 
+		if (fd_gets(sock, buf, sizeof(buf) - 1) <= 0)
 			goto search_exit;
 
 		buf[sizeof(buf) - 1] = '\0';
@@ -2769,14 +2608,14 @@ static void lock_socket_input_cb(gpointer data,
 		folderItem = folder_find_item_from_identifier(folder_name);
 
 		if (folderItem == NULL) {
-			debug_print("Unknown folder item : '%s', searching folder\n",folder_name);
-			Folder* folder = folder_find_from_path(folder_name);
+			debug_print("Unknown folder item : '%s', searching folder\n", folder_name);
+			Folder *folder = folder_find_from_path(folder_name);
 			if (folder != NULL)
 				folderItem = FOLDER_ITEM(folder->node->data);
 			else
-				debug_print("Unknown folder: '%s'\n",folder_name);
+				debug_print("Unknown folder: '%s'\n", folder_name);
 		} else {
-			debug_print("%s %s\n",folderItem->name, folderItem->path);
+			debug_print("%s %s\n", folderItem->name, folderItem->path);
 		}
 
 		if (folderItem != NULL) {
@@ -2788,7 +2627,7 @@ static void lock_socket_input_cb(gpointer data,
 
 		GSList *cur;
 		for (cur = messages; cur != NULL; cur = cur->next) {
-			MsgInfo* msg = (MsgInfo *)cur->data;
+			MsgInfo *msg = (MsgInfo *)cur->data;
 			gchar *file = procmsg_get_message_file_path(msg);
 			CM_FD_WRITE_ALL(file);
 			CM_FD_WRITE_ALL("\n");
@@ -2796,7 +2635,7 @@ static void lock_socket_input_cb(gpointer data,
 		}
 		CM_FD_WRITE_ALL(".\n");
 
-search_exit:
+ search_exit:
 		g_free(folder_name);
 		g_free(request);
 		advsearch_free(search);
@@ -2805,7 +2644,7 @@ search_exit:
 	} else if (!STRNCMP(buf, "exit")) {
 		if (prefs_common.clean_on_exit && !prefs_common.ask_on_clean) {
 			procmsg_empty_all_trash();
-                }
+		}
 		app_will_exit(NULL, mainwin);
 	}
 	fd_close(sock);
@@ -2833,25 +2672,22 @@ static void send_queue(void)
 		Folder *folder = list->data;
 
 		if (folder->queue) {
-			gint res = procmsg_send_queue
-				(folder->queue, prefs_common.savemsg,
-				&errstr);
+			gint res = procmsg_send_queue(folder->queue, prefs_common.savemsg,
+						      &errstr);
 
 			if (res) {
 				folder_item_scan(folder->queue);
 			}
-			
+
 			if (res < 0)
 				error = TRUE;
 		}
 	}
 	if (errstr) {
-		alertpanel_error_log(_("Some errors occurred "
-				"while sending queued messages:\n%s"), errstr);
+		alertpanel_error_log(_("Some errors occurred " "while sending queued messages:\n%s"), errstr);
 		g_free(errstr);
 	} else if (error) {
-		alertpanel_error_log("Some errors occurred "
-				"while sending queued messages.");
+		alertpanel_error_log("Some errors occurred " "while sending queued messages.");
 	}
 }
 
@@ -2867,7 +2703,7 @@ static void quit_signal_handler(int sig)
 static void install_basic_sighandlers()
 {
 #ifndef G_OS_WIN32
-	sigset_t    mask;
+	sigset_t mask;
 	struct sigaction act;
 
 	sigemptyset(&mask);
@@ -2883,26 +2719,25 @@ static void install_basic_sighandlers()
 #endif
 
 	act.sa_handler = quit_signal_handler;
-	act.sa_mask    = mask;
-	act.sa_flags   = 0;
+	act.sa_mask = mask;
+	act.sa_flags = 0;
 
 #ifdef SIGTERM
 	sigaction(SIGTERM, &act, 0);
 #endif
 #ifdef SIGINT
 	sigaction(SIGINT, &act, 0);
-#endif	
+#endif
 #ifdef SIGHUP
 	sigaction(SIGHUP, &act, 0);
-#endif	
+#endif
 
 	sigprocmask(SIG_UNBLOCK, &mask, 0);
 #endif /* !G_OS_WIN32 */
 }
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
-					 gpointer data)
+static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev, gpointer data)
 {
 	MainWindow *mainWin;
 
@@ -2910,8 +2745,8 @@ static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
 	if (static_mainwindow)
 		mainWin = static_mainwindow;
 	else if (data)
-		mainWin = (MainWindow*)data;
-	
+		mainWin = (MainWindow *)data;
+
 	if (!prefs_common.use_networkmanager)
 		return;
 
@@ -2920,29 +2755,24 @@ static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
 		gboolean online;
 
 		online = networkmanager_is_online(&error);
-		if(!error) {
-			if(online && went_offline_nm) {
+		if (!error) {
+			if (online && went_offline_nm) {
 				went_offline_nm = FALSE;
 				main_window_toggle_work_offline(mainWin, FALSE, FALSE);
 				debug_print("NetworkManager: Went online\n");
 				log_message(LOG_PROTOCOL, _("NetworkManager: network is online.\n"));
-			}
-			else if(!online) {
+			} else if (!online) {
 				went_offline_nm = TRUE;
 				main_window_toggle_work_offline(mainWin, TRUE, FALSE);
 				debug_print("NetworkManager: Went offline\n");
 				log_message(LOG_PROTOCOL, _("NetworkManager: network is offline.\n"));
 			}
-		}
-		else {
-			debug_print("Failed to get online information from NetworkManager: %s\n",
-							 error->message);
+		} else {
+			debug_print("Failed to get online information from NetworkManager: %s\n", error->message);
 			g_error_free(error);
 		}
-	}
-	else
-		debug_print("NetworkManager: Cannot change connection state because "
-						 "main window does not exist\n");
+	} else
+		debug_print("NetworkManager: Cannot change connection state because " "main window does not exist\n");
 }
 
 /* Returns true (and sets error appropriately, if given) in case of error */
@@ -2961,39 +2791,34 @@ gboolean networkmanager_is_online(GError **error)
 	proxy = NULL;
 	connection = dbus_g_bus_get(DBUS_BUS_SYSTEM, &tmp_error);
 
-	if(!connection) {
+	if (!connection) {
 		/* If calling code doesn't do error checking, at least print some debug */
-		if((error == NULL) || (*error == NULL))
-			debug_print("Failed to open connection to system bus: %s\n",
-							 tmp_error->message);
+		if ((error == NULL) || (*error == NULL))
+			debug_print("Failed to open connection to system bus: %s\n", tmp_error->message);
 		g_propagate_error(error, tmp_error);
 		return TRUE;
 	}
 
-	proxy = dbus_g_proxy_new_for_name(connection,
-			"org.freedesktop.NetworkManager",
-			"/org/freedesktop/NetworkManager",
-			"org.freedesktop.NetworkManager");
+	proxy = dbus_g_proxy_new_for_name(connection, "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager", "org.freedesktop.NetworkManager");
 
-	retVal = dbus_g_proxy_call(proxy,"state",&tmp_error, G_TYPE_INVALID,
-			G_TYPE_UINT, &state, G_TYPE_INVALID);
+	retVal = dbus_g_proxy_call(proxy, "state", &tmp_error, G_TYPE_INVALID, G_TYPE_UINT, &state, G_TYPE_INVALID);
 
-	if(proxy)
+	if (proxy)
 		g_object_unref(proxy);
-	if(connection)
+	if (connection)
 		dbus_g_connection_unref(connection);
 
-	if(!retVal) {
+	if (!retVal) {
 		/* If calling code doesn't do error checking, at least print some debug */
-		if((error == NULL) || (*error == NULL))
-			debug_print("Failed to get state info from NetworkManager: %s\n",
-							 tmp_error->message);
+		if ((error == NULL) || (*error == NULL))
+			debug_print("Failed to get state info from NetworkManager: %s\n", tmp_error->message);
 		g_propagate_error(error, tmp_error);
 		return TRUE;
 	}
-    	return (state == NM_STATE_CONNECTED_LOCAL ||
-		state == NM_STATE_CONNECTED_SITE ||
-		state == NM_STATE_CONNECTED_GLOBAL ||
-		state == NM_STATE_UNKNOWN);
+	return (state == NM_STATE_CONNECTED_LOCAL || state == NM_STATE_CONNECTED_SITE || state == NM_STATE_CONNECTED_GLOBAL || state == NM_STATE_UNKNOWN);
 }
 #endif
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

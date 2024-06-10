@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -41,7 +41,7 @@
 
 /* indexes of keys are default_mode - 10 if applicable */
 static const char *def_mode[] = {
-	"404",	/* not used, only useful in web pages */
+	"404", /* not used, only useful in web pages */
 	"mm",
 	"identicon",
 	"monsterid",
@@ -53,11 +53,11 @@ static const char *def_mode[] = {
 
 static gulong update_hook_id = HOOK_NONE;
 static gulong render_hook_id = HOOK_NONE;
-static gchar *cache_dir = NULL; /* dir-separator terminated */
+static gchar *cache_dir = NULL;	/* dir-separator terminated */
 
 static gboolean libravatar_header_update_hook(gpointer source, gpointer data)
 {
-	AvatarCaptureData *acd = (AvatarCaptureData *)source;
+	AvatarCaptureData *acd = (AvatarCaptureData *) source;
 
 	debug_print("libravatar avatar_header_update invoked\n");
 
@@ -94,7 +94,7 @@ static gchar *federated_base_url_from_address(const gchar *address)
 		return base_url;
 	}
 
-default_url:
+ default_url:
 #endif
 	return g_strdup(libravatarprefs.base_url);
 }
@@ -122,9 +122,8 @@ static GtkWidget *image_widget_from_filename(const gchar *filename)
 
 	if (w != AVATAR_SIZE || h != AVATAR_SIZE)
 		/* server can provide a different size from the requested in URL */
-		picture = gdk_pixbuf_new_from_file_at_scale(
-				filename, AVATAR_SIZE, AVATAR_SIZE, TRUE, &error);
-	else	/* exact size */
+		picture = gdk_pixbuf_new_from_file_at_scale(filename, AVATAR_SIZE, AVATAR_SIZE, TRUE, &error);
+	else /* exact size */
 		picture = gdk_pixbuf_new_from_file(filename, &error);
 
 	if (error != NULL) {
@@ -138,11 +137,9 @@ static GtkWidget *image_widget_from_filename(const gchar *filename)
 
 static gchar *cache_name_for_md5(const gchar *md5)
 {
-	if (libravatarprefs.default_mode >= DEF_MODE_MM
-			&& libravatarprefs.default_mode <= DEF_MODE_RETRO) {
+	if (libravatarprefs.default_mode >= DEF_MODE_MM && libravatarprefs.default_mode <= DEF_MODE_RETRO) {
 		/* cache dir for generated avatars */
-		return g_strconcat(cache_dir, def_mode[libravatarprefs.default_mode - 10],
-				   G_DIR_SEPARATOR_S, md5, NULL);
+		return g_strconcat(cache_dir, def_mode[libravatarprefs.default_mode - 10], G_DIR_SEPARATOR_S, md5, NULL);
 	}
 	/* default cache dir */
 	return g_strconcat(cache_dir, md5, NULL);
@@ -200,18 +197,15 @@ static GtkWidget *image_widget_from_cached_md5(const gchar *md5)
 static gchar *libravatar_url_for_md5(const gchar *base, const gchar *md5)
 {
 	if (libravatarprefs.default_mode >= DEF_MODE_404) {
-		return g_strdup_printf("%s/%s?s=%u&d=%s",
-				base, md5, AVATAR_SIZE,
-				def_mode[libravatarprefs.default_mode - 10]);
+		return g_strdup_printf("%s/%s?s=%u&d=%s", base, md5, AVATAR_SIZE, def_mode[libravatarprefs.default_mode - 10]);
 	} else if (libravatarprefs.default_mode == DEF_MODE_URL) {
 		gchar *escaped = g_uri_escape_string(libravatarprefs.default_mode_url, "/", TRUE);
 		gchar *url = g_strdup_printf("%s/%s?s=%u&d=%s",
-				base, md5, AVATAR_SIZE, escaped);
+					     base, md5, AVATAR_SIZE, escaped);
 		g_free(escaped);
 		return url;
 	} else if (libravatarprefs.default_mode == DEF_MODE_NONE) {
-		return g_strdup_printf("%s/%s?s=%u&d=404",
-				base, md5, AVATAR_SIZE);
+		return g_strdup_printf("%s/%s?s=%u&d=404", base, md5, AVATAR_SIZE);
 	}
 
 	g_warning("invalid libravatar default mode: %d", libravatarprefs.default_mode);
@@ -242,7 +236,7 @@ static gboolean libravatar_image_render_hook(gpointer source, gpointer data)
 			if (ar->image) /* previous plugin set one */
 				gtk_widget_destroy(ar->image);
 			ar->image = image;
-			ar->type  = AVATAR_LIBRAVATAR;
+			ar->type = AVATAR_LIBRAVATAR;
 			return FALSE;
 		}
 		/* not cached copy: try network */
@@ -259,7 +253,7 @@ static gboolean libravatar_image_render_hook(gpointer source, gpointer data)
 				if (ar->image) /* previous plugin set one */
 					gtk_widget_destroy(ar->image);
 				ar->image = image;
-				ar->type  = AVATAR_LIBRAVATAR;
+				ar->type = AVATAR_LIBRAVATAR;
 			}
 		}
 		g_free(base);
@@ -273,7 +267,7 @@ static gboolean libravatar_image_render_hook(gpointer source, gpointer data)
 static gint cache_dir_init()
 {
 	cache_dir = libravatar_cache_init(def_mode, DEF_MODE_MM - 10, DEF_MODE_RETRO - 10);
-	cm_return_val_if_fail (cache_dir != NULL, -1);
+	cm_return_val_if_fail(cache_dir != NULL, -1);
 
 	return 0;
 }
@@ -281,7 +275,7 @@ static gint cache_dir_init()
 static gint missing_cache_init()
 {
 	gchar *cache_file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-	                                LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
+					LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
 					LIBRAVATAR_MISSING_FILE, NULL);
 
 	libravatarmisses = missing_load_from_file(cache_file);
@@ -298,9 +292,7 @@ static void missing_cache_done()
 	gchar *cache_file;
 
 	if (libravatarmisses != NULL) {
-		cache_file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
-					LIBRAVATAR_MISSING_FILE, NULL);
+		cache_file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S, LIBRAVATAR_MISSING_FILE, NULL);
 		missing_save_to_file(libravatarmisses, cache_file);
 		g_free(cache_file);
 		g_hash_table_destroy(libravatarmisses);
@@ -310,13 +302,11 @@ static void missing_cache_done()
 static void unregister_hooks()
 {
 	if (render_hook_id != HOOK_NONE) {
-		hooks_unregister_hook(AVATAR_IMAGE_RENDER_HOOKLIST,
-				      render_hook_id);
+		hooks_unregister_hook(AVATAR_IMAGE_RENDER_HOOKLIST, render_hook_id);
 		render_hook_id = HOOK_NONE;
 	}
 	if (update_hook_id != HOOK_NONE) {
-		hooks_unregister_hook(AVATAR_HEADER_UPDATE_HOOKLIST,
-				      update_hook_id);
+		hooks_unregister_hook(AVATAR_HEADER_UPDATE_HOOKLIST, update_hook_id);
 		update_hook_id = HOOK_NONE;
 	}
 }
@@ -330,21 +320,16 @@ static void unregister_hooks()
  */
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3,9,3,29),
-				  VERSION_NUMERIC, _("Libravatar"), error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 9, 3, 29), VERSION_NUMERIC, _("Libravatar"), error))
 		return -1;
 	/* get info from headers */
-	update_hook_id = hooks_register_hook(AVATAR_HEADER_UPDATE_HOOKLIST,
-					     libravatar_header_update_hook,
-					     NULL);
+	update_hook_id = hooks_register_hook(AVATAR_HEADER_UPDATE_HOOKLIST, libravatar_header_update_hook, NULL);
 	if (update_hook_id == HOOK_NONE) {
 		*error = g_strdup(_("Failed to register avatar header update hook"));
 		return -1;
 	}
 	/* get image for displaying */
-	render_hook_id = hooks_register_hook(AVATAR_IMAGE_RENDER_HOOKLIST,
-					     libravatar_image_render_hook,
-					     NULL);
+	render_hook_id = hooks_register_hook(AVATAR_IMAGE_RENDER_HOOKLIST, libravatar_image_render_hook, NULL);
 	if (render_hook_id == HOOK_NONE) {
 		unregister_hooks();
 		*error = g_strdup(_("Failed to register avatar image render hook"));
@@ -406,16 +391,7 @@ const gchar *plugin_name(void)
  */
 const gchar *plugin_desc(void)
 {
-	return _("Display libravatar profiles' images for mail messages. More\n"
-		 "info about libravatar at http://www.libravatar.org/. If you have\n"
-		 "a gravatar.com profile but not a libravatar one, those will also\n"
-		 "be retrieved (when redirections are allowed in plugin config).\n"
-		 "Plugin config page is available from main window at:\n"
-		 "/Configuration/Preferences/Plugins/Libravatar.\n\n"
-		 "This plugin uses libcurl to retrieve images, so if you're behind a\n"
-		 "proxy please refer to curl(1) manpage for details on 'http_proxy'\n"
-		 "configuration. More details about this and others on README file.\n\n"
-		 "Feedback to <ricardo@mones.org> is welcome.\n");
+	return _("Display libravatar profiles' images for mail messages. More\n" "info about libravatar at http://www.libravatar.org/. If you have\n" "a gravatar.com profile but not a libravatar one, those will also\n" "be retrieved (when redirections are allowed in plugin config).\n" "Plugin config page is available from main window at:\n" "/Configuration/Preferences/Plugins/Libravatar.\n\n" "This plugin uses libcurl to retrieve images, so if you're behind a\n" "proxy please refer to curl(1) manpage for details on 'http_proxy'\n" "configuration. More details about this and others on README file.\n\n" "Feedback to <ricardo@mones.org> is welcome.\n");
 }
 
 /**
@@ -455,10 +431,13 @@ const gchar *plugin_version(void)
  */
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] =
-		{ {PLUGIN_OTHER, N_("Libravatar")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_OTHER, N_("Libravatar")},
+	{PLUGIN_NOTHING, NULL}
+	};
 
 	return features;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

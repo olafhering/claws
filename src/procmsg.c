@@ -54,29 +54,26 @@
 
 extern SessionStats session_stats;
 
-static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_session, gchar **errstr,
-					    FolderItem *queue, gint msgnum, gboolean *queued_removed);
-static void procmsg_update_unread_children	(MsgInfo 	*info,
-					 gboolean 	 newly_marked);
-enum
-{
-	Q_SENDER           = 0,
-	Q_SMTPSERVER       = 1,
-	Q_RECIPIENTS       = 2,
-	Q_NEWSGROUPS       = 3,
-	Q_MAIL_ACCOUNT_ID  = 4,
-	Q_NEWS_ACCOUNT_ID  = 5,
+static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_session, gchar **errstr, FolderItem *queue, gint msgnum, gboolean *queued_removed);
+static void procmsg_update_unread_children(MsgInfo *info, gboolean newly_marked);
+enum {
+	Q_SENDER = 0,
+	Q_SMTPSERVER = 1,
+	Q_RECIPIENTS = 2,
+	Q_NEWSGROUPS = 3,
+	Q_MAIL_ACCOUNT_ID = 4,
+	Q_NEWS_ACCOUNT_ID = 5,
 	Q_SAVE_COPY_FOLDER = 6,
 	Q_REPLY_MESSAGE_ID = 7,
-	Q_FWD_MESSAGE_ID   = 8,
-	Q_PRIVACY_SYSTEM   = 9,
-	Q_ENCRYPT 	   = 10,
-	Q_ENCRYPT_DATA	   = 11,
-	Q_CLAWS_HDRS       = 12,
+	Q_FWD_MESSAGE_ID = 8,
+	Q_PRIVACY_SYSTEM = 9,
+	Q_ENCRYPT = 10,
+	Q_ENCRYPT_DATA = 11,
+	Q_CLAWS_HDRS = 12,
 	Q_PRIVACY_SYSTEM_OLD = 13,
-	Q_ENCRYPT_OLD 	     = 14,
-	Q_ENCRYPT_DATA_OLD   = 15,
-	Q_CLAWS_HDRS_OLD     = 16,
+	Q_ENCRYPT_OLD = 14,
+	Q_ENCRYPT_DATA_OLD = 15,
+	Q_CLAWS_HDRS_OLD = 16,
 };
 
 void procmsg_msg_list_free(GSList *mlist)
@@ -123,7 +120,7 @@ struct MarkSum {
   hashtable. will use the oldest node with the same
   subject that is not more then thread_by_subject_max_age
   days old (see subject_hashtable_lookup)
-*/  
+*/
 
 static void subject_hashtable_insert(GHashTable *hashtable, GNode *node)
 {
@@ -133,7 +130,7 @@ static void subject_hashtable_insert(GHashTable *hashtable, GNode *node)
 
 	cm_return_if_fail(hashtable != NULL);
 	cm_return_if_fail(node != NULL);
-	msginfo = (MsgInfo *) node->data;
+	msginfo = (MsgInfo *)node->data;
 	cm_return_if_fail(msginfo != NULL);
 
 	subject = msginfo->subject;
@@ -155,7 +152,7 @@ static GNode *subject_hashtable_lookup(GHashTable *hashtable, MsgInfo *msginfo)
 	gint prefix_length;
 	MsgInfo *hashtable_msginfo = NULL, *best_msginfo = NULL;
 	gboolean match;
-    
+
 	cm_return_val_if_fail(hashtable != NULL, NULL);
 
 	subject = msginfo->subject;
@@ -165,7 +162,7 @@ static GNode *subject_hashtable_lookup(GHashTable *hashtable, MsgInfo *msginfo)
 	if (prefix_length <= 0)
 		return NULL;
 	subject += prefix_length;
-	
+
 	list = g_hash_table_lookup(hashtable, subject);
 	if (list == NULL)
 		return NULL;
@@ -173,20 +170,17 @@ static GNode *subject_hashtable_lookup(GHashTable *hashtable, MsgInfo *msginfo)
 	/* check all nodes with the same subject to find the best parent */
 	for (cur = list; cur; cur = cur->next) {
 		hashtable_node = (GNode *)cur->data;
-		hashtable_msginfo = (MsgInfo *) hashtable_node->data;
+		hashtable_msginfo = (MsgInfo *)hashtable_node->data;
 		match = FALSE;
 
 		/* best node should be the oldest in the found nodes */
 		/* parent node must not be older then msginfo */
-		if ((hashtable_msginfo->date_t < msginfo->date_t) &&
-		    ((best_msginfo == NULL) ||
-		     (best_msginfo->date_t > hashtable_msginfo->date_t)))
+		if ((hashtable_msginfo->date_t < msginfo->date_t) && ((best_msginfo == NULL) || (best_msginfo->date_t > hashtable_msginfo->date_t)))
 			match = TRUE;
 
 		/* parent node must not be more then thread_by_subject_max_age
 		   days older then msginfo */
-		if (fabs(difftime(msginfo->date_t, hashtable_msginfo->date_t)) >
-                    prefs_common.thread_by_subject_max_age * 3600 * 24)
+		if (fabs(difftime(msginfo->date_t, hashtable_msginfo->date_t)) > prefs_common.thread_by_subject_max_age * 3600 * 24)
 			match = FALSE;
 
 		/* can add new tests for all matching
@@ -214,11 +208,11 @@ GNode *procmsg_get_thread_tree(GSList *mlist)
 	GHashTable *subject_hashtable = NULL;
 	MsgInfo *msginfo;
 	const gchar *msgid;
-        GSList *reflist;
+	GSList *reflist;
 	START_TIMING("");
 	root = g_node_new(NULL);
 	msgid_table = g_hash_table_new(g_str_hash, g_str_equal);
-	
+
 	if (prefs_common.thread_by_subject) {
 		subject_hashtable = g_hash_table_new(g_str_hash, g_str_equal);
 	}
@@ -233,9 +227,7 @@ GNode *procmsg_get_thread_tree(GSList *mlist)
 				parent = root;
 			}
 		}
-		node = g_node_insert_data_before
-			(parent, parent == root ? parent->children : NULL,
-			 msginfo);
+		node = g_node_insert_data_before(parent, parent == root ? parent->children : NULL, msginfo);
 		if ((msgid = msginfo->msgid) && g_hash_table_lookup(msgid_table, msgid) == NULL)
 			g_hash_table_insert(msgid_table, (gchar *)msgid, node);
 
@@ -246,32 +238,28 @@ GNode *procmsg_get_thread_tree(GSList *mlist)
 	}
 
 	/* complete the unfinished threads */
-	for (node = root->children; node != NULL; ) {
+	for (node = root->children; node != NULL;) {
 		next = node->next;
 		msginfo = (MsgInfo *)node->data;
 		parent = NULL;
-		
-                if (msginfo->inreplyto)
+
+		if (msginfo->inreplyto)
 			parent = g_hash_table_lookup(msgid_table, msginfo->inreplyto);
 
 		/* try looking for the indirect parent */
 		if (!parent && msginfo->references) {
-			for (reflist = msginfo->references;
-			     reflist != NULL; reflist = reflist->next)
-				if ((parent = g_hash_table_lookup
-					(msgid_table, reflist->data)) != NULL)
+			for (reflist = msginfo->references; reflist != NULL; reflist = reflist->next)
+				if ((parent = g_hash_table_lookup(msgid_table, reflist->data)) != NULL)
 					break;
-                }                                        
-              
+		}
+
 		/* node should not be the parent, and node should not
 		   be an ancestor of parent (circular reference) */
-		if (parent && parent != node &&
-		    !g_node_is_ancestor(node, parent)) {
+		if (parent && parent != node && !g_node_is_ancestor(node, parent)) {
 			g_node_unlink(node);
-			g_node_insert_before
-				(parent, parent->children, node);
+			g_node_insert_before(parent, parent->children, node);
 		}
-               
+
 		node = next;
 	}
 
@@ -279,32 +267,31 @@ GNode *procmsg_get_thread_tree(GSList *mlist)
 		START_TIMING("thread by subject");
 		for (node = root->children; node && node != NULL;) {
 			next = node->next;
-			msginfo = (MsgInfo *) node->data;
-			
+			msginfo = (MsgInfo *)node->data;
+
 			parent = subject_hashtable_lookup(subject_hashtable, msginfo);
-			
+
 			/* the node may already be threaded by IN-REPLY-TO, so go up 
 			 * in the tree to 
-			   find the parent node */
+			 find the parent node */
 			if (parent != NULL) {
 				if (g_node_is_ancestor(node, parent))
 					parent = NULL;
 				if (parent == node)
 					parent = NULL;
 			}
-			
+
 			if (parent) {
 				g_node_unlink(node);
 				g_node_append(parent, node);
 			}
 
 			node = next;
-		}	
+		}
 		END_TIMING();
 	}
-	
-	if (prefs_common.thread_by_subject)
-	{
+
+	if (prefs_common.thread_by_subject) {
 		g_hash_table_foreach(subject_hashtable, subject_hashtable_free, NULL);
 		g_hash_table_destroy(subject_hashtable);
 	}
@@ -321,11 +308,12 @@ gint procmsg_move_messages(GSList *mlist)
 	FolderItem *dest = NULL;
 	gint retval = 0;
 	gboolean finished = TRUE;
-	if (!mlist) return 0;
+	if (!mlist)
+		return 0;
 
 	folder_item_update_freeze();
 
-next_folder:
+ next_folder:
 	for (cur = mlist; cur != NULL; cur = cur->next) {
 		msginfo = (MsgInfo *)cur->data;
 		if (!msginfo->to_folder) {
@@ -365,11 +353,12 @@ void procmsg_copy_messages(GSList *mlist)
 	MsgInfo *msginfo;
 	FolderItem *dest = NULL;
 	gboolean finished = TRUE;
-	if (!mlist) return;
+	if (!mlist)
+		return;
 
 	folder_item_update_freeze();
 
-next_folder:
+ next_folder:
 	for (cur = mlist; cur != NULL; cur = cur->next) {
 		msginfo = (MsgInfo *)cur->data;
 		if (!msginfo->to_folder) {
@@ -428,8 +417,7 @@ gchar *procmsg_get_message_file_full(MsgInfo *msginfo, gboolean headers, gboolea
 
 	cm_return_val_if_fail(msginfo != NULL, NULL);
 
-	filename = folder_item_fetch_msg_full(msginfo->folder, msginfo->msgnum,
-						headers, body);
+	filename = folder_item_fetch_msg_full(msginfo->folder, msginfo->msgnum, headers, body);
 	if (!filename)
 		debug_print("can't fetch message %d\n", msginfo->msgnum);
 
@@ -438,30 +426,30 @@ gchar *procmsg_get_message_file_full(MsgInfo *msginfo, gboolean headers, gboolea
 
 GSList *procmsg_get_message_file_list(GSList *mlist)
 {
-        GSList *file_list = NULL;
-        MsgInfo *msginfo;
-        MsgFileInfo *fileinfo;
-        gchar *file;
+	GSList *file_list = NULL;
+	MsgInfo *msginfo;
+	MsgFileInfo *fileinfo;
+	gchar *file;
 
-        while (mlist != NULL) {
-                msginfo = (MsgInfo *)mlist->data;
-                file = procmsg_get_message_file(msginfo);
-                if (!file) {
-                        procmsg_message_file_list_free(file_list);
-                        return NULL;
-                }
-                fileinfo = g_new(MsgFileInfo, 1);
+	while (mlist != NULL) {
+		msginfo = (MsgInfo *)mlist->data;
+		file = procmsg_get_message_file(msginfo);
+		if (!file) {
+			procmsg_message_file_list_free(file_list);
+			return NULL;
+		}
+		fileinfo = g_new(MsgFileInfo, 1);
 		fileinfo->msginfo = procmsg_msginfo_new_ref(msginfo);
-                fileinfo->file = file;
-                fileinfo->flags = g_new(MsgFlags, 1);
-                *fileinfo->flags = msginfo->flags;
-                file_list = g_slist_prepend(file_list, fileinfo);
-                mlist = mlist->next;
-        }
+		fileinfo->file = file;
+		fileinfo->flags = g_new(MsgFlags, 1);
+		*fileinfo->flags = msginfo->flags;
+		file_list = g_slist_prepend(file_list, fileinfo);
+		mlist = mlist->next;
+	}
 
-        file_list = g_slist_reverse(file_list);
+	file_list = g_slist_reverse(file_list);
 
-        return file_list;
+	return file_list;
 }
 
 void procmsg_message_file_list_free(MsgInfoList *file_list)
@@ -470,7 +458,7 @@ void procmsg_message_file_list_free(MsgInfoList *file_list)
 	MsgFileInfo *fileinfo;
 
 	for (cur = file_list; cur != NULL; cur = cur->next) {
-		fileinfo = (MsgFileInfo *)cur->data;
+		fileinfo = (MsgFileInfo *) cur->data;
 		procmsg_msginfo_free(&(fileinfo->msginfo));
 		g_free(fileinfo->file);
 		g_free(fileinfo->flags);
@@ -486,7 +474,7 @@ FILE *procmsg_open_message(MsgInfo *msginfo, gboolean skip_special_headers)
 	gchar *file;
 
 	cm_return_val_if_fail(msginfo != NULL, NULL);
-	
+
 	file = procmsg_get_message_file_path(msginfo);
 	cm_return_val_if_fail(file != NULL, NULL);
 
@@ -505,24 +493,21 @@ FILE *procmsg_open_message(MsgInfo *msginfo, gboolean skip_special_headers)
 
 	g_free(file);
 
-	if (MSG_IS_QUEUED(msginfo->flags) || MSG_IS_DRAFT(msginfo->flags) ||
-	    skip_special_headers == TRUE) {
+	if (MSG_IS_QUEUED(msginfo->flags) || MSG_IS_DRAFT(msginfo->flags) || skip_special_headers == TRUE) {
 		gchar buf[BUFFSIZE];
 
 		while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 			/* new way */
-			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1",
-				strlen("X-Claws-End-Special-Headers:"))) ||
-			    (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1",
-				strlen("X-Sylpheed-End-Special-Headers:"))))
+			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1", strlen("X-Claws-End-Special-Headers:"))) || (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1", strlen("X-Sylpheed-End-Special-Headers:"))))
 				break;
 			/* old way */
-			if (buf[0] == '\r' || buf[0] == '\n') break;
+			if (buf[0] == '\r' || buf[0] == '\n')
+				break;
 			/* from other mailers */
 			if (!strncmp(buf, "Date: ", 6)
-			||  !strncmp(buf, "To: ", 4)
-			||  !strncmp(buf, "From: ", 6)
-			||  !strncmp(buf, "Subject: ", 9)) {
+			    || !strncmp(buf, "To: ", 4)
+			    || !strncmp(buf, "From: ", 6)
+			    || !strncmp(buf, "Subject: ", 9)) {
 				rewind(fp);
 				break;
 			}
@@ -536,35 +521,35 @@ gboolean procmsg_msg_exist(MsgInfo *msginfo)
 {
 	gboolean ret;
 
-	if (!msginfo) return FALSE;
+	if (!msginfo)
+		return FALSE;
 
 	ret = !folder_item_is_msg_changed(msginfo->folder, msginfo);
 
 	return ret;
 }
 
-void procmsg_get_filter_keyword(MsgInfo *msginfo, gchar **header, gchar **key,
-				PrefsFilterType type)
+void procmsg_get_filter_keyword(MsgInfo *msginfo, gchar **header, gchar **key, PrefsFilterType type)
 {
-	static HeaderEntry hentry[] = {{"X-BeenThere:",    NULL, TRUE},
-				       {"X-ML-Name:",      NULL, TRUE},
-				       {"X-List:",         NULL, TRUE},
-				       {"X-Mailing-list:", NULL, TRUE},
-				       {"List-Id:",        NULL, TRUE},
-				       {"X-Sequence:",	   NULL, TRUE},
-				       {"Sender:",	   NULL, TRUE},
-				       {"List-Post:",	   NULL, TRUE},
-				       {NULL,		   NULL, FALSE}};
-	enum
-	{
-		H_X_BEENTHERE	 = 0,
-		H_X_ML_NAME      = 1,
-		H_X_LIST         = 2,
+	static HeaderEntry hentry[] = { {"X-BeenThere:", NULL, TRUE},
+	{"X-ML-Name:", NULL, TRUE},
+	{"X-List:", NULL, TRUE},
+	{"X-Mailing-list:", NULL, TRUE},
+	{"List-Id:", NULL, TRUE},
+	{"X-Sequence:", NULL, TRUE},
+	{"Sender:", NULL, TRUE},
+	{"List-Post:", NULL, TRUE},
+	{NULL, NULL, FALSE}
+	};
+	enum {
+		H_X_BEENTHERE = 0,
+		H_X_ML_NAME = 1,
+		H_X_LIST = 2,
 		H_X_MAILING_LIST = 3,
-		H_LIST_ID	 = 4,
-		H_X_SEQUENCE	 = 5,
-		H_SENDER	 = 6,
-		H_LIST_POST	 = 7
+		H_LIST_ID = 4,
+		H_X_SEQUENCE = 5,
+		H_SENDER = 6,
+		H_LIST_POST = 7
 	};
 
 	FILE *fp;
@@ -603,14 +588,16 @@ void procmsg_get_filter_keyword(MsgInfo *msginfo, gchar **header, gchar **key,
 			SET_FILTER_KEY("header \"X-List\"", H_X_LIST);
 		} else if (hentry[H_X_MAILING_LIST].body != NULL) {
 			SET_FILTER_KEY("header \"X-Mailing-List\"", H_X_MAILING_LIST);
-		} else  if (hentry[H_X_SEQUENCE].body != NULL) {
+		} else if (hentry[H_X_SEQUENCE].body != NULL) {
 			gchar *p;
 
 			SET_FILTER_KEY("X-Sequence", H_X_SEQUENCE);
 			p = *key;
 			while (*p != '\0') {
-				while (*p != '\0' && !g_ascii_isspace(*p)) p++;
-				while (g_ascii_isspace(*p)) p++;
+				while (*p != '\0' && !g_ascii_isspace(*p))
+					p++;
+				while (g_ascii_isspace(*p))
+					p++;
 				if (g_ascii_isdigit(*p)) {
 					*p = '\0';
 					break;
@@ -677,7 +664,7 @@ void procmsg_get_filter_keyword(MsgInfo *msginfo, gchar **header, gchar **key,
 		g_free(hentry[H_LIST_ID].body);
 		hentry[H_LIST_ID].body = NULL;
 		g_free(hentry[H_SENDER].body);
-		hentry[H_SENDER].body = NULL;		
+		hentry[H_SENDER].body = NULL;
 
 #undef SET_FILTER_KEY
 		break;
@@ -690,22 +677,19 @@ static void procmsg_empty_trash(FolderItem *trash)
 {
 	GNode *node, *next;
 
-	if (!trash || 
-	    (trash->stype != F_TRASH && 
-	     !folder_has_parent_of_type(trash, F_TRASH)))
+	if (!trash || (trash->stype != F_TRASH && !folder_has_parent_of_type(trash, F_TRASH)))
 		return;
 
 	if (trash && trash->total_msgs > 0) {
 		GSList *mlist = folder_item_get_msg_list(trash);
 		GSList *cur;
-		for (cur = mlist ; cur != NULL ; cur = cur->next) {
-			MsgInfo * msginfo = (MsgInfo *) cur->data;
+		for (cur = mlist; cur != NULL; cur = cur->next) {
+			MsgInfo *msginfo = (MsgInfo *)cur->data;
 			if (MSG_IS_LOCKED(msginfo->flags)) {
 				procmsg_msginfo_free(&msginfo);
 				continue;
 			}
-			if (msginfo->total_size != 0 && 
-			    msginfo->size != (off_t)msginfo->total_size)
+			if (msginfo->total_size != 0 && msginfo->size != (off_t) msginfo->total_size)
 				partial_mark_for_delete(msginfo);
 
 			procmsg_msginfo_free(&msginfo);
@@ -734,10 +718,8 @@ void procmsg_empty_all_trash(void)
 		Folder *folder = FOLDER(cur->data);
 		trash = folder->trash;
 		procmsg_empty_trash(trash);
-		if (folder->account && folder->account->set_trash_folder && 
-		    folder_find_item_from_identifier(folder->account->trash_folder))
-		    	procmsg_empty_trash(
-				folder_find_item_from_identifier(folder->account->trash_folder));
+		if (folder->account && folder->account->set_trash_folder && folder_find_item_from_identifier(folder->account->trash_folder))
+			procmsg_empty_trash(folder_find_item_from_identifier(folder->account->trash_folder));
 	}
 }
 
@@ -747,24 +729,25 @@ static PrefsAccount *procmsg_get_account_from_file(const gchar *file)
 	FILE *fp;
 	int hnum;
 	gchar *buf = NULL;
-	static HeaderEntry qentry[] = {{"S:",    NULL, FALSE},
-				       {"SSV:",  NULL, FALSE},
-				       {"R:",    NULL, FALSE},
-				       {"NG:",   NULL, FALSE},
-				       {"MAID:", NULL, FALSE},
-				       {"NAID:", NULL, FALSE},
-				       {"SCF:",  NULL, FALSE},
-				       {"RMID:", NULL, FALSE},
-				       {"FMID:", NULL, FALSE},
-				       {"X-Claws-Privacy-System:", NULL, FALSE},
-				       {"X-Claws-Encrypt:", NULL, FALSE},
-				       {"X-Claws-Encrypt-Data:", NULL, FALSE},
-				       {"X-Claws-End-Special-Headers",    NULL, FALSE},
-				       {"X-Sylpheed-Privacy-System:", NULL, FALSE},
-				       {"X-Sylpheed-Encrypt:", NULL, FALSE},
-				       {"X-Sylpheed-Encrypt-Data:", NULL, FALSE},
-				       {NULL,    NULL, FALSE}};
-	
+	static HeaderEntry qentry[] = { {"S:", NULL, FALSE},
+	{"SSV:", NULL, FALSE},
+	{"R:", NULL, FALSE},
+	{"NG:", NULL, FALSE},
+	{"MAID:", NULL, FALSE},
+	{"NAID:", NULL, FALSE},
+	{"SCF:", NULL, FALSE},
+	{"RMID:", NULL, FALSE},
+	{"FMID:", NULL, FALSE},
+	{"X-Claws-Privacy-System:", NULL, FALSE},
+	{"X-Claws-Encrypt:", NULL, FALSE},
+	{"X-Claws-Encrypt-Data:", NULL, FALSE},
+	{"X-Claws-End-Special-Headers", NULL, FALSE},
+	{"X-Sylpheed-Privacy-System:", NULL, FALSE},
+	{"X-Sylpheed-Encrypt:", NULL, FALSE},
+	{"X-Sylpheed-Encrypt-Data:", NULL, FALSE},
+	{NULL, NULL, FALSE}
+	};
+
 	cm_return_val_if_fail(file != NULL, NULL);
 
 	if ((fp = claws_fopen(file, "rb")) == NULL) {
@@ -796,7 +779,7 @@ gchar *procmsg_msginfo_get_avatar(MsgInfo *msginfo, gint type)
 		return NULL;
 
 	for (mia = msginfo->extradata->avatars; mia; mia = mia->next) {
-		MsgInfoAvatar *avatar = (MsgInfoAvatar *)mia->data;
+		MsgInfoAvatar *avatar = (MsgInfoAvatar *) mia->data;
 		if (avatar->avatar_id == type)
 			return avatar->avatar_src;
 	}
@@ -877,15 +860,15 @@ static GSList *procmsg_list_sort_by_account(FolderItem *queue, GSList *list)
 		return NULL;
 
 	orig = g_slist_copy(list);
-	
+
 	msg = (MsgInfo *)orig->data;
-	
+
 	for (cur = orig; cur; cur = cur->next)
 		debug_print("sort before %s\n", ((MsgInfo *)cur->data)->from);
-	
+
 	debug_print("\n");
 
-parse_again:	
+ parse_again:
 	nothing_to_sort = TRUE;
 	cur = orig;
 	while (cur) {
@@ -905,7 +888,7 @@ parse_again:
 		}
 		cur = cur->next;
 	}
-	
+
 	if (orig && g_slist_length(orig)) {
 		if (!last_account && nothing_to_sort) {
 			/* can't find an account for the rest of the list */
@@ -919,9 +902,9 @@ parse_again:
 			goto parse_again;
 		}
 	}
-	
+
 	g_slist_free(orig);
-	
+
 	for (cur = result; cur; cur = cur->next)
 		debug_print("sort after %s\n", ((MsgInfo *)cur->data)->from);
 
@@ -939,14 +922,14 @@ static gboolean procmsg_is_last_for_account(FolderItem *queue, MsgInfo *msginfo,
 	for (cur = elem; cur; cur = cur->next) {
 		MsgInfo *cur_msginfo = (MsgInfo *)cur->data;
 		file = folder_item_fetch_msg(queue, cur_msginfo->msgnum);
-		
+
 		if (cur_msginfo != msginfo && !MSG_IS_LOCKED(cur_msginfo->flags)) {
 			if (procmsg_get_account_from_file(file) == ac) {
 				g_free(file);
 				return FALSE;
 			}
 		}
-		
+
 		g_free(file);
 	}
 	return TRUE;
@@ -960,7 +943,8 @@ gboolean procmsg_queue_lock(char **errstr)
 		/* Avoid having to translate two similar strings */
 		log_warning(LOG_PROTOCOL, "%s\n", _("Already trying to send."));
 		if (errstr) {
-			if (*errstr) g_free(*errstr);
+			if (*errstr)
+				g_free(*errstr);
 			*errstr = g_strdup_printf(_("Already trying to send."));
 		}
 		return FALSE;
@@ -968,10 +952,12 @@ gboolean procmsg_queue_lock(char **errstr)
 	send_queue_lock = TRUE;
 	return TRUE;
 }
+
 void procmsg_queue_unlock(void)
 {
 	send_queue_lock = FALSE;
 }
+
 /*!
  *\brief	Send messages in queue
  *
@@ -987,7 +973,7 @@ gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr)
 	GSList *list, *elem;
 	GSList *sorted_list = NULL;
 	GNode *node, *next;
-	
+
 	if (!procmsg_queue_lock(errstr)) {
 		main_window_set_menu_sensitive(mainwindow_get_mainwindow());
 		toolbar_main_set_sensitive(mainwindow_get_mainwindow());
@@ -996,7 +982,7 @@ gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr)
 	inc_lock();
 	if (!queue)
 		queue = folder_get_default_queue();
-	
+
 	if (queue == NULL) {
 		procmsg_queue_unlock();
 		inc_unlock();
@@ -1011,24 +997,21 @@ gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr)
 
 	/* sort the list per sender account; this helps reusing the same SMTP server */
 	sorted_list = procmsg_list_sort_by_account(queue, list);
-	
+
 	for (elem = sorted_list; elem != NULL; elem = elem->next) {
 		gchar *file;
 		MsgInfo *msginfo;
-			
+
 		msginfo = (MsgInfo *)(elem->data);
 		if (!MSG_IS_LOCKED(msginfo->flags) && !MSG_IS_DELETED(msginfo->flags)) {
 			file = folder_item_fetch_msg(queue, msginfo->msgnum);
 			if (file) {
 				gboolean queued_removed = FALSE;
-				if (procmsg_send_message_queue_full(file, 
-						!procmsg_is_last_for_account(queue, msginfo, elem),
-						errstr, queue, msginfo->msgnum, &queued_removed) < 0) {
-					g_warning("sending queued message %d failed",
-						  msginfo->msgnum);
+				if (procmsg_send_message_queue_full(file, !procmsg_is_last_for_account(queue, msginfo, elem), errstr, queue, msginfo->msgnum, &queued_removed) < 0) {
+					g_warning("sending queued message %d failed", msginfo->msgnum);
 					err++;
 				} else {
-					sent++; 
+					sent++;
 					if (!queued_removed)
 						folder_item_remove_msg(queue, msginfo->msgnum);
 				}
@@ -1052,7 +1035,7 @@ gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr)
 			send_queue_lock = FALSE;
 			res = procmsg_send_queue(FOLDER_ITEM(node->data), save_msgs, errstr);
 			send_queue_lock = TRUE;
-			if (res < 0) 
+			if (res < 0)
 				err = -res;
 			else
 				sent += res;
@@ -1111,7 +1094,7 @@ gint procmsg_remove_special_headers(const gchar *in, const gchar *out)
 {
 	FILE *fp, *outfp;
 	gchar buf[BUFFSIZE];
-	
+
 	if ((fp = claws_fopen(in, "rb")) == NULL) {
 		FILE_OP_ERROR(in, "claws_fopen");
 		return -1;
@@ -1123,18 +1106,16 @@ gint procmsg_remove_special_headers(const gchar *in, const gchar *out)
 	}
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		/* new way */
-		if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1",
-			strlen("X-Claws-End-Special-Headers:"))) ||
-		    (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1",
-			strlen("X-Sylpheed-End-Special-Headers:"))))
+		if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1", strlen("X-Claws-End-Special-Headers:"))) || (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1", strlen("X-Sylpheed-End-Special-Headers:"))))
 			break;
 		/* old way */
-		if (buf[0] == '\r' || buf[0] == '\n') break;
+		if (buf[0] == '\r' || buf[0] == '\n')
+			break;
 		/* from other mailers */
 		if (!strncmp(buf, "Date: ", 6)
-		||  !strncmp(buf, "To: ", 4)
-		||  !strncmp(buf, "From: ", 6)
-		||  !strncmp(buf, "Subject: ", 9)) {
+		    || !strncmp(buf, "To: ", 4)
+		    || !strncmp(buf, "From: ", 6)
+		    || !strncmp(buf, "Subject: ", 9)) {
 			rewind(fp);
 			break;
 		}
@@ -1152,12 +1133,11 @@ gint procmsg_remove_special_headers(const gchar *in, const gchar *out)
 	return 0;
 }
 
-gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file,
-			    gboolean is_queued)
+gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file, gboolean is_queued)
 {
 	gint num;
 	MsgInfo *msginfo, *tmp_msginfo;
-	MsgFlags flag = {0, 0};
+	MsgFlags flag = { 0, 0 };
 	gchar *outbox_path = NULL;
 
 	if (!outbox) {
@@ -1175,10 +1155,9 @@ gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file,
 	if (is_queued) {
 		gchar tmp[MAXPATHLEN + 1];
 
-		g_snprintf(tmp, sizeof(tmp), "%s%ctmpmsg.out.%08x",
-			   get_rc_dir(), G_DIR_SEPARATOR, (guint) rand());
-		
-		if (procmsg_remove_special_headers(file, tmp) !=0)
+		g_snprintf(tmp, sizeof(tmp), "%s%ctmpmsg.out.%08x", get_rc_dir(), G_DIR_SEPARATOR, (guint)rand());
+
+		if (procmsg_remove_special_headers(file, tmp) != 0)
 			return -1;
 
 		folder_item_scan(outbox);
@@ -1189,34 +1168,30 @@ gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file,
 		}
 	} else {
 		folder_item_scan(outbox);
-		if ((num = folder_item_add_msg
-			(outbox, file, &flag, FALSE)) < 0) {
+		if ((num = folder_item_add_msg(outbox, file, &flag, FALSE)) < 0) {
 			g_warning("can't save message");
 			return -1;
 		}
 	}
-	msginfo = folder_item_get_msginfo(outbox, num);		/* refcnt++ */
-	tmp_msginfo = procmsg_msginfo_get_full_info(msginfo);	/* refcnt++ */ 
+	msginfo = folder_item_get_msginfo(outbox, num);	/* refcnt++ */
+	tmp_msginfo = procmsg_msginfo_get_full_info(msginfo); /* refcnt++ */
 	if (msginfo != NULL) {
 		procmsg_msginfo_unset_flags(msginfo, ~0, 0);
-		procmsg_msginfo_free(&msginfo);			/* refcnt-- */
+		procmsg_msginfo_free(&msginfo);	/* refcnt-- */
 		/* tmp_msginfo == msginfo */
-		if (tmp_msginfo && msginfo->extradata && 
-		    (msginfo->extradata->dispositionnotificationto || 
-		     msginfo->extradata->returnreceiptto)) {
-			procmsg_msginfo_set_flags(msginfo, MSG_RETRCPT_SENT, 0); 
-		}	
-		procmsg_msginfo_free(&tmp_msginfo);		/* refcnt-- */
+		if (tmp_msginfo && msginfo->extradata && (msginfo->extradata->dispositionnotificationto || msginfo->extradata->returnreceiptto)) {
+			procmsg_msginfo_set_flags(msginfo, MSG_RETRCPT_SENT, 0);
+		}
+		procmsg_msginfo_free(&tmp_msginfo); /* refcnt-- */
 	}
 
 	return 0;
 }
 
-
 MsgInfo *procmsg_msginfo_new_ref(MsgInfo *msginfo)
 {
 	msginfo->refcnt++;
-	
+
 	return msginfo;
 }
 
@@ -1226,7 +1201,7 @@ MsgInfo *procmsg_msginfo_new(void)
 
 	newmsginfo = g_new0(MsgInfo, 1);
 	newmsginfo->refcnt = 1;
-	
+
 	return newmsginfo;
 }
 
@@ -1234,7 +1209,8 @@ static MsgInfoAvatar *procmsg_msginfoavatar_copy(MsgInfoAvatar *avatar)
 {
 	MsgInfoAvatar *newavatar;
 
-	if (avatar == NULL) return NULL;
+	if (avatar == NULL)
+		return NULL;
 
 	newavatar = g_new0(MsgInfoAvatar, 1);
 	newavatar->avatar_id = avatar->avatar_id;
@@ -1255,9 +1231,10 @@ static void procmsg_msginfoavatar_free(MsgInfoAvatar *avatar)
 MsgInfo *procmsg_msginfo_copy(MsgInfo *msginfo)
 {
 	MsgInfo *newmsginfo;
-        GSList *refs;
+	GSList *refs;
 
-	if (msginfo == NULL) return NULL;
+	if (msginfo == NULL)
+		return NULL;
 
 	newmsginfo = g_new0(MsgInfo, 1);
 
@@ -1292,8 +1269,7 @@ MsgInfo *procmsg_msginfo_copy(MsgInfo *msginfo)
 	if (msginfo->extradata) {
 		newmsginfo->extradata = g_new0(MsgInfoExtraData, 1);
 		if (msginfo->extradata->avatars) {
-			newmsginfo->extradata->avatars = g_slist_copy_deep(msginfo->extradata->avatars,
-								(GCopyFunc) procmsg_msginfoavatar_copy, NULL);
+			newmsginfo->extradata->avatars = g_slist_copy_deep(msginfo->extradata->avatars, (GCopyFunc) procmsg_msginfoavatar_copy, NULL);
 		}
 		MEMBDUP(extradata->dispositionnotificationto);
 		MEMBDUP(extradata->returnreceiptto);
@@ -1309,12 +1285,11 @@ MsgInfo *procmsg_msginfo_copy(MsgInfo *msginfo)
 		MEMBDUP(extradata->resent_from);
 	}
 
-        refs = msginfo->references;
-        for (refs = msginfo->references; refs != NULL; refs = refs->next) {
-                newmsginfo->references = g_slist_prepend
-                        (newmsginfo->references, g_strdup(refs->data)); 
-        }
-        newmsginfo->references = g_slist_reverse(newmsginfo->references);
+	refs = msginfo->references;
+	for (refs = msginfo->references; refs != NULL; refs = refs->next) {
+		newmsginfo->references = g_slist_prepend(newmsginfo->references, g_strdup(refs->data));
+	}
+	newmsginfo->references = g_slist_reverse(newmsginfo->references);
 
 	MEMBCOPY(score);
 	MEMBDUP(plaintext_file);
@@ -1326,7 +1301,8 @@ MsgInfo *procmsg_msginfo_get_full_info_from_file(MsgInfo *msginfo, const gchar *
 {
 	MsgInfo *full_msginfo;
 
-	if (msginfo == NULL) return NULL;
+	if (msginfo == NULL)
+		return NULL;
 
 	if (!file || !is_file_exist(file)) {
 		g_warning("procmsg_msginfo_get_full_info_from_file(): can't get message file");
@@ -1334,7 +1310,8 @@ MsgInfo *procmsg_msginfo_get_full_info_from_file(MsgInfo *msginfo, const gchar *
 	}
 
 	full_msginfo = procheader_parse_file(file, msginfo->flags, TRUE, FALSE);
-	if (!full_msginfo) return NULL;
+	if (!full_msginfo)
+		return NULL;
 
 	msginfo->total_size = full_msginfo->total_size;
 	msginfo->planned_download = full_msginfo->planned_download;
@@ -1351,30 +1328,23 @@ MsgInfo *procmsg_msginfo_get_full_info_from_file(MsgInfo *msginfo, const gchar *
 		if (!msginfo->extradata->list_help)
 			msginfo->extradata->list_help = g_strdup(full_msginfo->extradata->list_help);
 		if (!msginfo->extradata->list_archive)
-			msginfo->extradata->list_archive= g_strdup(full_msginfo->extradata->list_archive);
+			msginfo->extradata->list_archive = g_strdup(full_msginfo->extradata->list_archive);
 		if (!msginfo->extradata->list_owner)
 			msginfo->extradata->list_owner = g_strdup(full_msginfo->extradata->list_owner);
 		if (!msginfo->extradata->avatars)
-			msginfo->extradata->avatars = g_slist_copy_deep(full_msginfo->extradata->avatars,
-									(GCopyFunc) procmsg_msginfoavatar_copy, NULL);
+			msginfo->extradata->avatars = g_slist_copy_deep(full_msginfo->extradata->avatars, (GCopyFunc) procmsg_msginfoavatar_copy, NULL);
 		if (!msginfo->extradata->dispositionnotificationto)
-			msginfo->extradata->dispositionnotificationto = 
-				g_strdup(full_msginfo->extradata->dispositionnotificationto);
+			msginfo->extradata->dispositionnotificationto = g_strdup(full_msginfo->extradata->dispositionnotificationto);
 		if (!msginfo->extradata->returnreceiptto)
-			msginfo->extradata->returnreceiptto = g_strdup
-				(full_msginfo->extradata->returnreceiptto);
+			msginfo->extradata->returnreceiptto = g_strdup(full_msginfo->extradata->returnreceiptto);
 		if (!msginfo->extradata->partial_recv && full_msginfo->extradata->partial_recv)
-			msginfo->extradata->partial_recv = g_strdup
-				(full_msginfo->extradata->partial_recv);
+			msginfo->extradata->partial_recv = g_strdup(full_msginfo->extradata->partial_recv);
 		if (!msginfo->extradata->account_server && full_msginfo->extradata->account_server)
-			msginfo->extradata->account_server = g_strdup
-				(full_msginfo->extradata->account_server);
+			msginfo->extradata->account_server = g_strdup(full_msginfo->extradata->account_server);
 		if (!msginfo->extradata->account_login && full_msginfo->extradata->account_login)
-			msginfo->extradata->account_login = g_strdup
-				(full_msginfo->extradata->account_login);
+			msginfo->extradata->account_login = g_strdup(full_msginfo->extradata->account_login);
 		if (!msginfo->extradata->resent_from && full_msginfo->extradata->resent_from)
-			msginfo->extradata->resent_from = g_strdup
-				(full_msginfo->extradata->resent_from);
+			msginfo->extradata->resent_from = g_strdup(full_msginfo->extradata->resent_from);
 	}
 	procmsg_msginfo_free(&full_msginfo);
 
@@ -1386,7 +1356,8 @@ MsgInfo *procmsg_msginfo_get_full_info(MsgInfo *msginfo)
 	MsgInfo *full_msginfo;
 	gchar *file;
 
-	if (msginfo == NULL) return NULL;
+	if (msginfo == NULL)
+		return NULL;
 
 	file = procmsg_get_message_file_path(msginfo);
 	if (!file || !is_file_exist(file)) {
@@ -1408,7 +1379,8 @@ void procmsg_msginfo_free(MsgInfo **msginfo_ptr)
 {
 	MsgInfo *msginfo = *msginfo_ptr;
 
-	if (msginfo == NULL) return;
+	if (msginfo == NULL)
+		return;
 
 	msginfo->refcnt--;
 	if (msginfo->refcnt > 0)
@@ -1435,9 +1407,7 @@ void procmsg_msginfo_free(MsgInfo **msginfo_ptr)
 
 	if (msginfo->extradata) {
 		if (msginfo->extradata->avatars) {
-			g_slist_foreach(msginfo->extradata->avatars,
-					(GFunc)procmsg_msginfoavatar_free,
-					NULL);
+			g_slist_foreach(msginfo->extradata->avatars, (GFunc) procmsg_msginfoavatar_free, NULL);
 			g_slist_free(msginfo->extradata->avatars);
 			msginfo->extradata->avatars = NULL;
 		}
@@ -1465,13 +1435,14 @@ void procmsg_msginfo_free(MsgInfo **msginfo_ptr)
 	g_free(msginfo);
 	*msginfo_ptr = NULL;
 }
+
 #undef FREENULL
 
 guint procmsg_msginfo_memusage(MsgInfo *msginfo)
 {
 	guint memusage = 0;
 	GSList *tmp;
-	
+
 	memusage += sizeof(MsgInfo);
 	if (msginfo->fromname)
 		memusage += strlen(msginfo->fromname);
@@ -1492,22 +1463,22 @@ guint procmsg_msginfo_memusage(MsgInfo *msginfo)
 	if (msginfo->inreplyto)
 		memusage += strlen(msginfo->inreplyto);
 
-	for (tmp = msginfo->references; tmp; tmp=tmp->next) {
+	for (tmp = msginfo->references; tmp; tmp = tmp->next) {
 		gchar *r = (gchar *)tmp->data;
-		memusage += r?strlen(r):0 + sizeof(GSList);
+		memusage += r ? strlen(r) : 0 + sizeof(GSList);
 	}
 	if (msginfo->fromspace)
 		memusage += strlen(msginfo->fromspace);
 
-	for (tmp = msginfo->tags; tmp; tmp=tmp->next) {
+	for (tmp = msginfo->tags; tmp; tmp = tmp->next) {
 		memusage += sizeof(GSList);
 	}
 	if (msginfo->extradata) {
 		memusage += sizeof(MsgInfoExtraData);
 		if (msginfo->extradata->avatars) {
 			for (tmp = msginfo->extradata->avatars; tmp; tmp = tmp->next) {
-				MsgInfoAvatar *avt = (MsgInfoAvatar *)tmp->data;
-				memusage += (avt->avatar_src)? strlen(avt->avatar_src): 0;
+				MsgInfoAvatar *avt = (MsgInfoAvatar *) tmp->data;
+				memusage += (avt->avatar_src) ? strlen(avt->avatar_src) : 0;
 				memusage += sizeof(MsgInfoAvatar) + sizeof(GSList);
 			}
 		}
@@ -1541,28 +1512,28 @@ guint procmsg_msginfo_memusage(MsgInfo *msginfo)
 	return memusage;
 }
 
-static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_session, gchar **errstr,
-					    FolderItem *queue, gint msgnum, gboolean *queued_removed)
+static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_session, gchar **errstr, FolderItem *queue, gint msgnum, gboolean *queued_removed)
 {
 	static HeaderEntry qentry[] = {
-				       {"S:",    NULL, FALSE}, /* 0 */
-				       {"SSV:",  NULL, FALSE},
-				       {"R:",    NULL, FALSE},
-				       {"NG:",   NULL, FALSE},
-				       {"MAID:", NULL, FALSE},
-				       {"NAID:", NULL, FALSE}, /* 5 */
-				       {"SCF:",  NULL, FALSE},
-				       {"RMID:", NULL, FALSE},
-				       {"FMID:", NULL, FALSE},
-				       {"X-Claws-Privacy-System:", NULL, FALSE},
-				       {"X-Claws-Encrypt:", NULL, FALSE}, /* 10 */
-				       {"X-Claws-Encrypt-Data:", NULL, FALSE},
-				       {"X-Claws-End-Special-Headers:", NULL, FALSE},
-				       {"X-Sylpheed-Privacy-System:", NULL, FALSE},
-				       {"X-Sylpheed-Encrypt:", NULL, FALSE},
-				       {"X-Sylpheed-Encrypt-Data:", NULL, FALSE}, /* 15 */
-				       {"X-Sylpheed-End-Special-Headers:", NULL, FALSE},
-				       {NULL,    NULL, FALSE}};
+		{"S:", NULL, FALSE}, /* 0 */
+		{"SSV:", NULL, FALSE},
+		{"R:", NULL, FALSE},
+		{"NG:", NULL, FALSE},
+		{"MAID:", NULL, FALSE},
+		{"NAID:", NULL, FALSE},	/* 5 */
+		{"SCF:", NULL, FALSE},
+		{"RMID:", NULL, FALSE},
+		{"FMID:", NULL, FALSE},
+		{"X-Claws-Privacy-System:", NULL, FALSE},
+		{"X-Claws-Encrypt:", NULL, FALSE}, /* 10 */
+		{"X-Claws-Encrypt-Data:", NULL, FALSE},
+		{"X-Claws-End-Special-Headers:", NULL, FALSE},
+		{"X-Sylpheed-Privacy-System:", NULL, FALSE},
+		{"X-Sylpheed-Encrypt:", NULL, FALSE},
+		{"X-Sylpheed-Encrypt-Data:", NULL, FALSE}, /* 15 */
+		{"X-Sylpheed-End-Special-Headers:", NULL, FALSE},
+		{NULL, NULL, FALSE}
+	};
 	FILE *fp;
 	gint filepos;
 	gint mailval = 0, newsval = 0;
@@ -1584,7 +1555,8 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 	if ((fp = claws_fopen(file, "rb")) == NULL) {
 		FILE_OP_ERROR(file, "claws_fopen");
 		if (errstr) {
-			if (*errstr) g_free(*errstr);
+			if (*errstr)
+				g_free(*errstr);
 			*errstr = g_strdup_printf(_("Couldn't open file %s."), file);
 		}
 		return -1;
@@ -1595,11 +1567,11 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 
 		switch (hnum) {
 		case Q_SENDER:
-			if (from == NULL) 
+			if (from == NULL)
 				from = g_strdup(p);
 			break;
 		case Q_SMTPSERVER:
-			if (smtpserver == NULL) 
+			if (smtpserver == NULL)
 				smtpserver = g_strdup(p);
 			break;
 		case Q_RECIPIENTS:
@@ -1615,37 +1587,38 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 			newsac = account_find_from_id(atoi(p));
 			break;
 		case Q_SAVE_COPY_FOLDER:
-			if (savecopyfolder == NULL) 
+			if (savecopyfolder == NULL)
 				savecopyfolder = g_strdup(p);
 			break;
 		case Q_REPLY_MESSAGE_ID:
-			if (replymessageid == NULL) 
+			if (replymessageid == NULL)
 				replymessageid = g_strdup(p);
 			break;
 		case Q_FWD_MESSAGE_ID:
-			if (fwdmessageid == NULL) 
+			if (fwdmessageid == NULL)
 				fwdmessageid = g_strdup(p);
 			break;
 		case Q_ENCRYPT:
 		case Q_ENCRYPT_OLD:
-			if (p[0] == '1') 
+			if (p[0] == '1')
 				encrypt = TRUE;
 			break;
 		case Q_CLAWS_HDRS:
 		case Q_CLAWS_HDRS_OLD:
 			/* end of special headers reached */
 			g_free(buf);
-			goto send_mail; /* can't "break;break;" */
+			goto send_mail;	/* can't "break;break;" */
 		}
 		g_free(buf);
 	}
 
-send_mail:
+ send_mail:
 	filepos = ftell(fp);
 	if (filepos < 0) {
 		FILE_OP_ERROR(file, "ftell");
 		if (errstr) {
-			if (*errstr) g_free(*errstr);
+			if (*errstr)
+				g_free(*errstr);
 			*errstr = g_strdup_printf(_("Couldn't open file %s."), file);
 		}
 		return -1;
@@ -1655,19 +1628,18 @@ send_mail:
 		debug_print("Sending message by mail\n");
 		if (!from) {
 			if (errstr) {
-				if (*errstr) g_free(*errstr);
+				if (*errstr)
+					g_free(*errstr);
 				*errstr = g_strdup_printf(_("Queued message header is broken."));
 			}
 			mailval = -1;
-		} else if (mailac && mailac->use_mail_command &&
-			   mailac->mail_command && (* mailac->mail_command)) {
+		} else if (mailac && mailac->use_mail_command && mailac->mail_command && (*mailac->mail_command)) {
 			mailval = send_message_local(mailac->mail_command, fp);
 		} else {
 			if (!mailac) {
 				mailac = account_find_from_smtp_server(from, smtpserver);
 				if (!mailac) {
-					g_warning("account not found, "
-						    "using current account...");
+					g_warning("account not found, " "using current account...");
 					mailac = cur_account;
 				}
 			}
@@ -1675,7 +1647,8 @@ send_mail:
 			if (mailac) {
 				mailval = send_message_smtp_full(mailac, to_list, fp, keep_session);
 				if (mailval == -1 && errstr) {
-					if (*errstr) g_free(*errstr);
+					if (*errstr)
+						g_free(*errstr);
 					*errstr = g_strdup_printf(_("An error happened during SMTP session."));
 				}
 			} else {
@@ -1689,17 +1662,17 @@ send_mail:
 				tmp_ac.smtpport = SMTP_PORT;
 				mailval = send_message_smtp(&tmp_ac, to_list, fp);
 				if (mailval == -1 && errstr) {
-					if (*errstr) g_free(*errstr);
-					*errstr = g_strdup_printf(_("No specific account has been found to "
-							"send, and an error happened during SMTP session."));
+					if (*errstr)
+						g_free(*errstr);
+					*errstr = g_strdup_printf(_("No specific account has been found to " "send, and an error happened during SMTP session."));
 				}
 			}
 		}
 	} else if (!to_list && !newsgroup_list) {
 		if (errstr) {
-			if (*errstr) g_free(*errstr);
-			*errstr = g_strdup(_("Couldn't determine sending information. "
-				"Maybe the email hasn't been generated by Claws Mail."));
+			if (*errstr)
+				g_free(*errstr);
+			*errstr = g_strdup(_("Couldn't determine sending information. " "Maybe the email hasn't been generated by Claws Mail."));
 		}
 		mailval = -1;
 	}
@@ -1715,25 +1688,25 @@ send_mail:
 		gchar buf[BUFFSIZE];
 		FILE *tmpfp;
 
-    		/* write to temporary file */
-    		tmp = g_strdup_printf("%s%cnntp%p", get_tmp_dir(),
-                    	    G_DIR_SEPARATOR, file);
-    		if ((tmpfp = claws_fopen(tmp, "wb")) == NULL) {
-            		FILE_OP_ERROR(tmp, "claws_fopen");
-            		newsval = -1;
+		/* write to temporary file */
+		tmp = g_strdup_printf("%s%cnntp%p", get_tmp_dir(), G_DIR_SEPARATOR, file);
+		if ((tmpfp = claws_fopen(tmp, "wb")) == NULL) {
+			FILE_OP_ERROR(tmp, "claws_fopen");
+			newsval = -1;
 			alertpanel_error(_("Couldn't create temporary file for news sending."));
-    		} else {
-    			if (change_file_mode_rw(tmpfp, tmp) < 0) {
-            			FILE_OP_ERROR(tmp, "chmod");
+		} else {
+			if (change_file_mode_rw(tmpfp, tmp) < 0) {
+				FILE_OP_ERROR(tmp, "chmod");
 				g_warning("can't change file mode");
-    			}
+			}
 
 			while ((newsval == 0) && claws_fgets(buf, sizeof(buf), fp) != NULL) {
 				if (claws_fputs(buf, tmpfp) == EOF) {
 					FILE_OP_ERROR(tmp, "claws_fputs");
 					newsval = -1;
 					if (errstr) {
-						if (*errstr) g_free(*errstr);
+						if (*errstr)
+							g_free(*errstr);
 						*errstr = g_strdup_printf(_("Error when writing temporary file for news sending."));
 					}
 				}
@@ -1745,11 +1718,11 @@ send_mail:
 
 				folder = FOLDER(newsac->folder);
 
-    				newsval = news_post(folder, tmp);
-    				if (newsval < 0 && errstr)  {
-					if (*errstr) g_free(*errstr);
-					*errstr = g_strdup_printf(_("Error occurred while posting the message to %s."),
-                            		 newsac->nntp_server);
+				newsval = news_post(folder, tmp);
+				if (newsval < 0 && errstr) {
+					if (*errstr)
+						g_free(*errstr);
+					*errstr = g_strdup_printf(_("Error occurred while posting the message to %s."), newsac->nntp_server);
 				}
 			}
 			claws_unlink(tmp);
@@ -1812,7 +1785,7 @@ send_mail:
 	if (replymessageid != NULL || fwdmessageid != NULL) {
 		gchar **tokens;
 		FolderItem *item;
-		
+
 		if (replymessageid != NULL)
 			tokens = g_strsplit(replymessageid, "\t", 0);
 		else
@@ -1822,31 +1795,29 @@ send_mail:
 		/* check if queued message has valid folder and message id */
 		if (item != NULL && tokens[2] != NULL) {
 			MsgInfo *msginfo;
-			
+
 			msginfo = folder_item_get_msginfo(item, atoi(tokens[1]));
-		
+
 			/* check if referring message exists and has a message id */
-			if ((msginfo != NULL) && 
-			    (msginfo->msgid != NULL) &&
-			    (strcmp(msginfo->msgid, tokens[2]) != 0)) {
+			if ((msginfo != NULL) && (msginfo->msgid != NULL) && (strcmp(msginfo->msgid, tokens[2]) != 0)) {
 				procmsg_msginfo_free(&msginfo);
 				msginfo = NULL;
 			}
-			
+
 			if (msginfo == NULL) {
 				msginfo = folder_item_get_msginfo_by_msgid(item, tokens[2]);
 			}
-			
+
 			if (msginfo != NULL) {
 				if (replymessageid != NULL) {
 					MsgPermFlags to_unset = 0;
 
 					if (prefs_common.mark_as_read_on_new_window)
-						to_unset = (MSG_NEW|MSG_UNREAD);
+						to_unset = (MSG_NEW | MSG_UNREAD);
 
 					procmsg_msginfo_unset_flags(msginfo, to_unset, 0);
 					procmsg_msginfo_set_flags(msginfo, MSG_REPLIED, 0);
-				}  else {
+				} else {
 					procmsg_msginfo_set_flags(msginfo, MSG_FORWARDED, 0);
 				}
 				procmsg_msginfo_free(&msginfo);
@@ -1910,7 +1881,7 @@ static void update_folder_msg_counts(FolderItem *item, MsgInfo *msginfo, MsgPerm
 		if (procmsg_msg_has_marked_parent(msginfo))
 			item->unreadmarked_msgs--;
 	}
-	
+
 	/* MARK flag */
 	if (!(old_flags & MSG_MARKED) && (new_flags & MSG_MARKED)) {
 		procmsg_update_unread_children(msginfo, TRUE);
@@ -1973,7 +1944,7 @@ void procmsg_msginfo_set_flags(MsgInfo *msginfo, MsgPermFlags perm_flags, MsgTmp
 	cm_return_if_fail(msginfo != NULL);
 	item = msginfo->folder;
 	cm_return_if_fail(item != NULL);
-	
+
 	debug_print("Setting flags for message %d in folder %s\n", msginfo->msgnum, item->path);
 
 	/* Perm Flags handling */
@@ -2016,13 +1987,13 @@ void procmsg_msginfo_unset_flags(MsgInfo *msginfo, MsgPermFlags perm_flags, MsgT
 	cm_return_if_fail(msginfo != NULL);
 	item = msginfo->folder;
 	cm_return_if_fail(item != NULL);
-	
+
 	debug_print("Unsetting flags for message %d in folder %s\n", msginfo->msgnum, item->path);
 
 	/* Perm Flags handling */
 	perm_flags_old = msginfo->flags.perm_flags;
 	perm_flags_new = msginfo->flags.perm_flags & ~perm_flags;
-	
+
 	if (perm_flags_old != perm_flags_new) {
 		folder_item_change_msg_flags(msginfo->folder, msginfo, perm_flags_new);
 
@@ -2042,9 +2013,7 @@ void procmsg_msginfo_unset_flags(MsgInfo *msginfo, MsgPermFlags perm_flags, MsgT
 	}
 }
 
-void procmsg_msginfo_change_flags(MsgInfo *msginfo, 
-				MsgPermFlags add_perm_flags, MsgTmpFlags add_tmp_flags,
-				MsgPermFlags rem_perm_flags, MsgTmpFlags rem_tmp_flags)
+void procmsg_msginfo_change_flags(MsgInfo *msginfo, MsgPermFlags add_perm_flags, MsgTmpFlags add_tmp_flags, MsgPermFlags rem_perm_flags, MsgTmpFlags rem_tmp_flags)
 {
 	FolderItem *item;
 	MsgInfoUpdate msginfo_update;
@@ -2054,7 +2023,7 @@ void procmsg_msginfo_change_flags(MsgInfo *msginfo,
 	cm_return_if_fail(msginfo != NULL);
 	item = msginfo->folder;
 	cm_return_if_fail(item != NULL);
-	
+
 	debug_print("Changing flags for message %d in folder %s\n", msginfo->msgnum, item->path);
 
 	/* Perm Flags handling */
@@ -2097,16 +2066,14 @@ void procmsg_msginfo_change_flags(MsgInfo *msginfo,
  *
  *\return	gboolean TRUE if perm_flags are found
  */
-static gboolean procmsg_msg_has_flagged_parent_real(MsgInfo *info,
-		MsgPermFlags perm_flags, GHashTable *parentmsgs)
+static gboolean procmsg_msg_has_flagged_parent_real(MsgInfo *info, MsgPermFlags perm_flags, GHashTable *parentmsgs)
 {
 	MsgInfo *tmp;
 
 	cm_return_val_if_fail(info != NULL, FALSE);
 
 	if (info != NULL && info->folder != NULL && info->inreplyto != NULL) {
-		tmp = folder_item_get_msginfo_by_msgid(info->folder,
-				info->inreplyto);
+		tmp = folder_item_get_msginfo_by_msgid(info->folder, info->inreplyto);
 		if (tmp && (tmp->flags.perm_flags & perm_flags)) {
 			procmsg_msginfo_free(&tmp);
 			return TRUE;
@@ -2114,13 +2081,11 @@ static gboolean procmsg_msg_has_flagged_parent_real(MsgInfo *info,
 			gboolean result;
 
 			if (g_hash_table_lookup(parentmsgs, info)) {
-				debug_print("loop detected: %d\n",
-					info->msgnum);
+				debug_print("loop detected: %d\n", info->msgnum);
 				result = FALSE;
 			} else {
 				g_hash_table_insert(parentmsgs, info, "1");
-				result = procmsg_msg_has_flagged_parent_real(
-				    tmp, perm_flags, parentmsgs);
+				result = procmsg_msg_has_flagged_parent_real(tmp, perm_flags, parentmsgs);
 			}
 			procmsg_msginfo_free(&tmp);
 			return result;
@@ -2134,9 +2099,7 @@ static gboolean procmsg_msg_has_flagged_parent_real(MsgInfo *info,
 /*!
  *\brief	Callback for cleaning up hash of parentmsgs
  */
-static gboolean parentmsgs_hash_remove(gpointer key,
-                            gpointer value,
-                            gpointer user_data)
+static gboolean parentmsgs_hash_remove(gpointer key, gpointer value, gpointer user_data)
 {
 	return TRUE;
 }
@@ -2149,9 +2112,9 @@ gboolean procmsg_msg_has_flagged_parent(MsgInfo *info, MsgPermFlags perm_flags)
 {
 	gboolean result;
 	static GHashTable *parentmsgs = NULL;
-	
+
 	if (parentmsgs == NULL)
-		parentmsgs = g_hash_table_new(NULL, NULL); 
+		parentmsgs = g_hash_table_new(NULL, NULL);
 
 	result = procmsg_msg_has_flagged_parent_real(info, perm_flags, parentmsgs);
 	g_hash_table_foreach_remove(parentmsgs, parentmsgs_hash_remove, NULL);
@@ -2168,13 +2131,11 @@ gboolean procmsg_msg_has_marked_parent(MsgInfo *info)
 	return procmsg_msg_has_flagged_parent(info, MSG_MARKED);
 }
 
-
-static GSList *procmsg_find_children_func(MsgInfo *info, 
-				   GSList *children, GSList *all)
+static GSList *procmsg_find_children_func(MsgInfo *info, GSList *children, GSList *all)
 {
 	GSList *cur;
 
-	cm_return_val_if_fail(info!=NULL, children);
+	cm_return_val_if_fail(info != NULL, children);
 	if (info->msgid == NULL)
 		return children;
 
@@ -2182,25 +2143,21 @@ static GSList *procmsg_find_children_func(MsgInfo *info,
 		MsgInfo *tmp = (MsgInfo *)cur->data;
 		if (tmp->inreplyto && !strcmp(tmp->inreplyto, info->msgid)) {
 			/* Check if message is already in the list */
-			if ((children == NULL) || 
-			    (g_slist_index(children, tmp) == -1)) {
-				children = g_slist_prepend(children,
-						procmsg_msginfo_new_ref(tmp));
-				children = procmsg_find_children_func(tmp, 
-							children, 
-							all);
+			if ((children == NULL) || (g_slist_index(children, tmp) == -1)) {
+				children = g_slist_prepend(children, procmsg_msginfo_new_ref(tmp));
+				children = procmsg_find_children_func(tmp, children, all);
 			}
 		}
 	}
 	return children;
 }
 
-static GSList *procmsg_find_children (MsgInfo *info)
+static GSList *procmsg_find_children(MsgInfo *info)
 {
 	GSList *children;
 	GSList *all, *cur;
 
-	cm_return_val_if_fail(info!=NULL, NULL);
+	cm_return_val_if_fail(info != NULL, NULL);
 	all = folder_item_get_msg_list(info->folder);
 	children = procmsg_find_children_func(info, NULL, all);
 	if (children != NULL) {
@@ -2221,8 +2178,8 @@ static void procmsg_update_unread_children(MsgInfo *info, gboolean newly_marked)
 	GSList *cur;
 	for (cur = children; cur != NULL; cur = g_slist_next(cur)) {
 		MsgInfo *tmp = (MsgInfo *)cur->data;
-		if(MSG_IS_UNREAD(tmp->flags) && !MSG_IS_IGNORE_THREAD(tmp->flags)) {
-			if(newly_marked) 
+		if (MSG_IS_UNREAD(tmp->flags) && !MSG_IS_IGNORE_THREAD(tmp->flags)) {
+			if (newly_marked)
 				info->folder->unreadmarked_msgs++;
 			else
 				info->folder->unreadmarked_msgs--;
@@ -2241,12 +2198,12 @@ static void procmsg_update_unread_children(MsgInfo *info, gboolean newly_marked)
  */
 void procmsg_msginfo_set_to_folder(MsgInfo *msginfo, FolderItem *to_folder)
 {
-	if(msginfo->to_folder != NULL) {
+	if (msginfo->to_folder != NULL) {
 		msginfo->to_folder->op_count--;
 		folder_item_update(msginfo->to_folder, F_ITEM_UPDATE_MSGCNT);
 	}
 	msginfo->to_folder = to_folder;
-	if(to_folder != NULL) {
+	if (to_folder != NULL) {
 		to_folder->op_count++;
 		folder_item_update(msginfo->to_folder, F_ITEM_UPDATE_MSGCNT);
 	}
@@ -2259,44 +2216,40 @@ void procmsg_msginfo_set_to_folder(MsgInfo *msginfo, FolderItem *to_folder)
  * \return TRUE if the message was moved and MsgInfo is now invalid,
  *         FALSE otherwise
  */
-static gboolean procmsg_msginfo_filter(MsgInfo *msginfo, PrefsAccount* ac_prefs)
+static gboolean procmsg_msginfo_filter(MsgInfo *msginfo, PrefsAccount *ac_prefs)
 {
 	MailFilteringData mail_filtering_data;
-			
-	mail_filtering_data.msginfo = msginfo;			
-	mail_filtering_data.msglist = NULL;			
-	mail_filtering_data.filtered = NULL;			
+
+	mail_filtering_data.msginfo = msginfo;
+	mail_filtering_data.msglist = NULL;
+	mail_filtering_data.filtered = NULL;
 	mail_filtering_data.unfiltered = NULL;
-	mail_filtering_data.account = ac_prefs;	
+	mail_filtering_data.account = ac_prefs;
 
 	if (!ac_prefs || ac_prefs->filterhook_on_recv)
 		if (hooks_invoke(MAIL_FILTERING_HOOKLIST, &mail_filtering_data))
-		return TRUE;
+			return TRUE;
 
 	/* filter if enabled in prefs or move to inbox if not */
-	if((filtering_rules != NULL) &&
-		filter_message_by_msginfo(filtering_rules, msginfo, ac_prefs,
-				FILTERING_INCORPORATION, NULL)) {
+	if ((filtering_rules != NULL) && filter_message_by_msginfo(filtering_rules, msginfo, ac_prefs, FILTERING_INCORPORATION, NULL)) {
 		return TRUE;
 	}
-		
+
 	return FALSE;
 }
 
-void procmsg_msglist_filter(GSList *list, PrefsAccount *ac, 
-			    GSList **filtered, GSList **unfiltered,
-			    gboolean do_filter)
+void procmsg_msglist_filter(GSList *list, PrefsAccount *ac, GSList **filtered, GSList **unfiltered, gboolean do_filter)
 {
 	GSList *cur, *to_do = NULL;
 	gint total = 0, curnum = 0;
 	MailFilteringData mail_filtering_data;
-			
+
 	cm_return_if_fail(filtered != NULL);
 	cm_return_if_fail(unfiltered != NULL);
 
 	*filtered = NULL;
 	*unfiltered = NULL;
-	
+
 	if (list == NULL)
 		return;
 
@@ -2310,39 +2263,32 @@ void procmsg_msglist_filter(GSList *list, PrefsAccount *ac,
 
 	statusbar_print_all(_("Filtering messages...\n"));
 
-	mail_filtering_data.msginfo = NULL;			
-	mail_filtering_data.msglist = list;			
-	mail_filtering_data.filtered = NULL;			
-	mail_filtering_data.unfiltered = NULL;	
-	mail_filtering_data.account = ac;	
-			
+	mail_filtering_data.msginfo = NULL;
+	mail_filtering_data.msglist = list;
+	mail_filtering_data.filtered = NULL;
+	mail_filtering_data.unfiltered = NULL;
+	mail_filtering_data.account = ac;
+
 	if (!ac || ac->filterhook_on_recv)
-	hooks_invoke(MAIL_LISTFILTERING_HOOKLIST, &mail_filtering_data);
-	
-	if (mail_filtering_data.filtered == NULL &&
-	    mail_filtering_data.unfiltered == NULL) {
-	    	/* nothing happened */
+		hooks_invoke(MAIL_LISTFILTERING_HOOKLIST, &mail_filtering_data);
+
+	if (mail_filtering_data.filtered == NULL && mail_filtering_data.unfiltered == NULL) {
+		/* nothing happened */
 		debug_print(MAIL_LISTFILTERING_HOOKLIST " did nothing. filtering whole list normally.\n");
 		to_do = list;
-	} 
+	}
 	if (mail_filtering_data.filtered != NULL) {
 		/* keep track of what's been filtered by the hooks */
-		debug_print(MAIL_LISTFILTERING_HOOKLIST " filtered some stuff. total %d filtered %d unfilt %d.\n",
-			g_slist_length(list),
-			g_slist_length(mail_filtering_data.filtered),
-			g_slist_length(mail_filtering_data.unfiltered));
+		debug_print(MAIL_LISTFILTERING_HOOKLIST " filtered some stuff. total %d filtered %d unfilt %d.\n", g_slist_length(list), g_slist_length(mail_filtering_data.filtered), g_slist_length(mail_filtering_data.unfiltered));
 
 		*filtered = g_slist_copy(mail_filtering_data.filtered);
 	}
 	if (mail_filtering_data.unfiltered != NULL) {
 		/* what the hooks didn't handle will go in filtered or 
 		 * unfiltered in the next loop */
-		debug_print(MAIL_LISTFILTERING_HOOKLIST " left unfiltered stuff. total %d filtered %d unfilt %d.\n",
-			g_slist_length(list),
-			g_slist_length(mail_filtering_data.filtered),
-			g_slist_length(mail_filtering_data.unfiltered));
+		debug_print(MAIL_LISTFILTERING_HOOKLIST " left unfiltered stuff. total %d filtered %d unfilt %d.\n", g_slist_length(list), g_slist_length(mail_filtering_data.filtered), g_slist_length(mail_filtering_data.unfiltered));
 		to_do = mail_filtering_data.unfiltered;
-	} 
+	}
 
 	for (cur = to_do; cur; cur = cur->next) {
 		MsgInfo *info = (MsgInfo *)cur->data;
@@ -2355,36 +2301,33 @@ void procmsg_msglist_filter(GSList *list, PrefsAccount *ac,
 
 	g_slist_free(mail_filtering_data.filtered);
 	g_slist_free(mail_filtering_data.unfiltered);
-	
+
 	*filtered = g_slist_reverse(*filtered);
 	*unfiltered = g_slist_reverse(*unfiltered);
 
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 	statusbar_pop_all();
 }
 
 MsgInfo *procmsg_msginfo_new_from_mimeinfo(MsgInfo *src_msginfo, MimeInfo *mimeinfo)
 {
 	MsgInfo *tmp_msginfo = NULL;
-	MsgFlags flags = {0, 0};
+	MsgFlags flags = { 0, 0 };
 	gchar *tmpfile = get_tmp_file();
 	FILE *fp = claws_fopen(tmpfile, "wb");
-	
-	if (!mimeinfo || mimeinfo->type != MIMETYPE_MESSAGE ||
-	    g_ascii_strcasecmp(mimeinfo->subtype, "rfc822")) {
+
+	if (!mimeinfo || mimeinfo->type != MIMETYPE_MESSAGE || g_ascii_strcasecmp(mimeinfo->subtype, "rfc822")) {
 		g_warning("procmsg_msginfo_new_from_mimeinfo(): unsuitable mimeinfo");
-		if (fp) 
+		if (fp)
 			claws_fclose(fp);
 		g_free(tmpfile);
 		return NULL;
 	}
-	
+
 	if (fp && procmime_write_mimeinfo(mimeinfo, fp) >= 0) {
 		claws_safe_fclose(fp);
 		fp = NULL;
-		tmp_msginfo = procheader_parse_file(
-			tmpfile, flags, 
-			TRUE, FALSE);
+		tmp_msginfo = procheader_parse_file(tmpfile, flags, TRUE, FALSE);
 	}
 	if (fp)
 		claws_safe_fclose(fp);
@@ -2404,25 +2347,23 @@ MsgInfo *procmsg_msginfo_new_from_mimeinfo(MsgInfo *src_msginfo, MimeInfo *mimei
 
 static GSList *spam_learners = NULL;
 
-void procmsg_register_spam_learner (int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam))
+void procmsg_register_spam_learner(int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam))
 {
-	if (!g_slist_find(spam_learners, learn_func))
+	if(!g_slist_find(spam_learners, learn_func))
 		spam_learners = g_slist_append(spam_learners, learn_func);
 	if (mainwindow_get_mainwindow()) {
 		main_window_set_menu_sensitive(mainwindow_get_mainwindow());
-		summary_set_menu_sensitive(
-			mainwindow_get_mainwindow()->summaryview);
+		summary_set_menu_sensitive(mainwindow_get_mainwindow()->summaryview);
 		toolbar_main_set_sensitive(mainwindow_get_mainwindow());
 	}
 }
 
-void procmsg_unregister_spam_learner (int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam))
+void procmsg_unregister_spam_learner(int (*learn_func)(MsgInfo *info, GSList *list, gboolean spam))
 {
 	spam_learners = g_slist_remove(spam_learners, learn_func);
 	if (mainwindow_get_mainwindow()) {
 		main_window_set_menu_sensitive(mainwindow_get_mainwindow());
-		summary_set_menu_sensitive(
-			mainwindow_get_mainwindow()->summaryview);
+		summary_set_menu_sensitive(mainwindow_get_mainwindow()->summaryview);
 		toolbar_main_set_sensitive(mainwindow_get_mainwindow());
 	}
 }
@@ -2432,20 +2373,20 @@ gboolean procmsg_spam_can_learn(void)
 	return g_slist_length(spam_learners) > 0;
 }
 
-int procmsg_spam_learner_learn (MsgInfo *info, GSList *list, gboolean spam)
+int procmsg_spam_learner_learn(MsgInfo *info, GSList *list, gboolean spam)
 {
 	GSList *cur = spam_learners;
 	int ret = 0;
 	for (; cur; cur = cur->next) {
-		int ((*func)(MsgInfo *info, GSList *list, gboolean spam)) = cur->data;
+		int ((*func) (MsgInfo *info, GSList *list, gboolean spam)) = cur->data;
 		ret |= func(info, list, spam);
 	}
 	return ret;
 }
 
 static gchar *spam_folder_item = NULL;
-static FolderItem * (*procmsg_spam_get_folder_func)(MsgInfo *msginfo) = NULL;
-void procmsg_spam_set_folder (const char *item_identifier, FolderItem *(*spam_get_folder_func)(MsgInfo *info))
+static FolderItem *(*procmsg_spam_get_folder_func)(MsgInfo *msginfo) = NULL;
+void procmsg_spam_set_folder(const char *item_identifier, FolderItem *(*spam_get_folder_func)(MsgInfo *info))
 {
 	g_free(spam_folder_item);
 	if (item_identifier)
@@ -2458,11 +2399,11 @@ void procmsg_spam_set_folder (const char *item_identifier, FolderItem *(*spam_ge
 		procmsg_spam_get_folder_func = NULL;
 }
 
-FolderItem *procmsg_spam_get_folder (MsgInfo *msginfo)
+FolderItem *procmsg_spam_get_folder(MsgInfo *msginfo)
 {
 	FolderItem *item = NULL;
-	
-	if (procmsg_spam_get_folder_func) 
+
+	if (procmsg_spam_get_folder_func)
 		item = procmsg_spam_get_folder_func(msginfo);
 	if (item == NULL && spam_folder_item)
 		item = folder_find_item_from_identifier(spam_folder_item);
@@ -2484,8 +2425,7 @@ static void item_has_queued_mails(FolderItem *item, gpointer data)
 			GSList *cur;
 			for (cur = msglist; cur; cur = cur->next) {
 				MsgInfo *msginfo = (MsgInfo *)cur->data;
-				if (!MSG_IS_DELETED(msginfo->flags) &&
-				    !MSG_IS_LOCKED(msginfo->flags)) {
+				if (!MSG_IS_DELETED(msginfo->flags) && !MSG_IS_LOCKED(msginfo->flags)) {
 					*result = TRUE;
 					break;
 				}
@@ -2495,7 +2435,7 @@ static void item_has_queued_mails(FolderItem *item, gpointer data)
 	}
 }
 
-gboolean procmsg_have_queued_mails_fast (void)
+gboolean procmsg_have_queued_mails_fast(void)
 {
 	gboolean result = FALSE;
 	folder_func_to_all_folders(item_has_queued_mails, &result);
@@ -2511,7 +2451,7 @@ static void item_has_trashed_mails(FolderItem *item, gpointer data)
 		*result = TRUE;
 }
 
-gboolean procmsg_have_trashed_mails_fast (void)
+gboolean procmsg_have_trashed_mails_fast(void)
 {
 	gboolean result = FALSE;
 	folder_func_to_all_folders(item_has_trashed_mails, &result);
@@ -2522,7 +2462,7 @@ gchar *procmsg_msginfo_get_tags_str(MsgInfo *msginfo)
 {
 	GSList *cur = NULL;
 	gchar *tags = NULL;
-	
+
 	if (!msginfo)
 		return NULL;
 
@@ -2536,13 +2476,13 @@ gchar *procmsg_msginfo_get_tags_str(MsgInfo *msginfo)
 			tags = g_strdup(tag);
 		else {
 			int olen = strlen(tags);
-			int nlen = olen + strlen(tag) + 2 /* strlen(", ") */;
-			tags = g_realloc(tags, nlen+1);
+			int nlen = olen + strlen(tag) + 2 /* strlen(", ") */ ;
+			tags = g_realloc(tags, nlen + 1);
 			if (!tags)
 				return NULL;
-			strcpy(tags+olen, ", ");
-			strcpy(tags+olen+2, tag);
-			tags[nlen]='\0';
+			strcpy(tags + olen, ", ");
+			strcpy(tags + olen + 2, tag);
+			tags[nlen] = '\0';
 		}
 	}
 	return tags;
@@ -2556,23 +2496,19 @@ void procmsg_msginfo_update_tags(MsgInfo *msginfo, gboolean set, gint id)
 		return;
 
 	if (!set) {
-		msginfo->tags = g_slist_remove(
-					msginfo->tags,
-					GINT_TO_POINTER(id));
+		msginfo->tags = g_slist_remove(msginfo->tags, GINT_TO_POINTER(id));
 		changed.data = GINT_TO_POINTER(id);
 		changed.next = NULL;
 		folder_item_commit_tags(msginfo->folder, msginfo, NULL, &changed);
 	} else {
 		if (!g_slist_find(msginfo->tags, GINT_TO_POINTER(id))) {
-			msginfo->tags = g_slist_append(
-					msginfo->tags,
-					GINT_TO_POINTER(id));
+			msginfo->tags = g_slist_append(msginfo->tags, GINT_TO_POINTER(id));
 		}
 		changed.data = GINT_TO_POINTER(id);
 		changed.next = NULL;
 		folder_item_commit_tags(msginfo->folder, msginfo, &changed, NULL);
 	}
-	
+
 }
 
 void procmsg_msginfo_clear_tags(MsgInfo *msginfo)
@@ -2582,3 +2518,7 @@ void procmsg_msginfo_clear_tags(MsgInfo *msginfo)
 	folder_item_commit_tags(msginfo->folder, msginfo, NULL, unset);
 	g_slist_free(unset);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

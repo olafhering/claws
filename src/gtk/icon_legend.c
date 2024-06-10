@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -39,9 +39,9 @@
 StockPixmap legend_icons[ICONS] = {
 	STOCK_PIXMAP_NEW,
 	STOCK_PIXMAP_UNREAD,
-	STOCK_PIXMAP_REPLIED, 
-	STOCK_PIXMAP_FORWARDED, 
-	STOCK_PIXMAP_REPLIED_AND_FORWARDED, 
+	STOCK_PIXMAP_REPLIED,
+	STOCK_PIXMAP_FORWARDED,
+	STOCK_PIXMAP_REPLIED_AND_FORWARDED,
 	STOCK_PIXMAP_IGNORETHREAD,
 	STOCK_PIXMAP_WATCHTHREAD,
 	STOCK_PIXMAP_SPAM,
@@ -55,7 +55,7 @@ StockPixmap legend_icons[ICONS] = {
 	STOCK_PIXMAP_MOVED,
 	STOCK_PIXMAP_COPIED,
 	STOCK_PIXMAP_LOCKED,
-	STOCK_PIXMAP_DIR_OPEN, 
+	STOCK_PIXMAP_DIR_OPEN,
 	STOCK_PIXMAP_DIR_OPEN_HRM,
 	STOCK_PIXMAP_DIR_OPEN_MARK,
 	STOCK_PIXMAP_DIR_NOSELECT_OPEN,
@@ -129,10 +129,8 @@ static void legend_create(void)
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_window_set_default_size(GTK_WINDOW(window), 666, 340);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(legend_close), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(key_pressed), NULL);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(legend_close), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(key_pressed), NULL);
 	gtk_widget_realize(window);
 
 	vbox = gtk_vbox_new(FALSE, 8);
@@ -143,9 +141,7 @@ static void legend_create(void)
 	gtk_widget_show(hbox);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-	label = gtk_label_new(g_strconcat("<span weight=\"bold\">",_("The following icons "
-				"are used to show the status of messages and "
-				"folders:"), "</span>", NULL));
+	label = gtk_label_new(g_strconcat("<span weight=\"bold\">", _("The following icons " "are used to show the status of messages and " "folders:"), "</span>", NULL));
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);
@@ -157,15 +153,13 @@ static void legend_create(void)
 
 	for (i = 0, j = 0, k = 0; i < ICONS; ++i, ++k) {
 		icon_label = stock_pixmap_widget(legend_icons[i]);
-		gtk_misc_set_alignment (GTK_MISC (icon_label), 0.5, 0.5);
-		gtk_table_attach(GTK_TABLE(table), icon_label, j, j + 1, k, k + 1,
-				GTK_FILL, 0, 0, 0);
+		gtk_misc_set_alignment(GTK_MISC(icon_label), 0.5, 0.5);
+		gtk_table_attach(GTK_TABLE(table), icon_label, j, j + 1, k, k + 1, GTK_FILL, 0, 0, 0);
 
 		desc_label = gtk_label_new(gettext(legend_icon_desc[i]));
-		gtk_misc_set_alignment (GTK_MISC (desc_label), 0, 0.5);
+		gtk_misc_set_alignment(GTK_MISC(desc_label), 0, 0.5);
 		gtk_label_set_line_wrap(GTK_LABEL(desc_label), TRUE);
-		gtk_table_attach(GTK_TABLE(table), desc_label, j + 1, j + 2, k, k + 1,
-				GTK_FILL, 0, 0, 0);
+		gtk_table_attach(GTK_TABLE(table), desc_label, j + 1, j + 2, k, k + 1, GTK_FILL, 0, 0, 0);
 
 		if (i == ICONS / 2) {
 			j = 2;
@@ -176,14 +170,10 @@ static void legend_create(void)
 	PACK_FRAME(vbox, frame, NULL);
 	gtk_container_add(GTK_CONTAINER(frame), table);
 
-	gtkut_stock_button_set_create(&confirm_area, &close_button, GTK_STOCK_CLOSE,
-				      NULL, NULL, NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &close_button, GTK_STOCK_CLOSE, NULL, NULL, NULL, NULL);
 	gtk_box_pack_end(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 4);
 	gtk_widget_grab_default(close_button);
-	g_signal_connect_closure
-		(G_OBJECT(close_button), "clicked",
-		 g_cclosure_new_swap(G_CALLBACK(legend_close),
-				     window, NULL), FALSE);
+	g_signal_connect_closure(G_OBJECT(close_button), "clicked", g_cclosure_new_swap(G_CALLBACK(legend_close), window, NULL), FALSE);
 
 	gtk_widget_show_all(window);
 
@@ -203,3 +193,7 @@ static void legend_close(void)
 	gtk_widget_destroy(legend.window);
 	legend.window = NULL;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

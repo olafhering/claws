@@ -39,15 +39,14 @@ MimeViewerFactory lh_viewer_factory = {
 static GtkWidget *lh_get_widget(MimeViewer *_viewer)
 {
 	debug_print("LH: get_widget\n");
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 	return viewer->vbox;
 }
 
-static void lh_show_mimepart(MimeViewer *_viewer, const gchar *infile,
-		MimeInfo *partinfo)
+static void lh_show_mimepart(MimeViewer *_viewer, const gchar *infile, MimeInfo *partinfo)
 {
 	debug_print("LH: show_mimepart\n");
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 	gchar *string = procmime_get_part_as_string(partinfo, TRUE);
 	gchar *utf8 = NULL;
 	const gchar *charset;
@@ -83,13 +82,13 @@ static void lh_show_mimepart(MimeViewer *_viewer, const gchar *infile,
 static void lh_clear_viewer(MimeViewer *_viewer)
 {
 	debug_print("LH: clear_viewer\n");
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 	lh_widget_clear(viewer->widget);
 }
 
 static void lh_destroy_viewer(MimeViewer *_viewer)
 {
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 
 	debug_print("LH: destroy_viewer\n");
 	g_free(viewer);
@@ -107,27 +106,25 @@ static void lh_print_viewer (MimeViewer *_viewer)
 
 static gboolean lh_scroll_page(MimeViewer *_viewer, gboolean up)
 {
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 	GtkAdjustment *vadj = NULL;
 
 	if (!viewer || (viewer->widget == NULL))
 		return FALSE;
 
-	vadj = gtk_scrolled_window_get_vadjustment(
-				GTK_SCROLLED_WINDOW(lh_widget_get_widget(viewer->widget)));
+	vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(lh_widget_get_widget(viewer->widget)));
 	return gtkutils_scroll_page(lh_widget_get_widget(viewer->widget), vadj, up);
 }
 
 static void lh_scroll_one_line(MimeViewer *_viewer, gboolean up)
 {
-	LHViewer *viewer = (LHViewer *)_viewer;
+	LHViewer *viewer = (LHViewer *) _viewer;
 	GtkAdjustment *vadj = NULL;
 
 	if (!viewer || (viewer->widget == NULL))
 		return;
 
-	vadj = gtk_scrolled_window_get_vadjustment(
-					GTK_SCROLLED_WINDOW(lh_widget_get_widget(viewer->widget)));
+	vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(lh_widget_get_widget(viewer->widget)));
 	gtkutils_scroll_one_line(lh_widget_get_widget(viewer->widget), vadj, up);
 }
 
@@ -152,15 +149,14 @@ MimeViewer *lh_viewer_create()
 	viewer->vbox = gtk_vbox_new(FALSE, 0);
 
 	GtkWidget *w = lh_widget_get_widget(viewer->widget);
-	gtk_box_pack_start(GTK_BOX(viewer->vbox), w,
-			TRUE, TRUE, 1);
+	gtk_box_pack_start(GTK_BOX(viewer->vbox), w, TRUE, TRUE, 1);
 
 	gtk_widget_show_all(viewer->vbox);
 
 	return (MimeViewer *)viewer;
 }
 
-void lh_widget_statusbar_push(const gchar* msg)
+void lh_widget_statusbar_push(const gchar *msg)
 {
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 	STATUSBAR_PUSH(mainwin, msg);
@@ -168,6 +164,10 @@ void lh_widget_statusbar_push(const gchar* msg)
 
 void lh_widget_statusbar_pop()
 {
-        MainWindow *mainwin = mainwindow_get_mainwindow();
-        STATUSBAR_POP(mainwin);
+	MainWindow *mainwin = mainwindow_get_mainwindow();
+	STATUSBAR_POP(mainwin);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

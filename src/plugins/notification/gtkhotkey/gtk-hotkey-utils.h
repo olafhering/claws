@@ -26,12 +26,9 @@
 #include <gio/gio.h>
 
 G_BEGIN_DECLS
-
 #define			gtk_hotkey_g_file_is_directory(file) (gtk_hotkey_g_file_get_type(file) == G_FILE_TYPE_DIRECTORY)
 #define			gtk_hotkey_g_file_is_regular(file) (gtk_hotkey_g_file_get_type(file) == G_FILE_TYPE_REGULAR)
-
-GFileType		gtk_hotkey_g_file_get_type			(GFile *file);
+    GFileType gtk_hotkey_g_file_get_type(GFile *file);
 
 G_END_DECLS
-
 #endif /* __GTK_HOTKEY_UTILS_H__ */
