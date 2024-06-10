@@ -139,7 +139,6 @@ void privacy_free_sig_check_task_result(gpointer data)
 gboolean privacy_mimeinfo_is_signed(MimeInfo *mimeinfo)
 {
 	GSList *cur;
-	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
 	if (mimeinfo->privacy != NULL) {
 		PrivacySystem *system = privacy_data_get_system(mimeinfo->privacy);
