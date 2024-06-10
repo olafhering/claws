@@ -594,36 +594,32 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 	g_free(tmp);
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
-		tmp = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
+		g_autofree gchar *t = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
 		g_string_append(auth_url, "&redirect_uri=");
-		g_string_append(auth_url, tmp);
-		g_free(tmp);
+		g_string_append(auth_url, t);
 	}
 	if (OAUTH2info[i][OA2_RESPONSE_TYPE]) {
 		g_string_append(auth_url, "&response_type=");
 		g_string_append(auth_url, OAUTH2info[i][OA2_RESPONSE_TYPE]);
 	}
 	if (OAUTH2info[i][OA2_SCOPE_FOR_AUTH]) {
-		tmp = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
+		g_autofree gchar *t = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
 		g_string_append(auth_url, "&scope=");
-		g_string_append(auth_url, tmp);
-		g_free(tmp);
+		g_string_append(auth_url, t);
 	}
 	if (OAUTH2info[i][OA2_TENANT]) {
-		tmp = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
+		g_autofree gchar *t = g_uri_escape_string(OAUTH2info[i][OA2_TENANT], NULL, FALSE);
 		g_string_append(auth_url, "&tenant=");
-		g_string_append(auth_url, tmp);
-		g_free(tmp);
+		g_string_append(auth_url, t);
 	}
 	if (OAUTH2info[i][OA2_RESPONSE_MODE]) {
 		g_string_append(auth_url, "&response_mode=");
 		g_string_append(auth_url, OAUTH2info[i][OA2_RESPONSE_MODE]);
 	}
 	if (OAUTH2info[i][OA2_STATE]) {
-		tmp = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
+		g_autofree gchar *t = g_uri_escape_string(OAUTH2info[i][OA2_STATE], NULL, FALSE);
 		g_string_append(auth_url, "&state=");
-		g_string_append(auth_url, tmp);
-		g_free(tmp);
+		g_string_append(auth_url, t);
 	}
 
 	return g_string_free(auth_url, FALSE);
