@@ -3421,7 +3421,7 @@ gtk_cmctree_is_viewable (GtkCMCTree     *ctree,
   while (work) {
     if (!work->parent)
       break;
-    if (!GTK_CMCTREE_ROW (work->parent)->expanded)
+    if (!(GTK_CMCTREE_ROW (work->parent)->expanded))
       break;
     work = GTK_CMCTREE_ROW (work->parent);
   }
@@ -3429,7 +3429,7 @@ gtk_cmctree_is_viewable (GtkCMCTree     *ctree,
   if (!work)
     return FALSE;
 
-  return work->parent != NULL;
+  return work->parent == NULL;
 }
 
 GtkCMCTreeNode * 
