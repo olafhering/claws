@@ -990,6 +990,8 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	GError *error = NULL;
 
 	cancellable = g_task_get_cancellable(task);
+	if (mimeview->sig_check_cancellable != cancellable)
+		return;
 	cancelled = g_cancellable_set_error_if_cancelled(cancellable, &error);
 	if (cancelled) {
 		debug_print("sig check task was cancelled: task:%p GError: domain:%s code:%d message:\"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
