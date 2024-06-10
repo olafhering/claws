@@ -989,26 +989,26 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 }
 
 static PrivacySystem smime_system = {
-	"smime", /* id */
-	"S-MIME", /* name */
+	.id = "smime", /* id */
+	.name = "S-MIME", /* name */
 
-	smime_free_privacydata,	/* free_privacydata */
+	.free_privacydata = smime_free_privacydata,	/* free_privacydata */
 
-	smime_is_signed, /* is_signed(MimeInfo *) */
-	smime_check_sig_async,
+	.is_signed = smime_is_signed, /* is_signed(MimeInfo *) */
+	.check_signature = smime_check_sig_async,
 
-	smime_is_encrypted, /* is_encrypted(MimeInfo *) */
-	smime_decrypt, /* decrypt(MimeInfo *) */
+	.is_encrypted = smime_is_encrypted, /* is_encrypted(MimeInfo *) */
+	.decrypt = smime_decrypt, /* decrypt(MimeInfo *) */
 
-	TRUE,
-	smime_sign,
+	.can_sign = TRUE,
+	.sign = smime_sign,
 
-	TRUE,
-	smime_get_encrypt_data,
-	smime_encrypt,
-	smime_get_encrypt_warning,
-	smime_inhibit_encrypt_warning,
-	prefs_gpg_auto_check_signatures,
+	.can_encrypt = TRUE,
+	.get_encrypt_data = smime_get_encrypt_data,
+	.encrypt = smime_encrypt,
+	.get_encrypt_warning = smime_get_encrypt_warning,
+	.inhibit_encrypt_warning = smime_inhibit_encrypt_warning,
+	.auto_check_signatures = prefs_gpg_auto_check_signatures,
 };
 
 void smime_init()

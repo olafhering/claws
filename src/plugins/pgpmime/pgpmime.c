@@ -689,26 +689,26 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 }
 
 static PrivacySystem pgpmime_system = {
-	"pgpmime", /* id */
-	"PGP MIME", /* name */
+	.id = "pgpmime",
+	.name = "PGP MIME",
 
-	pgpmime_free_privacydata, /* free_privacydata */
+	.free_privacydata = pgpmime_free_privacydata,
 
-	pgpmime_is_signed, /* is_signed(MimeInfo *) */
-	pgpmime_check_sig_async,
+	.is_signed = pgpmime_is_signed,
+	.check_signature = pgpmime_check_sig_async,
 
-	pgpmime_is_encrypted, /* is_encrypted(MimeInfo *) */
-	pgpmime_decrypt, /* decrypt(MimeInfo *) */
+	.is_encrypted = pgpmime_is_encrypted,
+	.decrypt = pgpmime_decrypt,
 
-	TRUE,
-	pgpmime_sign,
+	.can_sign = TRUE,
+	.sign = pgpmime_sign,
 
-	TRUE,
-	pgpmime_get_encrypt_data,
-	pgpmime_encrypt,
-	pgpmime_get_encrypt_warning,
-	pgpmime_inhibit_encrypt_warning,
-	prefs_gpg_auto_check_signatures,
+	.can_encrypt = TRUE,
+	.get_encrypt_data = pgpmime_get_encrypt_data,
+	.encrypt = pgpmime_encrypt,
+	.get_encrypt_warning = pgpmime_get_encrypt_warning,
+	.inhibit_encrypt_warning = pgpmime_inhibit_encrypt_warning,
+	.auto_check_signatures = prefs_gpg_auto_check_signatures,
 };
 
 void pgpmime_init()
