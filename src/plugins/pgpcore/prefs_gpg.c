@@ -70,7 +70,7 @@ static PrefParam param[] = {
 	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
 };
 
-static gchar *saved_gpg_agent_info = NULL;
+static gchar *saved_gpg_agent_info;
 static void gpg_path_browse_cb(GtkWidget *widget, gpointer data);
 
 struct GPGPage {
