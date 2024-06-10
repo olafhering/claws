@@ -282,10 +282,6 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 					/* NOP */ ;
 				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_SEND)) == NULL) {
 					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
-					if (!smtp_session->pass) {
-						session_destroy(&smtp_session->session);
-						return -1;
-					}
 				}
 			} else {
 				smtp_session->user = g_strdup(ac_prefs->userid);
@@ -293,11 +289,11 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 					/* NOP */ ;
 				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
 					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
-					if (!smtp_session->pass) {
-						session_destroy(&smtp_session->session);
-						return -1;
-					}
 				}
+			}
+			if (!smtp_session->pass) {
+				session_destroy(&smtp_session->session);
+				return -1;
 			}
 		} else {
 			smtp_session->user = NULL;
