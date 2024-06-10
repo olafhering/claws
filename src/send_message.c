@@ -518,7 +518,7 @@ static gint send_send_data_progressive(Session *session, guint cur_len, guint to
 
 static gint send_send_data_finished(Session *session, guint len, gpointer data)
 {
-	SendProgressDialog *dialog = (SendProgressDialog *)data;
+	SendProgressDialog *dialog = data;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 
 	cm_return_val_if_fail(dialog != NULL, -1);
