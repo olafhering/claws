@@ -103,12 +103,12 @@
 #endif
 
 /* list of all instantiated MainWindow */
-static GList *mainwin_list = NULL;
+static GList *mainwin_list;
 
-static GdkCursor *watch_cursor = NULL;
-static GdkCursor *hand_cursor = NULL;
+static GdkCursor *watch_cursor;
+static GdkCursor *hand_cursor;
 
-static gint iconified_count = 0;
+static gint iconified_count;
 
 static void main_window_menu_callback_block(MainWindow *mainwin);
 static void main_window_menu_callback_unblock(MainWindow *mainwin);
@@ -789,7 +789,7 @@ static GtkRadioActionEntry mainwin_radio_dec_entries[] = {
 };
 
 static gboolean offline_ask_sync = TRUE;
-static gboolean is_obscured = FALSE;
+static gboolean is_obscured;
 
 #define N_COLOR_LABELS colorlabel_get_color_count()
 
@@ -2001,7 +2001,7 @@ static void main_window_menu_callback_unblock(MainWindow *mainwin)
 		mainwin->menu_lock_count--;
 }
 
-static guint prefs_tag = 0;
+static guint prefs_tag;
 
 void main_window_reflect_prefs_all(void)
 {
@@ -2095,7 +2095,7 @@ void main_window_reflect_prefs_custom_colors(MainWindow *mainwin)
 	folderview_reinit_fonts(mainwin->folderview);
 }
 
-static gint tags_tag = 0;
+static gint tags_tag;
 static gboolean main_window_reflect_tags_changes_real(gpointer data)
 {
 	GtkMenuShell *menu;
@@ -3215,7 +3215,7 @@ static void mailing_list_open_uri(GtkWidget *w, gpointer *data)
 
 static void fix_folderview_scroll(MainWindow *mainwin)
 {
-	static gboolean fix_done = FALSE;
+	static gboolean fix_done;
 
 	if (fix_done)
 		return;
@@ -3770,7 +3770,7 @@ static void set_layout_cb(GtkAction *action, GtkRadioAction *current, gpointer d
 
 void main_window_toggle_work_offline(MainWindow *mainwin, gboolean offline, gboolean ask_sync)
 {
-	static gboolean switching = FALSE;
+	static gboolean switching;
 
 	if (switching)
 		return;
