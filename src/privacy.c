@@ -111,8 +111,6 @@ void privacy_free_privacydata(PrivacyData *privacydata)
 
 void privacy_free_signature_data(SignatureData *sig_data)
 {
-	cm_return_if_fail(sig_data != NULL);
-
 	g_free(sig_data->info_short);
 	g_free(sig_data->info_full);
 	g_free(sig_data);
@@ -122,7 +120,8 @@ void privacy_free_sig_check_task_result(gpointer data)
 {
 	SigCheckTaskResult *result = data;
 
-	privacy_free_signature_data(result->sig_data);
+	if (result->sig_data)
+		privacy_free_signature_data(result->sig_data);
 	if (result->newinfo)
 		procmime_mimeinfo_free_all(&result->newinfo);
 	g_free(result);
