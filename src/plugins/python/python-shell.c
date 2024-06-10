@@ -64,7 +64,7 @@ static char *parasite_python_shell_get_input(GtkWidget *python_shell);
 /* Callbacks */
 static gboolean parasite_python_shell_key_press_cb(GtkWidget *textview, GdkEventKey *event, GtkWidget *python_shell);
 
-static GtkVBoxClass *parent_class = NULL;
+static GtkVBoxClass *parent_class;
 //static guint signals[LAST_SIGNAL] = {0};
 
 #if !GLIB_CHECK_VERSION(2, 58, 0)
