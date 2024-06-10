@@ -356,7 +356,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 				proxy_info->proxy_pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_PROXY_PASS);
 		}
 	}
-	SESSION(smtp_session)->proxy_info = proxy_info;
+	smtp_session->session.proxy_info = proxy_info;
 
 	session_set_timeout(&smtp_session->session, prefs_common.io_timeout_secs * 1000);
 	/* connect if necessary */
