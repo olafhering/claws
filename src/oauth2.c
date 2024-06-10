@@ -64,7 +64,7 @@ static gchar *OAUTH2info[5][17] = {
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
-	 "",
+		[OA2_RESPONSE_MODE] = "",
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
@@ -82,7 +82,7 @@ static gchar *OAUTH2info[5][17] = {
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-	 "query",
+		[OA2_RESPONSE_MODE] = "query",
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
@@ -100,7 +100,7 @@ static gchar *OAUTH2info[5][17] = {
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-	 "query",
+		[OA2_RESPONSE_MODE] = "query",
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.us",
@@ -118,7 +118,7 @@ static gchar *OAUTH2info[5][17] = {
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "offline",
 		[OA2_SCOPE_FOR_ACCESS] = "offline_access https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send",
-	 "query",
+		[OA2_RESPONSE_MODE] = "query",
 	 ""},
 	{
 		[OA2_BASE_URL] = "api.login.yahoo.com",
@@ -136,7 +136,7 @@ static gchar *OAUTH2info[5][17] = {
 		[OA2_STATE] = "",
 		[OA2_ACCESS_TYPE] = "",
 		[OA2_SCOPE_FOR_ACCESS] = "",
-	 "",
+		[OA2_RESPONSE_MODE] = "",
 	 "1"}
 };
 
