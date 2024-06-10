@@ -39,8 +39,8 @@
 #include "addrbook.h"
 #include "editaddress.h"
 
-static GtkActionGroup *custom_attr_popup_action = NULL;
-static GtkWidget *custom_attr_popup_menu = NULL;
+static GtkActionGroup *custom_attr_popup_action;
+static GtkWidget *custom_attr_popup_menu;
 
 static struct CustomAttrWindow {
 	GtkWidget *window;
@@ -73,7 +73,7 @@ static gchar *default_addressbook_attributes_table[] = {
 	NULL
 };
 
-static gboolean dirty = FALSE;
+static gboolean dirty;
 
 static void custom_attr_window_create(void);
 static void custom_attr_selected_attr_edited(GtkCellRendererText *widget, gchar *arg1, gchar *arg2, GtkWidget *list_view);
@@ -508,7 +508,7 @@ static void custom_attr_window_load_list(GList *list)
 	}
 }
 
-static GList *store_to_glist = NULL;
+static GList *store_to_glist;
 
 static gboolean custom_attr_store_to_glist(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer *data)
 {
