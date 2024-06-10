@@ -546,8 +546,9 @@ static gboolean button_press_cb(GtkCMCTree *ctree, GdkEventButton *button, gpoin
 
 	list = g_slist_find_custom(subscribed, ginfo->name, (GCompareFunc) g_ascii_strcasecmp);
 	if (list) {
+		gpointer tmpdata = list->data;
 		subscribed = g_slist_remove(subscribed, list->data);
-		g_free(list->data);
+		g_free(tmpdata);
 		gtk_cmclist_unselect_row(GTK_CMCLIST(ctree), row, 0);
 	} else {
 		subscribed = g_slist_append(subscribed, g_strdup(ginfo->name));
