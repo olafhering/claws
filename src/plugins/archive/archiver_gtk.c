@@ -75,7 +75,7 @@ typedef enum {
 	A_FILE_UNKNOWN = 1 << 5
 } AFileTest;
 
-static progress_widget *progress = NULL;
+static progress_widget *progress;
 
 static progress_widget *init_progress()
 {
