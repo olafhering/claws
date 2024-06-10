@@ -64,7 +64,7 @@ typedef struct {
 	G_TYPE_INSTANCE_GET_PRIVATE (entry, CLAWS_TYPE_SPELL_ENTRY, \
 			ClawsSpellEntryPrivate)
 
-static GtkEntryClass *parent_class = NULL;
+static GtkEntryClass *parent_class;
 
 #if !GLIB_CHECK_VERSION(2,58, 0)
 G_DEFINE_TYPE(ClawsSpellEntry, claws_spell_entry, GTK_TYPE_ENTRY)
