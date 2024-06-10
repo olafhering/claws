@@ -1038,11 +1038,11 @@ static void check_signature_cb(NoticeView *noticeview, void *user_data)
 	MimeView *mimeview = user_data;
 	gint ret;
 
-	if (mimeview->siginfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
-		return;
-
 	noticeview_set_text(mimeview->siginfoview, _("Checking signature..."));
 	GTK_EVENTS_FLUSH();
+
+	if (mimeview->siginfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
+		return;
 
 	mimeview_sig_check_cancel_and_clear(mimeview);
 
