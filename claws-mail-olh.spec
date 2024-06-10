@@ -61,6 +61,9 @@ Conflicts:      %name-debuginfo < %version-%release
 Conflicts:      %name-debugsource < %version-%release
 URL:            https://gitlab.com/olafhering/claws/-/compare/3.21.0...olh-3.21.0
 #
+%if %{with claws_fsanitize}
+BuildRequires:  strace
+%endif
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
