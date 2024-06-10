@@ -238,7 +238,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		strncpy2(spec_from, ac_prefs->address, BUFFSIZE - 1);
 	}
 	if (tmp_msginfo) {
-		procmsg_msginfo_free(&tmp_msginfo);
+		proc_msginfo_release(tmp_msginfo);
 	}
 
 	if (!ac_prefs->smtp_session) {

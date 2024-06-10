@@ -83,7 +83,7 @@ void procmsg_msg_list_free(GSList *mlist)
 
 	for (cur = mlist; cur != NULL; cur = cur->next) {
 		msginfo = (MsgInfo *)cur->data;
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 	g_slist_free(mlist);
 }
@@ -459,7 +459,7 @@ void procmsg_message_file_list_free(MsgInfoList *file_list)
 
 	for (cur = file_list; cur != NULL; cur = cur->next) {
 		fileinfo = (MsgFileInfo *) cur->data;
-		procmsg_msginfo_free(&(fileinfo->msginfo));
+		proc_msginfo_release(fileinfo->msginfo);
 		g_free(fileinfo->file);
 		g_free(fileinfo->flags);
 		g_free(fileinfo);
@@ -686,13 +686,13 @@ static void procmsg_empty_trash(FolderItem *trash)
 		for (cur = mlist; cur != NULL; cur = cur->next) {
 			MsgInfo *msginfo = (MsgInfo *)cur->data;
 			if (MSG_IS_LOCKED(msginfo->flags)) {
-				procmsg_msginfo_free(&msginfo);
+				proc_msginfo_release(msginfo);
 				continue;
 			}
 			if (msginfo->total_size != 0 && msginfo->size != (off_t) msginfo->total_size)
 				partial_mark_for_delete(msginfo);
 
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 		}
 		g_slist_free(mlist);
 		folder_item_remove_all_msg(trash);
@@ -1021,7 +1021,7 @@ gint procmsg_send_queue(FolderItem *queue, gboolean save_msgs, gchar **errstr)
 		/* FIXME: supposedly if only one message is locked, and queue
 		 * is being flushed, the following free says something like 
 		 * "freeing msg ## in folder (nil)". */
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 
 	g_slist_free(sorted_list);
@@ -1177,12 +1177,12 @@ gint procmsg_save_to_outbox(FolderItem *outbox, const gchar *file, gboolean is_q
 	tmp_msginfo = procmsg_msginfo_get_full_info(msginfo); /* refcnt++ */
 	if (msginfo != NULL) {
 		procmsg_msginfo_unset_flags(msginfo, ~0, 0);
-		procmsg_msginfo_free(&msginfo);	/* refcnt-- */
+		proc_msginfo_release(msginfo);	/* refcnt-- */
 		/* tmp_msginfo == msginfo */
 		if (tmp_msginfo && msginfo->extradata && (msginfo->extradata->dispositionnotificationto || msginfo->extradata->returnreceiptto)) {
 			procmsg_msginfo_set_flags(msginfo, MSG_RETRCPT_SENT, 0);
 		}
-		procmsg_msginfo_free(&tmp_msginfo); /* refcnt-- */
+		proc_msginfo_release(tmp_msginfo); /* refcnt-- */
 	}
 
 	return 0;
@@ -1346,7 +1346,7 @@ MsgInfo *procmsg_msginfo_get_full_info_from_file(MsgInfo *msginfo, const gchar *
 		if (!msginfo->extradata->resent_from && full_msginfo->extradata->resent_from)
 			msginfo->extradata->resent_from = g_strdup(full_msginfo->extradata->resent_from);
 	}
-	procmsg_msginfo_free(&full_msginfo);
+	proc_msginfo_release(full_msginfo);
 
 	return procmsg_msginfo_new_ref(msginfo);
 }
@@ -1375,10 +1375,8 @@ MsgInfo *procmsg_msginfo_get_full_info(MsgInfo *msginfo)
 }
 
 #define FREENULL(n) { g_free(n); n = NULL; }
-void procmsg_msginfo_free(MsgInfo **msginfo_ptr)
+void proc_msginfo_release(MsgInfo *msginfo)
 {
-	MsgInfo *msginfo = *msginfo_ptr;
-
 	if (msginfo == NULL)
 		return;
 
@@ -1433,7 +1431,6 @@ void procmsg_msginfo_free(MsgInfo **msginfo_ptr)
 	FREENULL(msginfo->plaintext_file);
 
 	g_free(msginfo);
-	*msginfo_ptr = NULL;
 }
 
 #undef FREENULL
@@ -1773,7 +1770,7 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 					debug_print("copied queued mail %d to sent folder\n", msgnum);
 					saved = TRUE;
 				}
-				procmsg_msginfo_free(&queued_mail);
+				proc_msginfo_release(queued_mail);
 			}
 			if (!saved) {
 				debug_print("resaving queued mail to sent folder\n");
@@ -1800,7 +1797,7 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 
 			/* check if referring message exists and has a message id */
 			if ((msginfo != NULL) && (msginfo->msgid != NULL) && (strcmp(msginfo->msgid, tokens[2]) != 0)) {
-				procmsg_msginfo_free(&msginfo);
+				proc_msginfo_release(msginfo);
 				msginfo = NULL;
 			}
 
@@ -1820,7 +1817,7 @@ static gint procmsg_send_message_queue_full(const gchar *file, gboolean keep_ses
 				} else {
 					procmsg_msginfo_set_flags(msginfo, MSG_FORWARDED, 0);
 				}
-				procmsg_msginfo_free(&msginfo);
+				proc_msginfo_release(msginfo);
 			}
 		}
 		g_strfreev(tokens);
@@ -2083,7 +2080,7 @@ static void procmsg_msg_has_flagged_parent_references(gpointer d, gpointer ud)
 
 	if (tmp->flags.perm_flags & fp->perm_flags)
 		fp->found = TRUE;
-	procmsg_msginfo_free(&tmp);
+	proc_msginfo_release(tmp);
 }
 
 /*!
@@ -2107,7 +2104,7 @@ gboolean procmsg_msg_has_flagged_parent(MsgInfo *info, MsgPermFlags perm_flags)
 		MsgInfo *tmp = folder_item_get_msginfo_by_msgid(info->folder, info->inreplyto);
 		if (tmp && (tmp->flags.perm_flags & perm_flags))
 			result = TRUE;
-		procmsg_msginfo_free(&tmp);
+		proc_msginfo_release(tmp);
 		if (result)
 			goto out;
 	}
@@ -2167,7 +2164,8 @@ static GSList *procmsg_find_children(MsgInfo *info)
 		for (cur = all; cur != NULL; cur = g_slist_next(cur)) {
 			/* this will not free the used pointers
 			   created with procmsg_msginfo_new_ref */
-			procmsg_msginfo_free((MsgInfo **)&(cur->data));
+			MsgInfo *msginfo = cur->data;
+			proc_msginfo_release(msginfo);
 		}
 	}
 	g_slist_free(all);
@@ -2188,7 +2186,7 @@ static void procmsg_update_unread_children(MsgInfo *info, gboolean newly_marked)
 				info->folder->unreadmarked_msgs--;
 			folder_item_update(info->folder, F_ITEM_UPDATE_MSGCNT);
 		}
-		procmsg_msginfo_free(&tmp);
+		proc_msginfo_release(tmp);
 	}
 	g_slist_free(children);
 }

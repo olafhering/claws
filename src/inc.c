@@ -697,7 +697,8 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 			folder_item_move_msgs(inbox, unfiltered);
 
 		for (msglist_element = msglist; msglist_element != NULL; msglist_element = msglist_element->next) {
-			procmsg_msginfo_free((MsgInfo **)&(msglist_element->data));
+			MsgInfo *msginfo = msglist_element->data;
+			proc_msginfo_release(msginfo);
 		}
 		folder_item_update_thaw();
 

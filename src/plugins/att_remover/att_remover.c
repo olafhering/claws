@@ -112,7 +112,7 @@ static gint save_new_message(MsgInfo *oldmsg, MsgInfo *newmsg, MimeInfo *info, g
 
 	finalmsg = procmsg_msginfo_new_from_mimeinfo(newmsg, info);
 	if (!finalmsg) {
-		procmsg_msginfo_free(&newmsg);
+		proc_msginfo_release(newmsg);
 		return -1;
 	}
 
@@ -128,20 +128,20 @@ static gint save_new_message(MsgInfo *oldmsg, MsgInfo *newmsg, MimeInfo *info, g
 	msgnum = folder_item_add_msg(item, finalmsg->plaintext_file, &flags, TRUE);
 	if (msgnum < 0) {
 		g_warning("could not add message without attachments");
-		procmsg_msginfo_free(&newmsg);
-		procmsg_msginfo_free(&finalmsg);
+		proc_msginfo_release(newmsg);
+		proc_msginfo_release(finalmsg);
 		return msgnum;
 	}
 	folder_item_remove_msg(item, oldmsg->msgnum);
 	finalmsg->msgnum = msgnum;
-	procmsg_msginfo_free(&newmsg);
-	procmsg_msginfo_free(&finalmsg);
+	proc_msginfo_release(newmsg);
+	proc_msginfo_release(finalmsg);
 
 	newmsg = folder_item_get_msginfo(item, msgnum);
 	if (newmsg && item) {
 		procmsg_msginfo_unset_flags(newmsg, ~0, ~0);
 		procmsg_msginfo_set_flags(newmsg, flags.perm_flags, flags.tmp_flags);
-		procmsg_msginfo_free(&newmsg);
+		proc_msginfo_release(newmsg);
 	}
 
 	return msgnum;
@@ -169,7 +169,7 @@ static void remove_attachments_cb(GtkWidget *widget, AttRemover *attremover)
 	partinfo = procmime_mimeinfo_next(partinfo);
 	if (!partinfo || !gtk_tree_model_get_iter_first(model, &iter)) {
 		gtk_widget_destroy(attremover->window);
-		procmsg_msginfo_free(&newmsg);
+		proc_msginfo_release(newmsg);
 		return;
 	}
 
@@ -407,7 +407,7 @@ static void remove_attachments(GSList *msglist)
 		info = procmime_scan_message(newmsg);
 
 		if (!(partinfo = find_first_text_part(info))) {
-			procmsg_msginfo_free(&newmsg);
+			proc_msginfo_release(newmsg);
 			continue;
 		}
 		/* only strip attachments where there is at least one */

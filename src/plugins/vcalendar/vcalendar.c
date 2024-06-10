@@ -197,7 +197,7 @@ static void create_meeting_from_message_cb_ui(GtkAction *action, gpointer data)
 			g_free(url);
 		}
 
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 
 	statusbar_progress_all(0, 0, 0);

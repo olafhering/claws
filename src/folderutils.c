@@ -109,7 +109,7 @@ gint folderutils_delete_duplicates(FolderItem *item, DeleteDuplicatesMode mode)
 	for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
 		MsgInfo *msginfo = (MsgInfo *)cur->data;
 
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 	g_slist_free(msglist);
 
@@ -158,7 +158,7 @@ void folderutils_mark_all_read(FolderItem *item, gboolean mark_as_read)
 				}
 			}
 			i++;
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 		}
 		folder_item_set_batch(item, FALSE);
 		folder_item_close(item);

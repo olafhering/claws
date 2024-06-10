@@ -1971,7 +1971,8 @@ static gint folder_item_syncronize_flags(FolderItem *item)
 	ret = syncronize_flags(item, msglist);
 
 	for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
-		procmsg_msginfo_free((MsgInfo **)&(cur->data));
+		MsgInfo *msginfo = cur->data;
+		proc_msginfo_release(msginfo);
 	}
 
 	g_slist_free(msglist);
@@ -2047,7 +2048,7 @@ gint folder_item_close(FolderItem *item)
 			msginfo = (MsgInfo *)cur->data;
 			if (MSG_IS_NEW(msginfo->flags))
 				procmsg_msginfo_unset_flags(msginfo, MSG_NEW, 0);
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 		}
 		g_slist_free(mlist);
 		folder_item_update_thaw();
@@ -2269,7 +2270,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 			if (msginfo && folder->klass->is_msg_changed && folder->klass->is_msg_changed(folder, item, msginfo)) {
 				msgcache_remove_msg(item->cache, msginfo->msgnum);
 				new_list = g_slist_prepend(new_list, GINT_TO_POINTER(msginfo->msgnum));
-				procmsg_msginfo_free(&msginfo);
+				proc_msginfo_release(msginfo);
 
 				debug_print("Remembering message %u to update...\n", folder_cur_num);
 			} else if (msginfo) {
@@ -2301,8 +2302,10 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 		}
 	}
 
-	for (cache_list_cur = cache_list; cache_list_cur != NULL; cache_list_cur = g_slist_next(cache_list_cur))
-		procmsg_msginfo_free((MsgInfo **)&(cache_list_cur->data));
+	for (cache_list_cur = cache_list; cache_list_cur != NULL; cache_list_cur = g_slist_next(cache_list_cur)) {
+		MsgInfo *msginfo = cache_list_cur->data;
+		proc_msginfo_release(msginfo);
+	}
 
 	g_slist_free(cache_list);
 	g_slist_free(folder_list);
@@ -2350,7 +2353,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 			if (to_filter != NULL) {
 				for (elem = to_filter; elem; elem = g_slist_next(elem)) {
 					MsgInfo *msginfo = (MsgInfo *)elem->data;
-					procmsg_msginfo_free(&msginfo);
+					proc_msginfo_release(msginfo);
 				}
 				g_slist_free(to_filter);
 			}
@@ -2418,7 +2421,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 
 		totalcnt++;
 
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 	folder_item_set_batch(item, FALSE);
 	g_slist_free(exists_list);
@@ -2853,7 +2856,7 @@ gchar *folder_item_fetch_msg(FolderItem *item, gint num)
 				procmsg_msginfo_set_flags(msginfo, 0, MSG_SCANNED);
 			}
 		}
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 
 	return msgfile;
@@ -2896,7 +2899,7 @@ gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers, 
 				procmsg_msginfo_set_flags(msginfo, 0, MSG_SCANNED);
 			}
 		}
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 
 	return msgfile;
@@ -2940,7 +2943,7 @@ static gint folder_item_get_msg_num_by_file(FolderItem *dest, const gchar *file)
 		remove_space(hentry[0].body);
 		if ((msginfo = msgcache_get_msg_by_id(dest->cache, hentry[0].body)) != NULL) {
 			msgnum = msginfo->msgnum;
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 
 			debug_print("found message as uid %d\n", msgnum);
 		}
@@ -3155,10 +3158,10 @@ gint folder_item_add_msgs(FolderItem *dest, GSList *file_list, gboolean remove_s
 
 			if (!folderscan && ((newmsginfo = get_msginfo(dest, num)) != NULL)) {
 				add_msginfo_to_cache(dest, newmsginfo, NULL);
-				procmsg_msginfo_free(&newmsginfo);
+				proc_msginfo_release(newmsginfo);
 			} else if ((newmsginfo = msgcache_get_msg(dest->cache, num)) != NULL) {
 				/* TODO: set default flags */
-				procmsg_msginfo_free(&newmsginfo);
+				proc_msginfo_release(newmsginfo);
 			}
 		}
 	}
@@ -3552,7 +3555,7 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 					hooks_invoke(MAIL_POSTFILTERING_HOOKLIST, newmsginfo);
 				}
 			}
-			procmsg_msginfo_free(&newmsginfo);
+			proc_msginfo_release(newmsginfo);
 
 			if (num > lastnum)
 				lastnum = num;
@@ -3661,7 +3664,7 @@ gint folder_item_remove_msg(FolderItem *item, gint num)
 
 	msginfo = msgcache_get_msg(item->cache, num);
 	if (msginfo && MSG_IS_LOCKED(msginfo->flags)) {
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 		return -1;
 	}
 	ret = folder->klass->remove_msg(folder, item, num);
@@ -3669,7 +3672,7 @@ gint folder_item_remove_msg(FolderItem *item, gint num)
 	if (msginfo != NULL) {
 		if (ret == 0)
 			remove_msginfo_from_cache(item, msginfo);
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 
 	return ret;
@@ -4393,7 +4396,8 @@ void folder_item_apply_processing(FolderItem *item)
 	if (pre_global_processing || processing_list || post_global_processing)
 		filtering_move_and_copy_msgs(mlist);
 	for (cur = mlist; cur != NULL; cur = cur->next) {
-		procmsg_msginfo_free((MsgInfo **)&(cur->data));
+		MsgInfo *msginfo = cur->data;
+		proc_msginfo_release(msginfo);
 	}
 	g_slist_free(mlist);
 
@@ -4707,7 +4711,7 @@ gint folder_item_search_msgs_local(Folder *folder, FolderItem *container, MsgNum
 		}
 		processed_count++;
 
-		procmsg_msginfo_free(&msg);
+		proc_msginfo_release(msg);
 
 		if (progress_cb != NULL && !progress_cb(progress_data, FALSE, processed_count, matched_count, msgcount))
 			break;
