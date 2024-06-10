@@ -41,9 +41,9 @@
 #include "cm_gdata_contacts.h"
 #include "cm_gdata_prefs.h"
 
-static gulong hook_address_completion = 0;
-static gulong hook_offline_switch = 0;
-static gulong timer_query_contacts = 0;
+static gulong hook_address_completion;
+static gulong hook_offline_switch;
+static gulong timer_query_contacts;
 
 static gboolean my_address_completion_build_list_hook(gpointer source, gpointer data)
 {
