@@ -288,7 +288,6 @@ gchar *privacy_mimeinfo_get_sig_info(MimeInfo *mimeinfo, gboolean full)
 gboolean privacy_mimeinfo_is_encrypted(MimeInfo *mimeinfo)
 {
 	GSList *cur;
-	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = cur->data;
