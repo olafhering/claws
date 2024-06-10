@@ -1583,14 +1583,12 @@ static void clean_cache_cb(GtkWidget *widget, gpointer data)
 static regex_t *summary_compile_simplify_regexp(gchar *simplify_subject_regexp)
 {
 	int err;
-	gchar buf[BUFFSIZE];
 	regex_t *preg = NULL;
 
 	preg = g_new0(regex_t, 1);
 
 	err = regcomp(preg, simplify_subject_regexp, REG_EXTENDED);
 	if (err) {
-		regerror(err, preg, buf, BUFFSIZE);
 		regfree(preg);
 		g_free(preg);
 		preg = NULL;
