@@ -46,7 +46,7 @@
 #include "common/tags.h"
 #include "account.h"
 
-static PyObject *cm_module = NULL;
+static PyObject *cm_module;
 
 PyObject *get_gobj_from_address(gpointer addr)
 {
