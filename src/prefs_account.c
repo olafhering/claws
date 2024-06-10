@@ -104,7 +104,7 @@ struct AutocheckWidgets {
 	GtkWidget *autochk_sec_spinbtn;
 };
 
-static GSList *prefs_pages = NULL;
+static GSList *prefs_pages;
 
 #ifdef USE_OAUTH2
 static GTask *oauth2_listener_task;
@@ -4314,7 +4314,7 @@ static gint prefs_account_get_new_id(void)
 {
 	GList *ac_list;
 	PrefsAccount *ac;
-	static gint last_id = 0;
+	static gint last_id;
 
 	for (ac_list = account_get_list(); ac_list != NULL; ac_list = ac_list->next) {
 		ac = (PrefsAccount *)ac_list->data;
@@ -4452,8 +4452,8 @@ static void auto_configure_cb(GtkWidget *widget, gpointer data)
 	gchar *address = NULL;
 	AutoConfigureData *recv_data;
 	AutoConfigureData *send_data;
-	static GCancellable *recv_cancel = NULL;
-	static GCancellable *send_cancel = NULL;
+	static GCancellable *recv_cancel;
+	static GCancellable *send_cancel;
 	RecvProtocol protocol;
 	struct BasicProtocol *protocol_optmenu = (struct BasicProtocol *)basic_page.protocol_optmenu;
 	GtkWidget *optmenu = protocol_optmenu->combobox;
@@ -5511,7 +5511,7 @@ static void prefs_account_showpwd_checkbtn_toggled(GtkToggleButton *button, gpoi
 static void prefs_account_entry_changed_newline_check_cb(GtkWidget *entry, gpointer user_data)
 {
 	static GdkColor red;
-	static gboolean colors_initialised = FALSE;
+	static gboolean colors_initialised;
 
 	if (strchr(gtk_entry_get_text(GTK_ENTRY(entry)), '\n') != NULL) {
 		/* Entry contains a newline, light it up. */
