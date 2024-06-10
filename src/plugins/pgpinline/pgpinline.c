@@ -382,7 +382,7 @@ static MimeInfo *pgpinline_decrypt(MimeInfo *mimeinfo)
 
 	plain = sgpgme_decrypt_verify(cipher, &sigstat, ctx);
 
-	if (sigstat != NULL && sigstat->signatures != NULL) {
+	if (plain && sigstat != NULL && sigstat->signatures != NULL) {
 		sig_data = g_new0(SignatureData, 1);
 		sig_data->status = sgpgme_sigstat_gpgme_to_privacy(ctx, sigstat);
 		sig_data->info_short = sgpgme_sigstat_info_short(ctx, sigstat);
@@ -394,8 +394,6 @@ static MimeInfo *pgpinline_decrypt(MimeInfo *mimeinfo)
 
 	if (plain == NULL) {
 		g_free(textdata);
-		if (sig_data)
-			privacy_free_signature_data(sig_data);
 		return NULL;
 	}
 
