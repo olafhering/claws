@@ -71,7 +71,7 @@ static struct _LDAPEntry_dlg {
 /**
  * Message queue.
  */
-static GList *_displayQueue_ = NULL;
+static GList *_displayQueue_;
 
 /**
  * Mutex to protect callback from multiple threads.
@@ -81,17 +81,17 @@ static pthread_mutex_t _browseMutex_ = PTHREAD_MUTEX_INITIALIZER;
 /**
  * Current query ID.
  */
-static gint _queryID_ = 0;
+static gint _queryID_;
 
 /**
  * Completion idle ID.
  */
-static guint _browseIdleID_ = 0;
+static guint _browseIdleID_;
 
 /**
  * Search complete indicator.
  */
-static gboolean _searchComplete_ = FALSE;
+static gboolean _searchComplete_;
 
 /**
  * Callback entry point for each LDAP entry processed. The background thread
