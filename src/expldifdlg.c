@@ -75,8 +75,8 @@ static struct _ExpLdif_Dlg {
 
 static struct _AddressFileSelection _exp_ldif_file_selector_;
 
-static ExportLdifCtl *_exportCtl_ = NULL;
-static AddressCache *_addressCache_ = NULL;
+static ExportLdifCtl *_exportCtl_;
+static AddressCache *_addressCache_;
 
 /**
  * Display message in status field.
