@@ -2733,14 +2733,12 @@ gint addrindex_setup_explicit_search(AddressDataSource *ds, const gchar *searchT
  */
 static gboolean addrindex_start_explicit(QueryRequest *req)
 {
-	gboolean retVal;
+	gboolean retVal = FALSE;
+#ifdef USE_LDAP
 	AddrQueryObject *aqo;
-
-	retVal = FALSE;
 
 	/* Note: there should only be one query in the list. */
 	aqo = req->queryList->data;
-#ifdef USE_LDAP
 	if (aqo->queryType == ADDRQUERY_LDAP) {
 		LdapServer *server;
 		LdapQuery *qry;
