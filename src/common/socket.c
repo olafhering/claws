@@ -1418,7 +1418,7 @@ gint sock_close(SockInfo *sock, gboolean close_fd)
 #ifdef USE_GNUTLS
 	if (sock->ssl)
 		ssl_done_socket(sock);
-	if (sock->g_source != 0 && g_main_context_find_source_by_id(NULL, sock->g_source) != NULL)
+	if (sock->g_source)
 		g_source_remove(sock->g_source);
 #endif
 	if (close_fd) {
