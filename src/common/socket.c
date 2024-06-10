@@ -1403,12 +1403,10 @@ Single-byte send() and recv().
 	return bp - buf;
 }
 
-gint sock_close(SockInfo *sock, gboolean close_fd)
+void sock_close(SockInfo *sock, gboolean close_fd)
 {
-	gint ret = 0;
-
 	if (!sock)
-		return 0;
+		return;
 
 	if (sock->sock_ch)
 		g_io_channel_unref(sock->sock_ch);
@@ -1421,17 +1419,15 @@ gint sock_close(SockInfo *sock, gboolean close_fd)
 	if (close_fd) {
 #ifdef G_OS_WIN32
 		shutdown(sock->sock, 1); /* complete transfer before close */
-		ret = closesocket(sock->sock);
+		closesocket(sock->sock);
 #else
-		ret = fd_close(sock->sock);
+		fd_close(sock->sock);
 #endif
 	}
 
 	g_free(sock->canonical_name);
 	g_free(sock->hostname);
 	g_free(sock);
-
-	return ret;
 }
 
 gint fd_close(gint fd)
