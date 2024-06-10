@@ -215,12 +215,11 @@ struct _MsgInfo {
 	GSList *references;
 	gchar *fromspace;
 
-	gint score;
-
 	/* used only for encrypted messages */
 	gchar *plaintext_file;
 
 	gint hidden;
+	gint score;
 
 	/* used only for partially received messages */
 	gint total_size;
