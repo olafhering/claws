@@ -346,8 +346,8 @@ static GtkActionEntry spamreport_main_menu[] = { {
 						  }
 };
 
-static guint context_menu_id = 0;
-static guint main_menu_id = 0;
+static guint context_menu_id;
+static guint main_menu_id;
 
 gint plugin_init(gchar **error)
 {
