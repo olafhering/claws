@@ -998,6 +998,7 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	GTask *task = G_TASK(async_result);
 	GCancellable *cancellable;
 	MimeView *mimeview = (MimeView *)user_data;
+	MimeInfo *siginfo = mimeview->siginfo;
 	gboolean cancelled;
 	SigCheckTaskResult *result;
 	GError *error = NULL;
@@ -1018,19 +1019,19 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 
 	result = g_task_propagate_pointer(task, &error);
 
-	if (mimeview->siginfo && mimeview->siginfo->sig_data) {
-		privacy_free_signature_data(mimeview->siginfo->sig_data);
-		mimeview->siginfo->sig_data = NULL;
+	if (siginfo && siginfo->sig_data) {
+		privacy_free_signature_data(siginfo->sig_data);
+		siginfo->sig_data = NULL;
 	}
 
-	if (!result || !mimeview->siginfo) {
-		debug_print("sig check task propagated NULL task:%p GError: domain:%s code:%d message:\"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
+	if (!result || !siginfo) {
+		g_free(result);
 		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
 		return;
 	}
 
-	mimeview->siginfo->sig_data = result->sig_data;
+	siginfo->sig_data = result->sig_data;
 	update_signature_noticeview(mimeview, FALSE, 0);
 
 	if (result->newinfo) {
@@ -1134,12 +1135,16 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		}
 	}
 
-	while (selected != NULL) {
-		if (privacy_mimeinfo_is_signed(selected))
-			break;
-		selected = procmime_mimeinfo_parent(selected);
+	if (mimeview->siginfo) {
+		g_warning("%s siginfo %p", __func__, mimeview->siginfo);
+	} else {
+		while (selected != NULL) {
+			if (privacy_mimeinfo_is_signed(selected))
+				break;
+			selected = procmime_mimeinfo_parent(selected);
+		}
+		mimeview->siginfo = selected;
 	}
-	mimeview->siginfo = selected;
 
 	/* This shortcut boolean is there to correctly set the menu's
 	 * CheckSignature item sensitivity without killing performance
