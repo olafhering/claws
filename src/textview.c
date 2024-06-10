@@ -71,17 +71,9 @@
 #include "avatars.h"
 #include "file-utils.h"
 
-static GdkColor quote_colors[3] = {
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0},
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0},
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0}
-};
+static GdkColor quote_colors[3];
 
-static GdkColor quote_bgcolors[3] = {
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0},
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0},
-	{(gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0}
-};
+static GdkColor quote_bgcolors[3];
 
 static GdkColor signature_color = {
 	(gulong) 0,
@@ -90,58 +82,16 @@ static GdkColor signature_color = {
 	(gushort) 0x7fff
 };
 
-static GdkColor uri_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor emphasis_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor diff_added_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor diff_deleted_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor diff_hunk_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor tags_bgcolor = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor tags_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkCursor *hand_cursor = NULL;
-static GdkCursor *text_cursor = NULL;
-static GdkCursor *watch_cursor = NULL;
+static GdkColor uri_color;
+static GdkColor emphasis_color;
+static GdkColor diff_added_color;
+static GdkColor diff_deleted_color;
+static GdkColor diff_hunk_color; 
+static GdkColor tags_bgcolor;
+static GdkColor tags_color; 
+static GdkCursor *hand_cursor;
+static GdkCursor *text_cursor;
+static GdkCursor *watch_cursor;
 
 #define TEXTVIEW_FONT_SIZE_STEP 15 /* pango font zoom level change granularity in % */
 #define TEXTVIEW_FONT_SIZE_MIN -75 /* this gives 5 zoom out steps at 15% */
