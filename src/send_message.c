@@ -358,7 +358,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	}
 	smtp_session->session.proxy_info = proxy_info;
 
-	session_set_timeout(&smtp_session->session, prefs_common.io_timeout_secs * 1000);
+	session_set_timeout(&smtp_session->session, prefs_common.io_timeout_secs);
 	/* connect if necessary */
 	if (!was_inited && session_connect(&smtp_session->session, ac_prefs->smtp_server, port) < 0) {
 		session_destroy(&smtp_session->session);

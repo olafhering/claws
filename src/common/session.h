@@ -89,7 +89,7 @@ struct _Session {
 	gint write_data_len;
 
 	guint timeout_tag;
-	guint timeout_interval;
+	unsigned int timeout_interval;
 
 	gpointer data;
 
@@ -144,7 +144,7 @@ gboolean session_is_connected(Session *session);
 
 void session_set_access_time(Session *session);
 
-void session_set_timeout(Session *session, guint interval);
+void session_set_timeout(Session *session, unsigned int interval);
 
 void session_set_recv_message_notify(Session *session, RecvMsgNotify notify_func, gpointer data);
 void session_set_recv_data_progressive_notify(Session *session, RecvDataProgressiveNotify notify_func, gpointer data);

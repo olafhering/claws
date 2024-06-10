@@ -810,7 +810,7 @@ static IncState inc_pop3_session_do(IncSession *session)
 	GTK_EVENTS_FLUSH();
 	g_free(buf);
 
-	session_set_timeout(SESSION(pop3_session), prefs_common.io_timeout_secs * 1000);
+	session_set_timeout(SESSION(pop3_session), prefs_common.io_timeout_secs);
 
 	if (session_connect(SESSION(pop3_session), server, port) < 0) {
 		if (!prefs_common.no_recv_err_panel) {
