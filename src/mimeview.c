@@ -467,6 +467,7 @@ void mimeview_destroy(MimeView *mimeview)
 	if (mimeview->sig_check_cancellable != NULL) {
 		/* Set last_sig_check_task to NULL to discard results in async_cb */
 		mimeview->siginfo->last_sig_check_task = NULL;
+		mimeview->siginfo = NULL;
 		g_cancellable_cancel(mimeview->sig_check_cancellable);
 		g_object_unref(mimeview->sig_check_cancellable);
 	}
@@ -858,6 +859,7 @@ void mimeview_clear(MimeView *mimeview)
 	if (mimeview->sig_check_cancellable != NULL) {
 		/* Set last_sig_check_task to NULL to discard results in async_cb */
 		mimeview->siginfo->last_sig_check_task = NULL;
+		mimeview->siginfo = NULL;
 		g_cancellable_cancel(mimeview->sig_check_cancellable);
 		g_object_unref(mimeview->sig_check_cancellable);
 		mimeview->sig_check_cancellable = NULL;
@@ -1002,16 +1004,8 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	SigCheckTaskResult *result;
 	GError *error = NULL;
 
-	if (mimeview->siginfo == NULL) {
-		debug_print("discarding stale sig check task result task:%p\n", task);
+	if (mimeview->siginfo == NULL)
 		return;
-	} else if (task != mimeview->siginfo->last_sig_check_task) {
-		debug_print("discarding stale sig check task result last_task:%p task:%p\n", mimeview->siginfo->last_sig_check_task, task);
-		return;
-	} else {
-		debug_print("using sig check task result task:%p\n", task);
-		mimeview->siginfo->last_sig_check_task = NULL;
-	}
 
 	cancellable = g_task_get_cancellable(task);
 	cancelled = g_cancellable_set_error_if_cancelled(cancellable, &error);
