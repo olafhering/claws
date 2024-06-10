@@ -601,10 +601,8 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 
 	}
 	if (OAUTH2info[i][OA2_RESPONSE_TYPE]) {
-		tmp = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_TYPE], NULL, FALSE);
 		g_string_append(url, "&response_type=");
-		g_string_append(url, tmp);
-		g_free(tmp);
+		g_string_append(url, OAUTH2info[i][OA2_RESPONSE_TYPE]);
 	}
 	if (OAUTH2info[i][OA2_SCOPE_FOR_AUTH]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
