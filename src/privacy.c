@@ -364,7 +364,7 @@ static PrivacySystem *privacy_get_system(const gchar *id)
 	cm_return_val_if_fail(id != NULL, NULL);
 
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
+		PrivacySystem *system = cur->data;
 
 		if (strcmp(id, system->id) == 0)
 			return system;
