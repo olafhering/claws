@@ -124,8 +124,8 @@ gboolean vcal_subscribe_uri(Folder *folder, const gchar *uri);
 
 FolderClass vcal_class;
 
-static GSList *created_files = NULL;
-static GHashTable *hash_uids = NULL;
+static GSList *created_files;
+static GHashTable *hash_uids;
 
 struct _VCalFolder {
 	Folder folder;
@@ -1093,7 +1093,7 @@ static gboolean vcal_scan_required(Folder *folder, FolderItem *item)
 	return FALSE;
 }
 
-static gint vcal_folder_lock_count = 0;
+static gint vcal_folder_lock_count;
 
 static void vcal_set_mtime(Folder *folder, FolderItem *item)
 {
@@ -1251,7 +1251,7 @@ static void add_menuitems(GtkUIManager *ui_manager, FolderItem *item)
 	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorVcal5", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
 }
 
-static gboolean setting_sensitivity = FALSE;
+static gboolean setting_sensitivity;
 static void set_sensitivity(GtkUIManager *ui_manager, FolderItem *fitem)
 {
 	VCalFolderItem *item = (VCalFolderItem *) fitem;
