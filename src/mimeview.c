@@ -68,10 +68,7 @@ typedef enum {
 #define N_MIMEVIEW_COLS	(N_MIMEVIEW_COLUMNS)
 
 static void mimeview_set_multipart_tree(MimeView *mimeview, MimeInfo *mimeinfo, GtkTreeIter *parent);
-static void mimeview_show_message_part(MimeView *mimeview, MimeInfo *partinfo);
 static void mimeview_change_view_type(MimeView *mimeview, MimeViewType type);
-static gchar *mimeview_get_filename_for_part(MimeInfo *partinfo, const gchar *basedir, gint number);
-static gint mimeview_write_part(const gchar *filename, MimeInfo *partinfo, gboolean handle_error);
 
 static void mimeview_selected(GtkTreeSelection *selection, MimeView *mimeview);
 static gint mimeview_button_pressed(GtkWidget *widget, GdkEventButton *event, MimeView *mimeview);
@@ -87,10 +84,7 @@ static void mimeview_open_part_with(MimeView *mimeview, MimeInfo *partinfo, gboo
 #endif
 static void mimeview_send_to(MimeView *mimeview, MimeInfo *partinfo);
 static void mimeview_view_file(const gchar *filename, MimeInfo *partinfo, const gchar *cmd, MimeView *mimeview);
-static gboolean icon_clicked_cb(GtkWidget *button, GdkEventButton *event, MimeView *mimeview);
 static void icon_selected(MimeView *mimeview, gint num, MimeInfo *partinfo);
-static gint icon_key_pressed(GtkWidget *button, GdkEventKey *event, MimeView *mimeview);
-static void icon_list_append_icon(MimeView *mimeview, MimeInfo *mimeinfo);
 static void icon_list_create(MimeView *mimeview, MimeInfo *mimeinfo);
 static void icon_list_clear(MimeView *mimeview);
 static void icon_list_toggle_by_mime_info(MimeView *mimeview, MimeInfo *mimeinfo);
