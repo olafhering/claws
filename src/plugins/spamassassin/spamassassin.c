@@ -217,7 +217,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	MailFilteringData *mail_filtering_data = (MailFilteringData *) source;
 	MsgInfo *msginfo = mail_filtering_data->msginfo;
 	gboolean is_spam = FALSE, error = FALSE;
-	static gboolean warned_error = FALSE;
+	static gboolean warned_error;
 	FILE *fp = NULL;
 	int pid = 0;
 	int status;
