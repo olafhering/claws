@@ -1261,7 +1261,7 @@ MainWindow *main_window_create()
 
 	/* main window */
 	window = GTK_WIDGET(gtkut_window_new(GTK_WINDOW_TOPLEVEL, "mainwindow"));
-	gtk_window_set_title(GTK_WINDOW(window), PROG_VERSION);
+	gtk_window_set_title(GTK_WINDOW(window), PACKAGE_FRIENDLY);
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 #ifdef GENERIC_UMPC
 	prefs_common.layout_mode = SMALL_LAYOUT;
@@ -2314,10 +2314,10 @@ static void main_window_show_cur_account(MainWindow *mainwin)
 	ac_name = g_strdup(cur_account ? (cur_account->account_name ? cur_account->account_name : _("Untitled"))
 			   : _("none"));
 
-	if (cur_account)
+	if (0 && cur_account)
 		buf = g_strdup_printf("%s - %s", ac_name, PROG_VERSION);
 	else
-		buf = g_strdup(PROG_VERSION);
+		buf = g_strdup(PACKAGE_FRIENDLY);
 	gtk_window_set_title(GTK_WINDOW(mainwin->window), buf);
 	g_free(buf);
 
