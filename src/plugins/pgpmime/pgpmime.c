@@ -494,6 +494,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	}
 
 	sigcontent = sgpgme_data_release_and_get_mem(gpgsig, &len);
+	gpgsig = NULL;
 
 	if (sigcontent == NULL || len <= 0) {
 		g_warning("sgpgme_data_release_and_get_mem failed");
@@ -520,7 +521,8 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 
 error:
 	gpgme_release(ctx);
-	gpgme_data_release(gpgsig);
+	if (gpgsig)
+		gpgme_data_release(gpgsig);
 	gpgme_data_release(gpgtext);
 
 out:
