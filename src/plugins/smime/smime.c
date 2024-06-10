@@ -1000,10 +1000,8 @@ static PrivacySystem smime_system = {
 	.is_encrypted = smime_is_encrypted, /* is_encrypted(MimeInfo *) */
 	.decrypt = smime_decrypt, /* decrypt(MimeInfo *) */
 
-	.can_sign = TRUE,
 	.sign = smime_sign,
 
-	.can_encrypt = TRUE,
 	.get_encrypt_data = smime_get_encrypt_data,
 	.encrypt = smime_encrypt,
 	.get_encrypt_warning = smime_get_encrypt_warning,
