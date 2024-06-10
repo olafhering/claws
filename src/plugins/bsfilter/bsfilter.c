@@ -124,9 +124,9 @@ typedef struct _BsFilterData {
 	gboolean in_thread;
 } BsFilterData;
 
-static BsFilterData *to_filter_data = NULL;
+static BsFilterData *to_filter_data;
 #ifdef USE_PTHREAD
-static gboolean filter_th_done = FALSE;
+static gboolean filter_th_done;
 static pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t wait_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t wait_cond = PTHREAD_COND_INITIALIZER;
@@ -206,7 +206,7 @@ static void *bsfilter_filtering_thread(void *data)
 }
 
 static pthread_t filter_th;
-static int filter_th_started = 0;
+static int filter_th_started;
 
 static void bsfilter_start_thread(void)
 {
@@ -246,7 +246,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 {
 	MailFilteringData *mail_filtering_data = (MailFilteringData *) source;
 	MsgInfo *msginfo = mail_filtering_data->msginfo;
-	static gboolean warned_error = FALSE;
+	static gboolean warned_error;
 	int status = 0, whitelisted = 0;
 #ifndef G_OS_WIN32
 	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath : "bsfilter";
