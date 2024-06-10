@@ -449,6 +449,7 @@ Plugin *plugin_load(const gchar *filename, gchar **error)
 			return NULL;
 	} else {
 		plugin->in_prefix_dir = FALSE;
+		plugin->in_prefix_dir = TRUE;
 	}
 
  init_plugin:
