@@ -70,7 +70,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
 		[OA2_CLIENT_ID] = "",
-		[OA2_CLIENT_SECRET] = "",
 		[OA2_REDIRECT_URI] = "http://127.0.0.1:8888",
 		[OA2_AUTH_RESOURCE] = "/common/oauth2/v2.0/authorize",
 		[OA2_ACCESS_RESOURCE] = "/common/oauth2/v2.0/token",
@@ -370,7 +369,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 
 	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
 
-	if (OAUTH2info[i][OA2_CLIENT_SECRET][0]) {
+	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
 		if (OAUTH2Data->custom_client_secret)
 			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
@@ -499,7 +498,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	body = g_strconcat("client_id=", uri, "&refresh_token=", OAUTH2Data->refresh_token, NULL);
 	g_free(uri);
 
-	if (OAUTH2info[i][OA2_CLIENT_SECRET][0]) {
+	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
 		if (OAUTH2Data->custom_client_secret)
 			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
