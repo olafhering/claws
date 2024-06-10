@@ -81,7 +81,7 @@ static void send_progress_dialog_destroy(SendProgressDialog *dialog);
 static void send_showlog_button_cb(GtkWidget *widget, gpointer data);
 static void send_cancel_button_cb(GtkWidget *widget, gpointer data);
 
-static void send_put_error(Session *session);
+static void send_put_error(SMTPSession *smtp_session);
 
 void send_cancel(void)
 {
@@ -397,7 +397,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 
 	if (ret == -1) {
 		manage_window_focus_in(send_dialog->dialog->window, NULL, NULL);
-		send_put_error(&smtp_session->session);
+		send_put_error(smtp_session);
 		manage_window_focus_out(send_dialog->dialog->window, NULL, NULL);
 	}
 
@@ -597,9 +597,8 @@ static void send_cancel_button_cb(GtkWidget *widget, gpointer data)
 	dialog->cancelled = TRUE;
 }
 
-static void send_put_error(Session *session)
+static void send_put_error(SMTPSession *smtp_session)
 {
-	SMTPSession *smtp_session = SMTP_SESSION(session);
 	gchar *msg;
 	gchar *log_msg = NULL;
 	gchar *err_msg = NULL;
