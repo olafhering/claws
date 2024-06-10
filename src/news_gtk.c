@@ -233,11 +233,8 @@ static void unsubscribe_newsgroup_cb(GtkAction *action, gpointer data)
 	message = g_strdup_printf(_("Really unsubscribe newsgroup '%s'?"), name);
 	avalue = alertpanel_full(_("Unsubscribe newsgroup"), message, GTK_STOCK_CANCEL, _("_Unsubscribe"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
 	g_free(message);
-	g_free(name);
-	if (avalue != G_ALERTALTERNATE) {
-		g_free(old_id);
-		return;
-	}
+	if (avalue != G_ALERTALTERNATE)
+		goto out;
 
 	if (item == folderview_get_opened_item(folderview)) {
 		summary_clear_all(folderview->summaryview);
@@ -247,14 +244,15 @@ static void unsubscribe_newsgroup_cb(GtkAction *action, gpointer data)
 	if (item->folder->klass->remove_folder(item->folder, item) < 0) {
 		folder_item_scan(item);
 		alertpanel_error(_("Can't remove the folder '%s'."), name);
-		g_free(old_id);
-		return;
+		goto out;
 	}
 
 	folder_write_list();
 
 	prefs_filtering_delete_path(old_id);
+out:
 	g_free(old_id);
+	g_free(name);
 }
 
 static void rename_newsgroup_cb(GtkAction *action, gpointer data)
