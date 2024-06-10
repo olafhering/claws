@@ -3418,13 +3418,18 @@ gtk_cmctree_is_viewable (GtkCMCTree     *ctree,
 
   work = GTK_CMCTREE_ROW (node);
 
-  while (work && work->parent && GTK_CMCTREE_ROW (work->parent)->expanded)
+  while (work) {
+    if (!work->parent)
+      break;
+    if (!GTK_CMCTREE_ROW (work->parent)->expanded)
+      break;
     work = GTK_CMCTREE_ROW (work->parent);
+  }
 
-  if (!work->parent)
-    return TRUE;
+  if (!work)
+    return FALSE;
 
-  return FALSE;
+  return work->parent != NULL;
 }
 
 GtkCMCTreeNode * 
