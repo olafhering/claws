@@ -49,11 +49,11 @@
 #include "addrindex.h"
 #include "folder_item_prefs.h"
 
-GSList *pre_global_processing = NULL;
-GSList *post_global_processing = NULL;
-GSList *filtering_rules = NULL;
+GSList *pre_global_processing;
+GSList *post_global_processing;
+GSList *filtering_rules;
 
-gboolean debug_filtering_session = FALSE;
+gboolean debug_filtering_session;
 
 static gboolean filtering_is_final_action(FilteringAction *filtering_action);
 
