@@ -685,7 +685,7 @@ static void about_create(void)
 	gtk_label_set_selectable(GTK_LABEL(label), TRUE);
 	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 	gtk_box_pack_start(GTK_BOX(vbox2), label, FALSE, FALSE, 0);
-	markup = g_markup_printf_escaped("<span weight=\"bold\" size=\"xx-large\">" PACKAGE_NAME "</span>\nversion %s", VERSION);
+	markup = g_markup_printf_escaped("<span weight=\"bold\" size=\"xx-large\">" PACKAGE_NAME "</span>\nversion %s", VERSION_UI);
 	gtk_label_set_markup(GTK_LABEL(label), markup);
 	g_free(markup);
 

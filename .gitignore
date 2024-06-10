@@ -16,6 +16,7 @@
 /.settings
 /ChangeLog
 /TAGS
+/VERSION_UI
 /aclocal.m4
 /appdata/*.xml
 /autom4te.cache
