@@ -1582,33 +1582,15 @@ srow_new (GtkCMCTree *ctree)
   int i;
 
   clist = GTK_CMCLIST (ctree);
-  ctree_row = g_slice_new (GtkCMCTreeRow);
-  ctree_row->row.cell = g_slice_alloc (sizeof (GtkCMCell) * clist->columns);
+  ctree_row = g_slice_new0 (GtkCMCTreeRow);
+  ctree_row->row.cell = g_slice_alloc0 (sizeof (GtkCMCell) * clist->columns);
   for (i = 0; i < clist->columns; i++)
-    {
+    if (!!GTK_CMCELL_EMPTY)
       ctree_row->row.cell[i].type = GTK_CMCELL_EMPTY;
-      ctree_row->row.cell[i].vertical = 0;
-      ctree_row->row.cell[i].horizontal = 0;
-      ctree_row->row.cell[i].style = NULL;
-    }
 
-  GTK_CMCELL_PIXTEXT (ctree_row->row.cell[ctree->tree_column])->text = NULL;
-
-  ctree_row->row.fg_set     = FALSE;
-  ctree_row->row.bg_set     = FALSE;
-  ctree_row->row.style      = NULL;
   ctree_row->row.selectable = TRUE;
-  ctree_row->row.state      = GTK_STATE_NORMAL;
-  ctree_row->row.data       = NULL;
-  ctree_row->row.destroy    = NULL;
-
-  ctree_row->level         = 0;
-  ctree_row->expanded      = FALSE;
-  ctree_row->parent        = NULL;
-  ctree_row->sibling       = NULL;
-  ctree_row->children      = NULL;
-  ctree_row->pixbuf_closed = NULL;
-  ctree_row->pixbuf_opened = NULL;
+  if (!!GTK_STATE_NORMAL)
+    ctree_row->row.state = GTK_STATE_NORMAL;
   
   return ctree_row;
 }
