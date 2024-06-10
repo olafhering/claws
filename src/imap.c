@@ -396,17 +396,26 @@ static gboolean imap_ping(gpointer data)
 	Session *session = (Session *)data;
 	IMAPSession *imap_session = IMAP_SESSION(session);
 	int r;
+	gboolean ret = G_SOURCE_REMOVE;
 
 	if (session->state != SESSION_READY)
-		return FALSE;
-	if (imap_session->busy || !imap_session->authenticated)
-		return TRUE;
+		goto out;
+	if (imap_session->busy || !imap_session->authenticated) {
+		ret = G_SOURCE_CONTINUE;
+		goto out;
+	}
 
 	lock_session(imap_session);
 	r = imap_cmd_noop(imap_session);
 	unlock_session(imap_session);
 
-	return r == MAILIMAP_NO_ERROR;
+	if (r == MAILIMAP_NO_ERROR)
+		ret = G_SOURCE_CONTINUE;
+
+out:
+	if (ret == G_SOURCE_REMOVE)
+		session->ping_tag = 0;
+	return ret;
 }
 
 static void imap_disc_session_destroy(IMAPSession *session)
