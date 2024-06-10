@@ -25,7 +25,7 @@
 #define ENTITY_MAX_LEN 8
 #define DECODED_MAX_LEN 6
 
-static GHashTable *symbol_table = NULL;
+static GHashTable *symbol_table;
 
 typedef struct _EntitySymbol EntitySymbol;
 
