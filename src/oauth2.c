@@ -159,7 +159,7 @@ static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar 
 		return snprintf(buf, OAUTH2BUFSIZE, "POST %s HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nAccept: text/html,application/json\r\nContent-Length: %i\r\nHost: %s\r\nConnection: close\r\nUser-Agent: ClawsMail\r\n\r\n%s", resource, len, host, body);
 }
 
-static gchar *oauth2_filter_access(const gchar *json, gint *expiry)
+static gchar *oauth2_filter_access(const gchar *json, char **expiry)
 {
 	GMatchInfo *matchInfo;
 	GRegex *regex;
@@ -177,19 +177,13 @@ static gchar *oauth2_filter_access(const gchar *json, gint *expiry)
 	if (!matched || !access_token)
 		return NULL;
 
-	*expiry = 0;
+	*expiry = NULL;
 	regex = g_regex_new("\"expires_in\": ?([0-9]*),?", G_REGEX_RAW, 0, NULL);
 	if (!regex)
 		return access_token;
 	matched = g_regex_match(regex, json, 0, &matchInfo);
-	if (matched) {
-		g_autofree gchar *str = g_match_info_fetch(matchInfo, 1);
-		gint expires_in = atoi(str);
-		// Reduce available token life to avoid attempting connections with (near) expired tokens
-		if (expires_in > 120)
-			expires_in -= 120;
-		*expiry = (g_get_real_time() / G_USEC_PER_SEC) + expires_in;
-	}
+	if (matched)
+		*expiry = g_match_info_fetch(matchInfo, 1);
 	g_match_info_free(matchInfo);
 	g_regex_unref(regex);
 
@@ -292,7 +286,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
 	gchar *refresh_token;
-	gint expiry = 0;
+	gchar *expiry;
 	gint ret;
 	SockInfo *sock;
 	gchar *client_id;
@@ -400,7 +394,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		OAUTH2Data->access_token = access_token;
 		OAUTH2Data->expiry = expiry;
-		OAUTH2Data->expiry_str = g_strdup_printf("%i", expiry);
 		ret = 0;
 		log_message(LOG_PROTOCOL, _("OAuth2 access token obtained\n"));
 	} else {
@@ -439,7 +432,7 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token = NULL;
 	gchar *refresh_token;
-	gint expiry = 0;
+	gchar *expiry = NULL;
 	gint ret;
 	SockInfo *sock;
 	gchar *client_id;
@@ -533,7 +526,6 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		OAUTH2Data->access_token = access_token;
 		OAUTH2Data->expiry = expiry;
-		OAUTH2Data->expiry_str = g_strdup_printf("%i", expiry);
 		ret = 0;
 		log_message(LOG_PROTOCOL, _("OAuth2 access token obtained\n"));
 	} else {
@@ -549,7 +541,7 @@ gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 		log_message(LOG_PROTOCOL, _("OAuth2 replacement refresh token not provided\n"));
 
 	debug_print("OAuth2 - access token: %s\n", access_token);
-	debug_print("OAuth2 - access token expiry: %i\n", expiry);
+	debug_print("OAuth2 - access token expiry: %s\n", expiry);
 
 	sock_close(sock, TRUE);
 	g_free(body);
@@ -647,6 +639,9 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 		acc = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY);
 		expiry = atoi(acc);
 		g_free(acc);
+		// Reduce available token life to avoid attempting connections with (near) expired tokens
+		if (expiry > 120)
+			expiry -= 120;
 		if (expiry > (g_get_real_time() / G_USEC_PER_SEC)) {
 			g_free(OAUTH2Data);
 			log_message(LOG_PROTOCOL, _("OAuth2 access token still fresh\n"));
@@ -674,7 +669,7 @@ gint oauth2_check_passwds(PrefsAccount *ac_prefs)
 			passwd_store_set_account(ac_prefs->account_id, PWS_ACCOUNT_RECV, OAUTH2Data->access_token, FALSE);
 		if (ac_prefs->use_smtp_auth && ac_prefs->smtp_auth_type == SMTPAUTH_OAUTH2)
 			passwd_store_set_account(ac_prefs->account_id, PWS_ACCOUNT_SEND, OAUTH2Data->access_token, FALSE);
-		passwd_store_set_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY, OAUTH2Data->expiry_str, FALSE);
+		passwd_store_set_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_EXPIRY, OAUTH2Data->expiry, FALSE);
 		//Some providers issue replacement refresh tokens with each access token. Re-store whether replaced or not. 
 		if (OAUTH2Data->refresh_token != NULL)
 			passwd_store_set_account(ac_prefs->account_id, PWS_ACCOUNT_OAUTH2_REFRESH, OAUTH2Data->refresh_token, FALSE);
@@ -724,8 +719,7 @@ gint oauth2_init(OAUTH2Data *OAUTH2Data)
 {
 	OAUTH2Data->refresh_token = NULL;
 	OAUTH2Data->access_token = NULL;
-	OAUTH2Data->expiry_str = NULL;
-	OAUTH2Data->expiry = 0;
+	OAUTH2Data->expiry = NULL;
 	OAUTH2Data->custom_client_id = NULL;
 	OAUTH2Data->custom_client_secret = NULL;
 
