@@ -42,7 +42,7 @@
 #define ATTRIB_COL_WIDTH_VALUE	180
 
 PersonEditDlg *personEditDlg;
-gboolean attrib_adding = FALSE, attrib_saving = FALSE;
+gboolean attrib_adding, attrib_saving;
 
 int get_attribute_index(const gchar *string_literal)
 {
