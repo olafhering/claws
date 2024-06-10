@@ -48,7 +48,7 @@ static GtkActionEntry mainwindow_tools_perl_edit[] = { {
 							}
 };
 
-static gint main_menu_id = 0;
+static gint main_menu_id;
 
 void perl_gtk_init(void)
 {
