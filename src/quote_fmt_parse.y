@@ -47,17 +47,17 @@ bison -p quote_fmt quote_fmt.y
 
 int yylex(void);
 
-static MsgInfo *msginfo = NULL;
-static PrefsAccount *account = NULL;
+static MsgInfo *msginfo;
+static PrefsAccount *account;
 #ifdef USE_ENCHANT
 static gchar default_dictionary[BUFFSIZE];
 #endif
-static gboolean *visible = NULL;
-static gboolean dry_run = FALSE;
-static gint maxsize = 0;
-static gint stacksize = 0;
-static GHashTable *var_table = NULL;
-static GList *attachments = NULL;
+static gboolean *visible;
+static gboolean dry_run;
+static gint maxsize;
+static gint stacksize;
+static GHashTable *var_table;
+static GList *attachments;
 
 typedef struct st_buffer
 {
@@ -66,13 +66,13 @@ typedef struct st_buffer
 	gint bufmax;
 } st_buffer;
 
-static struct st_buffer main_expr = { NULL, 0, 0 };
-static struct st_buffer sub_expr = { NULL, 0, 0 };
-static struct st_buffer* current = NULL;
+static struct st_buffer main_expr;
+static struct st_buffer sub_expr;
+static struct st_buffer* current;
 
-static const gchar *quote_str = NULL;
-static const gchar *body = NULL;
-static gint error = 0;
+static const gchar *quote_str;
+static const gchar *body;
+static gint error;
 
 static gint cursor_pos = -1;
 
