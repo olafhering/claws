@@ -42,7 +42,7 @@
 #define ALPHA_CHANNEL 60
 #define SELECTION_COLOR 0xFF00FF
 
-static gchar *msg = NULL;
+static gchar *msg;
 
 struct _PageResult {
 	GList *results;
