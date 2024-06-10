@@ -384,7 +384,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		client_secret = g_strconcat("", NULL);
 	}
 
-	if (OAUTH2info[i][OA2_REDIRECT_URI][0]) {
+	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
 		tmp = g_strconcat(body, "&redirect_uri=", OAUTH2info[i][OA2_REDIRECT_URI], NULL);
 		g_free(body);
 		body = tmp;
@@ -604,7 +604,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
    	g_string_append(url, tmp);
 	g_free(tmp);
 
-	if (OAUTH2info[i][OA2_REDIRECT_URI][0]) {
+	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
 		g_string_append(url, "&redirect_uri=");
 		g_string_append(url, tmp);
