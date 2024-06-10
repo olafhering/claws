@@ -403,6 +403,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		OAUTH2Data->access_token = access_token;
 		OAUTH2Data->expiry = expiry;
+		debug_print("access_token %s expiry %s\n", access_token, expiry);
 		ret = 0;
 		log_message(LOG_PROTOCOL, _("OAuth2 access token obtained\n"));
 	} else {
