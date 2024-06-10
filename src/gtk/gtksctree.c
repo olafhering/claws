@@ -63,8 +63,8 @@ enum {
 	LAST_SIGNAL
 };
 
-static void gtk_sctree_class_init (GtkSCTreeClass *class);
-static void gtk_sctree_init (GtkSCTree *sctree);
+static void gtk_sctree_class_init(gpointer klass, gpointer class_data);
+static void gtk_sctree_init(GTypeInstance *instance, gpointer g_class);
 
 static gint gtk_sctree_button_press (GtkWidget *widget, GdkEventButton *event);
 static gint gtk_sctree_button_release (GtkWidget *widget, GdkEventButton *event);
@@ -134,20 +134,10 @@ gtk_sctree_get_type (void)
 
 	if (!sctree_type) {
 		GTypeInfo sctree_info = {
-			sizeof (GtkSCTreeClass),
-
-			(GBaseInitFunc) NULL,
-			(GBaseFinalizeFunc) NULL,
-
-			(GClassInitFunc) gtk_sctree_class_init,
-			(GClassFinalizeFunc) NULL,
-			NULL,	/* class_data */
-
-			sizeof (GtkSCTree),
-			0,	/* n_preallocs */
-			(GInstanceInitFunc) gtk_sctree_init,
-
-			(const GTypeValueTable *) NULL	/* value table */
+			.class_size = sizeof(GtkSCTreeClass),
+			.class_init = gtk_sctree_class_init,
+			.instance_size = sizeof(GtkSCTree),
+			.instance_init = gtk_sctree_init,
 		};
 
 		sctree_type = g_type_register_static (GTK_TYPE_CMCTREE, "GtkSCTree", &sctree_info, (GTypeFlags)0);
@@ -216,7 +206,7 @@ static void gtk_sctree_finalize(GObject *object)
 
 /* Standard class initialization function */
 static void
-gtk_sctree_class_init (GtkSCTreeClass *klass)
+gtk_sctree_class_init(gpointer klass, gpointer class_data)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class;
@@ -291,8 +281,10 @@ gtk_sctree_class_init (GtkSCTreeClass *klass)
 
 /* Standard object initialization function */
 static void
-gtk_sctree_init (GtkSCTree *sctree)
+gtk_sctree_init (GTypeInstance *instance, gpointer g_class)
 {
+	GtkSCTree *sctree = (GtkSCTree *)instance;
+
 	sctree->anchor_row = NULL;
 
 	/* GtkCMCTree does not specify pointer motion by default */
