@@ -2647,7 +2647,6 @@ static gboolean addrindex_start_dynamic(QueryRequest *req)
 void addrindex_stop_search(const gint queryID)
 {
 	QueryRequest *req;
-	AddrQueryObject *aqo;
 	GList *node;
 
 	/* g_print( "addrindex_stop_search/queryID=%d\n", queryID ); */
@@ -2660,8 +2659,8 @@ void addrindex_stop_search(const gint queryID)
 	/* Stop all queries that were associated with request */
 	node = req->queryList;
 	while (node) {
-		aqo = node->data;
 #ifdef USE_LDAP
+		AddrQueryObject *aqo = node->data;
 		if (aqo->queryType == ADDRQUERY_LDAP) {
 			LdapQuery *qry = (LdapQuery *)aqo;
 			ldapqry_set_stop_flag(qry, TRUE);
