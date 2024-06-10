@@ -889,8 +889,13 @@ gchar *get_message_check_signature_shortcut(MessageView *messageview)
 	return cm_menu_item_get_shortcut(ui_manager, "Menu/Message/CheckSignature");
 }
 
-static void check_signature_cb(NoticeView *noticeview, void *user_data);
 static void display_full_info_cb(NoticeView *noticeview, void *user_data);
+static void check_signature_cb(NoticeView *noticeview, void *user_data)
+{
+	MimeView *mimeview = user_data;
+
+	mimeview_check_signature(mimeview);
+}
 
 static void update_signature_noticeview(MimeView *mimeview, SignatureStatus code)
 {
@@ -1033,9 +1038,8 @@ static gboolean mimeview_check_sig_timeout(gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
-static void check_signature_cb(NoticeView *noticeview, void *user_data)
+void mimeview_check_signature(MimeView *mimeview)
 {
-	MimeView *mimeview = user_data;
 	gint ret;
 
 	noticeview_set_text(mimeview->siginfoview, _("Checking signature..."));
@@ -1058,11 +1062,6 @@ static void check_signature_cb(NoticeView *noticeview, void *user_data)
 		mimeview_sig_check_cancel_and_clear(mimeview);
 		update_signature_noticeview(mimeview, privacy_mimeinfo_get_sig_status(mimeview->siginfo));
 	}
-}
-
-void mimeview_check_signature(MimeView *mimeview)
-{
-	check_signature_cb(NULL, mimeview);
 }
 
 static void redisplay_email(NoticeView *noticeview, void *user_data)
