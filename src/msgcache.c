@@ -377,21 +377,6 @@ gint msgcache_get_memory_usage(MsgCache *cache)
 	} \
 }
 
-#define PUT_CACHE_DATA(data)				\
-{							\
-	size_t len;					\
-	if (data == NULL)				\
-		len = 0;				\
-	else						\
-		len = strlen(data);			\
-	PUT_CACHE_DATA_INT(len);			\
-	if (len > 0) {					\
-		memcpy(walk_data, data, len);		\
-		walk_data += len;			\
-		wrote += len;				\
-	}						\
-}
-
 static FILE *msgcache_open_data_file(const gchar *file, guint version, DataOpenMode mode, gchar *buf, size_t buf_size)
 {
 	FILE *fp;
