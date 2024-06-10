@@ -193,7 +193,8 @@ AC_MSG_RESULT([$time_t_fmt])
 AC_DEFINE_UNQUOTED([CM_TIME_FORMAT], ["$time_t_fmt"],
 	[Define printf format specifier for time_t])
 
-AM_CFLAGS="-Wall -std=gnu99"
+AM_CFLAGS="-Wall -Wno-deprecated-declarations -std=gnu99"
+AM_CXXFLAGS="-Wall -Wno-deprecated-declarations"
 AS_IF([test "$with_fsanitize" != ""],
 	[AM_CFLAGS="$AM_CFLAGS -fsanitize=$with_fsanitize -Wno-deprecated-declarations";
 	AM_CXXFLAGS="$AM_CXXFLAGS -fsanitize=$with_fsanitize -Wno-deprecated-declarations";

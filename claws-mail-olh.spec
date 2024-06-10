@@ -218,7 +218,6 @@ export DOCBOOK2PDF=/bin/false
 export enable_crash_dialog=/usr/bin/gdb
 %endif
 
-CFLAGS='%optflags -Wno-deprecated-declarations -std=gnu99'
 %configure --help
 %configure \
 	--enable-maintainer-mode \
@@ -417,7 +416,7 @@ CFLAGS='%optflags -Wno-deprecated-declarations -std=gnu99'
 %endif
 	--with-config-dir=".%name"
 diff -u src/common/version.h{.in,} && exit 1
-%make_build CFLAGS='%optflags -Wno-deprecated-declarations -std=gnu99 -Og -ggdb3 -gdwarf-4 -fno-omit-frame-pointer -fsanitize=address,undefined'
+%make_build
 
 %install
 . .env.%name-%version-%release.txt
