@@ -51,14 +51,14 @@
 #define PYTHON_SCRIPTS_AUTO_COMPOSE "compose_any"
 #define PYTHON_SCRIPTS_ACTION_PREFIX "Tools/PythonScripts/"
 
-static GSList *menu_id_list = NULL;
-static GSList *python_mainwin_scripts_id_list = NULL;
-static GSList *python_mainwin_scripts_names = NULL;
-static GSList *python_compose_scripts_names = NULL;
+static GSList *menu_id_list;
+static GSList *python_mainwin_scripts_id_list;
+static GSList *python_mainwin_scripts_names;
+static GSList *python_compose_scripts_names;
 
-static GtkWidget *python_console = NULL;
+static GtkWidget *python_console;
 
-static gulong hook_compose_create = 0;
+static gulong hook_compose_create;
 
 static gboolean python_console_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
