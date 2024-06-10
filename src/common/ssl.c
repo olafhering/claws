@@ -473,8 +473,7 @@ void ssl_done_socket(SockInfo *sockinfo)
 			gnutls_certificate_free_credentials(sockinfo->xcred);
 		gnutls_deinit(sockinfo->ssl);
 #if GNUTLS_VERSION_NUMBER < 0x030000
-		if (sockinfo->client_crt)
-			gnutls_x509_crt_deinit(sockinfo->client_crt);
+		gnutls_x509_crt_deinit(sockinfo->client_crt);
 		if (sockinfo->client_key)
 			gnutls_x509_privkey_deinit(sockinfo->client_key);
 		sockinfo->client_key = NULL;
