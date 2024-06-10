@@ -465,132 +465,132 @@ static void imap_handle_error(Session *session, const gchar *server, int libetpa
 	case MAILIMAP_NO_ERROR:
 		return;
 	case MAILIMAP_NO_ERROR_AUTHENTICATED:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("authenticated"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("authenticated"), NULL), session_server)
 		    break;
 	case MAILIMAP_NO_ERROR_NON_AUTHENTICATED:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("not authenticated"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("not authenticated"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_BAD_STATE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("bad state"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("bad state"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_STREAM:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("stream error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("stream error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_PARSE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("parse error " "(very probably non-RFC compliance from the server)"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("parse error " "(very probably non-RFC compliance from the server)"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_CONNECTION_REFUSED:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("connection refused"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("connection refused"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_MEMORY:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("memory error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("memory error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_FATAL:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("fatal error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("fatal error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_PROTOCOL:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("protocol error " "(very probably non-RFC compliance from the server)"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("protocol error " "(very probably non-RFC compliance from the server)"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_DONT_ACCEPT_CONNECTION:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("connection not accepted"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("connection not accepted"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_APPEND:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("APPEND error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("APPEND error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_NOOP:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("NOOP error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("NOOP error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_LOGOUT:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LOGOUT error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LOGOUT error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_CAPABILITY:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CAPABILITY error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CAPABILITY error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_CHECK:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CHECK error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CHECK error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_CLOSE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CLOSE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CLOSE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_EXPUNGE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXPUNGE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXPUNGE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_COPY:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("COPY error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("COPY error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_UID_COPY:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID COPY error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID COPY error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_CREATE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CREATE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("CREATE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_DELETE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("DELETE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("DELETE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_EXAMINE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXAMINE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXAMINE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_FETCH:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("FETCH error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("FETCH error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_UID_FETCH:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID FETCH error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID FETCH error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_LIST:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LIST error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LIST error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_LOGIN:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LOGIN error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LOGIN error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_LSUB:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LSUB error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("LSUB error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_RENAME:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("RENAME error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("RENAME error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_SEARCH:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SEARCH error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SEARCH error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_UID_SEARCH:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID SEARCH error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID SEARCH error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_SELECT:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SELECT error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SELECT error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_STATUS:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STATUS error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STATUS error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_STORE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STORE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STORE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_UID_STORE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID STORE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UID STORE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_SUBSCRIBE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SUBSCRIBE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SUBSCRIBE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_UNSUBSCRIBE:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UNSUBSCRIBE error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("UNSUBSCRIBE error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_STARTTLS:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STARTTLS error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("STARTTLS error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_INVAL:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("INVAL error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("INVAL error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_EXTENSION:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXTENSION error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("EXTENSION error"), NULL), session_server)
 		    break;
 	case MAILIMAP_ERROR_SASL:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SASL error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("SASL error"), NULL), session_server)
 		    break;
 #ifdef USE_GNUTLS
 	case MAILIMAP_ERROR_SSL:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("TLS error"), "\n", NULL), session_server)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("TLS error"), NULL), session_server)
 		    break;
 #endif
 	default:
-		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("Unknown error [%d]"), "\n", NULL), session_server, libetpan_errcode)
+		MY_LOG_WARNING(g_strconcat(_("IMAP error on %s:"), " ", _("Unknown error [%d]"), NULL), session_server, libetpan_errcode)
 		    break;
 	}
 
