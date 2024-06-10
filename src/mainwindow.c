@@ -2997,7 +2997,7 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/NextPart", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/PrevPart", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Part", mimepart_selected);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Message/CheckSignature", mimepart_selected && mainwin->messageview->mimeview->signed_part);
+	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Message/CheckSignature", mimepart_selected && !!mainwin->messageview->mimeview->siginfo);
 
 	sensitive = TRUE;
 	if (mimepart_selected) {

@@ -1109,12 +1109,6 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 	}
 	mimeview->siginfo = selected;
 
-	/* This shortcut boolean is there to correctly set the menu's
-	 * CheckSignature item sensitivity without killing performance
-	 * each time the menu sensitiveness is updated (a lot).
-	 */
-	mimeview->signed_part = (selected != NULL);
-
 	if (selected == NULL) {
 		noticeview_hide(mimeview->siginfoview);
 		return;

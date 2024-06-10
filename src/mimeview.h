@@ -77,7 +77,6 @@ struct _MimeView {
 	MimeInfo *spec_part;
 	GtkUIManager *ui_manager;
 	GtkActionGroup *action_group;
-	gboolean signed_part;
 
 	GCancellable *sig_check_cancellable;
 	guint sig_check_timeout_tag;
