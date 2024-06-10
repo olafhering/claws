@@ -317,10 +317,6 @@ static gint session_close(Session *session)
 
 	session_set_timeout(session, 0);
 
-	if (session->sock->g_source > 0) {
-		g_source_remove(session->sock->g_source);
-		session->sock->g_source = 0;
-	}
 
 	if (session->sock) {
 		sock_close(session->sock, TRUE);
