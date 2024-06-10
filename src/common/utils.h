@@ -257,9 +257,7 @@ extern "C" {
 	void debug_set_mode(gboolean mode);
 	gboolean debug_get_mode(void);
 
-#define debug_print \
-	debug_print_real("%s:%d:", debug_srcname(__FILE__), __LINE__), \
-	debug_print_real
+#define debug_print(fmt, ...) debug_print_real("%s:%d: " fmt, debug_srcname(__FILE__), __LINE__, ##__VA_ARGS__) 
 
 /* for macro expansion */
 #define Str(x)	#x
