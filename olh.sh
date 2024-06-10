@@ -39,6 +39,7 @@ do_it() {
 			CFLAGS='-O2 -g -Wall -Wno-deprecated-declarations' \
 			CXXFLAGS='-O2 -g -Wall -Wno-deprecated-declarations -Wno-reorder -Wno-sign-compare -Wno-switch' \
 		bash autogen.sh	\
+			--with-fsanitize \
 			"${args[@]}"
 	#		--prefix=/dev/shm/$PPID \
 		;;
