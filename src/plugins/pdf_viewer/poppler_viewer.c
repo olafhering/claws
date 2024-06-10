@@ -650,6 +650,8 @@ static FileType pdf_viewer_mimepart_get_type(MimeInfo *partinfo)
 	gchar *content_type = NULL;
 	FileType type = TYPE_UNKNOWN;
 	debug_print("mimepart_get_type\n");
+	if (!partinfo)
+		return type;
 	if ((partinfo->type == MIMETYPE_APPLICATION) && (!g_ascii_strcasecmp(partinfo->subtype, "octet-stream"))) {
 
 		const gchar *filename;
