@@ -41,6 +41,7 @@
 #include <sys/stat.h>
 #include <sys/un.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <resolv.h>
 #ifndef _PATH_RESCONF
@@ -640,6 +641,7 @@ SockInfo *sock_connect(const gchar *hostname, gushort port)
 	if ((sock = sock_connect_by_getaddrinfo(hostname, port)) < 0) {
 		return NULL;
 	}
+	socket_enable_keepalive(sock);
 
 	return sockinfo_from_fd(hostname, port, sock);
 }
@@ -807,6 +809,7 @@ static gint sock_connect_address_list_async(SockConnectData *conn_data)
 		}
 
 		set_nonblocking_mode(sock, TRUE);
+		socket_enable_keepalive(sock);
 
 		if (connect(sock, addr_data->addr, addr_data->addr_len) < 0) {
 			if (EINPROGRESS == errno) {
@@ -1442,6 +1445,39 @@ gint fd_close(gint fd)
 	return close(fd);
 }
 
+void socket_enable_keepalive(int fd)
+{
+#if defined(SO_KEEPALIVE)
+	{
+		int val = 1;
+		setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &val , sizeof(val));
+	}
+#endif
+#if defined(TCP_KEEPCNT)
+	{
+		int val = 2;
+		setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &val, sizeof(val));
+	}
+#endif
+#if defined(TCP_KEEPIDLE)
+	{
+		int val = 33;
+		setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &val, sizeof(val));
+	}
+#endif
+#if defined(TCP_KEEPINTVL)
+	{
+		int val = 44;
+		setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &val, sizeof(val));
+	}
+#endif
+#if defined(TCP_USER_TIMEOUT)
+	{
+		unsigned int val = 22 * 1000;
+		setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &val, sizeof(val));
+	}
+#endif
+}
 /*
  * vim: noet ts=4 shiftwidth=4 nowrap
  */
