@@ -453,7 +453,7 @@ struct _PrefsCommon {
 	gboolean ask_on_clean;
 	gboolean warn_queued_on_exit;
 
-	gint io_timeout_secs;
+	unsigned int io_timeout_secs;
 
 	gboolean gtk_can_change_accels;
 	gboolean gtk_enable_accels;

@@ -329,8 +329,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	sock->ssl_cert_auto_accept = TRUE;
 	sock->use_tls_sni = TRUE;
 	sock_set_nonblocking_mode(sock, FALSE);
-	gint timeout_secs = prefs_common_get_prefs()->io_timeout_secs;
-	debug_print("Socket timeout: %i sec(s)\n", timeout_secs);
+	unsigned int timeout_secs = prefs_common_get_prefs()->io_timeout_secs;
+	debug_print("Socket timeout: %u sec(s)\n", timeout_secs);
 	sock_set_io_timeout(timeout_secs);
 	sock->gnutls_priority = GNUTLS_PRIORITY;
 	if (ssl_init_socket(sock) == FALSE) {
@@ -453,8 +453,8 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	sock->ssl_cert_auto_accept = TRUE;
 	sock->use_tls_sni = TRUE;
 	sock_set_nonblocking_mode(sock, FALSE);
-	gint timeout_secs = prefs_common_get_prefs()->io_timeout_secs;
-	debug_print("Socket timeout: %i sec(s)\n", timeout_secs);
+	unsigned int timeout_secs = prefs_common_get_prefs()->io_timeout_secs;
+	debug_print("Socket timeout: %u sec(s)\n", timeout_secs);
 	sock_set_io_timeout(timeout_secs);
 	sock->gnutls_priority = GNUTLS_PRIORITY;
 	if (ssl_init_socket(sock) == FALSE) {

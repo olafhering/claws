@@ -117,7 +117,7 @@ void feed_free_items(Feed *feed)
 }
 
 /* Timeout */
-void feed_set_timeout(Feed *feed, guint timeout)
+void feed_set_timeout(Feed *feed, unsigned int timeout)
 {
 	g_return_if_fail(feed != NULL);
 	feed->timeout = timeout;

@@ -340,7 +340,7 @@ void imap_main_init(gboolean skip_ssl_cert_check)
 	thread_manager_signal = g_io_add_watch_full(io_channel, 0, G_IO_IN, thread_manager_event, (gpointer)NULL, NULL);
 }
 
-void imap_main_set_timeout(int sec)
+void imap_main_set_timeout(unsigned int sec)
 {
 	mailstream_network_delay.tv_sec = sec;
 	mailstream_network_delay.tv_usec = 0;
@@ -3417,7 +3417,7 @@ void imap_main_done(gboolean have_connectivity)
 {
 }
 
-void imap_main_set_timeout(int sec)
+void imap_main_set_timeout(unsigned int sec)
 {
 }
 

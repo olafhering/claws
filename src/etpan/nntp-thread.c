@@ -1043,7 +1043,7 @@ int nntp_threaded_xhdr(Folder *folder, const char *header, guint32 beg, guint32 
 	return result.error;
 }
 
-void nntp_main_set_timeout(int sec)
+void nntp_main_set_timeout(unsigned int sec)
 {
 	mailstream_network_delay.tv_sec = sec;
 	mailstream_network_delay.tv_usec = 0;
@@ -1059,7 +1059,7 @@ void nntp_main_done(gboolean have_connectivity)
 {
 }
 
-void nntp_main_set_timeout(int sec)
+void nntp_main_set_timeout(unsigned int sec)
 {
 }
 

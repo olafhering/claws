@@ -124,7 +124,7 @@ struct _SockSource {
 	SockInfo *sock;
 };
 
-static guint io_timeout = 60;
+static unsigned int io_timeout = 60;
 
 static GList *sock_connect_data_list;
 
@@ -180,7 +180,7 @@ gint sock_cleanup(void)
 	return 0;
 }
 
-void sock_set_io_timeout(guint sec)
+void sock_set_io_timeout(unsigned int sec)
 {
 	io_timeout = sec;
 }
@@ -514,9 +514,9 @@ static gint fd_check_io(gint fd, GIOCondition cond)
 	FD_SET(fd, &fds);
 
 	if (cond == G_IO_IN) {
-		select(fd + 1, &fds, NULL, NULL, io_timeout > 0 ? &timeout : NULL);
+		select(fd + 1, &fds, NULL, NULL, io_timeout ? &timeout : NULL);
 	} else {
-		select(fd + 1, NULL, &fds, NULL, io_timeout > 0 ? &timeout : NULL);
+		select(fd + 1, NULL, &fds, NULL, io_timeout ? &timeout : NULL);
 	}
 
 	if (FD_ISSET(fd, &fds)) {
@@ -537,7 +537,7 @@ static void timeout_handler(gint sig)
 }
 #endif /*G_OS_UNIX */
 
-static gint sock_connect_with_timeout(gint sock, const struct sockaddr *serv_addr, gint addrlen, guint timeout_secs)
+static gint sock_connect_with_timeout(gint sock, const struct sockaddr *serv_addr, gint addrlen, unsigned int timeout_secs)
 {
 	gint ret, saved_errno;
 #ifdef G_OS_UNIX

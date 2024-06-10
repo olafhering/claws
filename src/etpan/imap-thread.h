@@ -35,7 +35,7 @@ typedef enum {
 	IMAP_FLAG_HAM = 1 << 7
 } IMAPFlags;
 
-void imap_main_set_timeout(int sec);
+void imap_main_set_timeout(unsigned int sec);
 void imap_main_init(gboolean skip_ssl_cert_check);
 void imap_main_done(gboolean have_connectivity);
 

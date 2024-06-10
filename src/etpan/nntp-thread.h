@@ -25,7 +25,7 @@
 #include "folder.h"
 #include "proxy.h"
 
-void nntp_main_set_timeout(int sec);
+void nntp_main_set_timeout(unsigned int sec);
 void nntp_main_init(gboolean skip_ssl_cert_check);
 void nntp_main_done(gboolean have_connectivity);
 

@@ -1537,7 +1537,7 @@ void *url_read_thread(void *data)
 		td->error = g_strdup(curl_easy_strerror(res));
 
 		if (res == CURLE_OPERATION_TIMEOUTED)
-			log_error(LOG_PROTOCOL, _("Timeout (%d seconds) connecting to %s\n"), prefs_common_get_prefs()->io_timeout_secs, t_url);
+			log_error(LOG_PROTOCOL, _("Timeout (%u seconds) connecting to %s\n"), prefs_common_get_prefs()->io_timeout_secs, t_url);
 	}
 
 	curl_easy_getinfo(curl_ctx, CURLINFO_RESPONSE_CODE, &response_code);

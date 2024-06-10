@@ -93,7 +93,7 @@ void feed_free(Feed *feed);
 
 void feed_free_items(Feed *feed);
 
-void feed_set_timeout(Feed *feed, guint timeout);
+void feed_set_timeout(Feed *feed, unsigned int timeout);
 guint feed_get_timeout(Feed *feed);
 
 void feed_set_url(Feed *feed, gchar *url);
