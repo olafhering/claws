@@ -60,7 +60,7 @@ static size_t mmap_string_ceil = MMAP_STRING_DEFAULT_CEIL;
 /* MMAPString references */
 
 static pthread_mutex_t mmapstring_lock = PTHREAD_MUTEX_INITIALIZER;
-static chash *mmapstring_hashtable = NULL;
+static chash *mmapstring_hashtable;
 
 static void mmapstring_hashtable_init()
 {
