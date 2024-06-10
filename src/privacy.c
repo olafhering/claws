@@ -334,7 +334,7 @@ gint privacy_mimeinfo_decrypt(MimeInfo *mimeinfo)
 	procmime_decode_content(mimeinfo);
 
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
+		PrivacySystem *system = cur->data;
 
 		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return decrypt(mimeinfo, system);
