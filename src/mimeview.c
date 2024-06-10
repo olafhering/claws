@@ -483,7 +483,7 @@ MimeInfo *mimeview_get_selected_part(MimeView *mimeview)
 	return gtkut_tree_view_get_selected_pointer(GTK_TREE_VIEW(mimeview->ctree), COL_DATA, NULL, NULL, NULL);
 }
 
-MimeInfo *mimeview_get_node_part(MimeView *mimeview, GtkTreePath *path)
+static MimeInfo *mimeview_get_node_part(MimeView *mimeview, GtkTreePath *path)
 {
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(mimeview->ctree));
 	GtkTreeIter iter;
