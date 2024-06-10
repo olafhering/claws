@@ -109,7 +109,7 @@ struct _FancyViewer {
 	const gchar *curlfile;
 	FILE *stream;
 
-	const gchar *cur_link;
+	gchar *cur_link;
 	gchar *filename;
 	MimeInfo *to_load;
 	gulong doc_handle;
