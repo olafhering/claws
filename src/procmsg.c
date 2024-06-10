@@ -2057,6 +2057,35 @@ void procmsg_msginfo_change_flags(MsgInfo *msginfo, MsgPermFlags add_perm_flags,
 	}
 }
 
+struct flagged_parent {
+	MsgInfo *info;
+	MsgPermFlags perm_flags;
+	gboolean found;
+};
+
+/*
+ * Unlike "In-Reply-To", the list "References" is not ordered. So it is unknown
+ * which entry is the nearest parent to base the decision on. Any parent with
+ * the requested flag will trigger the flag for the new msg.
+ */
+static void procmsg_msg_has_flagged_parent_references(gpointer d, gpointer ud)
+{
+	gchar *msgid = d;
+	struct flagged_parent *fp = ud;
+	MsgInfo *tmp;
+
+	if (fp->found)
+		return;
+
+	tmp = folder_item_get_msginfo_by_msgid(fp->info->folder, msgid);
+	if (!tmp)
+		return;
+
+	if (tmp->flags.perm_flags & fp->perm_flags)
+		fp->found = TRUE;
+	procmsg_msginfo_free(&tmp);
+}
+
 /*!
  *\brief	check for flags (e.g. mark) in prior msg of current thread
  *
@@ -2069,12 +2098,31 @@ gboolean procmsg_msg_has_flagged_parent(MsgInfo *info, MsgPermFlags perm_flags)
 {
 	gboolean result = FALSE;
 
-	if (info && info->folder && info->inreplyto) {
+	if (!info)
+		goto out;
+	if (!info->folder || (!info->inreplyto && !info->references))
+		goto out;
+
+	if (info->inreplyto) {
 		MsgInfo *tmp = folder_item_get_msginfo_by_msgid(info->folder, info->inreplyto);
 		if (tmp && (tmp->flags.perm_flags & perm_flags))
 			result = TRUE;
 		procmsg_msginfo_free(&tmp);
+		if (result)
+			goto out;
 	}
+
+	if (info->references) {
+		struct flagged_parent fp = {
+			.info = info,
+			.perm_flags = perm_flags,
+			.found = FALSE,
+		};
+		g_slist_foreach(info->references, procmsg_msg_has_flagged_parent_references, &fp);
+		result = fp.found;
+	}
+
+out:
 	return result;
 }
 
