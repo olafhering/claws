@@ -871,7 +871,7 @@ void mimeview_clear(MimeView *mimeview)
 	mimeview_change_view_type(mimeview, MIMEVIEW_TEXT);
 }
 
-gchar *get_message_check_signature_shortcut(MessageView *messageview)
+static gchar *get_message_check_signature_shortcut(MessageView *messageview)
 {
 	GtkUIManager *ui_manager;
 
