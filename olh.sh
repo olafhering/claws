@@ -43,7 +43,7 @@ do_it() {
 	#		--prefix=/dev/shm/$PPID \
 		;;
 		-t)
-		find * ../{gdk-pixbuf,glib,gnutls,gtk,libetpan}.git -name '*.[ch]' | ctags -L -
+		find * ../{gdk-pixbuf,glib,gnutls,gpgme,gtk,libetpan}.git -name '*.[ch]' | ctags -L -
 		;;
 	esac
 }
