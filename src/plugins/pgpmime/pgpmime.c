@@ -425,7 +425,42 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 		gpgme_set_passphrase_cb(ctx, gpgmegtk_passphrase_cb, &info);
 	}
 
-	err = gpgme_op_sign(ctx, gpgtext, gpgsig, GPGME_SIG_MODE_DETACH);
+	err = gpgme_op_sign_start(ctx, gpgtext, gpgsig, GPGME_SIG_MODE_DETACH);
+	if (err != GPG_ERR_NO_ERROR) {
+		privacy_set_error(_("Data signing failed, %s"), gpgme_strerror(err));
+		gpgme_release(ctx);
+		gpgme_data_release(gpgsig);
+		gpgme_data_release(gpgtext);
+		g_free(textstr);
+		return FALSE;
+	}
+
+	do {
+		gpgme_ctx_t ret;
+
+		while (gtk_events_pending()) {
+			gtk_main_iteration();
+		}
+
+		ret = gpgme_wait(ctx, &err, 0);
+		if (ret) {
+			if (ret != ctx) {
+				privacy_set_error("%s: ctx mismatch, expected %p, got %p: %s", __func__, ctx, ret, gpgme_strerror(err));
+				err = gpgme_cancel(ctx);
+				if (err != GPG_ERR_NO_ERROR)
+					g_warning("%s: cancel ctx %p: %s", __func__, ctx, gpgme_strerror(err));
+				gpgme_release(ctx);
+				gpgme_data_release(gpgsig);
+				gpgme_data_release(gpgtext);
+				g_free(textstr);
+				return FALSE;
+			}
+			break;
+		}
+		if (err == GPG_ERR_NO_ERROR)
+			g_usleep(1234);
+	} while (err == GPG_ERR_NO_ERROR);
+
 	if (err != GPG_ERR_NO_ERROR) {
 		if (err == GPG_ERR_CANCELED) {
 			/* ignore cancelled signing */
