@@ -1223,7 +1223,10 @@ static void pdf_viewer_update(PdfViewer *viewer, gboolean reload_file, int page_
 			g_free(password);
 		}
 
-		viewer->num_pages = poppler_document_get_n_pages(viewer->pdf_doc);
+		if (viewer->pdf_doc)
+			viewer->num_pages = poppler_document_get_n_pages(viewer->pdf_doc);
+		else
+			viewer->num_pages = 0;
 
 		g_signal_handlers_block_by_func(G_OBJECT(viewer->cur_page), pdf_viewer_spin_change_page_cb, (gpointer *)viewer);
 		gtk_spin_button_set_range(GTK_SPIN_BUTTON(viewer->cur_page), 1, (gdouble)viewer->num_pages);
