@@ -1077,6 +1077,8 @@ static void display_full_info_cb(NoticeView *noticeview, void *user_data)
 {
 	MimeView *mimeview = user_data;
 
+	if (!mimeview->siginfo)
+		return;
 	textview_set_text(mimeview->textview, privacy_mimeinfo_get_sig_info(mimeview->siginfo, TRUE));
 	noticeview_set_button_text(mimeview->siginfoview, NULL);
 	noticeview_set_button_press_callback(mimeview->siginfoview, redisplay_email, mimeview);
