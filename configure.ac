@@ -187,7 +187,7 @@ AC_MSG_RESULT([$time_t_fmt])
 AC_DEFINE_UNQUOTED([CM_TIME_FORMAT], ["$time_t_fmt"],
 	[Define printf format specifier for time_t])
 
-AM_CFLAGS="-Wall"
+AM_CFLAGS="-Wall -std=gnu99"
 if test $USE_MAINTAINER_MODE = yes; then
 	AM_CFLAGS="$AM_CFLAGS -g"
 fi
@@ -216,7 +216,6 @@ case "$target" in
 	LIBS="$LIBS -l${pthread_name} -lws2_32 -lregex"
 	;;
 *-*-solaris*)
-	AM_CFLAGS="$AM_CFLAGS -std=gnu99"
 	AC_DEFINE([SOLARIS], [], [Target is Solaris])
 	;;
 esac
