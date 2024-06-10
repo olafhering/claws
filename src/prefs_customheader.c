@@ -98,7 +98,7 @@ static void prefs_custom_header_create_list_view_columns(GtkWidget *list_view);
 
 static gboolean prefs_custom_header_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data);
 
-static PrefsAccount *cur_ac = NULL;
+static PrefsAccount *cur_ac;
 
 void prefs_custom_header_open(PrefsAccount *ac)
 {
