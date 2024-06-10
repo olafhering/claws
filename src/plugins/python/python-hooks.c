@@ -40,12 +40,12 @@
 
 #include "python-hooks.h"
 
-static gboolean python_enabled = FALSE;
-static void *python_dlhandle = NULL;
+static gboolean python_enabled;
+static void *python_dlhandle;
 
 #ifdef ENABLE_PYTHON
-static GString *captured_stdout = NULL;
-static GString *captured_stderr = NULL;
+static GString *captured_stdout;
+static GString *captured_stderr;
 
 static PyObject *capture_stdout(PyObject *self, PyObject *args)
 {
