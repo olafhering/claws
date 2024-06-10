@@ -1149,7 +1149,6 @@ static void display_full_info_cb(GtkWidget *widget, gpointer user_data)
 
 static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 {
-	MimeInfo *siginfo;
 	MimeInfo *first_text;
 
 	cm_return_if_fail(mimeview != NULL);
@@ -1167,21 +1166,20 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		}
 	}
 
-	siginfo = selected;
-	while (siginfo != NULL) {
-		if (privacy_mimeinfo_is_signed(siginfo))
+	while (selected != NULL) {
+		if (privacy_mimeinfo_is_signed(selected))
 			break;
-		siginfo = procmime_mimeinfo_parent(siginfo);
+		selected = procmime_mimeinfo_parent(selected);
 	}
-	mimeview->siginfo = siginfo;
+	mimeview->siginfo = selected;
 
 	/* This shortcut boolean is there to correctly set the menu's
 	 * CheckSignature item sensitivity without killing performance
 	 * each time the menu sensitiveness is updated (a lot).
 	 */
-	mimeview->signed_part = (siginfo != NULL);
+	mimeview->signed_part = (selected != NULL);
 
-	if (siginfo == NULL) {
+	if (selected == NULL) {
 		noticeview_hide(mimeview->siginfoview);
 		return;
 	}
