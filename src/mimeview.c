@@ -1000,16 +1000,15 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	MimeView *mimeview = (MimeView *)user_data;
 	MimeInfo *siginfo = mimeview->siginfo;
 	gboolean cancelled;
-	SigCheckTaskResult *result;
+	SigCheckTaskResult *result = NULL;
 	GError *error = NULL;
 
 	cancellable = g_task_get_cancellable(task);
 	cancelled = g_cancellable_set_error_if_cancelled(cancellable, &error);
 	if (cancelled) {
 		debug_print("sig check task was cancelled: task:%p GError: domain:%s code:%d message:\"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
-		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_TIMEOUT);
-		return;
+		goto out;
 	}
 
 	g_source_remove(mimeview->sig_check_timeout_tag);
@@ -1025,21 +1024,23 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	}
 
 	if (!result || !siginfo) {
-		g_free(result);
-		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
-		return;
+		goto out;
 	}
 
 	siginfo->sig_data = result->sig_data;
-	update_signature_noticeview(mimeview, FALSE, 0);
+	update_signature_noticeview(mimeview, FALSE, SIGNATURE_UNCHECKED);
 
 	if (result->newinfo) {
 		g_warning("Check sig task returned an unexpected new MimeInfo");
 		procmime_mimeinfo_free_all(&result->newinfo);
 	}
 
+out:
+	if (error)
+		g_error_free(error);
 	g_free(result);
+	mimeview->siginfo = NULL;
 }
 
 gboolean mimeview_check_sig_timeout(gpointer user_data)
@@ -1137,14 +1138,15 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 
 	if (mimeview->siginfo) {
 		g_warning("%s siginfo %p", __func__, mimeview->siginfo);
-	} else {
-		while (selected != NULL) {
-			if (privacy_mimeinfo_is_signed(selected))
-				break;
-			selected = procmime_mimeinfo_parent(selected);
-		}
-		mimeview->siginfo = selected;
+		return;
 	}
+
+	while (selected != NULL) {
+		if (privacy_mimeinfo_is_signed(selected))
+			break;
+		selected = procmime_mimeinfo_parent(selected);
+	}
+	mimeview->siginfo = selected;
 
 	/* This shortcut boolean is there to correctly set the menu's
 	 * CheckSignature item sensitivity without killing performance
