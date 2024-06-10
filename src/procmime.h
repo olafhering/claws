@@ -145,7 +145,6 @@ struct _MimeInfo {
 
 	/* Privacy */
 	struct _PrivacyData *privacy;
-	GTask *last_sig_check_task;
 	SignatureData *sig_data;
 };
 

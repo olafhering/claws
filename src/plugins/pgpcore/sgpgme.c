@@ -234,7 +234,6 @@ gint cm_check_detached_sig_async(MimeInfo *mimeinfo, GCancellable *cancellable, 
 	task_data->get_canonical_content = get_canonical_content;
 
 	task = g_task_new(NULL, cancellable, callback, user_data);
-	mimeinfo->last_sig_check_task = task;
 
 	g_task_set_task_data(task, task_data, cm_free_detached_sig_task_data);
 	debug_print("creating check sig async task:%p task_data:%p\n", task, task_data);

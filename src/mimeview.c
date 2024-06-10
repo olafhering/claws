@@ -465,8 +465,6 @@ void mimeview_destroy(MimeView *mimeview)
 	if (mimeview->sig_check_timeout_tag != 0)
 		g_source_remove(mimeview->sig_check_timeout_tag);
 	if (mimeview->sig_check_cancellable != NULL) {
-		/* Set last_sig_check_task to NULL to discard results in async_cb */
-		mimeview->siginfo->last_sig_check_task = NULL;
 		g_cancellable_cancel(mimeview->sig_check_cancellable);
 		g_object_unref(mimeview->sig_check_cancellable);
 	}
@@ -856,8 +854,6 @@ void mimeview_clear(MimeView *mimeview)
 	}
 
 	if (mimeview->sig_check_cancellable != NULL) {
-		/* Set last_sig_check_task to NULL to discard results in async_cb */
-		mimeview->siginfo->last_sig_check_task = NULL;
 		g_cancellable_cancel(mimeview->sig_check_cancellable);
 		g_object_unref(mimeview->sig_check_cancellable);
 		mimeview->sig_check_cancellable = NULL;
