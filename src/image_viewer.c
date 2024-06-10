@@ -102,7 +102,7 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 		return;
 	}
 #if GDK_PIXBUF_MINOR >= 28
-	if (animation && gdk_pixbuf_animation_is_static_image(animation)
+	if (gdk_pixbuf_animation_is_static_image(animation)
 	    || imageviewer->resize_img || imageviewer->fit_img_height) {
 		pixbuf = gdk_pixbuf_animation_get_static_image(animation);
 		g_object_ref(pixbuf);
