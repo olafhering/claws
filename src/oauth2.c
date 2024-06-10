@@ -505,7 +505,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		client_secret = g_strconcat("", NULL);
 	}
 
-	if (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH][0]) {
+	if (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH]) {
 		uri = g_uri_escape_string(OAUTH2info[i][OA2_GRANT_TYPE_REFRESH], NULL, FALSE);
 		tmp = g_strconcat(body, "&grant_type=", uri, NULL);
 		g_free(body);
