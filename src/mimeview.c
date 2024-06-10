@@ -1109,8 +1109,7 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		}
 	}
 
-	if (mimeview->siginfo)
-		cancel_mimeview_siginfo(mimeview, TRUE);
+	cancel_mimeview_siginfo(mimeview, TRUE);
 
 	while (selected != NULL) {
 		if (privacy_mimeinfo_is_signed(selected))
