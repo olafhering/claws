@@ -451,14 +451,6 @@ void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, const gchar *
 	g_signal_handlers_unblock_by_func(G_OBJECT(ctree), mimeview_selected, mimeview);
 }
 
-static void mimeview_free_mimeinfo(MimeView *mimeview)
-{
-	if (mimeview->mimeinfo != NULL) {
-		procmime_mimeinfo_free_all(&mimeview->mimeinfo);
-		mimeview->mimeinfo = NULL;
-	}
-}
-
 void mimeview_destroy(MimeView *mimeview)
 {
 	GSList *cur;
@@ -478,7 +470,7 @@ void mimeview_destroy(MimeView *mimeview)
 		g_cancellable_cancel(mimeview->sig_check_cancellable);
 		g_object_unref(mimeview->sig_check_cancellable);
 	}
-	mimeview_free_mimeinfo(mimeview);
+	procmime_mimeinfo_free_all(&mimeview->mimeinfo);
 	gtk_tree_path_free(mimeview->opened);
 	g_free(mimeview->file);
 	mimeviews = g_slist_remove(mimeviews, mimeview);
@@ -880,9 +872,7 @@ void mimeview_clear(MimeView *mimeview)
 	if (mimeview->mimeviewer != NULL)
 		mimeview->mimeviewer->clear_viewer(mimeview->mimeviewer);
 
-	mimeview_free_mimeinfo(mimeview);
-
-	mimeview->mimeinfo = NULL;
+	procmime_mimeinfo_free_all(&mimeview->mimeinfo);
 
 	gtk_tree_path_free(mimeview->opened);
 	mimeview->opened = NULL;
