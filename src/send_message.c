@@ -339,7 +339,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		ac_prefs->session = NULL;
 		smtp_session = SMTP_SESSION(session);
 		smtp_session->state = SMTP_HELO;
-		send_dialog = (SendProgressDialog *)smtp_session->dialog;
+		send_dialog = smtp_session->dialog;
 		was_inited = TRUE;
 	}
 
