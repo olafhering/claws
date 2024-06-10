@@ -53,7 +53,6 @@ static gboolean session_write_data_cb(SockInfo *source, GIOCondition condition, 
 
 void session_init(Session *session, const void *prefs_account, gboolean is_smtp)
 {
-	session->type = SESSION_UNKNOWN;
 	session->sock = NULL;
 	session->server = NULL;
 	session->port = 0;
