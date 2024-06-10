@@ -190,8 +190,8 @@ static GtkTargetEntry mimeview_mime_types[] = {
 	{"text/uri-list", 0, 0}
 };
 
-GSList *mimeviewer_factories;
-GSList *mimeviews;
+static GSList *mimeviewer_factories;
+static GSList *mimeviews;
 
 static GdkCursor *hand_cursor;
 
