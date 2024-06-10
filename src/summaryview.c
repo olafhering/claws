@@ -2534,10 +2534,10 @@ void summary_reflect_tags_changes(SummaryView *summaryview)
 
 void summary_reflect_prefs(void)
 {
-	static gchar *last_smallfont = NULL;
-	static gchar *last_normalfont = NULL;
-	static gchar *last_boldfont = NULL;
-	static gboolean last_derive = 0;
+	static gchar *last_smallfont;
+	static gchar *last_normalfont;
+	static gchar *last_boldfont;
+	static gboolean last_derive;
 	gboolean update_font = FALSE;
 	SummaryView *summaryview = NULL;
 
@@ -2950,7 +2950,7 @@ static inline void summary_set_header(SummaryView *summaryview, gchar *text[], M
 	gboolean should_swap = FALSE;
 	gboolean vert_layout = (prefs_common.layout_mode == VERTICAL_LAYOUT);
 	gboolean small_layout = (prefs_common.layout_mode == SMALL_LAYOUT);
-	static const gchar *color_dim_rgb = NULL;
+	static const gchar *color_dim_rgb;
 	if (!color_dim_rgb)
 		color_dim_rgb = gdk_color_to_string(&summaryview->color_dim);
 	text[col_pos[S_COL_FROM]] = "";
@@ -7450,7 +7450,7 @@ void summary_update_unread(SummaryView *summaryview, FolderItem *removed_item)
 {
 	guint new, unread, unreadmarked, marked, total;
 	guint replied, forwarded, locked, ignored, watched;
-	static gboolean tips_initialized = FALSE;
+	static gboolean tips_initialized;
 
 	if (prefs_common.layout_mode != SMALL_LAYOUT) {
 		if (tips_initialized) {
