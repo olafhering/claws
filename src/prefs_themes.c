@@ -611,7 +611,7 @@ static void prefs_themes_viewall_close_btn_clicked(GtkWidget *widget, gpointer d
 
 static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget, gpointer data)
 {
-	static GtkWidget *viewall_win = NULL;
+	static GtkWidget *viewall_win;
 
 	ThemesData *tdata = prefs_themes_data;
 	GtkWidget *vbox;
