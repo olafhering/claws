@@ -484,6 +484,7 @@ void sock_add_watch(SockInfo *sock, GIOCondition condition, SockFunc func, gpoin
 		u.ss->sock = sock;
 		sock->g_source = g_source_attach(u.gs, NULL);
 		g_source_unref(u.gs);	/* Refcount back down to 1 */
+		return;
 	}
 #endif
 
