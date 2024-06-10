@@ -344,7 +344,7 @@ static MimeInfo *pgpinline_decrypt(MimeInfo *mimeinfo)
 	FILE *dstfp;
 	gchar *fname;
 	gchar *textdata = NULL;
-	static gint id = 0;
+	static gint id;
 	const gchar *src_codeset = NULL;
 	gpgme_verify_result_t sigstat = 0;
 	PrivacyDataPGP *data = NULL;
