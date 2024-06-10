@@ -37,7 +37,7 @@
 
 #define PLUGIN_NAME (_("ManageSieve"))
 
-static gint main_menu_id = 0;
+static gint main_menu_id;
 
 static void manage_cb(GtkAction *action, gpointer data)
 {
