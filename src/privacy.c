@@ -349,7 +349,7 @@ GSList *privacy_get_system_ids()
 	GSList *ret = NULL;
 
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
+		PrivacySystem *system = cur->data;
 
 		ret = g_slist_append(ret, g_strdup(system->id));
 	}
