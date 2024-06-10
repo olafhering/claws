@@ -985,7 +985,7 @@ static SieveSession *sieve_session_new(PrefsAccount *account)
 {
 	SieveSession *session;
 	session = g_new0(SieveSession, 1);
-	session_init(SESSION(session), account, FALSE);
+	session_init(SESSION(session), account);
 
 	session->account = account;
 

@@ -51,7 +51,7 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition, g
 static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition, gpointer data);
 static gboolean session_write_data_cb(SockInfo *source, GIOCondition condition, gpointer data);
 
-void session_init(Session *session, const void *prefs_account, gboolean is_smtp)
+void session_init(Session *session, const void *prefs_account)
 {
 	session->sock = NULL;
 	session->server = NULL;
@@ -89,7 +89,6 @@ void session_init(Session *session, const void *prefs_account, gboolean is_smtp)
 
 	session->data = NULL;
 	session->account = prefs_account;
-	session->is_smtp = is_smtp;
 
 	session->ping_tag = -1;
 
