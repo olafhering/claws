@@ -2857,7 +2857,7 @@ gchar *tzoffset(time_t *now)
 {
 	static gchar offset_string[6];
 	struct tm gmt, *lt;
-	gint off;
+	unsigned short off;
 	gchar sign = '+';
 	struct tm buf1, buf2;
 #ifdef G_OS_WIN32
@@ -2886,7 +2886,7 @@ gchar *tzoffset(time_t *now)
 	if (off >= 24 * 60) /* should be impossible */
 		off = 23 * 60 + 59; /* if not, insert silly value */
 
-	sprintf(offset_string, "%c%02d%02d", sign, off / 60, off % 60);
+	sprintf(offset_string, "%c%02u%02u", sign, off / 60, off % 60);
 
 	return offset_string;
 }
