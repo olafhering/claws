@@ -110,7 +110,9 @@ gint fd_open_inet(gushort port);
 gint fd_write(gint sock, const gchar *buf, gint len);
 gint fd_write_all(gint sock, const gchar *buf, gint len);
 gint fd_gets(gint sock, gchar *buf, gint len);
-gint fd_close(gint sock);
+static inline void fd_close(gint sock) {
+	close(sock);
+}
 
 void socket_enable_keepalive(int fd);
 #endif /* __SOCKET_H__ */

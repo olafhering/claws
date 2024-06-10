@@ -1430,11 +1430,6 @@ void sock_close(SockInfo *sock, gboolean close_fd)
 	g_free(sock);
 }
 
-gint fd_close(gint fd)
-{
-	return close(fd);
-}
-
 void socket_enable_keepalive(int fd)
 {
 #if defined(SO_KEEPALIVE)
