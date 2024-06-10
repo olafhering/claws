@@ -63,30 +63,28 @@ static gint smtp_eom(SMTPSession *session);
 static gint smtp_session_recv_msg(Session *session, const gchar *msg);
 static gint smtp_session_send_data_finished(Session *session, guint len);
 
-Session *smtp_session_new(const void *prefs_account)
+SMTPSession *smtp_session_new(const void *prefs_account)
 {
-	SMTPSession *session;
+	SMTPSession *smtp_session = g_new0(SMTPSession, 1);
 
-	session = g_new0(SMTPSession, 1);
+	session_init(&smtp_session->session, prefs_account);
 
-	session_init(SESSION(session), prefs_account);
+	smtp_session->session.is_smtp = TRUE;
+	smtp_session->session.recv_msg = smtp_session_recv_msg;
 
-	SESSION(session)->is_smtp = TRUE;
-	SESSION(session)->recv_msg = smtp_session_recv_msg;
+	smtp_session->session.send_data_finished = smtp_session_send_data_finished;
 
-	SESSION(session)->send_data_finished = smtp_session_send_data_finished;
+	smtp_session->session.destroy = smtp_session_destroy;
 
-	SESSION(session)->destroy = smtp_session_destroy;
-
-	session->state = SMTP_READY;
+	smtp_session->state = SMTP_READY;
 
 #ifdef USE_GNUTLS
-	session->tls_init_done = FALSE;
+	smtp_session->tls_init_done = FALSE;
 #endif
 
-	session->error_val = SM_OK;
+	smtp_session->error_val = SM_OK;
 
-	return SESSION(session);
+	return smtp_session;
 }
 
 static void smtp_session_destroy(Session *session)
