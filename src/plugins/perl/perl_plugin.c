@@ -89,21 +89,21 @@
 #define MANU_FILTER 1
 
 /* embedded Perl stuff */
-static PerlInterpreter *my_perl = NULL;
+static PerlInterpreter *my_perl;
 EXTERN_C void xs_init(pTHX);
 EXTERN_C void boot_DynaLoader(pTHX_ CV * cv);
 
 /* plugin stuff */
 static guint filtering_hook_id = HOOK_NONE;
 static guint manual_filtering_hook_id = HOOK_NONE;
-static MailFilteringData *mail_filtering_data = NULL;
-static MsgInfo *msginfo = NULL;
-static gboolean stop_filtering = FALSE;
-static gboolean manual_filtering = FALSE;
-static gboolean wrote_filter_log_head = FALSE;
+static MailFilteringData *mail_filtering_data;
+static MsgInfo *msginfo;
+static gboolean stop_filtering;
+static gboolean manual_filtering;
+static gboolean wrote_filter_log_head;
 static gint filter_log_verbosity;
-static FILE *message_file = NULL;
-static gchar *attribute_key = NULL;
+static FILE *message_file;
+static gchar *attribute_key;
 
 /* configuration */
 static PerlPluginConfig config;
@@ -174,8 +174,8 @@ static void filter_log_write(gint type, gchar *text)
 
 /* Addressbook interface */
 
-static PerlPluginTimedSList *email_slist = NULL;
-static GHashTable *attribute_hash = NULL;
+static PerlPluginTimedSList *email_slist;
+static GHashTable *attribute_hash;
 
 /* addressbook email collector callback */
 static gint add_to_email_slist(ItemPerson *person, const gchar *bookname)
