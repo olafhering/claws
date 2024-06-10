@@ -61,7 +61,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_ACCESS_TYPE] = "",
-		[OA2_RESPONSE_MODE] = "",
 	},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
@@ -131,7 +130,6 @@ static gchar *OAUTH2info[OAUTH2AUTH_LAST - 1][OA2_LAST] = {
 		[OA2_GRANT_TYPE_ACCESS] = "authorization_code",
 		[OA2_GRANT_TYPE_REFRESH] = "refresh_token",
 		[OA2_ACCESS_TYPE] = "",
-		[OA2_RESPONSE_MODE] = "",
 		[OA2_HEADER_AUTH_BASIC] = "1",
 	},
 };
@@ -621,7 +619,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 		g_string_append(url, tmp);
 		g_free(tmp);
 	}
-	if (OAUTH2info[i][OA2_RESPONSE_MODE][0]) {
+	if (OAUTH2info[i][OA2_RESPONSE_MODE]) {
 		tmp = g_uri_escape_string(OAUTH2info[i][OA2_RESPONSE_MODE], NULL, FALSE);
 		g_string_append(url, "&response_mode=");
 		g_string_append(url, tmp);
