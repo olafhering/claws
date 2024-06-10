@@ -89,7 +89,7 @@ typedef struct _Filtering Filtering;
 
 static Filtering filtering;
 
-static GSList **p_processing_list = NULL;
+static GSList **p_processing_list;
 
 /* widget creating functions */
 static void prefs_filtering_create(void);
@@ -140,9 +140,9 @@ static void prefs_filtering_select_row(GtkTreeView *list_view, GtkTreePath *path
 
 static void prefs_filtering_account_option_menu_populate(void);
 
-static gulong signal_id = 0; /* filtering.help_btn clicked signal */
+static gulong signal_id; /* filtering.help_btn clicked signal */
 
-static int modified = FALSE;
+static int modified;
 
 void prefs_filtering_open(GSList **p_processing, const gchar *title, const gchar *help_url_anchor, const gchar *header, const gchar *key, gboolean per_account_filtering)
 {
@@ -1489,8 +1489,8 @@ static void prefs_filtering_list_view_get_rule_info(GtkWidget *list, gint row, g
 	}
 }
 
-static GtkActionGroup *prefs_filtering_popup_action = NULL;
-static GtkWidget *prefs_filtering_popup_menu = NULL;
+static GtkActionGroup *prefs_filtering_popup_action;
+static GtkWidget *prefs_filtering_popup_menu;
 
 static GtkActionEntry prefs_filtering_popup_entries[] = {
 	{"PrefsFilteringPopup", NULL, "PrefsFilteringPopup", NULL, NULL, NULL},
