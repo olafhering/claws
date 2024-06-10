@@ -135,35 +135,35 @@ static gchar *list_titles[] = { N_("Name"),
 
 #define ADDRESSBOOK_MSGBUF_SIZE 2048
 
-static GdkPixbuf *folderxpm = NULL;
-static GdkPixbuf *folderopenxpm = NULL;
-static GdkPixbuf *groupxpm = NULL;
-static GdkPixbuf *interfacexpm = NULL;
-static GdkPixbuf *bookxpm = NULL;
-static GdkPixbuf *addressxpm = NULL;
-static GdkPixbuf *vcardxpm = NULL;
-static GdkPixbuf *jpilotxpm = NULL;
-static GdkPixbuf *categoryxpm = NULL;
-static GdkPixbuf *ldapxpm = NULL;
-static GdkPixbuf *addrsearchxpm = NULL;
+static GdkPixbuf *folderxpm;
+static GdkPixbuf *folderopenxpm;
+static GdkPixbuf *groupxpm;
+static GdkPixbuf *interfacexpm;
+static GdkPixbuf *bookxpm;
+static GdkPixbuf *addressxpm;
+static GdkPixbuf *vcardxpm;
+static GdkPixbuf *jpilotxpm;
+static GdkPixbuf *categoryxpm;
+static GdkPixbuf *ldapxpm;
+static GdkPixbuf *addrsearchxpm;
 
 /* Message buffer */
 static gchar addressbook_msgbuf[ADDRESSBOOK_MSGBUF_SIZE];
 
 /* Address list selection */
-static AddrSelectList *_addressSelect_ = NULL;
-static AddressClipboard *_clipBoard_ = NULL;
+static AddrSelectList *_addressSelect_;
+static AddressClipboard *_clipBoard_;
 
 /* Address index file and interfaces */
-static AddressIndex *_addressIndex_ = NULL;
-static GList *_addressInterfaceList_ = NULL;
-static GList *_addressIFaceSelection_ = NULL;
+static AddressIndex *_addressIndex_;
+static GList *_addressInterfaceList_;
+static GList *_addressIFaceSelection_;
 #define ADDRESSBOOK_IFACE_SELECTION "1/y,3/y,4/y,2/n"
 
 static AddressBook_win addrbook;
 
-static GHashTable *_addressBookTypeHash_ = NULL;
-static GList *_addressBookTypeList_ = NULL;
+static GHashTable *_addressBookTypeHash_;
+static GList *_addressBookTypeList_;
 
 static void addressbook_new_address_from_book_post_cb(ItemPerson *person);
 static void addressbook_new_address_from_folder_post_cb(ItemPerson *person);
@@ -172,8 +172,8 @@ static void addressbook_edit_address_post_cb(ItemPerson *person);
 static void addressbook_create(void);
 static gint addressbook_close(void);
 
-static gboolean address_index_has_focus = FALSE;
-static gboolean address_list_has_focus = FALSE;
+static gboolean address_index_has_focus;
+static gboolean address_list_has_focus;
 
 /* callback functions */
 static void addressbook_del_clicked(GtkButton *button, gpointer data);
@@ -299,7 +299,7 @@ static GtkTargetEntry addressbook_drag_types[] = {
 	{"claws-mail/internal", GTK_TARGET_SAME_APP, TARGET_DUMMY}
 };
 
-static GtkTargetList *addressbook_target_list = NULL;
+static GtkTargetList *addressbook_target_list;
 
 static GtkActionEntry addressbook_entries[] = {
 	{"Menu", NULL, "Menu", NULL, NULL, NULL},
@@ -470,7 +470,7 @@ static gchar *addressbook_err2string(ErrMsgTableEntry lut[], gint code)
 	return desc;
 }
 
-static gboolean lastCanLookup = FALSE;
+static gboolean lastCanLookup;
 
 static void addressbook_show_buttons(gboolean add_and_delete, gboolean lookup, gboolean mail_ops)
 {
@@ -609,7 +609,7 @@ static void addressbook_size_allocate_cb(GtkWidget *widget, GtkAllocation *alloc
 	prefs_common.addressbookwin_height = allocation->height;
 }
 
-static gint sort_column_number = 0;
+static gint sort_column_number;
 static GtkSortType sort_column_type = GTK_SORT_ASCENDING;
 
 static gint list_case_sort(GtkCMCList *clist, gconstpointer ptr1, gconstpointer ptr2)
@@ -3690,7 +3690,7 @@ static void addressbook_set_clist(AddressObject *obj, gboolean refresh)
 	GtkCMCList *clist = GTK_CMCLIST(addrbook.clist);
 	AddressDataSource *ds = NULL;
 	AdapterDSource *ads = NULL;
-	static AddressObject *last_obj = NULL;
+	static AddressObject *last_obj;
 
 	if (addrbook.clist == NULL) {
 		return;
