@@ -1091,10 +1091,9 @@ gboolean mimeview_check_sig_timeout(gpointer user_data)
 static void check_signature_cb(GtkWidget *widget, gpointer user_data)
 {
 	MimeView *mimeview = (MimeView *)user_data;
-	MimeInfo *mimeinfo = mimeview->siginfo;
 	gint ret;
 
-	if (mimeinfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
+	if (mimeview->siginfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
 		return;
 
 	noticeview_set_text(mimeview->siginfoview, _("Checking signature..."));
