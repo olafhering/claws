@@ -661,8 +661,12 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 
 				GET_CACHE_DATA(ref, memusage);
 
-				if (ref && *ref)
-					msginfo->references = g_slist_prepend(msginfo->references, ref);
+				if (ref) {
+					if (*ref)
+						msginfo->references = g_slist_prepend(msginfo->references, ref);
+					else
+						g_free(ref);
+				}
 			}
 			if (msginfo->references)
 				msginfo->references = g_slist_reverse(msginfo->references);
@@ -709,8 +713,12 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 
 				READ_CACHE_DATA(ref, fp, memusage);
 
-				if (ref && *ref)
-					msginfo->references = g_slist_prepend(msginfo->references, ref);
+				if (ref) {
+					if (*ref)
+						msginfo->references = g_slist_prepend(msginfo->references, ref);
+					else
+						g_free(ref);
+				}
 			}
 			if (msginfo->references)
 				msginfo->references = g_slist_reverse(msginfo->references);
