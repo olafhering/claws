@@ -4486,7 +4486,9 @@ gtk_cmclist_realize (GtkWidget *widget)
 {
   GtkAllocation allocation;
   GtkCMCList *clist;
-  GtkStyle *style, *attached_style;
+  GtkStyleContext *style_context;
+  GtkStateFlags state;
+  GtkBorder padding;
   GdkWindow *window;
   GdkWindowAttr attributes;
   GtkCMCListRow *clist_row;
@@ -4523,14 +4525,9 @@ gtk_cmclist_realize (GtkWidget *widget)
   gtk_widget_set_window (widget, window);
   gtk_widget_register_window (widget, window);
 
-  style = gtk_widget_get_style (widget);
-  attached_style = gtk_style_attach (style, window);
-  if (attached_style != style) {
-	gtk_widget_set_style(widget, attached_style);
-	style = attached_style;
-  }
-
-  gtk_style_set_background (style, window, GTK_STATE_NORMAL);
+  style_context = gtk_widget_get_style_context (widget);
+  state = gtk_widget_get_state_flags(widget);
+  gtk_style_context_set_background (style_context, window);
 
   /* column-title window */
 
@@ -4543,8 +4540,7 @@ gtk_cmclist_realize (GtkWidget *widget)
 					attributes_mask);
   gtk_widget_register_window (widget, clist->title_window);
 
-  gtk_style_set_background (style, clist->title_window,
-			    GTK_STATE_NORMAL);
+  gtk_style_context_set_background (style_context, clist->title_window);
   gdk_window_show (clist->title_window);
 
   /* set things up so column buttons are drawn in title window */
@@ -4554,11 +4550,12 @@ gtk_cmclist_realize (GtkWidget *widget)
 				    clist->title_window);
 
   /* clist-window */
+  gtk_style_context_get_padding(style_context, state, &padding);
   attributes.x = (clist->internal_allocation.x +
-		  style->xthickness);
+                  padding.left);
   attributes.y = (clist->internal_allocation.y +
-		  style->ythickness +
-		  clist->column_title_area.height);
+                  padding.top +
+                  clist->column_title_area.height);
   attributes.width = clist->clist_window_width;
   attributes.height = clist->clist_window_height;
   attributes.event_mask = event_mask |
@@ -4573,8 +4570,6 @@ gtk_cmclist_realize (GtkWidget *widget)
 					attributes_mask);
   gtk_widget_register_window (widget, clist->clist_window);
 
-  gdk_window_set_background (clist->clist_window,
-			     &style->base[GTK_STATE_NORMAL]);
   gdk_window_show (clist->clist_window);
   clist->clist_window_width = gdk_window_get_width(clist->clist_window);
   clist->clist_window_height = gdk_window_get_height(clist->clist_window);
@@ -4868,7 +4863,7 @@ gtk_cmclist_style_set (GtkWidget *widget,
 		     GtkStyle  *previous_style)
 {
   GtkCMCList *clist;
-  GtkStyle *style;
+  GtkStyleContext *style_context;
 
   cm_return_if_fail (GTK_IS_CMCLIST (widget));
 
@@ -4879,11 +4874,9 @@ gtk_cmclist_style_set (GtkWidget *widget,
 
   if (gtk_widget_get_realized (widget))
     {
-      style = gtk_widget_get_style (widget);
-      gtk_style_set_background (style, gtk_widget_get_window (widget),
-				gtk_widget_get_state(widget));
-      gtk_style_set_background (style, clist->title_window, GTK_STATE_NORMAL);
-      gdk_window_set_background (clist->clist_window, &style->base[GTK_STATE_NORMAL]);
+      style_context = gtk_widget_get_style_context (widget);
+      gtk_style_context_set_background (style_context, gtk_widget_get_window (widget));
+      gtk_style_context_set_background (style_context, clist->title_window);
     }
 
   /* Fill in data after widget has correct style */

@@ -251,6 +251,7 @@ static char *CONTRIBS_LIST[] = {
 "Ales Nosek",
 "Emilian Nowak",
 "James Noyes",
+"Nikolas Nyby",
 "nycex",
 "Jens Oberender",
 "Ofer",
