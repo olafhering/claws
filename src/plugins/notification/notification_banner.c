@@ -145,7 +145,7 @@ static void notification_banner_create(GSList *msg_list)
 		if(notify_config.banner_width > 0)
 			gtk_widget_set_size_request(banner.window, notify_config.banner_width, -1);
 		else
-			gtk_widget_set_size_request(banner.window, gdk_screen_width(), -1);
+			gtk_widget_set_size_request(banner.window, gtkut_gdk_screen_width(), -1);
 		gtk_window_set_keep_above(GTK_WINDOW(banner.window), TRUE);
 		gtk_window_set_accept_focus(GTK_WINDOW(banner.window), FALSE);
 		gtk_window_set_skip_taskbar_hint(GTK_WINDOW(banner.window), TRUE);
@@ -196,7 +196,7 @@ static void notification_banner_create(GSList *msg_list)
 	if (notify_config.banner_width > 0)
 		banner_width = notify_config.banner_width;
 	else
-		banner_width = gdk_screen_width();
+		banner_width = gtkut_gdk_screen_width();
 
 	if(requisition.width > banner_width) {
 		/* Line is too big for screen! */

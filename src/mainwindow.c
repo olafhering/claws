@@ -1433,6 +1433,7 @@ MainWindow *main_window_create()
 	SummaryView *summaryview;
 	MessageView *messageview;
 	GtkWidget *ac_menu;
+	GdkScreen *screen;
 
 	static GdkGeometry geometry;
 
@@ -1461,6 +1462,11 @@ MainWindow *main_window_create()
 			 mainwin);
 	g_signal_connect(G_OBJECT(window), "key_press_event",
 			 G_CALLBACK(mainwindow_key_pressed), mainwin);
+
+	screen = gdk_screen_get_default();
+	g_signal_connect(G_OBJECT(screen), "size_changed",
+			 G_CALLBACK(gtkut_gdk_screen_size_changed), NULL);
+	g_signal_emit_by_name(G_OBJECT(screen), "size_changed", NULL);
 
 	gtk_widget_realize(window);
 	gtk_widget_add_events(window, GDK_KEY_PRESS_MASK|GDK_KEY_RELEASE_MASK);

@@ -26,6 +26,7 @@
 #include <cmath>
 #include "lh_prefs.h"
 #include "utils.h"
+#include "gtk/gtkutils.h"
 
 #ifndef M_PI
 #       define M_PI    3.14159265358979323846
@@ -1036,8 +1037,8 @@ void container_linux::get_media_features(litehtml::media_features& media) const
 	media.type			= litehtml::media_type_screen;
 	media.width			= client.width;
 	media.height		= client.height;
-	media.device_width	= gdk_screen_width();
-	media.device_height	= gdk_screen_height();
+	media.device_width	= gtkut_gdk_screen_width();
+	media.device_height	= gtkut_gdk_screen_height();
 	media.color			= 8;
 	media.monochrome	= 0;
 	media.color_index	= 256;

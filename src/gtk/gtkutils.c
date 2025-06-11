@@ -58,6 +58,8 @@
 #include "manage_window.h"
 #include "manual.h"
 
+static GdkRectangle _screen_area = { 0 };
+
 gboolean gtkut_get_font_size(GtkWidget *widget,
 			     gint *width, gint *height)
 {
@@ -1417,11 +1419,11 @@ gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model,
 }
 
 GtkWidget *gtkut_window_new		(GtkWindowType	 type,
-					 const gchar	*class)
+					 const gchar	*cls)
 {
 	GtkWidget *window = gtk_window_new(type);
-	gtk_window_set_role(GTK_WINDOW(window), class);
-	gtk_widget_set_name(GTK_WIDGET(window), class);
+	gtk_window_set_role(GTK_WINDOW(window), cls);
+	gtk_widget_set_name(GTK_WIDGET(window), cls);
 	return window;
 }
 
@@ -2035,3 +2037,30 @@ gchar *gtkut_gdk_rgba_to_string(GdkRGBA *rgba)
 	return str;
 }
 #undef RGBA_ELEMENT_TO_BYTE
+
+static void get_screen_rectangle()
+{
+	if (_screen_area.width == 0 && _screen_area.height == 0) {
+		gdk_monitor_get_workarea(
+			gdk_display_get_primary_monitor(gdk_display_get_default()),
+			&_screen_area);
+		debug_print("saved screen area: %u x %u\n", _screen_area.width, _screen_area.height);
+	}
+}
+
+gint gtkut_gdk_screen_width()
+{
+	return _screen_area.width;
+}
+
+gint gtkut_gdk_screen_height()
+{
+	return _screen_area.height;
+}
+
+void gtkut_gdk_screen_size_changed (GdkScreen* self, gpointer data)
+{
+	_screen_area.width = 0;
+	_screen_area.height = 0;
+	get_screen_rectangle();
+}
