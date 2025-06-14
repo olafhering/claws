@@ -75,6 +75,10 @@
 	rgba.alpha = 1.0; \
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Since GDK's gdk_rgba_to_string() produces a string
  * representation unsuitable for us, we have to have
  * our own function to produce a "#rrggbb" string from
@@ -270,6 +274,10 @@ gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view,
 gint gtkut_gdk_screen_width();
 gint gtkut_gdk_screen_height();
 void gtkut_gdk_screen_size_changed (GdkScreen* self, gpointer data);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* __GTKUTILS_H__ */
