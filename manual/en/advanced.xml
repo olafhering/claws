@@ -670,7 +670,7 @@
 	<listitem>
 	  <para>
     Enable the horizontal scrollbar in the message list of Summary View
-    if set to '1' (default). Set it to '0' to disable.
+    if set to '1'. Default value is '0'.
 	  </para>
 	</listitem>
       </varlistentry>

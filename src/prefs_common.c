@@ -1192,7 +1192,7 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"stripes_color_offset", "4000", &prefs_common.stripes_color_offset, P_INT,
 	 NULL, NULL, NULL},
-	{"enable_hscrollbar", "TRUE", &prefs_common.enable_hscrollbar, P_BOOL,
+	{"enable_hscrollbar", "FALSE", &prefs_common.enable_hscrollbar, P_BOOL,
 	 NULL, NULL, NULL},
 	{"folderview_vscrollbar_policy", "0",
 	 &prefs_common.folderview_vscrollbar_policy, P_ENUM,
