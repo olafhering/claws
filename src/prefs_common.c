@@ -1192,8 +1192,13 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"stripes_color_offset", "4000", &prefs_common.stripes_color_offset, P_INT,
 	 NULL, NULL, NULL},
+#ifndef GENERIC_UMPC
 	{"enable_hscrollbar", "FALSE", &prefs_common.enable_hscrollbar, P_BOOL,
 	 NULL, NULL, NULL},
+#else
+	{"enable_hscrollbar", "TRUE", &prefs_common.enable_hscrollbar, P_BOOL,
+	 NULL, NULL, NULL}, 
+#endif
 	{"folderview_vscrollbar_policy", "0",
 	 &prefs_common.folderview_vscrollbar_policy, P_ENUM,
 	 NULL, NULL, NULL},
