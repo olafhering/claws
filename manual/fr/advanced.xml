@@ -715,8 +715,8 @@
         </term>
         <listitem>
           <para>
-            Active la barre de défilement horizontale dans
-		    la liste de messages.
+            Quand cette option est activée ('1'), active la barre de défilement
+            horizontale dans la liste de messages. La valeur par défaut est '0'.
           </para>
         </listitem>
       </varlistentry>
