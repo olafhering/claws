@@ -646,7 +646,7 @@ static GtkActionEntry mainwin_entries[] =
 
 	{"View/Quotes",                 NULL, N_("Quotes"), NULL, NULL, NULL }, 
 	/* {"View/---",                 NULL, "---", NULL, NULL, NULL }, */
-	{"View/UpdateSummary",          NULL, N_("_Update summary"), "<control><alt>U", NULL, G_CALLBACK(update_summary_cb) },
+	{"View/UpdateSummary",          NULL, N_("Refresh message list"), "<control><alt>U", NULL, G_CALLBACK(update_summary_cb) },
 
 /* Message menu */
 	{"Message/Receive",                              NULL, N_("Recei_ve"), NULL, NULL, NULL },
