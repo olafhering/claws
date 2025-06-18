@@ -583,8 +583,8 @@
 	<term><literal>bold_marked</literal></term>
 	<listitem>
 	  <para>
-    Show marked messages in the message list of summary view using a
-    bold font when set to '1'. '0' (default) will use normal font.
+    Show marked messages in the Message List view using a bold font when
+    set to '1'. '0' (default) will use normal font.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -592,8 +592,8 @@
 	<term><literal>bold_unread</literal></term>
 	<listitem>
 	  <para>
-    Show unread messages in the message list of summary view using a
-    bold font when set to '1' (default). '0' will use normal font.
+    Show unread messages in the Message List using a bold font when
+    set to '1' (default). '0' will use normal font.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -669,8 +669,8 @@
 	<term><literal>enable_hscrollbar</literal></term>
 	<listitem>
 	  <para>
-    Enable the horizontal scrollbar in the message list of Summary View
-    if set to '1'. Default value is '0'.
+    Enable the horizontal scrollbar in the Message List when
+    set to '1'.
 	  </para>
 	</listitem>
       </varlistentry>
