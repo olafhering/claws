@@ -50,6 +50,7 @@ case `uname` in
 esac
 
 ${LIBTOOL} \
+  && autopoint -f \
   && aclocal -I m4 \
   && autoconf \
   && autoheader \
