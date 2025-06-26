@@ -100,6 +100,7 @@ static void partial_recv_unmark_clicked (NoticeView	*noticeview,
                                          MsgInfo        *msginfo);
 static void save_as_cb			(GtkAction	*action,
 					 gpointer	 data);
+void messageview_save_as		(MessageView *messageview);
 static void page_setup_cb		(GtkAction	*action,
 					 gpointer	 data);
 static void print_cb			(GtkAction	*action,
@@ -2174,8 +2175,80 @@ gchar *messageview_get_selection(MessageView *msgview)
 
 static void save_as_cb(GtkAction *action, gpointer data)
 {
-	MessageView *messageview = (MessageView *)data;
-	summary_save_as(messageview->mainwin->summaryview);
+	messageview_save_as((MessageView *)data);
+}
+
+void messageview_save_as(MessageView *messageview)
+{
+	gchar *filename = NULL;
+	gchar *src, *dest;
+	gchar *tmp;
+	gchar *filedir = NULL;
+	gchar *converted_filename = NULL;
+	gchar * filepath = NULL;
+	AlertValue aval = 0;
+
+	if (!messageview->msginfo) return;
+	
+	if (messageview->msginfo->subject) {
+		Xstrdup_a(filename, messageview->msginfo->subject, return);
+		subst_for_filename(filename);
+	}
+
+	if (filename && !g_utf8_validate(filename, -1, NULL)) {
+		converted_filename = conv_codeset_strdup(filename,
+					       conv_get_locale_charset_str(),
+					       CS_UTF_8);
+		if (!converted_filename)
+			g_warning("messageview_save_as(): failed to convert character set");
+		else
+			filename = converted_filename;
+	}
+	if (!filename)
+		return;
+
+	if (prefs_common.attach_save_dir && *prefs_common.attach_save_dir) 
+		filepath = g_strconcat(prefs_common.attach_save_dir, G_DIR_SEPARATOR_S,
+				       filename, NULL);
+	dest = filesel_select_file_save(_("Save as"), filepath ? filepath : filename);
+	if (filepath)
+		g_free(filepath);
+	if (converted_filename)
+		g_free(converted_filename);
+	if (!dest)
+		return;
+
+	if (is_file_exist(dest)) {
+		aval = alertpanel(_("Append or Overwrite"),
+				  _("Append or overwrite existing file?"),
+				  NULL, _("_Append"), NULL, _("_Overwrite"),
+				  NULL, _("_Cancel"), ALERTFOCUS_FIRST);
+		if (aval != 0 && aval != 1)
+			return;
+	}
+
+	src = procmsg_get_message_file(messageview->msginfo);
+	tmp = g_path_get_basename(dest);
+
+	if (aval == 0) {
+		if (append_file(src, dest, TRUE) < 0) 
+			alertpanel_error(_("Couldn't save the file '%s'."), tmp);
+	} else {
+		if (copy_file(src, dest, TRUE) < 0)
+			alertpanel_error(_("Couldn't save the file '%s'."), tmp);
+	}
+	g_free(src);
+
+	filedir = g_path_get_dirname(dest);
+	if (filedir) {
+		if (strcmp(filedir, ".")) {
+			g_free(prefs_common.attach_save_dir);
+			prefs_common.attach_save_dir = g_filename_to_utf8(filedir, -1, NULL, NULL, NULL);
+		}
+		g_free(filedir);
+	}
+	g_free(dest);
+	g_free(tmp);
 }
 
 static void print_mimeview(MimeView *mimeview, gint sel_start, gint sel_end, gint partnum) 
