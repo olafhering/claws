@@ -9787,7 +9787,7 @@ static void compose_ext_editor_closed_cb(GPid pid, gint exit_status, gpointer da
 	gtk_text_buffer_get_start_iter(buffer, &iter);
 
 	while (!gtk_text_iter_is_end(&iter) && modified)
-		modified = compose_beautify_paragraph(compose, &iter, TRUE);
+		modified = compose_beautify_paragraph(compose, &iter, compose->autowrap);
 
 	compose_set_ext_editor_sensitive(compose, TRUE);
 
@@ -11867,7 +11867,7 @@ static void compose_insert_drag_received_cb (GtkWidget		*widget,
 			claws_unlink(tmpfile);
 			g_free(tmpfile);
 			gtk_drag_finish(drag_context, TRUE, FALSE, time);
-			compose_beautify_paragraph(compose, NULL, TRUE);
+			compose_beautify_paragraph(compose, NULL, compose->autowrap);
 			return;
 		}
 		switch (prefs_common.compose_dnd_mode) {
