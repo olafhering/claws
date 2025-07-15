@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 The Claws Mail Team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 The Claws Mail Team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -4033,13 +4033,13 @@ gboolean file_is_email (const gchar *filename)
 		return FALSE;
 	while (score < 3
 	       && claws_fgets(buffer, sizeof (buffer), fp) != NULL) {
-		if (!strncmp(buffer, "From:", strlen("From:")))
+		if (!strncasecmp(buffer, "From:", strlen("From:")))
 			score++;
-		else if (!strncmp(buffer, "Date:", strlen("Date:")))
+		else if (!strncasecmp(buffer, "Date:", strlen("Date:")))
 			score++;
-		else if (!strncmp(buffer, "Message-ID:", strlen("Message-ID:")))
+		else if (!strncasecmp(buffer, "Message-ID:", strlen("Message-ID:")))
 			score++;
-		else if (!strncmp(buffer, "Subject:", strlen("Subject:")))
+		else if (!strncasecmp(buffer, "Subject:", strlen("Subject:")))
 			score++;
 		else if (!strcmp(buffer, "\r\n")) {
 			debug_print("End of headers\n");
