@@ -1306,7 +1306,6 @@ int message_filter(struct transport *tp, const char *username,
     unsigned int throwaway;
     SSL_CTX *ctx = NULL;
     SSL *ssl = NULL;
-    const SSL_METHOD *meth;
     char zlib_on = 0;
     unsigned char *zlib_buf = NULL;
     int zlib_bufsiz = 0;
@@ -2057,7 +2056,7 @@ static void _randomize_hosts(struct transport *tp)
 int transport_setup(struct transport *tp, int flags)
 {
 #ifdef SPAMC_HAS_ADDRINFO
-    struct addrinfo hints, *res, *addrp;
+    struct addrinfo hints, *res; /*, *addrp; */
     char port[6];
     int origerr;
 #else
