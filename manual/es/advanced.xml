@@ -780,8 +780,8 @@
 	<listitem>
 	  <para>
 
-	Mostrar los mensajes marcados utilizando negrita en la lista de
-	mensajes si est&aacute; a '1'. Con '0' (predeterminado) se
+	Resalta los mensajes marcados en la lista de mensajes usando negrita
+	si est&aacute; a '1'. Con '0' (predeterminado) se
 	usar&aacute; la tipograf&iacute;a normal.
 
 	  </para>
@@ -792,8 +792,8 @@
 	<listitem>
 	  <para>
 
-	Mostrar los mensajes no le&iacute;dos utilizando negrita en la lista
-	de mensajes si est&aacute; a '1' (predeterminado). Con '0' se
+	Resalta los mensajes no le&iacute;dos en la lista de mensajes
+	utilizando negrita si est&aacute; a '1' (predeterminado). Con '0' se
 	usar&aacute; la tipograf&iacute;a normal.
 
 	  </para>
