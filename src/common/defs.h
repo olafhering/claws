@@ -51,6 +51,7 @@
 #define COMMON_RC		"clawsrc"
 #define OLD_COMMON_RC		"sylpheedrc"
 #define ACCOUNT_RC		"accountrc"
+#define OAUTH2_RC		"oauth2rc"
 #define CUSTOM_HEADER_RC	"customheaderrc"
 #define DISPLAY_HEADER_RC	"dispheaderrc"
 #define FOLDERITEM_RC           "folderitemrc"

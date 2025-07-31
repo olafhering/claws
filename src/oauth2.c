@@ -24,6 +24,7 @@
 
 #ifdef USE_OAUTH2
 
+#include "defs.h"
 #include <glib.h>
 #ifdef ENABLE_NLS
 #include <glib/gi18n.h>
@@ -42,118 +43,278 @@
 #include "log.h"
 #include "time.h"
 #include "common/passcrypt.h"
+#include "common/version.h"
+#include "file-utils.h"
 #include "prefs_common.h"
 
 #define GNUTLS_PRIORITY "NORMAL:!VERS-SSL3.0:!VERS-TLS1.0:!VERS-TLS1.1"
 //Yahoo requires token requests to send POST header Authorization: Basic
 //where the password is Base64 encoding of client_id:client_secret
 
-static gchar *OAUTH2info[5][17]={
-  {"accounts.google.com",
-   "",
-   ".",
-   "http://127.0.0.1:8888",
-   "/o/oauth2/auth",
-   "/o/oauth2/token",
-   "/o/oauth2/token",
-   "code",
-   "https://mail.google.com",
-   "authorization_code",
-   "refresh_token",
-   "",
-   "",
-   "",
-   "",
-   "",
-   ""},
-  {"login.microsoftonline.com",
-   "",
-   "",
-   "http://127.0.0.1:8888",
-   "/common/oauth2/v2.0/authorize",
-   "/common/oauth2/v2.0/token",
-   "/common/oauth2/v2.0/token",
-   "code",
-   "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-   "authorization_code",
-   "refresh_token",
-   "common",
-   "",
-   "offline",
-   "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-   "query",
-   ""},
-  {"login.microsoftonline.com",
-   "",
-   "",
-   "http://127.0.0.1:8888",
-   "/common/oauth2/v2.0/authorize",
-   "/common/oauth2/v2.0/token",
-   "/common/oauth2/v2.0/token",
-   "code",
-   "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-   "authorization_code",
-   "refresh_token",
-   "common",
-   "",
-   "offline",
-   "offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send",
-   "query",
-   ""},
-   {"login.microsoftonline.us",
-   "",
-   "",
-   "http://127.0.0.1:8888",
-   "/common/oauth2/v2.0/authorize",
-   "/common/oauth2/v2.0/token",
-   "/common/oauth2/v2.0/token",
-   "code",
-   "offline_access https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send",
-   "authorization_code",
-   "refresh_token",
-   "common",
-   "",
-   "offline",
-   "offline_access https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send",
-   "query",
-   ""},
- {"api.login.yahoo.com",
-   "",
-   ".",
-   "oob",
-   "/oauth2/request_auth",
-   "/oauth2/get_token",
-   "/oauth2/get_token",
-   "code",
-   "",
-   "authorization_code",
-   "refresh_token",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "1"}
-};
-
-static gchar *OAUTH2CodeMarker[6][2] = {
-    {"",""},
-    {"code=","&scope="},
-    {"code="," HTTP"},
-    {"code=","&session_state="},
-    {"code=","&session_state="},
-    {"yahoo_begin_mark","yahoo_end_mark"} /* Not used since token avalable to user to copy in browser window */
-};
-
 static gint oauth2_post_request (gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body);
 static gint oauth2_filter_refresh (gchar *json, gchar *refresh_token);
 static gint oauth2_filter_access (gchar *json, gchar *access_token, gint *expiry);
+static GList *oauth2_providers_list = NULL;
+static Oauth2Info tmp_oa2_info;
 
+static PrefParam oauth2_info[] = {
+	{"oa2_name", NULL, &tmp_oa2_info.oa2_name, P_STRING, NULL, NULL, NULL},
+	{"oa2_base_url", NULL, &tmp_oa2_info.oa2_base_url, P_STRING, NULL, NULL, NULL},
+	{"oa2_client_id", NULL, &tmp_oa2_info.oa2_client_id, P_STRING, NULL, NULL, NULL},
+	{"oa2_client_secret", NULL, &tmp_oa2_info.oa2_client_secret, P_STRING, NULL, NULL, NULL},
+	{"oa2_redirect_uri", NULL, &tmp_oa2_info.oa2_redirect_uri, P_STRING, NULL, NULL, NULL},
+	{"oa2_auth_resource", NULL, &tmp_oa2_info.oa2_auth_resource, P_STRING, NULL, NULL, NULL},
+	{"oa2_access_resource", NULL, &tmp_oa2_info.oa2_access_resource, P_STRING, NULL, NULL, NULL},
+	{"oa2_refresh_resource", NULL, &tmp_oa2_info.oa2_refresh_resource, P_STRING, NULL, NULL, NULL},
+	{"oa2_response_type", NULL, &tmp_oa2_info.oa2_response_type, P_STRING, NULL, NULL, NULL},
+	{"oa2_scope_for_auth", NULL, &tmp_oa2_info.oa2_scope_for_auth, P_STRING, NULL, NULL, NULL},
+	{"oa2_grant_type_access", NULL, &tmp_oa2_info.oa2_grant_type_access, P_STRING, NULL, NULL, NULL},
+	{"oa2_grant_type_refresh", NULL, &tmp_oa2_info.oa2_grant_type_refresh, P_STRING, NULL, NULL, NULL},
+	{"oa2_tenant", NULL, &tmp_oa2_info.oa2_tenant, P_STRING, NULL, NULL, NULL},
+	{"oa2_state", NULL, &tmp_oa2_info.oa2_state, P_STRING, NULL, NULL, NULL},
+	{"oa2_access_type", NULL, &tmp_oa2_info.oa2_access_type, P_STRING, NULL, NULL, NULL},
+	{"oa2_scope_for_access", NULL, &tmp_oa2_info.oa2_scope_for_access, P_STRING, NULL, NULL, NULL},
+	{"oa2_response_mode", NULL, &tmp_oa2_info.oa2_response_mode, P_STRING, NULL, NULL, NULL},
+	{"oa2_header_auth_basic", NULL, &tmp_oa2_info.oa2_header_auth_basic, P_STRING, NULL, NULL, NULL},
+	{"oa2_two_stage_pop", NULL, &tmp_oa2_info.oa2_two_stage_pop, P_INT, NULL, NULL, NULL},
+	{"oa2_codemarker_start", NULL, &tmp_oa2_info.oa2_codemarker_start, P_STRING, NULL, NULL, NULL},
+	{"oa2_codemarker_stop", NULL, &tmp_oa2_info.oa2_codemarker_stop, P_STRING, NULL, NULL, NULL},
+	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
+};
+
+static gchar *oauth2_tmpl =
+	"protected=0\n\n"
+	"[Oauth2: 1]\n"
+	"oa2_name=Google\n"
+	"oa2_base_url=accounts.google.com\n"
+	"oa2_client_id=\n"
+	"oa2_client_secret=.\n"
+	"oa2_redirect_uri=http://127.0.0.1:8888\n"
+	"oa2_auth_resource=/o/oauth2/auth\n"
+	"oa2_access_resource=/o/oauth2/token\n"
+	"oa2_refresh_resource=/o/oauth2/token\n"
+	"oa2_response_type=code\n"
+	"oa2_scope_for_auth=https://mail.google.com\n"
+	"oa2_grant_type_access=authorization_code\n"
+	"oa2_grant_type_refresh=refresh_token\n"
+	"oa2_tenant=\n"
+	"oa2_state=\n"
+	"oa2_access_type=\n"
+	"oa2_scope_for_access=\n"
+	"oa2_response_mode=\n"
+	"oa2_header_auth_basic=\n"
+	"oa2_two_stage_pop=0\n"
+	"oa2_codemarker_start=code=\n"
+	"oa2_codemarker_stop=&scope=\n\n"
+	"[Oauth2: 2]\n"
+	"oa2_name=Outlook\n"
+	"oa2_base_url=login.microsoftonline.com\n"
+	"oa2_client_id=\n"
+	"oa2_client_secret=\n"
+	"oa2_redirect_uri=http://127.0.0.1:8888\n"
+	"oa2_auth_resource=/common/oauth2/v2.0/authorize\n"
+	"oa2_access_resource=/common/oauth2/v2.0/token\n"
+	"oa2_refresh_resource=/common/oauth2/v2.0/token\n"
+	"oa2_response_type=code\n"
+	"oa2_scope_for_auth=offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send\n"
+	"oa2_grant_type_access=authorization_code\n"
+	"oa2_grant_type_refresh=refresh_token\n"
+	"oa2_tenant=common\n"
+	"oa2_state=\n"
+	"oa2_access_type=offline\n"
+	"oa2_scope_for_access=offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send\n"
+	"oa2_response_mode=query\n"
+	"oa2_header_auth_basic=\n"
+	"oa2_two_stage_pop=1\n"
+	"oa2_codemarker_start=code=\n"
+	"oa2_codemarker_stop= HTTP\n\n"
+	"[Oauth2: 3]\n"
+	"oa2_name=Exchange\n"
+	"oa2_base_url=login.microsoftonline.com\n"
+	"oa2_client_id=\n"
+	"oa2_client_secret=\n"
+	"oa2_redirect_uri=http://127.0.0.1:8888\n"
+	"oa2_auth_resource=/common/oauth2/v2.0/authorize\n"
+	"oa2_access_resource=/common/oauth2/v2.0/token\n"
+	"oa2_refresh_resource=/common/oauth2/v2.0/token\n"
+	"oa2_response_type=code\n"
+	"oa2_scope_for_auth=offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send\n"
+	"oa2_grant_type_access=authorization_code\n"
+	"oa2_grant_type_refresh=refresh_token\n"
+	"oa2_tenant=common\n"
+	"oa2_state=\n"
+	"oa2_access_type=offline\n"
+	"oa2_scope_for_access=offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send\n"
+	"oa2_response_mode=query\n"
+	"oa2_header_auth_basic=\n"
+	"oa2_two_stage_pop=1\n"
+	"oa2_codemarker_start=code=\n"
+	"oa2_codemarker_stop=&session_state=\n\n"
+	"[Oauth2: 4]\n"
+	"oa2_name=Microsoft_gcchigh\n"
+	"oa2_base_url=login.microsoftonline.us\n"
+	"oa2_client_id=\n"
+	"oa2_client_secret=\n"
+	"oa2_redirect_uri=http://127.0.0.1:8888\n"
+	"oa2_auth_resource=/common/oauth2/v2.0/authorize\n"
+	"oa2_access_resource=/common/oauth2/v2.0/token\n"
+	"oa2_refresh_resource=/common/oauth2/v2.0/token\n"
+	"oa2_response_type=code\n"
+	"oa2_scope_for_auth=offline_access https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send\n"
+	"oa2_grant_type_access=authorization_code\n"
+	"oa2_grant_type_refresh=refresh_token\n"
+	"oa2_tenant=common\n"
+	"oa2_state=\n"
+	"oa2_access_type=offline\n"
+	"oa2_scope_for_access=offline_access https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send\n"
+	"oa2_response_mode=query\n"
+	"oa2_header_auth_basic=\n"
+	"oa2_two_stage_pop=1\n"
+	"oa2_codemarker_start=code=\n"
+	"oa2_codemarker_stop=&session_state=\n\n"
+	"[Oauth2: 5]\n"
+	"oa2_name=Yahoo\n"
+	"oa2_base_url=api.login.yahoo.com\n"
+	"oa2_client_id=\n"
+	"oa2_client_secret=.\n"
+	"oa2_redirect_uri=oob\n"
+	"oa2_auth_resource=/oauth2/request_auth\n"
+	"oa2_access_resource=/oauth2/get_token\n"
+	"oa2_refresh_resource=/oauth2/get_token\n"
+	"oa2_response_type=code\n"
+	"oa2_scope_for_auth=\n"
+	"oa2_grant_type_access=authorization_code\n"
+	"oa2_grant_type_refresh=refresh_token\n"
+	"oa2_tenant=\n"
+	"oa2_state=\n"
+	"oa2_access_type=\n"
+	"oa2_scope_for_access=\n"
+	"oa2_response_mode=\n"
+	"oa2_header_auth_basic=1\n"
+	"oa2_two_stage_pop=0\n"
+	"oa2_codemarker_start=\n"
+	"oa2_codemarker_stop=\n"
+	;
+
+static Oauth2Info *oauth2_new_from_config(const gchar *label)
+{
+	gchar *rcpath;
+	Oauth2Info *oa2_info;
+
+	cm_return_val_if_fail(label != NULL, NULL);
+
+	oa2_info = g_new0(Oauth2Info, 1);
+
+	/* Load default values to tmp_oa2_info first, ... */
+	memset(&tmp_oa2_info, 0, sizeof(Oauth2Info));
+	prefs_set_default(oauth2_info);
+
+	/* ... overriding them with values from stored config file. */
+	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, OAUTH2_RC, NULL);
+	prefs_read_config(oauth2_info, label, rcpath, NULL);
+	g_free(rcpath);
+
+	*oa2_info = tmp_oa2_info;
+
+	return oa2_info;
+}
+
+void account_read_oauth2_all(void)
+{
+	GSList *oauth2_label_list = NULL, *cur;
+	Oauth2Info *oauth2_prefs;
+	gchar *rcpath;
+	gchar *oauth2_text, *version_text;
+	FILE *fp;
+	gchar buf[PREFSBUFSIZE];
+	gint protected = 1;
+	gint matchedversion = 0;
+
+	debug_print("Reading oauth2rc file\n");
+	
+	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, OAUTH2_RC, NULL);
+	if ((fp = claws_fopen(rcpath, "rb")) == NULL) {
+	        //No oauth2rc file exists
+	        oauth2_text = g_strconcat("[Version: ", VERSION, "]\n", oauth2_tmpl, NULL);
+	        str_write_to_file(oauth2_text, rcpath, TRUE);
+		g_free(oauth2_text);
+		debug_print("No oauth2rc file found, new one created\n");
+
+		if ((fp = claws_fopen(rcpath, "rb")) == NULL) {
+		        if (ENOENT != errno) FILE_OP_ERROR(rcpath, "claws_fopen");
+			g_free(rcpath);
+			return;
+		}
+	}else{  
+	        //oauth2rc file exists. Check version and whether protected from update
+	        version_text = g_strconcat("[Version: ", VERSION, "]\n", NULL);
+	        while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
+		        if (!strncmp(buf, "protected=0", 11)) {
+			  protected = 0;
+			  debug_print("oauth2rc file is unprotected from updates\n");
+			}
+			
+			if (!strcmp(buf, version_text)) {
+			  matchedversion = 1;
+			  debug_print("oauth2rc file matches Claws version\n");
+			}
+		}
+		g_free(version_text);
+		rewind(fp);
+		
+		if(!protected && !matchedversion){
+		        //oauth2rc not protected from updates and does not match this version of Claws
+		        //Update it to the latest template version.
+		        claws_fclose(fp);
+			oauth2_text = g_strconcat("[Version: ", VERSION, "]\n", oauth2_tmpl, NULL);
+			str_write_to_file(oauth2_text, rcpath, TRUE);
+			g_free(oauth2_text);
+			debug_print("Replacement oauth2rc file created to match this Claws version\n");
+			
+			if ((fp = claws_fopen(rcpath, "rb")) == NULL) {
+			        if (ENOENT != errno) FILE_OP_ERROR(rcpath, "claws_fopen");
+				g_free(rcpath);
+				return;
+			}
+		}
+	}
+	g_free(rcpath);
+
+	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
+		if (!strncmp(buf, "[Oauth2: ", 9)) {
+			strretchomp(buf);
+			memmove(buf, buf + 1, sizeof(buf) - 1);
+			buf[strlen(buf) - 1] = '\0';
+			debug_print("Found configuration: %s\n", buf);
+			oauth2_label_list = g_slist_append(oauth2_label_list,
+						       g_strdup(buf));
+		}
+	}
+	claws_fclose(fp);
+
+	/* read config data from file */
+	for (cur = oauth2_label_list; cur != NULL; cur = cur->next) {
+	        debug_print("Extracting oauth2 data\n");
+		oauth2_prefs = oauth2_new_from_config((gchar *)cur->data);
+		oauth2_providers_list = g_list_append(oauth2_providers_list, oauth2_prefs);
+	}
+
+	while (oauth2_label_list) {
+		g_free(oauth2_label_list->data);
+		oauth2_label_list = g_slist_remove(oauth2_label_list,
+					       oauth2_label_list->data);
+	}
+}
+
+GList *oauth2_providers_get_list(void)
+{
+	return oauth2_providers_list;
+}
 
 static gint oauth2_post_request (gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
 {
        gint len;
-  
+
        debug_print("Complete body: %s\n", body);
        len = strlen(body);
        if (header[0])
@@ -214,17 +375,30 @@ static gint oauth2_filter_refresh (gchar *json, gchar *refresh_token)
 
 static gchar* oauth2_get_token_from_response(Oauth2Service provider, const gchar* response) {
 	gchar* token = NULL;
+	gint i;
+	Oauth2Info *oa2;
+	
+	//Retrieve oauth2 configuration information
+	if(provider > g_list_length(oauth2_providers_list)){
+	  debug_print("Configured OAUTH2 provider is not present in the oauth2rc config file\n");
+	  return NULL;
+	}
+	
+	i = (int)provider - 1;
+
+	oa2 = g_list_nth_data (oauth2_providers_list, i);
 	
         debug_print("Auth response: %s\n", response);
-        if (provider == OAUTH2AUTH_YAHOO) {
-                /* Providers which display auth token in browser for users to copy */
+        if (!oa2->oa2_codemarker_start || !oa2->oa2_codemarker_stop ||
+	    !oa2->oa2_codemarker_start[0] || !oa2->oa2_codemarker_stop[0]) {
+	  /* Providers which display auth token in browser for users to copy */
                 token = g_strdup(response);
         } else {
-                gchar* start = g_strstr_len(response, strlen(response), OAUTH2CodeMarker[provider][0]);
+                gchar* start = g_strstr_len(response, strlen(response), oa2->oa2_codemarker_start);
                 if (start == NULL)
                         return NULL;
-                start += strlen(OAUTH2CodeMarker[provider][0]);
-                gchar* stop = g_strstr_len(response, strlen(response), OAUTH2CodeMarker[provider][1]);
+                start += strlen(oa2->oa2_codemarker_start);
+                gchar* stop = g_strstr_len(response, strlen(response), oa2->oa2_codemarker_stop);
                 if (stop == NULL)
                         return NULL;
                 token = g_strndup(start, stop - start);
@@ -296,19 +470,25 @@ int oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const 
         gchar *token = NULL;
         gchar *tmp;
 	gint i;
-
-	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST-1))
+	Oauth2Info *oa2;
+	
+	//Retrieve oauth2 configuration information
+	if(provider > g_list_length(oauth2_providers_list)){
+	  debug_print("Configured OAUTH2 provider is not present in the oauth2rc config file\n");
 	  return (1);
-    
+	}
+	
+	i = (int)provider - 1;
+	oa2 = g_list_nth_data (oauth2_providers_list, i);
+
         token = oauth2_get_token_from_response(provider, authcode);
         debug_print("Auth token: %s\n", token);
         if (token == NULL) {
                 log_message(LOG_PROTOCOL, _("OAuth2 missing authorization code\n"));
                 return (1);
         }
-        debug_print("Connect: %s:443\n", OAUTH2info[i][OA2_BASE_URL]);
-	sock = sock_connect(OAUTH2info[i][OA2_BASE_URL], 443);
+        debug_print("Connect: %s:443\n", oa2->oa2_base_url);
+	sock = sock_connect(oa2->oa2_base_url, 443);
 	if (sock == NULL) {
                 log_message(LOG_PROTOCOL, _("OAuth2 connection error\n"));
                 g_free(token);
@@ -331,21 +511,21 @@ int oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const 
 	access_token = g_malloc(OAUTH2BUFSIZE+1);
 	request = g_malloc(OAUTH2BUFSIZE+1);
 
-	if(OAUTH2Data->custom_client_id)
+	if(OAUTH2Data->custom_client_id[0])
 	  client_id = g_strdup(OAUTH2Data->custom_client_id);
 	else
-	  client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+	  client_id = g_strdup(oa2->oa2_client_id);
 
         body = g_strconcat ("client_id=", client_id, "&code=", token, NULL);
         debug_print("Body: %s\n", body);
         g_free(token);
 
-	if(OAUTH2info[i][OA2_CLIENT_SECRET][0]){
+	if(oa2->oa2_client_secret[0]){
 	  //Only allow custom client secret if the service provider would usually expect a client secret
-	  if(OAUTH2Data->custom_client_secret)
+	  if(OAUTH2Data->custom_client_secret[0])
 	    client_secret = g_strdup(OAUTH2Data->custom_client_secret);
 	  else
-	    client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
+	    client_secret = g_strdup(oa2->oa2_client_secret);
 	  uri = g_uri_escape_string (client_secret, NULL, FALSE);
 	  tmp = g_strconcat (body, "&client_secret=", uri, NULL);
 	  g_free(body);
@@ -355,33 +535,33 @@ int oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const 
 	  client_secret = g_strconcat ("", NULL);
 	}
 
-	if(OAUTH2info[i][OA2_REDIRECT_URI][0]) {
-          tmp = g_strconcat(body, "&redirect_uri=", OAUTH2info[i][OA2_REDIRECT_URI], NULL);
+	if(oa2->oa2_redirect_uri[0]) {
+          tmp = g_strconcat(body, "&redirect_uri=", oa2->oa2_redirect_uri, NULL);
 	  g_free(body);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_GRANT_TYPE_ACCESS][0]) {
-          tmp = g_strconcat(body, "&grant_type=", OAUTH2info[i][OA2_GRANT_TYPE_ACCESS], NULL);
+	if(oa2->oa2_grant_type_access[0]) {
+          tmp = g_strconcat(body, "&grant_type=", oa2->oa2_grant_type_access, NULL);
 	  g_free(body);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_TENANT][0]) {
-          tmp = g_strconcat(body, "&tenant=", OAUTH2info[i][OA2_TENANT], NULL);
+	if(oa2->oa2_tenant[0]) {
+          tmp = g_strconcat(body, "&tenant=", oa2->oa2_tenant, NULL);
 	  g_free(body);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_SCOPE_FOR_ACCESS][0]) {
-          tmp = g_strconcat(body, "&scope=", OAUTH2info[i][OA2_SCOPE_FOR_ACCESS], NULL);
+	if(oa2->oa2_scope_for_access[0]) {
+          tmp = g_strconcat(body, "&scope=", oa2->oa2_scope_for_access, NULL);
 	  g_free(body);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_STATE][0]) {
-          tmp = g_strconcat(body, "&state=", OAUTH2info[i][OA2_STATE], NULL);
+	if(oa2->oa2_state[0]) {
+          tmp = g_strconcat(body, "&state=", oa2->oa2_state, NULL);
 	  g_free(body);
 	  body = tmp;
 	}
 
-	if(OAUTH2info[i][OA2_HEADER_AUTH_BASIC][0]){
+	if(oa2->oa2_header_auth_basic[0]){
 	  tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
 	  tmp_hd_encoded = g_base64_encode (tmp_hd, strlen(tmp_hd));
 	  header = g_strconcat ("Authorization: Basic ", tmp_hd_encoded, NULL);
@@ -391,7 +571,7 @@ int oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const 
 	  header = g_strconcat ("", NULL);
 	}
 
-	oauth2_post_request (request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
+	oauth2_post_request (request, oa2->oa2_base_url, oa2->oa2_access_resource, header, body);
 	response = oauth2_contact_server (sock, request);
 	debug_print("Response from server: %s\n", response);
 
@@ -445,12 +625,18 @@ gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	gchar *client_secret;
 	gchar *tmp;
 	gint i;
-
-	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST-1))
+	Oauth2Info *oa2;
+	
+	//Retrieve oauth2 configuration information
+	if(provider > g_list_length(oauth2_providers_list)){
+	  debug_print("Configured OAUTH2 provider is not present in the oauth2rc config file\n");
 	  return (1);
+	}
+	
+	i = (int)provider - 1;
+	oa2 = g_list_nth_data (oauth2_providers_list, i);
 
-	sock = sock_connect(OAUTH2info[i][OA2_BASE_URL], 443);
+	sock = sock_connect(oa2->oa2_base_url, 443);
 	if (sock == NULL) {
                 log_message(LOG_PROTOCOL, _("OAuth2 connection error\n"));
                 return (1);
@@ -471,21 +657,21 @@ gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	refresh_token = g_malloc(OAUTH2BUFSIZE+1);
 	request = g_malloc(OAUTH2BUFSIZE+1);
 
-	if(OAUTH2Data->custom_client_id)
+	if(OAUTH2Data->custom_client_id[0])
 	  client_id = g_strdup(OAUTH2Data->custom_client_id);
 	else
-	  client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+	  client_id = g_strdup(oa2->oa2_client_id);
 
 	uri = g_uri_escape_string (client_id, NULL, FALSE);
 	body = g_strconcat ("client_id=", uri, "&refresh_token=", OAUTH2Data->refresh_token, NULL); 
 	g_free(uri);
 
-	if(OAUTH2info[i][OA2_CLIENT_SECRET][0]){
+	if(oa2->oa2_client_secret[0]){
 	  //Only allow custom client secret if the service provider would usually expect a client secret
-	  if(OAUTH2Data->custom_client_secret)
+	  if(OAUTH2Data->custom_client_secret[0])
 	    client_secret = g_strdup(OAUTH2Data->custom_client_secret);
 	  else
-	    client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
+	    client_secret = g_strdup(oa2->oa2_client_secret);
 	  uri = g_uri_escape_string (client_secret, NULL, FALSE);
 	  tmp = g_strconcat (body, "&client_secret=", uri, NULL);
 	  g_free(body);
@@ -495,29 +681,29 @@ gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	  client_secret = g_strconcat ("", NULL);
 	}
 
-	if(OAUTH2info[i][OA2_GRANT_TYPE_REFRESH][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH], NULL, FALSE);
+	if(oa2->oa2_grant_type_refresh[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_grant_type_refresh, NULL, FALSE);
 	  tmp = g_strconcat (body, "&grant_type=", uri, NULL);	
 	  g_free(body);
 	  g_free(uri);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_SCOPE_FOR_ACCESS][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS], NULL, FALSE);
+	if(oa2->oa2_scope_for_access[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_scope_for_access, NULL, FALSE);
 	  tmp = g_strconcat (body, "&scope=", uri, NULL);
 	  g_free(body);
 	  g_free(uri);
 	  body = tmp;
 	}
-	if(OAUTH2info[i][OA2_STATE][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_STATE], NULL, FALSE);
+	if(oa2->oa2_state[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_state, NULL, FALSE);
 	  tmp = g_strconcat (body, "&state=", uri, NULL);
 	  g_free(body);
 	  g_free(uri);
 	  body = tmp;
 	}
 
-	if(OAUTH2info[i][OA2_HEADER_AUTH_BASIC][0]){
+	if(oa2->oa2_header_auth_basic[0]){
 	  tmp_hd = g_strconcat(client_id, ":", client_secret, NULL);
 	  tmp_hd_encoded = g_base64_encode (tmp_hd, strlen(tmp_hd));
 	  header = g_strconcat ("Authorization: Basic ", tmp_hd_encoded, NULL);
@@ -527,7 +713,7 @@ gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 	  header = g_strconcat ("", NULL);
 	}
 
-	oauth2_post_request (request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
+	oauth2_post_request (request, oa2->oa2_base_url, oa2->oa2_refresh_resource, header, body);
 	debug_print("Request: %s\n", request);
 	response = oauth2_contact_server (sock, request);
 	debug_print("Response from server: %s\n", response);
@@ -573,59 +759,68 @@ gint oauth2_authorisation_url (Oauth2Service provider, gchar **url, const gchar 
 	gchar *client_id = NULL;
 	gchar *tmp;
 	gchar *uri;
-
-	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST-1))
+	Oauth2Info *oa2;
+	
+	//Retrieve oauth2 configuration information
+	if(provider > g_list_length(oauth2_providers_list)){
+	  debug_print("Configured OAUTH2 provider is not present in the oauth2rc config file\n");
 	  return (1);
+	}
 	
-	if(!custom_client_id)
-	  client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+	i = (int)provider - 1;
+	oa2 = g_list_nth_data (oauth2_providers_list, i);
+
+	debug_print("FROM OAUTH2.C Oauth2 name: %s\n", oa2->oa2_name);
+	debug_print("FROM OAUTH2.C Oauth2 URL: %s\n", oa2->oa2_redirect_uri);
+
+	if(!custom_client_id[0])
+	  client_id = g_strdup(oa2->oa2_client_id);
 	
-	uri = g_uri_escape_string (custom_client_id ? custom_client_id : client_id, NULL, FALSE);
-	*url = g_strconcat ("https://", OAUTH2info[i][OA2_BASE_URL],OAUTH2info[i][OA2_AUTH_RESOURCE], "?client_id=",
+	uri = g_uri_escape_string (custom_client_id[0] ? custom_client_id : client_id, NULL, FALSE);
+	*url = g_strconcat ("https://", oa2->oa2_base_url, oa2->oa2_auth_resource, "?client_id=",
 			    uri, NULL);
 	g_free(uri);
 	if (client_id)
 	  g_free(client_id);
 
-	if(OAUTH2info[i][OA2_REDIRECT_URI][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_REDIRECT_URI], NULL, FALSE);
+	if(oa2->oa2_redirect_uri[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_redirect_uri, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&redirect_uri=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
 	  g_free(uri);
     
 	}  
-	if(OAUTH2info[i][OA2_RESPONSE_TYPE][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_RESPONSE_TYPE], NULL, FALSE);
+	if(oa2->oa2_response_type[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_response_type, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&response_type=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
 	  g_free(uri);
 	}  
-	if(OAUTH2info[i][OA2_SCOPE_FOR_AUTH][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_SCOPE_FOR_AUTH], NULL, FALSE);
+	if(oa2->oa2_scope_for_auth[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_scope_for_auth, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&scope=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
 	  g_free(uri);
 	}  
-	if(OAUTH2info[i][OA2_TENANT][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_TENANT], NULL, FALSE);
+	if(oa2->oa2_tenant[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_tenant, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&tenant=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
 	  g_free(uri);
 	}  
-	if(OAUTH2info[i][OA2_RESPONSE_MODE][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_RESPONSE_MODE], NULL, FALSE);
+	if(oa2->oa2_response_mode[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_response_mode, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&response_mode=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
 	  g_free(uri);
 	}  
-	if(OAUTH2info[i][OA2_STATE][0]) {
-	  uri = g_uri_escape_string (OAUTH2info[i][OA2_STATE], NULL, FALSE);
+	if(oa2->oa2_state[0]) {
+	  uri = g_uri_escape_string (oa2->oa2_state, NULL, FALSE);
 	  tmp = g_strconcat (*url, "&state=", uri, NULL);
 	  g_free(*url);
 	  *url = tmp;
@@ -697,38 +892,6 @@ gint oauth2_check_passwds (PrefsAccount *ac_prefs)
 	return (ret);
 }
 
-/* returns allocated string which must be freed */
-guchar* oauth2_decode(const gchar *in)
-{
-         guchar *tmp;
-	 gsize len;
-	 
-	 tmp = g_base64_decode(in, &len);
-	 passcrypt_decrypt(tmp, len);
-	 return tmp;
-}
-
-/* For testing */
-void oauth2_encode(const gchar *in)
-{
-         guchar *tmp = g_strdup(in);
-	 guchar *tmp2 = g_strdup(in);
-	 gchar *result;
-	 gsize len = strlen(in);
-	 
-	 passcrypt_encrypt(tmp, len);
-	 result = g_base64_encode(tmp, len); 
-	 tmp2 = oauth2_decode(result);
-	 
-	 log_message(LOG_PROTOCOL, _("OAuth2 original: %s\n"), in);
-	 log_message(LOG_PROTOCOL, _("OAuth2 encoded: %s\n"), result);
-	 log_message(LOG_PROTOCOL, _("OAuth2 decoded: %s\n\n"), tmp2);
-	 
-	 g_free(tmp);  
-	 g_free(tmp2);
-	 g_free(result);
-}
-
 gint oauth2_init (OAUTH2Data *OAUTH2Data)
 { 
 	 OAUTH2Data->refresh_token = NULL;
@@ -741,4 +904,4 @@ gint oauth2_init (OAUTH2Data *OAUTH2Data)
 	 return (0);
 }
 
-#endif	/* USE_GNUTLS */
+#endif	/* USE_OAUTH2 */

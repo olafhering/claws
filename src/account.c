@@ -55,6 +55,9 @@
 #include "hooks.h"
 #include "passwordstore.h"
 #include "file-utils.h"
+#ifdef USE_OAUTH2
+#include "oauth2.h"
+#endif
 
 enum {
 	ACCOUNT_IS_DEFAULT,

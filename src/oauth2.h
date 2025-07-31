@@ -29,42 +29,17 @@
 #include "passwordstore.h"
 #include "smtp.h"
 #include "prefs_account.h"
+#include "prefs_gtk.h"
 
 #define OAUTH2BUFSIZE		8192
+#define OAUTH2AUTH_NONE 0
 
-typedef enum
-{
-	OA2_BASE_URL,
-	OA2_CLIENT_ID,
-	OA2_CLIENT_SECRET,
-	OA2_REDIRECT_URI,
-	OA2_AUTH_RESOURCE,
-	OA2_ACCESS_RESOURCE,
-	OA2_REFRESH_RESOURCE,
-	OA2_RESPONSE_TYPE,
-	OA2_SCOPE_FOR_AUTH,
-	OA2_GRANT_TYPE_ACCESS,
-	OA2_GRANT_TYPE_REFRESH,
-	OA2_TENANT,
-	OA2_STATE,
-	OA2_ACCESS_TYPE,
-	OA2_SCOPE_FOR_ACCESS,
-	OA2_RESPONSE_MODE,
-	OA2_HEADER_AUTH_BASIC
-} Oauth2Params;
+GList	     *oauth2_providers_get_list		(void);
 
-typedef enum
-{
-	OAUTH2AUTH_NONE,
-	OAUTH2AUTH_GOOGLE,
-	OAUTH2AUTH_OUTLOOK,
-	OAUTH2AUTH_EXCHANGE,
-	OAUTH2AUTH_MICROSOFT_GCCHIGH,
-	OAUTH2AUTH_YAHOO,
-	OAUTH2AUTH_LAST = OAUTH2AUTH_YAHOO
-} Oauth2Service;
+typedef int Oauth2Service;
 
 typedef struct _OAUTH2Data OAUTH2Data;
+
 struct _OAUTH2Data
 {
 	gchar *refresh_token;
@@ -80,7 +55,34 @@ gint oauth2_check_passwds (PrefsAccount *ac_prefs);
 gint oauth2_obtain_tokens (Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode);
 gint oauth2_authorisation_url (Oauth2Service provider, gchar **url, const gchar *custom_client_id);
 gint oauth2_use_refresh_token (Oauth2Service provider, OAUTH2Data *OAUTH2Data);
-guchar* oauth2_decode(const gchar *in);
-void oauth2_encode(const gchar *in);
 
-#endif	/* USE_GNUTLS */
+struct _Oauth2Info
+{
+        gchar *oa2_name;
+        gchar *oa2_base_url;
+        gchar *oa2_client_id;
+        gchar *oa2_client_secret;
+        gchar *oa2_redirect_uri;
+        gchar *oa2_auth_resource;
+        gchar *oa2_access_resource;
+        gchar *oa2_refresh_resource;
+        gchar *oa2_response_type;
+        gchar *oa2_scope_for_auth;
+        gchar *oa2_grant_type_access;
+        gchar *oa2_grant_type_refresh;
+        gchar *oa2_tenant;
+        gchar *oa2_state;
+        gchar *oa2_access_type;
+        gchar *oa2_scope_for_access;
+        gchar *oa2_response_mode;
+        gchar *oa2_header_auth_basic;
+        gint  oa2_two_stage_pop;
+        gchar *oa2_codemarker_start;
+        gchar *oa2_codemarker_stop;
+};
+
+typedef struct _Oauth2Info  Oauth2Info;
+
+void account_read_oauth2_all (void);
+
+#endif	/* USE_OAUTH2 */

@@ -2282,14 +2282,20 @@ static void oauth2_create_widget_func(PrefsPage * _page,
 	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(oauth2_auth_optmenu)));
 	gtk_widget_show (oauth2_auth_optmenu);
 	gtk_box_pack_start (GTK_BOX (hbox), oauth2_auth_optmenu, FALSE, FALSE, 0);
-
+	
 	COMBOBOX_ADD (menu, _("Select"), NULL);
 	COMBOBOX_ADD (menu, NULL, 0);
-	COMBOBOX_ADD (menu, "Google/Gmail", OAUTH2AUTH_GOOGLE);
-	COMBOBOX_ADD (menu, "MS Outlook", OAUTH2AUTH_OUTLOOK);
-	COMBOBOX_ADD (menu, "MS Exchange", OAUTH2AUTH_EXCHANGE);
-	COMBOBOX_ADD (menu, "MS 365 GCC High", OAUTH2AUTH_MICROSOFT_GCCHIGH);
-	COMBOBOX_ADD (menu, "Yahoo", OAUTH2AUTH_YAHOO);
+
+	gint j = 1;
+	GList *oauth2_providers_list = oauth2_providers_get_list();
+	GList *cur;
+	Oauth2Info *oa2;
+	for (cur = oauth2_providers_list; cur != NULL; cur = cur->next) {
+		oa2 = (Oauth2Info *)cur->data;
+		debug_print("Building menu Oauth2 name: %s number: %i\n", oa2->oa2_name, j);
+		COMBOBOX_ADD (menu, oa2->oa2_name, j);
+		j++;
+	}
 
 	protocol_optmenu = g_new(struct BasicProtocol, 1);
 	protocol_optmenu->combobox = oauth2_auth_optmenu;
@@ -2437,9 +2443,6 @@ static void oauth2_create_widget_func(PrefsPage * _page,
 			g_free(buf);
 		}
 	}
-
-	/* For testing */
-	/* 	oauth2_encode(OAUTH2info[0][OA2_CLIENT_ID]); */
 
 }
 #endif

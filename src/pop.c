@@ -42,6 +42,10 @@
 #include "file-utils.h"
 #include "oauth2.h"
 
+#ifdef USE_OAUTH2
+#include "defs.h"
+#endif
+
 static gint pop3_greeting_recv		(Pop3Session *session,
 					 const gchar *msg);
 static gint pop3_getauth_user_send	(Pop3Session *session);
@@ -243,13 +247,11 @@ static gint pop3_getauth_oauth2_send_microsoft_2(Pop3Session *session)
 
 static gint pop3_getauth_oauth2_send(Pop3Session *session)
 {
-	gint oauth2_provider = session->ac_prefs->oauth2_provider;
-	return (  oauth2_provider == OAUTH2AUTH_OUTLOOK ||
-		  oauth2_provider == OAUTH2AUTH_EXCHANGE ||
-		  oauth2_provider == OAUTH2AUTH_MICROSOFT_GCCHIGH
-		? pop3_getauth_oauth2_send_microsoft_1(session)
-		: pop3_getauth_oauth2_send_generic(session)
-		);
+	gint two_stage_pop = session->two_stage_pop;
+	return ( two_stage_pop ?
+		 pop3_getauth_oauth2_send_microsoft_1(session)
+		 : pop3_getauth_oauth2_send_generic(session)
+		 );
 }
 #endif
 
@@ -463,7 +465,6 @@ static gint pop3_retr_recv(Pop3Session *session, const gchar *data, guint len)
 			g_free(old_file);
 		}
 	}
-
 	/* drop_ok: 0: success 1: don't receive -1: error */
 	drop_ok = session->drop_message(session, file);
 
@@ -633,6 +634,18 @@ Session *pop3_session_new(PrefsAccount *account)
 	session->error_val = PS_SUCCESS;
 	session->error_msg = NULL;
 
+#ifdef USE_OAUTH2
+	if(session->ac_prefs->use_pop_auth && session->ac_prefs->pop_auth_type == POPAUTH_OAUTH2){
+	       //Set up for two stage sessions - link provider selected in ac_prefs to the config file
+	       GList *oauth2_providers_list = oauth2_providers_get_list();
+	       Oauth2Info *oa2;
+
+	       oa2 = g_list_nth_data (oauth2_providers_list, session->ac_prefs->oauth2_provider - 1);
+	       debug_print("POP - Oauth2 name: %s Two stage POP: %i\n", oa2->oa2_name, oa2->oa2_two_stage_pop);
+	       session->two_stage_pop = oa2->oa2_two_stage_pop;
+	}
+#endif	
+	
 	return SESSION(session);
 }
 

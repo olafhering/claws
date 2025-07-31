@@ -136,6 +136,10 @@
 #include "passwordstore.h"
 #include "file-utils.h"
 
+#ifdef USE_OAUTH2
+#include "oauth2.h"
+#endif
+
 #ifdef HAVE_LIBETPAN
 #include "imap-thread.h"
 #include "nntp-thread.h"
@@ -1279,6 +1283,9 @@ int main(int argc, char *argv[])
 
 	prefs_account_init();
 	account_read_config_all();
+#ifdef USE_OAUTH2
+	account_read_oauth2_all();
+#endif
 
 	if (prefs_update_config_version_accounts() < 0) {
 		debug_print("Accounts configuration file version upgrade failed, exiting\n");

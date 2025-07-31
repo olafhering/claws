@@ -131,6 +131,9 @@ struct _Pop3Session
 	gint cur_total_bytes;
 	gint cur_total_recv_bytes;
 
+#ifdef USE_OAUTH2
+        gint two_stage_pop;
+#endif
 	Pop3MsgInfo *msg;
 
 	GHashTable *uidl_table;

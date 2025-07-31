@@ -1009,6 +1009,7 @@ void prefs_prepare_cache(void)
 	gchar *clawsrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);
 	gchar *folderitemrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDERITEM_RC, NULL);
 	gchar *accountrc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, ACCOUNT_RC, NULL);
+	gchar *oauth2rc = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, OAUTH2_RC, NULL);
 	
 	if (whole_cache == NULL) {
 		whole_cache = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -1018,16 +1019,19 @@ void prefs_prepare_cache(void)
 		g_free(clawsrc);
 		g_free(folderitemrc);
 		g_free(accountrc);
+		g_free(oauth2rc);
 		return;
 	}
 	if (prefs_cache(clawsrc) < 0 ||
 	    prefs_cache(folderitemrc) < 0 ||
-	    prefs_cache(accountrc) < 0)
+	    prefs_cache(accountrc) < 0 ||
+	    prefs_cache(oauth2rc) < 0)
 		prefs_destroy_cache();
 
 	g_free(clawsrc);
 	g_free(folderitemrc);
 	g_free(accountrc);
+	g_free(oauth2rc);
 }
 
 void prefs_destroy_cache(void)
