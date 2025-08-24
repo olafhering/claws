@@ -2443,10 +2443,12 @@ static gint textview_key_pressed(GtkWidget *widget, GdkEventKey *event,
 		}
 		break;
 	case GDK_KEY_Page_Down:
+	case GDK_KEY_KP_Down:
 		mimeview_scroll_page(messageview->mimeview, FALSE);
 		break;
 	case GDK_KEY_Page_Up:
 	case GDK_KEY_BackSpace:
+	case GDK_KEY_KP_Up:
 		mimeview_scroll_page(messageview->mimeview, TRUE);
 		break;
 	case GDK_KEY_Return:
