@@ -316,7 +316,7 @@ SignatureStatus sgpgme_sigstat_gpgme_to_privacy(gpgme_ctx_t ctx, gpgme_verify_re
 	case GPG_ERR_BAD_SIGNATURE:
 		return SIGNATURE_INVALID;
 	case GPG_ERR_NO_PUBKEY:
-		return SIGNATURE_CHECK_FAILED;
+		return SIGNATURE_CHECK_NO_KEY;
 	default:
 		return SIGNATURE_CHECK_FAILED;
 	}
