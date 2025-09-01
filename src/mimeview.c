@@ -2570,7 +2570,6 @@ static void icon_list_append_icon (MimeView *mimeview, MimeInfo *mimeinfo)
 		case SIGNATURE_CHECK_ERROR:
 		case SIGNATURE_CHECK_FAILED:
 		case SIGNATURE_CHECK_TIMEOUT:
-		case SIGNATURE_CHECK_NO_KEY:
 			pixmap = stock_pixmap_widget_with_overlay(stockp,
 			    STOCK_PIXMAP_PRIVACY_EMBLEM_SIGNED, OVERLAY_BOTTOM_RIGHT, 6, 3);
 			break;
@@ -2584,6 +2583,7 @@ static void icon_list_append_icon (MimeView *mimeview, MimeInfo *mimeinfo)
 			    STOCK_PIXMAP_PRIVACY_EMBLEM_WARN, OVERLAY_BOTTOM_RIGHT, 6, 3);
 			break;
 		case SIGNATURE_INVALID:
+		case SIGNATURE_CHECK_NO_KEY:
 			pixmap = stock_pixmap_widget_with_overlay(stockp,
 			    STOCK_PIXMAP_PRIVACY_EMBLEM_FAILED, OVERLAY_BOTTOM_RIGHT, 6, 3);
 			break;
