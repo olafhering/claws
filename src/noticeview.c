@@ -105,8 +105,9 @@ NoticeView *noticeview_create(MainWindow *mainwin)
 	evtbox = gtk_event_box_new();
 	gtk_event_box_set_visible_window(GTK_EVENT_BOX(evtbox), FALSE);
 	gtk_widget_show(evtbox);
+	g_object_set(evtbox, "margin-right", 4, NULL);
 
-	icon = stock_pixmap_widget(STOCK_PIXMAP_NOTICE_WARN); 
+	icon = stock_pixmap_widget(STOCK_PIXMAP_NOTICE_WARN);
 
 	gtk_widget_show(icon);
 	g_signal_connect(G_OBJECT(evtbox), "button-press-event", 
