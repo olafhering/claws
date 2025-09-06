@@ -31,7 +31,6 @@ typedef struct _FolderClass	FolderClass;
 typedef struct _FolderItem	FolderItem;
 typedef struct _FolderUpdateData	FolderUpdateData;
 typedef struct _FolderItemUpdateData	FolderItemUpdateData;
-typedef struct _PersistPrefs		PersistPrefs;
 
 #define FOLDER(obj)		((Folder *)obj)
 #define FOLDER_CLASS(obj)	(FOLDER(obj)->klass)
@@ -781,19 +780,6 @@ struct _FolderItem
 	gboolean processing_pending;
 	gint scanning;
 	guint last_seen;
-};
-
-struct _PersistPrefs
-{
-	FolderSortKey	sort_key;
-	FolderSortType	sort_type;
-	guint		collapsed	: 1;
-	guint		thread_collapsed	: 1;
-	guint		threaded	: 1;
-	guint		hide_read_msgs	: 1; /* CLAWS */
-	guint		ret_rcpt	: 1; /* CLAWS */
-	guint		hide_del_msgs	: 1; /* CLAWS */
-	guint		hide_read_threads	: 1;
 };
 
 struct _FolderUpdateData

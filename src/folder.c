@@ -91,17 +91,10 @@ static GNode *folder_get_xml_node	(Folder 	*folder);
 static Folder *folder_get_from_xml	(GNode 		*node);
 static void folder_update_op_count_rec	(GNode		*node);
 
-
-static void folder_get_persist_prefs_recursive
-					(GNode *node, GHashTable *pptable);
-static gboolean persist_prefs_free	(gpointer key, gpointer val, gpointer data);
 static void folder_item_read_cache		(FolderItem *item);
 gint folder_item_scan_full		(FolderItem *item, gboolean filtering);
 static void folder_item_update_with_msg (FolderItem *item, FolderItemUpdateFlags update_flags,
                                          MsgInfo *msg);
-static GHashTable *folder_persist_prefs_new	(Folder *folder);
-static void folder_persist_prefs_free		(GHashTable *pptable);
-static void folder_item_restore_persist_prefs	(FolderItem *item, GHashTable *pptable);
 
 void folder_system_init(void)
 {
@@ -938,38 +931,14 @@ void folder_write_list(void)
 	xml_free_tree(rootnode);
 }
 
-static gboolean folder_scan_tree_func(GNode *node, gpointer data)
-{
-	GHashTable *pptable = (GHashTable *)data;
-	FolderItem *item = (FolderItem *)node->data;
-
-	folder_item_restore_persist_prefs(item, pptable);
-	folder_item_scan_full(item, FALSE);
-
-	return FALSE;
-}
-
-static gboolean folder_restore_prefs_func(GNode *node, gpointer data)
-{
-	GHashTable *pptable = (GHashTable *)data;
-	FolderItem *item = (FolderItem *)node->data;
-
-	folder_item_restore_persist_prefs(item, pptable);
-
-	return FALSE;
-}
-
 void folder_scan_tree(Folder *folder, gboolean rebuild)
 {
-	GHashTable *pptable;
 	FolderUpdateData hookdata;
 	Folder *old_folder = folder;
 
 	if (!folder->klass->scan_tree)
 		return;
 	
-	pptable = folder_persist_prefs_new(folder);
-
 	if (rebuild)
 		folder_remove(folder);
 
@@ -985,13 +954,6 @@ void folder_scan_tree(Folder *folder, gboolean rebuild)
 	hookdata.item = NULL;
 	hookdata.item2 = NULL;
 	hooks_invoke(FOLDER_UPDATE_HOOKLIST, &hookdata);
-
-	if (rebuild)
-		g_node_traverse(folder->node, G_POST_ORDER, G_TRAVERSE_ALL, -1, folder_scan_tree_func, pptable);
-	else
-		g_node_traverse(folder->node, G_POST_ORDER, G_TRAVERSE_ALL, -1, folder_restore_prefs_func, pptable);
-
-	folder_persist_prefs_free(pptable);
 
 	prefs_matcher_read_config();
 
@@ -4347,108 +4309,6 @@ static FolderItem *folder_create_processing_folder(int account_id)
 FolderItem *folder_get_default_processing(int account_id)
 {
 	return folder_create_processing_folder(account_id);
-}
-
-/* folder_persist_prefs_new() - return hash table with persistent
- * settings (and folder name as key). 
- * (note that in claws other options are in the folder_item_prefs_RC
- * file, so those don't need to be included in PersistPref yet) 
- */
-static GHashTable *folder_persist_prefs_new(Folder *folder)
-{
-	GHashTable *pptable;
-
-	cm_return_val_if_fail(folder, NULL);
-	pptable = g_hash_table_new(g_str_hash, g_str_equal);
-	folder_get_persist_prefs_recursive(folder->node, pptable);
-	return pptable;
-}
-
-static void folder_persist_prefs_free(GHashTable *pptable)
-{
-	cm_return_if_fail(pptable);
-	g_hash_table_foreach_remove(pptable, persist_prefs_free, NULL);
-	g_hash_table_destroy(pptable);
-}
-
-static const PersistPrefs *folder_get_persist_prefs(GHashTable *pptable, const char *name)
-{
-	if (pptable == NULL || name == NULL) return NULL;
-	return g_hash_table_lookup(pptable, name);
-}
-
-static void folder_item_restore_persist_prefs(FolderItem *item, GHashTable *pptable)
-{
-	const PersistPrefs *pp;
-	gchar *id = folder_item_get_identifier(item);
-
-	pp = folder_get_persist_prefs(pptable, id); 
-	g_free(id);
-
-	if (!pp) return;
-
-	/* CLAWS: since not all folder properties have been migrated to 
-	 * folderlist.xml, we need to call the old stuff first before
-	 * setting things that apply both to Main and Claws. */
-	folder_item_prefs_read_config(item); 
-
-	item->collapsed = pp->collapsed;
-	item->thread_collapsed = pp->thread_collapsed;
-	item->threaded  = pp->threaded;
-	item->ret_rcpt  = pp->ret_rcpt;
-	item->hide_read_msgs = pp->hide_read_msgs;
-	item->hide_del_msgs = pp->hide_del_msgs;
-	item->hide_read_threads = pp->hide_read_threads;
-	item->sort_key  = pp->sort_key;
-	item->sort_type = pp->sort_type;
-}
-
-static void folder_get_persist_prefs_recursive(GNode *node, GHashTable *pptable)
-{
-	FolderItem *item = FOLDER_ITEM(node->data);
-	PersistPrefs *pp;
-	GNode *child, *cur;
-	gchar *id;
-
-	cm_return_if_fail(node != NULL);
-	cm_return_if_fail(item != NULL);
-
-	/* NOTE: item->path == NULL means top level folder; not interesting
-	 * to store preferences of that one.  */
-	if (item->path) {
-		id = folder_item_get_identifier(item);
-		pp = g_new0(PersistPrefs, 1);
-		if (!pp) {
-			g_free(id);
-			return;
-		}
-   		pp->collapsed = item->collapsed;
-		pp->thread_collapsed = item->thread_collapsed;
-		pp->threaded  = item->threaded;
-		pp->ret_rcpt  = item->ret_rcpt;	
-		pp->hide_read_msgs = item->hide_read_msgs;
-		pp->hide_del_msgs = item->hide_del_msgs;
-		pp->hide_read_threads = item->hide_read_threads;
-		pp->sort_key  = item->sort_key;
-		pp->sort_type = item->sort_type;
-		g_hash_table_insert(pptable, id, pp);
-	}
-
-	if (node->children) {
-		child = node->children;
-		while (child) {
-			cur = child;
-			child = cur->next;
-			folder_get_persist_prefs_recursive(cur, pptable);
-		}
-	}	
-}
-
-static gboolean persist_prefs_free(gpointer key, gpointer val, gpointer data)
-{
-	g_free(key);
-	g_free(val);
-	return TRUE;	
 }
 
 void folder_item_apply_processing(FolderItem *item)
