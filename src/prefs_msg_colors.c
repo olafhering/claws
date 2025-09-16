@@ -111,6 +111,7 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 	GtkWidget *hbox;
 	GtkWidget *label[COL_LAST_COLOR_INDEX];
 	GtkWidget *frame_msg;
+	GtkWidget *frame_msglist;
 	GtkWidget *frame_folder;
 	GtkWidget *frame_quote;
 	GtkWidget *vbox3;
@@ -305,23 +306,6 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 	COLOR_LABEL_PACK_START(hbox, COL_SIGNATURE, _("Signatures"));
 	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors, label[COL_SIGNATURE]);
 
-	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, VBOX_BORDER);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
-
-	COLOR_BUTTON_PACK_START(hbox, COL_MARKED,
-				C_("Tooltip and Dialog title",
-				   "Pick color for marked messages"));
-	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors,
-			       color_buttons.color[COL_MARKED]);
-
-	COLOR_LABEL_PACK_START(hbox, COL_MARKED, _("Messages marked for moving or deletion"));
-	gtk_widget_set_tooltip_text(GTK_WIDGET(label[COL_MARKED]), 
-				    C_("Tooltip", "The Marked color is used when the option "
-				       "'Execute immediately when moving or "
-				       "deleting messages' is turned off"));
-	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors, label[COL_MARKED]);
-
 	vbox4 = gtkut_get_options_frame(vbox2, &frame_diff,
 	/* TRANSLATORS: A patch is a text file listing the differences between 2 or more different */
 	/* versions of the same text file */
@@ -361,6 +345,22 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 	COLOR_LABEL_PACK_START(hbox, COL_DIFF_HUNK,
 	/* TRANSLATORS: A hunk is a section of the patch indicating how the files differ */
 			       _("Hunk lines"));
+
+	vbox2 = gtkut_get_options_frame(vbox1, &frame_msglist, _("Message list"));
+
+	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, VBOX_BORDER);
+	gtk_widget_show (hbox);
+	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
+
+	COLOR_BUTTON_PACK_START(hbox, COL_MARKED,
+				C_("Tooltip and Dialog title",
+				   "Pick color for marked messages"));
+
+	COLOR_LABEL_PACK_START(hbox, COL_MARKED, _("Messages marked for moving or deletion"));
+	gtk_widget_set_tooltip_text(GTK_WIDGET(label[COL_MARKED]), 
+				    C_("Tooltip", "The Marked color is used when the option "
+				       "'Execute immediately when moving or "
+				       "deleting messages' is turned off"));
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame_folder, _("Folder list"));
 
