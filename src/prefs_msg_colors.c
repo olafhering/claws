@@ -315,7 +315,7 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors,
 			       color_buttons.color[COL_MARKED]);
 
-	COLOR_LABEL_PACK_START(hbox, COL_MARKED, _("Marked"));
+	COLOR_LABEL_PACK_START(hbox, COL_MARKED, _("Messages marked for moving or deletion"));
 	gtk_widget_set_tooltip_text(GTK_WIDGET(label[COL_MARKED]), 
 				    C_("Tooltip", "The Marked color is used when the option "
 				       "'Execute immediately when moving or "
