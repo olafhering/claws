@@ -743,6 +743,8 @@ static PrefParam param[] = {
 	 P_COLOR, NULL, NULL, NULL},
 	{"target_folder_color", "#da1cca", &prefs_common.color[COL_TGT_FOLDER],
 	 P_COLOR, NULL, NULL, NULL},
+	{"marked_color", "#0000ff", &prefs_common.color[COL_MARKED],
+	 P_COLOR, NULL, NULL, NULL},
 	{"signature_color", "#797979", &prefs_common.color[COL_SIGNATURE],
 	 P_COLOR, NULL, NULL, NULL},
 	{"recycle_quote_colors", "FALSE", &prefs_common.recycle_quote_colors,

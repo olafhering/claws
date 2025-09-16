@@ -2075,8 +2075,7 @@ MainWindow *main_window_create()
 #endif
 	
 	/* allocate colors for summary view and folder view */
-	summaryview->color_marked.red = summaryview->color_marked.green = 0;
-	summaryview->color_marked.blue = (guint16)65535;
+	summaryview->color_marked = prefs_common.color[COL_MARKED];
 
 	summaryview->color_dim.red = summaryview->color_dim.green =
 		summaryview->color_dim.blue = COLOR_DIM;

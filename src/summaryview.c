@@ -2979,6 +2979,8 @@ void summary_reflect_prefs(void)
 		return;
 	summaryview = mainwindow_get_mainwindow()->summaryview;
 
+	summaryview->color_marked = prefs_common.color[COL_MARKED];
+
 	if (!last_smallfont || strcmp(last_smallfont, SMALL_FONT) ||
 			!last_normalfont || strcmp(last_normalfont, NORMAL_FONT) ||
 			!last_boldfont || strcmp(last_boldfont, BOLD_FONT) ||

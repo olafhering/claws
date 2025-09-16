@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,6 +140,7 @@ typedef enum
 	COL_DIFF_ADDED,
 	COL_DIFF_DELETED,
 	COL_DIFF_HUNK,
+	COL_MARKED,
 	COL_LAST_COLOR_INDEX
 } ColorIndex;
 

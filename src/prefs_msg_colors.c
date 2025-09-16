@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2004-2021 The Claws Mail Team
+ * Copyright (C) 2004-2025 The Claws Mail Team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -305,6 +305,23 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 	COLOR_LABEL_PACK_START(hbox, COL_SIGNATURE, _("Signatures"));
 	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors, label[COL_SIGNATURE]);
 
+	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, VBOX_BORDER);
+	gtk_widget_show (hbox);
+	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
+
+	COLOR_BUTTON_PACK_START(hbox, COL_MARKED,
+				C_("Tooltip and Dialog title",
+				   "Pick color for marked messages"));
+	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors,
+			       color_buttons.color[COL_MARKED]);
+
+	COLOR_LABEL_PACK_START(hbox, COL_MARKED, _("Marked"));
+	gtk_widget_set_tooltip_text(GTK_WIDGET(label[COL_MARKED]), 
+				    C_("Tooltip", "The Marked color is used when the option "
+				       "'Execute immediately when moving or "
+				       "deleting messages' is turned off"));
+	SET_TOGGLE_SENSITIVITY(checkbtn_enable_colors, label[COL_MARKED]);
+
 	vbox4 = gtkut_get_options_frame(vbox2, &frame_diff,
 	/* TRANSLATORS: A patch is a text file listing the differences between 2 or more different */
 	/* versions of the same text file */
@@ -359,7 +376,6 @@ static void prefs_msg_colors_create_widget(PrefsPage *_page, GtkWindow *window,
 				    C_("Tooltip", "Target folder is used when the option "
 				       "'Execute immediately when moving or "
 				       "deleting messages' is turned off"));
-
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, VBOX_BORDER);
 	gtk_widget_show (hbox);
@@ -541,6 +557,7 @@ static void prefs_msg_colors_save(PrefsPage *_page)
 	COLOR_OTHER_SAVE(COL_QUOTE_LEVEL3_BG);
 	COLOR_OTHER_SAVE(COL_URI);
 	COLOR_OTHER_SAVE(COL_SIGNATURE);
+	COLOR_OTHER_SAVE(COL_MARKED);
 	COLOR_OTHER_SAVE(COL_DIFF_ADDED);
 	COLOR_OTHER_SAVE(COL_DIFF_DELETED);
 	COLOR_OTHER_SAVE(COL_DIFF_HUNK);
