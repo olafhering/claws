@@ -2124,6 +2124,8 @@ static void textview_show_contact_pic(TextView *textview)
 	gint w, h;
 	GtkAllocation allocation;
 
+	cm_return_if_fail(msginfo);
+
 	if (prefs_common.display_header_pane
 		|| !prefs_common.display_xface)
 		goto bail;
@@ -2217,6 +2219,8 @@ static void textview_show_tags(TextView *textview)
 	ClickableText *uri;
 	GSList *cur, *orig;
 	gboolean found_tag = FALSE;
+
+	cm_return_if_fail(msginfo);
 	
 	if (!msginfo->tags)
 		return;
