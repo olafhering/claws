@@ -87,7 +87,7 @@
 #define MAILING_LIST_URI	"https://www.claws-mail.org/MLs.php"
 #define WELCOME_MSG_ADDR	"noreply@claws-mail.org"
 #define USERS_ML_URI		"https://lists.claws-mail.org/cgi-bin/mailman/listinfo/users"
-#define GPL_URI			"https://www.gnu.org/licenses/gpl.html"
+#define GPL_URI			"https://www.gnu.org/licenses/gpl-3.0.html"
 #define DONATE_URI		"https://www.claws-mail.org/donations.php"
 #define CONFIG_VERSIONS_URI	"https://www.claws-mail.org/cvc.php"
 #define RELEASE_NOTES_FILE	"RELEASE_NOTES"
