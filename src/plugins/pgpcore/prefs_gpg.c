@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2004-2019 the Claws Mail team
+ * Copyright (C) 2004-2025 the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -434,7 +434,7 @@ static void prefs_gpg_account_create_widget_func(PrefsPage *_page,
 	gtk_widget_show(new_key_box);
 	gtk_box_pack_start(GTK_BOX(hbox), new_key_box, FALSE, FALSE, 0);
 
-	image = gtk_button_new_from_icon_name("dialog-warning",
+	image = gtk_button_new_from_icon_name("dialog-warning-symbolic",
 			GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	gtk_box_pack_start(GTK_BOX(new_key_box), image, FALSE, FALSE, 0);

@@ -7254,7 +7254,7 @@ static void compose_create_header_entry(Compose *compose)
 			 G_CALLBACK(compose_grab_focus_cb), compose);
 
 	/* Entry field with cleanup button */
-	button = gtk_button_new_from_icon_name("edit-clear", GTK_ICON_SIZE_MENU);
+	button = gtk_button_new_from_icon_name("edit-clear-symbolic", GTK_ICON_SIZE_MENU);
 	gtk_widget_show(button);
 	CLAWS_SET_TIP(button,
 		_("Delete entry contents"));
