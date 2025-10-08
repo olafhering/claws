@@ -560,6 +560,8 @@ static Compose *compose_generic_reply(MsgInfo *msginfo,
 
 static void compose_headerentry_changed_cb	   (GtkWidget	       *entry,
 					    ComposeHeaderEntry *headerentry);
+static void compose_headerentry_text_changed_cb	   (GtkWidget	       *entry,
+					    GtkWidget *button);
 static gboolean compose_headerentry_key_press_event_cb(GtkWidget	       *entry,
 					    GdkEventKey        *event,
 					    ComposeHeaderEntry *headerentry);
@@ -7217,6 +7219,8 @@ static void compose_create_header_entry(Compose *compose)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(combo))), "grab_focus",
 			 G_CALLBACK(compose_grab_focus_cb), compose);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(combo))), "changed", 
+			 G_CALLBACK(compose_changed_cb), compose);
 	gtk_widget_show(combo);
 
 	gtk_grid_attach(GTK_GRID(compose->header_table), combo, 0, compose->header_nextrow,
@@ -7269,21 +7273,31 @@ static void compose_create_header_entry(Compose *compose)
 	gtk_grid_attach(GTK_GRID(compose->header_table), hbox, 1, compose->header_nextrow,
 			1, 1);
 	gtk_widget_set_hexpand(hbox, TRUE);
-    	gtk_widget_set_halign(hbox, GTK_ALIGN_FILL);
+	gtk_widget_set_halign(hbox, GTK_ALIGN_FILL);
 
-        g_signal_connect(G_OBJECT(entry), "key-press-event", 
+	g_signal_connect(G_OBJECT(entry), "key-press-event", 
 			 G_CALLBACK(compose_headerentry_key_press_event_cb), 
 			 headerentry);
-    	g_signal_connect(G_OBJECT(entry), "changed", 
+	g_signal_connect(G_OBJECT(entry), "changed", 
 			 G_CALLBACK(compose_headerentry_changed_cb), 
 			 headerentry);
+	g_signal_connect(G_OBJECT(entry), "changed", 
+			 G_CALLBACK(compose_headerentry_text_changed_cb), 
+			 button);
+	g_signal_connect(G_OBJECT(entry), "changed", 
+			 G_CALLBACK(compose_changed_cb), 
+			 compose);
 	g_signal_connect_after(G_OBJECT(entry), "grab_focus",
-			 G_CALLBACK(compose_grab_focus_cb), compose);
+			G_CALLBACK(compose_grab_focus_cb),
+			compose);
 
 	g_signal_connect(G_OBJECT(button), "clicked",
 			 G_CALLBACK(compose_headerentry_button_clicked_cb),
 			 headerentry); 
-			 
+	g_signal_connect(G_OBJECT(button), "clicked", 
+			 G_CALLBACK(compose_changed_cb), 
+			 compose);
+
 	/* email dnd */
 	gtk_drag_dest_set(entry, GTK_DEST_DEFAULT_ALL, compose_mime_types, 
 			  sizeof(compose_mime_types)/sizeof(compose_mime_types[0]),
@@ -8423,6 +8437,8 @@ static GtkWidget *compose_account_option_menu_create(Compose *compose)
 	
 	g_signal_connect_after(G_OBJECT(from_name), "grab_focus",
 			 G_CALLBACK(compose_grab_focus_cb), compose);
+	g_signal_connect_after(G_OBJECT(from_name), "changed",
+			 G_CALLBACK(compose_changed_cb), compose);
 	g_signal_connect_after(G_OBJECT(from_name), "activate",
 			 G_CALLBACK(from_name_activate_cb), optmenu);
 
@@ -11976,9 +11992,18 @@ static void compose_toggle_remove_refs_cb(GtkToggleAction *action, gpointer data
 static gboolean compose_headerentry_button_clicked_cb (GtkWidget *button,
                                         ComposeHeaderEntry *headerentry)
 {
-	gtk_entry_set_text(GTK_ENTRY(headerentry->entry), "");
-	gtk_widget_modify_base(GTK_WIDGET(headerentry->entry), GTK_STATE_NORMAL, NULL);
-	gtk_widget_modify_text(GTK_WIDGET(headerentry->entry), GTK_STATE_NORMAL, NULL);
+	if (strlen(gtk_entry_get_text(GTK_ENTRY(headerentry->entry))) != 0) {
+		gtk_entry_set_text(GTK_ENTRY(headerentry->entry), "");
+		gtk_widget_modify_base(GTK_WIDGET(headerentry->entry), GTK_STATE_NORMAL, NULL);
+		gtk_widget_modify_text(GTK_WIDGET(headerentry->entry), GTK_STATE_NORMAL, NULL);
+	} else if ((g_slist_length(headerentry->compose->header_list) > 0) &&
+		   ((headerentry->headernum + 1) != headerentry->compose->header_nextrow)) {
+		gtk_widget_destroy(headerentry->combo);
+		gtk_widget_destroy(headerentry->hbox);
+		headerentry->compose->header_list =
+			g_slist_remove(headerentry->compose->header_list,
+				       headerentry);
+	}
 	return FALSE;
 }
 
@@ -12024,6 +12049,21 @@ static gboolean scroll_postpone(gpointer data)
 	GTK_EVENTS_FLUSH();
 	compose_show_first_last_header(compose, FALSE);
 	return FALSE;
+}
+
+static void compose_headerentry_text_changed_cb(GtkWidget *entry,
+				    GtkWidget *button)
+{
+	GtkWidget *image = gtk_button_get_image(GTK_BUTTON(button));
+	if (strlen(gtk_entry_get_text(GTK_ENTRY(entry))) != 0) 	{
+		gtk_image_set_from_icon_name(GTK_IMAGE(image), "edit-clear-symbolic",
+					     GTK_ICON_SIZE_MENU);
+		CLAWS_SET_TIP(button, _("Delete entry contents"));
+	} else {
+		gtk_image_set_from_icon_name(GTK_IMAGE(image), "edit-delete-symbolic",
+					     GTK_ICON_SIZE_MENU);
+		CLAWS_SET_TIP(button, _("Remove row"));
+	}
 }
 
 static void compose_headerentry_changed_cb(GtkWidget *entry,

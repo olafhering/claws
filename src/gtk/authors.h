@@ -335,6 +335,7 @@ static char *CONTRIBS_LIST[] = {
 "Johan Vromans",
 "Botalov Vyacheslav",
 "Radek Vybiral",
+"Peter Wagner",
 "Jonathan Ware",
 "Watanabe",
 "Rafal Weglarz",
