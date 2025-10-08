@@ -1870,7 +1870,7 @@ gchar *account_get_signature_str(PrefsAccount *account)
 
 	cm_return_val_if_fail(account != NULL, NULL);
 
-	if (!account->sig_path)
+	if (strlen(g_strstrip(account->sig_path)) == 0)
 		return NULL;
 
 	if (account->sig_type == SIG_FILE) {
