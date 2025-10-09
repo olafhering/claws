@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2020 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ HeaderView *headerview_create(void)
 	headerview = g_new0(HeaderView, 1);
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_widget_set_redraw_on_allocate(hbox, TRUE);
 	gtk_widget_set_name(GTK_WIDGET(hbox), "headerview");
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 2);
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
@@ -191,24 +192,29 @@ void headerview_show(HeaderView *headerview, MsgInfo *msginfo)
 
 	gtk_label_set_text(GTK_LABEL(headerview->from_body_label),
 			   msginfo->from ? msginfo->from : _("(No From)"));
+	gtk_label_set_ellipsize(GTK_LABEL(headerview->from_body_label), TRUE);
 	if (msginfo->to) {
 		gtk_label_set_text(GTK_LABEL(headerview->to_body_label),
 				   msginfo->to);
+		gtk_label_set_ellipsize(GTK_LABEL(headerview->to_body_label), TRUE);
 		gtk_widget_show(headerview->to_header_label);
 		gtk_widget_show(headerview->to_body_label);
 	}
 	if (msginfo->newsgroups) {
 		gtk_label_set_text(GTK_LABEL(headerview->ng_body_label),
 				   msginfo->newsgroups);
+		gtk_label_set_ellipsize(GTK_LABEL(headerview->ng_body_label), TRUE);
 		gtk_widget_show(headerview->ng_header_label);
 		gtk_widget_show(headerview->ng_body_label);
 	}
 	gtk_label_set_text(GTK_LABEL(headerview->subject_body_label),
 			   msginfo->subject ? msginfo->subject :
 			   _("(No Subject)"));
+	gtk_label_set_ellipsize(GTK_LABEL(headerview->subject_body_label), TRUE);
 	if (tags) {
 		gtk_label_set_text(GTK_LABEL(headerview->tags_body_label),
 				   tags);
+		gtk_label_set_ellipsize(GTK_LABEL(headerview->tags_body_label), TRUE);
 		gtk_widget_show(headerview->tags_header_label);
 		gtk_widget_show(headerview->tags_body_label);
 		g_free(tags);
