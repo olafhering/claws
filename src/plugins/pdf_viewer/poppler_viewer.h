@@ -57,7 +57,6 @@ struct _PdfViewer
 	MimeViewer			mimeviewer;
 	GtkWidget			*widgets_table;
 	GtkWidget			*vbox;
-	GtkWidget			*hbox;
 	GtkWidget			*frame_index;
 	GtkWidget			*pdf_view;
 	GtkWidget			*scrollwin;

@@ -1744,6 +1744,8 @@ static void pdf_viewer_print(MimeViewer *mviewer)
 static MimeViewer *pdf_viewer_create(void)
 {
 	PdfViewer *viewer;
+	GtkWidget *hbox;
+	GtkWidget *container_scrolled;
  	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	GtkTreeStore *tree_store;
@@ -1773,15 +1775,17 @@ static MimeViewer *pdf_viewer_create(void)
 	viewer->pdf_view_ebox = gtk_event_box_new();
 	gtk_event_box_set_visible_window(GTK_EVENT_BOX(viewer->pdf_view_ebox), FALSE);
 
+	viewer->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+	gtk_widget_set_name(GTK_WIDGET(viewer->vbox), "pdf_viewer");
+	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	container_scrolled = gtk_scrolled_window_new(NULL, NULL);
+
 	viewer->mimeinfo  = NULL;
 
 	viewer->pdf_view = gtk_image_new();
-	gtk_widget_set_events(viewer->pdf_view_ebox,
-						GDK_BUTTON_RELEASE_MASK
-						| GDK_POINTER_MOTION_MASK
-						| GDK_BUTTON_PRESS_MASK
-						| GDK_BUTTON_MOTION_MASK
-					    );
+	gtk_widget_set_events(viewer->pdf_view_ebox, GDK_BUTTON_RELEASE_MASK |
+			      GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK |
+			      GDK_BUTTON_MOTION_MASK);
 	gtk_container_add (GTK_CONTAINER(viewer->pdf_view_ebox), viewer->pdf_view);
 	viewer->icon_type = gtk_image_new();
 	viewer->icon_type_ebox = gtk_event_box_new();
@@ -1789,7 +1793,6 @@ static MimeViewer *pdf_viewer_create(void)
 	gtk_container_add(GTK_CONTAINER(viewer->icon_type_ebox), viewer->icon_type);
 
 	viewer->doc_label = gtk_label_new("");
-
 	viewer->widgets_table = gtk_grid_new();
 
 	viewer->doc_index_pane = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
@@ -1812,12 +1815,10 @@ static MimeViewer *pdf_viewer_create(void)
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(viewer->zoom_scroll), TRUE);
 	gtk_grid_attach(GTK_GRID(viewer->widgets_table), GTK_WIDGET(viewer->cur_page),
 			col, 0, 1, 1);
-
 	col++;
 	gtk_grid_attach(GTK_GRID(viewer->widgets_table), GTK_WIDGET(viewer->doc_label),
 			col, 0, 1, 1);
 	col++;
-
 	ADD_BUTTON_TO_GRID(viewer->next_page, STOCK_PIXMAP_RIGHT_ARROW)
 	ADD_BUTTON_TO_GRID(viewer->last_page, STOCK_PIXMAP_LAST_ARROW)
 	ADD_SEP_TO_GRID
@@ -1839,21 +1840,11 @@ static MimeViewer *pdf_viewer_create(void)
 	gtk_scrolled_window_set_policy(
 			GTK_SCROLLED_WINDOW(viewer->scrollwin), 
 			GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-
 	gtk_scrolled_window_set_shadow_type(
 			GTK_SCROLLED_WINDOW(viewer->scrollwin),
 			GTK_SHADOW_IN);
-
-	gtk_container_add(
-			GTK_CONTAINER(viewer->scrollwin),
-			viewer->pdf_view_ebox);
-
-	viewer->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-	viewer->hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
-
-	gtk_widget_set_name(GTK_WIDGET(viewer->vbox), "pdf_viewer");
-	gtk_widget_set_name(GTK_WIDGET(viewer->hbox), "buttons");
-
+	gtk_container_add(GTK_CONTAINER(viewer->scrollwin),
+			  viewer->pdf_view_ebox);
     /* treeview */
 	tree_store = gtk_tree_store_new(N_INDEX_COLUMNS,
 					G_TYPE_STRING,
@@ -1863,7 +1854,8 @@ static MimeViewer *pdf_viewer_create(void)
 	viewer->index_list = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tree_store));
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes(_("Name"),  renderer, "text", 0,  NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer,
+							  "text", 0,  NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewer->index_list), column);		
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(viewer->index_list), FALSE);
 
@@ -1873,54 +1865,50 @@ static MimeViewer *pdf_viewer_create(void)
 	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(viewer->index_list)), 
 								GTK_SELECTION_SINGLE);
 
-	g_signal_connect(G_OBJECT(viewer->index_list), "row_activated",
-	                 G_CALLBACK(pdf_viewer_index_row_activated),
-					 viewer);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(viewer->scrollwin_index),
+				       GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(viewer->scrollwin_index),
+					    GTK_SHADOW_IN);
 
-	gtk_scrolled_window_set_policy(
-			GTK_SCROLLED_WINDOW(viewer->scrollwin_index), 
-			GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-
-	gtk_scrolled_window_set_shadow_type(
-			GTK_SCROLLED_WINDOW(viewer->scrollwin_index),
-			GTK_SHADOW_IN);
-
-	gtk_container_add(
-			GTK_CONTAINER(viewer->scrollwin_index),
-			viewer->index_list);
-
+	gtk_container_add(GTK_CONTAINER(viewer->scrollwin_index),
+			  viewer->index_list);
 	/* end treeview */
 
-	stock_pixbuf_gdk(STOCK_PIXMAP_MIME_TEXT_PLAIN, 
-			&viewer->icon_pixbuf);
-
-	gtk_image_set_from_pixbuf(GTK_IMAGE(viewer->icon_type), 
-				viewer->icon_pixbuf);
+	stock_pixbuf_gdk(STOCK_PIXMAP_MIME_TEXT_PLAIN,&viewer->icon_pixbuf);
+	gtk_image_set_from_pixbuf(GTK_IMAGE(viewer->icon_type), viewer->icon_pixbuf);
 
 	/* pack widgets*/
-	gtk_box_pack_start(GTK_BOX(viewer->hbox), viewer->icon_type_ebox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(viewer->hbox), viewer->widgets_table, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), viewer->icon_type_ebox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), viewer->widgets_table, FALSE, FALSE, 0);
 
 	gtk_container_add(GTK_CONTAINER(viewer->frame_index), viewer->scrollwin_index);
 
 	gtk_paned_pack1(GTK_PANED(viewer->doc_index_pane), viewer->frame_index, FALSE, FALSE);
 	gtk_paned_pack2(GTK_PANED(viewer->doc_index_pane), viewer->scrollwin, FALSE, FALSE);
 
-	gtk_box_pack_start(GTK_BOX(viewer->vbox), viewer->hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(viewer->vbox), viewer->doc_index_pane, TRUE, TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(container_scrolled), hbox);
+	gtk_box_pack_start(GTK_BOX(viewer->vbox), container_scrolled, FALSE, FALSE, 0);
+	
 	/* show widgets */
 	gtk_widget_show(GTK_WIDGET(viewer->doc_index_pane));
 	g_object_ref(GTK_WIDGET(viewer->doc_index_pane));
+
 	gtk_widget_show(GTK_WIDGET(viewer->scrollwin));
 	g_object_ref(GTK_WIDGET(viewer->scrollwin));
+
 	gtk_widget_show(GTK_WIDGET(viewer->icon_type_ebox));
 	g_object_ref(GTK_WIDGET(viewer->icon_type_ebox));
+
 	gtk_widget_show(GTK_WIDGET(viewer->pdf_view_ebox));
 	g_object_ref(GTK_WIDGET(viewer->pdf_view_ebox));
+
 	gtk_widget_show(GTK_WIDGET(viewer->scrollwin_index));
 	g_object_ref(GTK_WIDGET(viewer->scrollwin_index));
-	gtk_widget_show(GTK_WIDGET(viewer->hbox));
-	g_object_ref(GTK_WIDGET(viewer->hbox));	
+
+	gtk_widget_show(GTK_WIDGET(hbox));
+	g_object_ref(GTK_WIDGET(hbox));
+
 	gtk_widget_show(GTK_WIDGET(viewer->vbox));
 	g_object_ref(GTK_WIDGET(viewer->vbox));
 
@@ -1944,163 +1932,126 @@ static MimeViewer *pdf_viewer_create(void)
 
 	gtk_widget_show(GTK_WIDGET(viewer->zoom_in));
 	g_object_ref(GTK_WIDGET(viewer->zoom_in));
+
 	gtk_widget_show(GTK_WIDGET(viewer->zoom_out));
 	g_object_ref(GTK_WIDGET(viewer->zoom_out));
+
 	gtk_widget_show(GTK_WIDGET(viewer->zoom_fit));
 	g_object_ref(GTK_WIDGET(viewer->zoom_fit));
+
 	gtk_widget_show(GTK_WIDGET(viewer->zoom_width));
 	g_object_ref(GTK_WIDGET(viewer->zoom_width));
 
 	gtk_widget_show(GTK_WIDGET(viewer->rotate_right));
 	g_object_ref(GTK_WIDGET(viewer->rotate_right));
+
 	gtk_widget_show(GTK_WIDGET(viewer->rotate_left));
 	g_object_ref(GTK_WIDGET(viewer->rotate_left));
+
 	gtk_widget_show(GTK_WIDGET(viewer->print));
 	g_object_ref(GTK_WIDGET(viewer->print));
+
 	gtk_widget_show(GTK_WIDGET(viewer->doc_info));
 	g_object_ref(GTK_WIDGET(viewer->doc_info));
+
 	gtk_widget_show(GTK_WIDGET(viewer->doc_index));
 	g_object_ref(GTK_WIDGET(viewer->doc_index));
 
 	gtk_widget_show(GTK_WIDGET(viewer->doc_label));
 	g_object_ref(GTK_WIDGET(viewer->doc_label));
+
 	gtk_widget_show(GTK_WIDGET(viewer->icon_type));
-	g_object_ref(GTK_WIDGET(viewer->icon_type));	
+	g_object_ref(GTK_WIDGET(viewer->icon_type));
+
 	gtk_widget_show(GTK_WIDGET(viewer->pdf_view));
 	g_object_ref(GTK_WIDGET(viewer->pdf_view));
+
 	gtk_widget_show(GTK_WIDGET(viewer->zoom_scroll));
 	g_object_ref(GTK_WIDGET(viewer->zoom_scroll));
 
 	gtk_widget_show(GTK_WIDGET(viewer->index_list));
 	g_object_ref(GTK_WIDGET(viewer->index_list));
 
+	gtk_widget_show(container_scrolled);
+
 	/* Set Tooltips*/
-	CLAWS_SET_TIP(viewer->first_page,
-				_("First Page"));
+	CLAWS_SET_TIP(viewer->first_page,   _("First Page"));
+	CLAWS_SET_TIP(viewer->prev_page,    _("Previous Page"));
+	CLAWS_SET_TIP(viewer->next_page,    _("Next Page"));
+	CLAWS_SET_TIP(viewer->last_page,    _("Last Page"));
+	CLAWS_SET_TIP(viewer->zoom_in,      _("Zoom In"));
+	CLAWS_SET_TIP(viewer->zoom_out,     _("Zoom Out"));
+	CLAWS_SET_TIP(viewer->zoom_fit,     _("Fit Page"));
+	CLAWS_SET_TIP(viewer->zoom_width,   _("Fit Page Width"));
+	CLAWS_SET_TIP(viewer->rotate_left,  _("Rotate Left"));
+	CLAWS_SET_TIP(viewer->rotate_right, _("Rotate Right"));
+	CLAWS_SET_TIP(viewer->print,	    _("Print Document"));
+	CLAWS_SET_TIP(viewer->doc_info,     _("Document Info"));
+	CLAWS_SET_TIP(viewer->doc_index,    _("Document Index"));
+	CLAWS_SET_TIP(viewer->cur_page,     _("Page Number"));
+	CLAWS_SET_TIP(viewer->zoom_scroll,  _("Zoom Factor"));
 
-	CLAWS_SET_TIP(viewer->prev_page,
-				_("Previous Page"));
-
-	CLAWS_SET_TIP(viewer->next_page,
-				_("Next Page"));
-
-	CLAWS_SET_TIP(viewer->last_page,
-				_("Last Page"));
-
-	CLAWS_SET_TIP(viewer->zoom_in,
-				_("Zoom In"));
-	CLAWS_SET_TIP(viewer->zoom_out,
-				_("Zoom Out"));
-
-	CLAWS_SET_TIP(viewer->zoom_fit,
-				_("Fit Page"));
-
-	CLAWS_SET_TIP(viewer->zoom_width,
-				_("Fit Page Width"));
-
-	CLAWS_SET_TIP(viewer->rotate_left,
-				_("Rotate Left"));
-
-	CLAWS_SET_TIP(viewer->rotate_right,
-				_("Rotate Right"));
-
-	CLAWS_SET_TIP(viewer->print,
-				_("Print Document"));
-
-	CLAWS_SET_TIP(viewer->doc_info,
-				_("Document Info"));
-
-	CLAWS_SET_TIP(viewer->doc_index,
-				_("Document Index"));
-	CLAWS_SET_TIP(viewer->cur_page,
-				_("Page Number"));
-	CLAWS_SET_TIP(viewer->zoom_scroll,
-				_("Zoom Factor"));
 	/* Connect Signals */
-	g_signal_connect(G_OBJECT(viewer->cur_page), 
-				    "value-changed", 
-				    G_CALLBACK(pdf_viewer_spin_change_page_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->first_page), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_first_page_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->prev_page), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_prev_page_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->next_page), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_next_page_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->last_page), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_last_page_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->zoom_in), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_zoom_in_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->zoom_out), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_zoom_out_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->zoom_scroll), 
-				    "value-changed", 
-				    G_CALLBACK(pdf_viewer_spin_zoom_scroll_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->zoom_fit), 
-				   "clicked", 
-				    G_CALLBACK(pdf_viewer_button_zoom_fit_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->zoom_width), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_zoom_width_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->rotate_right), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_rotate_right_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->rotate_left), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_rotate_left_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->print), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_print_cb), 
-				   (gpointer) viewer);
-
-	g_signal_connect(G_OBJECT(viewer->doc_info), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_button_document_info_cb), 
-				   (gpointer) viewer);	
-
-	g_signal_connect(G_OBJECT(viewer->doc_index), 
-				    "clicked", 
-				    G_CALLBACK(pdf_viewer_show_document_index_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->scrollwin), 
-				    "scroll-event", 
-				    G_CALLBACK(pdf_viewer_scroll_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), 
-				    "button_press_event", 
-				    G_CALLBACK(pdf_viewer_button_press_events_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), 
-				    "button_release_event", 
-				    G_CALLBACK(pdf_viewer_mouse_scroll_destroy_cb), 
-				   (gpointer) viewer);
-	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), 
-				    "motion_notify_event", 
-				    G_CALLBACK(pdf_viewer_move_events_cb), 
-				   (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->index_list), "row_activated",
+	                 G_CALLBACK(pdf_viewer_index_row_activated),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->cur_page),  "value-changed",
+			 G_CALLBACK(pdf_viewer_spin_change_page_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->first_page), "clicked",
+			 G_CALLBACK(pdf_viewer_button_first_page_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->prev_page), "clicked",
+			 G_CALLBACK(pdf_viewer_button_prev_page_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->next_page), "clicked",
+			 G_CALLBACK(pdf_viewer_button_next_page_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->last_page), "clicked",
+			 G_CALLBACK(pdf_viewer_button_last_page_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->zoom_in), "clicked",
+			 G_CALLBACK(pdf_viewer_button_zoom_in_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->zoom_out), "clicked",
+			 G_CALLBACK(pdf_viewer_button_zoom_out_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->zoom_scroll), "value-changed",
+			 G_CALLBACK(pdf_viewer_spin_zoom_scroll_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->zoom_fit), "clicked",
+			 G_CALLBACK(pdf_viewer_button_zoom_fit_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->zoom_width), "clicked",
+			 G_CALLBACK(pdf_viewer_button_zoom_width_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->rotate_right), "clicked",
+			 G_CALLBACK(pdf_viewer_button_rotate_right_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->rotate_left), "clicked",
+			 G_CALLBACK(pdf_viewer_button_rotate_left_cb),
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->print), "clicked", 
+			 G_CALLBACK(pdf_viewer_button_print_cb), 
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->doc_info), "clicked", 
+			 G_CALLBACK(pdf_viewer_button_document_info_cb), 
+			 (gpointer) viewer);	
+	g_signal_connect(G_OBJECT(viewer->doc_index), "clicked", 
+			 G_CALLBACK(pdf_viewer_show_document_index_cb), 
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->scrollwin), "scroll-event", 
+			 G_CALLBACK(pdf_viewer_scroll_cb), 
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), "button_press_event", 
+			 G_CALLBACK(pdf_viewer_button_press_events_cb), 
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), "button_release_event", 
+			 G_CALLBACK(pdf_viewer_mouse_scroll_destroy_cb), 
+			 (gpointer) viewer);
+	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), "motion_notify_event", 
+			 G_CALLBACK(pdf_viewer_move_events_cb), 
+			 (gpointer) viewer);
 
 	viewer->target_filename = NULL;
 	viewer->filename = NULL;
