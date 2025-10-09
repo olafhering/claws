@@ -1219,13 +1219,21 @@ MimeViewer *vcal_viewer_create(void)
 	vcalviewer_answer_set_choices(vcalviewer, NULL, ICAL_METHOD_REQUEST);
 
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->type), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->type), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->who), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->who), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->start), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->start), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->end), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->end), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->location), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->location), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->summary), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->summary), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->description), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->description), TRUE);
 	gtk_label_set_selectable(GTK_LABEL(vcalviewer->attendees), TRUE);
+	gtk_label_set_ellipsize(GTK_LABEL(vcalviewer->attendees), TRUE);
 
 	g_signal_connect(G_OBJECT(vcalviewer->button), "clicked",
 			 G_CALLBACK(vcalviewer_action_cb), vcalviewer);
