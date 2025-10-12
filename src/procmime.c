@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1311,7 +1311,7 @@ EncodingType procmime_get_encoding_for_text_file(const gchar *file, gboolean *ha
 		    "8bit chars: %"G_GSIZE_FORMAT" / %"G_GSIZE_FORMAT" (%f%%)\n", octet_chars, total_len,
 		    100.0 * octet_percentage);
 
-	if (octet_percentage > 0.20 || force_b64) {
+	if (octet_percentage > 0.20 || force_b64 || check_line_length(buf, 500, NULL) < 0) {
 		debug_print("using BASE64\n");
 		return ENC_BASE64;
 	} else if (octet_chars > 0) {
