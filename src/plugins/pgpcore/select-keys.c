@@ -1,5 +1,5 @@
 /* select-keys.c - GTK based key selection
- * Copyright (C) 2001-2024 Werner Koch (dd9jn) and the Claws Mail team
+ * Copyright (C) 2001-2025 Werner Koch (dd9jn) and the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify        
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "inputdialog.h"
 #include "manage_window.h"
 #include "alertpanel.h"
+#include "prefs_gpg.h"
 
 #define DIM(v) (sizeof(v)/sizeof((v)[0]))
 
@@ -281,6 +282,10 @@ fill_view (struct select_keys_s *sk, const char *pattern, gpgme_protocol_t proto
     gboolean exact_match = FALSE;
     gpgme_key_t last_key = NULL;
     gpgme_user_id_t last_uid = NULL;
+    gpgme_keylist_mode_t keylist_mode = GPGME_KEYLIST_MODE_LOCAL;
+
+    if(prefs_gpg_get_config()->use_gpg_locate_keys)
+        keylist_mode = GPGME_KEYLIST_MODE_LOCATE;
 
     cm_return_val_if_fail (sk, NULL);
 
@@ -294,6 +299,7 @@ fill_view (struct select_keys_s *sk, const char *pattern, gpgme_protocol_t proto
     g_assert (!err);
 
     gpgme_set_protocol(ctx, proto);
+    gpgme_set_keylist_mode (ctx, keylist_mode);
     sk->select_ctx = ctx;
 
     update_progress (sk, ++running, pattern);

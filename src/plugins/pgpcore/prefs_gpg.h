@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2004-2015 the Claws Mail team
+ * Copyright (C) 2004-2025 the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ struct GPGConfig
 	gboolean	 auto_check_signatures;
 	gboolean	 autocompletion;
 	gint		 autocompletion_limit;
+	gboolean	 use_gpg_locate_keys;
 	gboolean	 use_gpg_agent;
 	gboolean	 store_passphrase;
 	gint		 store_passphrase_timeout;

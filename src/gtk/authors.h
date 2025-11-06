@@ -317,6 +317,7 @@ static char *CONTRIBS_LIST[] = {
 "Shimamoto \"Neko\" Tatsuya",
 "Timo Teräs",
 "Pascal Terjan",
+"Giacomo Tesio",
 "Thorsten Thielen",
 "Edgar Toernig",
 "Konstantin Tokarev",
