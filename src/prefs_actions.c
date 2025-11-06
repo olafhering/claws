@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail Team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail Team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -986,8 +986,8 @@ static void prefs_actions_ok(GtkWidget *widget, gpointer data)
  * When adding new lines, remember to put one string for each line
  */
 static gchar *actions_desc_strings[] = {
-	N_("<span weight=\"bold\" underline=\"single\">Menu name:</span>"), NULL,
-	N_("Use / in menu name to make submenus."), NULL,
+	N_("<span weight=\"bold\" underline=\"single\">Menu name:</span>"), 
+	   N_("Use / in menu name to make submenus."),
 	"", NULL,
 	N_("<span weight=\"bold\" underline=\"single\">Command-line:</span>"), NULL,
 	N_("<span weight=\"bold\">Begin with:</span>"), NULL,
