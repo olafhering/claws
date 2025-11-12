@@ -504,8 +504,10 @@ static gboolean tags_window_key_pressed(GtkWidget *widget, GdkEventKey *event, g
 		return FALSE;
 	if (event && event->keyval == GDK_KEY_Escape)
 		tags_window_close();
-	else if (event && event->keyval == GDK_KEY_Delete)
-		tags_popup_delete(NULL, NULL);
+	else if (event && event->keyval == GDK_KEY_Delete) {
+		if (!gtk_widget_has_focus(tagswindow.add_entry))
+			tags_popup_delete(NULL, NULL);
+	}
 	return FALSE;
 }
 
