@@ -267,7 +267,7 @@ gboolean privacy_mimeinfo_system_can_locate_keys(MimeInfo *mimeinfo)
 	return TRUE;
 }
 
-gboolean privacy_mimeinfo_system_locate_keys(const gchar *from_addr, MimeInfo *mimeinfo)
+gboolean privacy_mimeinfo_system_locate_keys(const gchar *email_addr, MimeInfo *mimeinfo)
 {
 	PrivacySystem *system;
 
@@ -276,7 +276,7 @@ gboolean privacy_mimeinfo_system_locate_keys(const gchar *from_addr, MimeInfo *m
 
 	system = privacy_data_get_system(mimeinfo->privacy);
 
-	return system->locate_keys(from_addr, mimeinfo);
+	return system->locate_keys(email_addr, mimeinfo);
 }
 
 SignatureStatus privacy_mimeinfo_get_sig_status(MimeInfo *mimeinfo)
