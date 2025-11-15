@@ -1379,4 +1379,123 @@ gpgme_error_t cm_gpgme_data_rewind(gpgme_data_t dh)
 #endif
 }
 
+/* temporary replacement for GPGME's gpgme_get_key while the fix
+ * to the ctx cloning propagate. For more info see
+ * https://lists.gnupg.org/pipermail/gnupg-devel/2025-November/036087.html
+ *
+ * Code adapted from GPGME/src/keylist.c (LGPL-2.1-or-later):
+ * - removed TRACE calls
+ * - replaced gpg_error with gpgme_error alias
+ * - removed context duplication as we already pass a brand new one
+ * - indented according to CLaws-Mail rules
+ *
+ * Original checkout from libgpgme last commit at 2025-10-29T09:22:34
+ * 2360b937cf8f9bc52655e45dccd1885dd4c7ac32
+ */
+static gpgme_error_t
+sgpgme_download_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
+{
+	gpgme_error_t err;
+	gpgme_key_t result, key;
+
+	if (r_key)
+		*r_key = NULL;
+
+	if (!listctx || !r_key || !fpr)
+		return gpgme_error(GPG_ERR_INV_VALUE);
+
+	if (strlen(fpr) < 8)	/* We have at least a key ID.  */
+		return gpgme_error(GPG_ERR_INV_VALUE);
+
+	err = gpgme_op_keylist_start(listctx, fpr, 0);
+	if (!err)
+		err = gpgme_op_keylist_next(listctx, &result);
+	if (!err) {
+		try_next_key:
+		err = gpgme_op_keylist_next(listctx, &key);
+		if (gpgme_err_code(err) == GPG_ERR_EOF)
+			err = 0;
+		else {
+			if (!err && result && result->subkeys &&
+			    result->subkeys->fpr && key && key->subkeys &&
+			    key->subkeys->fpr &&
+			    !strcmp(result->subkeys->fpr, key->subkeys->fpr)) {
+				/* The fingerprint is identical.  We assume that this is
+				   the same key and don't mark it as an ambiguous.  This
+				   problem may occur with corrupted keyrings and has
+				   been noticed often with gpgsm.  In fact gpgsm uses a
+				   similar hack to sort out such duplicates but it can't
+				   do that while listing keys.  */
+				gpgme_key_unref(key);
+				goto try_next_key;
+			}
+			if (!err) {
+				gpgme_key_unref(key);
+				err = gpgme_error(GPG_ERR_AMBIGUOUS_NAME);
+			}
+			gpgme_key_unref(result);
+			result = NULL;
+		}
+	}
+	if (!err)
+		*r_key = result;
+	return err;
+}
+
+
+gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr, MimeInfo *mimeinfo)
+{
+	AlertValue val = G_ALERTDEFAULT;
+	gpgme_ctx_t ctx = NULL;
+	gpgme_key_t r_key = NULL;
+	gpgme_error_t err;
+	gboolean res = TRUE;
+
+	val = alertpanel(_("Key import"),
+			 _("This key is not in your keyring. Do you want "
+			 "Claws Mail to try to import it?"), NULL,
+			 _("_No"), NULL, _("from keyserver"), NULL,
+			 _("from Web Key Directory"), ALERTFOCUS_SECOND);
+	GTK_EVENTS_FLUSH();
+	if (val == G_ALERTDEFAULT)
+		return FALSE;
+	if (val != G_ALERTALTERNATE && val != G_ALERTOTHER)
+		return FALSE;
+
+	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
+		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
+		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
+		return FALSE;
+	}
+
+	gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
+	gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCATE);
+	/* Note that we do NOT add "clear" when keyserver import is requested.
+	 * That's because the gpg.conf might contains keyservers urls that
+	 * the user want queried: nodefault is enough to avoid a WKD
+	 * request to be sent before the keyserver one.
+	 */
+	gpgme_set_ctx_flag(ctx, "auto-key-locate",
+		(val == G_ALERTOTHER)? "clear,nodefault,wkd" : "nodefault,keyserver");
+
+	err = sgpgme_download_key(ctx, email_addr, &r_key);
+	if (err != GPG_ERR_NO_ERROR)
+		res = FALSE;
+	if (r_key == NULL)
+		res = FALSE;
+	else
+		gpgme_key_unref(r_key);
+
+	gpgme_release(ctx);
+
+	if (!res) {
+		if(val == G_ALERTOTHER)
+			alertpanel_error(_("Cannot locate the missing key from Web Key Directory."));
+		else
+			alertpanel_error(_("Cannot locate the missing key from keyserver."));
+	}
+
+	return res;
+}
+
 #endif /* USE_GPGME */

@@ -1,6 +1,6 @@
 /* 
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail team and Colin Leroy
+ * Copyright (C) 1999-2025 the Claws Mail team and Colin Leroy
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1060,6 +1060,7 @@ static PrivacySystem smime_system = {
 	smime_get_encrypt_warning,
 	smime_inhibit_encrypt_warning,
 	prefs_gpg_auto_check_signatures,
+	NULL,
 };
 
 void smime_init()

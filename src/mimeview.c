@@ -37,12 +37,14 @@
 #include <sys/stat.h>
 
 #include "main.h"
+#include "messageview.h"
 #include "mimeview.h"
 #include "textview.h"
 #include "procmime.h"
 #include "summaryview.h"
 #include "menu.h"
 #include "filesel.h"
+#include "inc.h"
 #include "alertpanel.h"
 #include "inputdialog.h"
 #include "utils.h"
@@ -1040,6 +1042,7 @@ gchar * get_message_check_signature_shortcut(MessageView *messageview) {
 	return cm_menu_item_get_shortcut(ui_manager, "Menu/Message/CheckSignature");
 }
 
+static void propose_online_key_search_cb(GtkWidget *widget, gpointer user_data);
 static void check_signature_cb(GtkWidget *widget, gpointer user_data);
 static void display_full_info_cb(GtkWidget *widget, gpointer user_data);
 
@@ -1075,8 +1078,13 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 		icon = STOCK_PIXMAP_PRIVACY_WARN;
 		break;
 	case SIGNATURE_KEY_EXPIRED:
-		button_text = _("View full information");
-		func = display_full_info_cb;
+		if (privacy_mimeinfo_system_can_locate_keys(mimeview->siginfo)){
+			button_text = _("Search online for an updated key");
+			func = propose_online_key_search_cb;
+		} else {
+			button_text = _("View full information");
+			func = display_full_info_cb;
+		}
 		icon = STOCK_PIXMAP_PRIVACY_EXPIRED;
 		break;
 	case SIGNATURE_INVALID:
@@ -1092,8 +1100,13 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 		icon = STOCK_PIXMAP_PRIVACY_UNKNOWN;
 		break;
 	case SIGNATURE_CHECK_NO_KEY:
-		button_text = _("This key is not in your keyring");
-		func = check_signature_cb;
+		if (privacy_mimeinfo_system_can_locate_keys(mimeview->siginfo)){
+			button_text = _("Search online for the missing key");
+			func = propose_online_key_search_cb;
+		} else {
+			button_text = _("This key is not in your keyring");
+			func = check_signature_cb;
+		}
 		icon = STOCK_PIXMAP_PRIVACY_FAILED;
 		break;
 	default:
@@ -1344,6 +1357,41 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 	
 	update_signature_noticeview(mimeview, FALSE, 0);
 	noticeview_show(mimeview->siginfoview);
+}
+
+static void propose_online_key_search_cb(GtkWidget *widget, gpointer user_data)
+{
+	MimeView *mimeview = (MimeView *) user_data;
+	MimeInfo *mimeinfo = mimeview->siginfo;
+	gboolean keyfound;
+	gchar *email_addr = NULL;
+
+	if (prefs_common_get_prefs()->work_offline){
+		inc_reset_offline_override_timers();
+		if (!inc_offline_should_override(FALSE,
+			_("Claws Mail needs network access to locate the missing key."))){
+			return;
+		}
+	}
+
+	if (mimeinfo == NULL || !noticeview_is_visible(mimeview->siginfoview))
+		return;
+
+	email_addr = g_strdup(mimeview->textview->messageview->msginfo->from);
+	extract_address(email_addr);
+
+	main_window_cursor_wait(mainwindow_get_mainwindow());
+	textview_cursor_wait(mimeview->textview);
+	GTK_EVENTS_FLUSH();
+
+	keyfound = privacy_mimeinfo_system_locate_keys(email_addr, mimeinfo);
+
+	g_free(email_addr);
+
+	if (keyfound)
+		messageview_update(mimeview->messageview, NULL);
+	main_window_cursor_normal(mainwindow_get_mainwindow());
+	textview_cursor_normal(mimeview->textview);
 }
 
 void mimeview_show_part_as_text(MimeView *mimeview, MimeInfo *partinfo)

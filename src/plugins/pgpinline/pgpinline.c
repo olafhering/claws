@@ -873,6 +873,7 @@ static PrivacySystem pgpinline_system = {
 	pgpinline_get_encrypt_warning,
 	pgpinline_inhibit_encrypt_warning,
 	prefs_gpg_auto_check_signatures,
+	sgpgme_propose_pgp_key_search,
 };
 
 void pgpinline_init()

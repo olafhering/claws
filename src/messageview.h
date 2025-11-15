@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2016 Hiroyuki Yamamoto and the Claws Mail team
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,6 +132,8 @@ void messageview_list_urls			(MessageView	*msgview);
 void messageview_show_partial_display		(MessageView 	*msgview, 
 						 MsgInfo 	*msginfo,
 						 size_t 	 length);
+void messageview_update				(MessageView	*msgview,
+						 MsgInfo	*old_msginfo);
 gboolean messageview_nav_has_prev(MessageView *messageview);
 gboolean messageview_nav_has_next(MessageView *messageview);
 MsgInfo *messageview_nav_get_prev(MessageView *messageview);

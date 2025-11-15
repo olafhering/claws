@@ -67,6 +67,8 @@ gint privacy_mimeinfo_check_signature	(MimeInfo *mimeinfo,
 SignatureStatus privacy_mimeinfo_get_sig_status	(MimeInfo *);
 gchar *privacy_mimeinfo_get_sig_info		(MimeInfo *, gboolean);
 
+gboolean privacy_mimeinfo_system_can_locate_keys(MimeInfo *);
+gboolean privacy_mimeinfo_system_locate_keys	(const gchar *, MimeInfo *);
 gboolean privacy_mimeinfo_is_encrypted		(MimeInfo *);
 gint privacy_mimeinfo_decrypt			(MimeInfo *);
 
@@ -120,6 +122,7 @@ struct _PrivacySystem {
 	const gchar	*(*get_encrypt_warning)	(void);
 	void 		 (*inhibit_encrypt_warning)	(gboolean inhibit);
 	gboolean	 (*auto_check_signatures)(void);
+	gboolean	 (*locate_keys)(const gchar *email_addr, MimeInfo *mimeinfo);
 };
 
 struct _PrivacyData {

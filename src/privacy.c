@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,6 +240,43 @@ gint privacy_mimeinfo_check_signature(MimeInfo *mimeinfo,
 		g_error("didn't find check_signature function");
 
 	return system->check_signature(mimeinfo, cancellable, callback, user_data);
+}
+
+gboolean privacy_mimeinfo_system_can_locate_keys(MimeInfo *mimeinfo)
+{
+	PrivacySystem *system;
+
+	cm_return_val_if_fail(mimeinfo != NULL, -1);
+
+	if (mimeinfo->privacy == NULL) {
+		privacy_mimeinfo_is_signed(mimeinfo);
+
+		if (mimeinfo->privacy == NULL)
+			return FALSE;
+	}
+
+	system = privacy_data_get_system(mimeinfo->privacy);
+	if (system == NULL)
+		return FALSE;
+	if (system->locate_keys == NULL)
+		return FALSE;
+
+	if (mimeinfo->sig_data == NULL)
+		return FALSE;
+
+	return TRUE;
+}
+
+gboolean privacy_mimeinfo_system_locate_keys(const gchar *from_addr, MimeInfo *mimeinfo)
+{
+	PrivacySystem *system;
+
+	if (!privacy_mimeinfo_system_can_locate_keys(mimeinfo))
+		return FALSE;
+
+	system = privacy_data_get_system(mimeinfo->privacy);
+
+	return system->locate_keys(from_addr, mimeinfo);
 }
 
 SignatureStatus privacy_mimeinfo_get_sig_status(MimeInfo *mimeinfo)

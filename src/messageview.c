@@ -186,8 +186,6 @@ static void open_urls_cb		(GtkAction	*action,
 
 static void about_cb			(GtkAction	*action,
 					 gpointer	 data);
-static void messageview_update		(MessageView	*msgview,
-					 MsgInfo	*old_msginfo);
 static gboolean messageview_update_msg	(gpointer source, gpointer data);
 
 static void save_part_as_cb(GtkAction *action, gpointer data);
@@ -1719,7 +1717,7 @@ void messageview_delete(MessageView *msgview)
  *        leave unchanged if summaryview is empty
  * \param pointer to MessageView
  */	
-static void messageview_update(MessageView *msgview, MsgInfo *old_msginfo)
+void messageview_update(MessageView *msgview, MsgInfo *old_msginfo)
 {
 	SummaryView *summaryview = (SummaryView*)msgview->mainwin->summaryview;
 

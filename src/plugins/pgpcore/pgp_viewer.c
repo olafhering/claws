@@ -166,150 +166,38 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 	gpgme_get_key(ctx, sig->fpr, &key, 0);
 	if (!key) {
 		gchar *gpgbin = get_gpg_executable_name();
-		gchar *from_addr = g_strdup(msginfo->from);
-		extract_address(from_addr);
+		gchar *email_addr = g_strdup(msginfo->from);
+		extract_address(email_addr);
 		gchar *cmd_ks = g_strdup_printf("\"%s\" --batch --no-tty --recv-keys %s",
 				(gpgbin ? gpgbin : "gpg2"), sig->fpr);
 		gchar *cmd_wkd = g_strdup_printf("\"%s\" --batch --no-tty --locate-keys \"%s\"",
-				(gpgbin ? gpgbin : "gpg2"), from_addr);
+				(gpgbin ? gpgbin : "gpg2"), email_addr);
 
-		AlertValue val = G_ALERTDEFAULT;
-		if (!prefs_common_get_prefs()->work_offline) {
-			val = alertpanel(_("Key import"),
-				_("This key is not in your keyring. Do you want "
-				  "Claws Mail to try to import it?"),
-				  NULL, _("_No"), NULL, _("from keyserver"),
-				  NULL, _("from Web Key Directory"), ALERTFOCUS_SECOND);
-			GTK_EVENTS_FLUSH();
-		}
-		if (val == G_ALERTDEFAULT) {
-			TEXTVIEW_INSERT("\n  ");
-			TEXTVIEW_INSERT(_("Key ID"));
-			TEXTVIEW_INSERT(" ");
-			TEXTVIEW_INSERT(sig->fpr);
-			TEXTVIEW_INSERT(" \n\n   ");
-			TEXTVIEW_INSERT(_("This key is not in your keyring.\n"));
-			TEXTVIEW_INSERT("\n   ");
-			TEXTVIEW_INSERT(_("It should be possible to import it"));
-			TEXTVIEW_INSERT(" ");
-			if (prefs_common_get_prefs()->work_offline) {
-				TEXTVIEW_INSERT(_("when working online,"));
-				TEXTVIEW_INSERT("\n   ");
-				TEXTVIEW_INSERT(_("or"));
-				TEXTVIEW_INSERT(" ");
-			}
-			TEXTVIEW_INSERT(_("with either of the following commands:"));
+		imported = sgpgme_propose_pgp_key_search(email_addr, partinfo);
+		if (imported) {
+			TEXTVIEW_INSERT("   ");
+			TEXTVIEW_INSERT(_("This key has been imported to your keyring."));
+			TEXTVIEW_INSERT("\n");
+		} else {
+			TEXTVIEW_INSERT("   ");
+			TEXTVIEW_INSERT(_("This key couldn't be imported to your keyring."));
+			TEXTVIEW_INSERT("\n");
+			TEXTVIEW_INSERT("   ");
+			TEXTVIEW_INSERT(_("Key servers are sometimes slow."));
+			TEXTVIEW_INSERT("\n");
+			TEXTVIEW_INSERT("   ");
+			TEXTVIEW_INSERT(_("You can try to import it manually with the command:"));
 			TEXTVIEW_INSERT("\n\n     ");
 			TEXTVIEW_INSERT(cmd_ks);
 			TEXTVIEW_INSERT("\n\n     ");
+			TEXTVIEW_INSERT(_("or"));
+			TEXTVIEW_INSERT("\n\n     ");
 			TEXTVIEW_INSERT(cmd_wkd);
-		} else if (val == G_ALERTALTERNATE || val == G_ALERTOTHER) {
-			TEXTVIEW_INSERT("\n  ");
-			TEXTVIEW_INSERT(_("Importing key ID"));
-			TEXTVIEW_INSERT(" ");
-			TEXTVIEW_INSERT(sig->fpr);
-			TEXTVIEW_INSERT(":\n\n");
-
-			main_window_cursor_wait(mainwindow_get_mainwindow());
-			textview_cursor_wait(textview);
-			GTK_EVENTS_FLUSH();
-
-#ifndef G_OS_WIN32
-			int res = 0;
-			pid_t pid = 0;
-
-			pid = fork();
-			if (pid == -1) {
-				res = -1;
-			} else if (pid == 0) {
-				/* son */
-				gchar **argv;
-				if (val == G_ALERTOTHER)
-					argv = strsplit_with_quote(cmd_wkd, " ", 0);
-				else
-					argv = strsplit_with_quote(cmd_ks, " ", 0);
-				res = execvp(argv[0], argv);
-				perror("execvp");
-				exit(255);
-			} else {
-				int status = 0;
-				time_t start_wait = time(NULL);
-				res = -1;
-				do {
-					if (waitpid(pid, &status, WNOHANG) == 0 || !WIFEXITED(status)) {
-						usleep(200000);
-					} else {
-						res = WEXITSTATUS(status);
-						break;
-					}
-					if (time(NULL) - start_wait > 9) {
-						debug_print("SIGTERM'ing gpg %d\n", pid);
-						kill(pid, SIGTERM);
-					}
-					if (time(NULL) - start_wait > 10) {
-						debug_print("SIGKILL'ing gpg %d\n", pid);
-						kill(pid, SIGKILL);
-						break;
-					}
-				} while(1);
-			}
-			debug_print("res %d\n", res);
-			if (res == 0)
-				imported = TRUE;
-#else
-			/* We need to call gpg in a separate thread, so that waiting for
-			 * it to finish does not block the UI. */
-			pthread_t pt;
-			struct _ImportCtx *ctx = malloc(sizeof(struct _ImportCtx));
-
-			ctx->done = FALSE;
-			ctx->exitcode = STILL_ACTIVE;
-			ctx->cmd = (val == G_ALERTOTHER)? cmd_wkd : cmd_ks;
-
-			if (pthread_create(&pt, NULL,
-						_import_threaded, (void *)ctx) != 0) {
-				debug_print("Couldn't create thread, continuing unthreaded.\n");
-				_import_threaded(ctx);
-			} else {
-				debug_print("Thread created, waiting for it to finish...\n");
-				while (!ctx->done)
-					claws_do_idle();
-			}
-
-			debug_print("Thread finished.\n");
-			pthread_join(pt, NULL);
-
-			if (ctx->exitcode == 0) {
-				imported = TRUE;
-			}
-			g_free(ctx);
-#endif
-			main_window_cursor_normal(mainwindow_get_mainwindow());
-			textview_cursor_normal(textview);
-			if (imported) {
-				TEXTVIEW_INSERT("   ");
-				TEXTVIEW_INSERT(_("This key has been imported to your keyring."));
-				TEXTVIEW_INSERT("\n");
-			} else {
-				TEXTVIEW_INSERT("   ");
-				TEXTVIEW_INSERT(_("This key couldn't be imported to your keyring."));
-				TEXTVIEW_INSERT("\n");
-				TEXTVIEW_INSERT("   ");
-				TEXTVIEW_INSERT(_("Key servers are sometimes slow."));
-				TEXTVIEW_INSERT("\n");
-				TEXTVIEW_INSERT("   ");
-				TEXTVIEW_INSERT(_("You can try to import it manually with the command:"));
-				TEXTVIEW_INSERT("\n\n     ");
-				TEXTVIEW_INSERT(cmd_ks);
-				TEXTVIEW_INSERT("\n\n     ");    
-				TEXTVIEW_INSERT(_("or"));
-				TEXTVIEW_INSERT("\n\n     ");
-				TEXTVIEW_INSERT(cmd_wkd);
-			}
 		}
+
 		g_free(cmd_ks);
 		g_free(cmd_wkd);
-		g_free(from_addr);
+		g_free(email_addr);
 	} else {
 		TEXTVIEW_INSERT("\n  ");
 		TEXTVIEW_INSERT(_("Key ID"));

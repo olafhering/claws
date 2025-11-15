@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail team
+ * Copyright (C) 1999-2025 the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -705,6 +705,7 @@ static PrivacySystem pgpmime_system = {
 	pgpmime_get_encrypt_warning,
 	pgpmime_inhibit_encrypt_warning,
 	prefs_gpg_auto_check_signatures,
+	sgpgme_propose_pgp_key_search,
 };
 
 void pgpmime_init()
