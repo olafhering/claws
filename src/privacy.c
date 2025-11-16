@@ -275,6 +275,8 @@ gboolean privacy_mimeinfo_system_locate_keys(const gchar *email_addr, MimeInfo *
 		return FALSE;
 
 	system = privacy_data_get_system(mimeinfo->privacy);
+	if(system == NULL)
+		return FALSE;
 
 	return system->locate_keys(email_addr, mimeinfo);
 }
