@@ -162,7 +162,7 @@ try_others:
 	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_signed != NULL && system->is_signed(mimeinfo))
+		if (system->is_signed != NULL && system->is_signed(mimeinfo))
 			return TRUE;
 	}
 
@@ -275,7 +275,7 @@ gboolean privacy_mimeinfo_system_locate_keys(const gchar *email_addr, MimeInfo *
 		return FALSE;
 
 	system = privacy_data_get_system(mimeinfo->privacy);
-	if(system == NULL)
+	if (system == NULL)
 		return FALSE;
 
 	return system->locate_keys(email_addr, mimeinfo);
@@ -340,7 +340,7 @@ gboolean privacy_mimeinfo_is_encrypted(MimeInfo *mimeinfo)
 	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
+		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return TRUE;
 	}
 
@@ -381,7 +381,7 @@ gint privacy_mimeinfo_decrypt(MimeInfo *mimeinfo)
 	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
+		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return decrypt(mimeinfo, system);
 	}
 
@@ -411,7 +411,7 @@ static PrivacySystem *privacy_get_system(const gchar *id)
 	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(strcmp(id, system->id) == 0)
+		if (strcmp(id, system->id) == 0)
 			return system;
 	}
 
