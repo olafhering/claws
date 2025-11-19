@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2012 Hiroyuki Yamamoto and the Claws Mail team
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,7 @@ typedef enum {
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
-#if GNUTLS_VERSION_NUMBER >= 0x030000
 #include <gnutls/abstract.h>
-#endif
 
 #include "socket.h"
 

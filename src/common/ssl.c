@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,11 +37,6 @@
 #include "ssl_certificate.h"
 #include "hooks.h"
 
-#if GNUTLS_VERSION_NUMBER <= 0x020b00
-#include <gcrypt.h>
-GCRY_THREAD_OPTION_PTHREAD_IMPL;
-#endif
-
 #ifdef HAVE_LIBETPAN
 #include <libetpan/mailstream_ssl.h>
 #endif
@@ -57,75 +52,7 @@ typedef struct _thread_data {
 } thread_data;
 #endif
 
-#if GNUTLS_VERSION_NUMBER < 0x030400
-#define DEFAULT_GNUTLS_PRIORITY "NORMAL:-VERS-SSL3.0"
-#else
 #define DEFAULT_GNUTLS_PRIORITY "NORMAL"
-#endif
-
-#if GNUTLS_VERSION_NUMBER < 0x030000
-/* GnuTLS 3.0 introduced new API for certificate callback,
- * gnutls_certificate_set_retrieve_function2() */
-
-#if GNUTLS_VERSION_NUMBER <= 0x020c00
-static int gnutls_client_cert_cb(gnutls_session_t session,
-                               const gnutls_datum_t *req_ca_rdn, int nreqs,
-                               const gnutls_pk_algorithm_t *sign_algos,
-                               int sign_algos_length, gnutls_retr_st *st)
-#else
-static int gnutls_cert_cb(gnutls_session_t session,
-                               const gnutls_datum_t *req_ca_rdn, int nreqs,
-                               const gnutls_pk_algorithm_t *sign_algos,
-                               int sign_algos_length, gnutls_retr2_st *st)
-#endif /* GNUTLS_VERSION_NUMBER <= 0x020c00 */
-{
-	SSLClientCertHookData hookdata;
-	SockInfo *sockinfo = (SockInfo *)gnutls_session_get_ptr(session);
-	gnutls_certificate_type_t type = gnutls_certificate_type_get(session);
-	gnutls_x509_crt_t crt;
-	gnutls_x509_privkey_t key;
-
-	st->ncerts = 0;
-
-	hookdata.account = sockinfo->account;
-	hookdata.cert_path = NULL;
-	hookdata.password = NULL;
-	hookdata.is_smtp = sockinfo->is_smtp;
-	hooks_invoke(SSLCERT_GET_CLIENT_CERT_HOOKLIST, &hookdata);	
-
-	if (hookdata.cert_path == NULL) {
-		g_free(hookdata.password);
-		return 0;
-	}
-
-	sockinfo->client_crt = ssl_certificate_get_x509_from_pem_file(hookdata.cert_path);
-	sockinfo->client_key = ssl_certificate_get_pkey_from_pem_file(hookdata.cert_path);
-	if (!(sockinfo->client_crt && sockinfo->client_key)) {
-		/* try pkcs12 format */
-		ssl_certificate_get_x509_and_pkey_from_p12_file(hookdata.cert_path, hookdata.password, 
-			&crt, &key);
-		sockinfo->client_crt = crt;
-		sockinfo->client_key = key;
-	}
-
-	if (type == GNUTLS_CRT_X509 && sockinfo->client_crt && sockinfo->client_key) {
-		st->ncerts = 1;
-#if GNUTLS_VERSION_NUMBER <= 0x020c00
-		st->type = type;
-#else
-		st->key_type = type;
-#endif
-		st->cert.x509 = &(sockinfo->client_crt);
-		st->key.x509 = sockinfo->client_key;
-		st->deinit_all = 0;
-		g_free(hookdata.password);
-		return 0;
-	}
-	g_free(hookdata.password);
-	return 0;
-}
-
-#else /* GNUTLS_VERSION_NUMBER < 0x030000 */
 
 static int gnutls_cert_cb(gnutls_session_t session,
 		const gnutls_datum_t *req_ca_rdn,
@@ -189,7 +116,6 @@ static int gnutls_cert_cb(gnutls_session_t session,
 
 	return 0;
 }
-#endif /* GNUTLS_VERSION_NUMBER < 0x030000 */
 
 const gchar *claws_ssl_get_cert_file(void)
 {
@@ -254,9 +180,6 @@ const gchar *claws_ssl_get_cert_dir(void)
 
 void ssl_init(void)
 {
-#if GNUTLS_VERSION_NUMBER <= 0x020b00
-	gcry_control (GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
-#endif
 #ifdef HAVE_LIBETPAN
 	mailstream_gnutls_init_not_required();
 #endif	
@@ -440,24 +363,8 @@ gboolean ssl_init_socket(SockInfo *sockinfo)
 	gnutls_transport_set_ptr(session, (gnutls_transport_ptr_t) GINT_TO_POINTER(sockinfo->sock));
 
 	gnutls_session_set_ptr(session, sockinfo);
-
-#if GNUTLS_VERSION_NUMBER < 0x030000
-#  if GNUTLS_VERSION_NUMBER <= 0x020c00
-	gnutls_certificate_client_set_retrieve_function(xcred, gnutls_client_cert_cb);
-#  else
-	gnutls_certificate_set_retrieve_function(xcred, gnutls_cert_cb);
-#  endif
-#else
 	debug_print("setting certificate callback function\n");
 	gnutls_certificate_set_retrieve_function2(xcred, gnutls_cert_cb);
-#endif
-
-#if GNUTLS_VERSION_NUMBER < 0x030107
-	/* Starting from GnuTLS 3.1.7, minimal size of the DH prime is
-	 * set by the priority string. By default ("NORMAL"), it is 1008
-	 * as of GnuTLS 3.3.0. */
-	gnutls_dh_set_prime_bits(session, 1008);
-#endif
 
 	if ((r = SSL_connect_nb(session)) < 0) {
 		g_warning("TLS connection failed (%s)", gnutls_strerror(r));
@@ -500,17 +407,8 @@ void ssl_done_socket(SockInfo *sockinfo)
 		if (sockinfo->xcred)
 			gnutls_certificate_free_credentials(sockinfo->xcred);
 		gnutls_deinit(sockinfo->ssl);
-#if GNUTLS_VERSION_NUMBER < 0x030000
-		if (sockinfo->client_crt)
-			gnutls_x509_crt_deinit(sockinfo->client_crt);
-		if (sockinfo->client_key)
-			gnutls_x509_privkey_deinit(sockinfo->client_key);
-		sockinfo->client_key = NULL;
-		sockinfo->client_crt = NULL;
-#else
 		gnutls_pcert_deinit(&sockinfo->client_crt);
 		gnutls_privkey_deinit(sockinfo->client_key);
-#endif
 		sockinfo->client_key = NULL;
 		sockinfo->xcred = NULL;
 		sockinfo->ssl = NULL;
