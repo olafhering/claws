@@ -73,7 +73,7 @@ static GtkVBoxClass *parent_class = NULL;
 //static guint signals[LAST_SIGNAL] = {0};
 
 G_DEFINE_TYPE_WITH_CODE(ParasitePythonShell, parasite_python_shell,
-    GTK_TYPE_VBOX, G_ADD_PRIVATE(ParasitePythonShell))
+    GTK_TYPE_BOX, G_ADD_PRIVATE(ParasitePythonShell))
 
 
 static void
@@ -95,10 +95,14 @@ parasite_python_shell_init(ParasitePythonShell *python_shell)
     GtkTextBuffer *buffer;
     GtkTextIter iter;
     PangoFontDescription *font_desc;
+    GValue orientation = G_VALUE_INIT;
 
     priv->history = g_queue_new();
 
     gtk_box_set_spacing(GTK_BOX(python_shell), 6);
+    g_value_init(&orientation, G_TYPE_INT);
+    g_value_set_int(&orientation, GTK_ORIENTATION_VERTICAL);
+    g_object_set_property(G_OBJECT(python_shell), "orientation", &orientation);
 
     swin = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_show(swin);
