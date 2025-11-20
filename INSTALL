@@ -70,7 +70,7 @@ J-Pilot
 LCDproc daemon
     for lcdproc feature of Notification plugin
     https://www.lcdproc.org
-libEtPan! (>= 0.57)
+libEtPan! (>= 1.9.4)
     for IMAP4, NNTP and Mailmbox plugin support
     https://www.etpan.org
 Network Manager (>= 0.6.2)
