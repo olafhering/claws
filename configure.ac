@@ -488,18 +488,10 @@ dnl GNUTLS
 AC_MSG_CHECKING([whether to use GnuTLS])
 AC_MSG_RESULT($enable_gnutls)
 if test "x$enable_gnutls" != "xno"; then
-        PKG_CHECK_MODULES(GNUTLS, gnutls >= 2.2,
+        PKG_CHECK_MODULES(GNUTLS, gnutls >= 3.4,
         [
                 AC_DEFINE(USE_GNUTLS, 1, gnutls)
                 echo "Building with GnuTLS"
-		PKG_CHECK_MODULES(GNUTLS, gnutls >= 2.11,
-		[
-			dnl No linking against libgcrypt needed
-		],
-		[
-			dnl linking against libgcrypt *is* needed
-			GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
-		])
         ],
         [
                 echo "Building without GnuTLS"
@@ -2247,7 +2239,7 @@ else
 	echo "JPilot               : $enable_jpilot"
 	echo "LDAP                 : $enable_ldap"
 fi
-echo "gnuTLS               : $enable_gnutls"
+echo "GnuTLS               : $enable_gnutls"
 echo "OAuth2               : $enable_oauth2"
 echo "iconv                : $am_cv_func_iconv"
 echo "compface             : $enable_compface"
