@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2023 the Claws Mail Team
+ * Copyright (C) 1999-2025 the Claws Mail Team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ struct _DilloViewer
 	GtkWidget	*widget;	
 	GtkWidget	*socket;
 	gchar		*filename;
+	GPid		 dillo_pid;
 };
 
 static MimeViewerFactory dillo_viewer_factory;
@@ -136,30 +137,80 @@ static void dillo_show_mimepart(MimeViewer *_viewer,
 #endif
 
 	viewer->filename = procmime_get_tmp_file_name(partinfo);
-	
+
 	if (!(procmime_get_part(viewer->filename, partinfo) < 0)) {
-		gchar *cmd;
+		gchar *cmd = NULL;
 
 		if (viewer->socket)
 			gtk_widget_destroy(viewer->socket);
+
 		viewer->socket = gtk_socket_new();
-		debug_print("Adding dillo socket %p", viewer->socket);
-		gtk_container_add(GTK_CONTAINER(viewer->widget),
-				  viewer->socket);
+		debug_print("Adding dillo socket %p\n", viewer->socket);
+
+		gtk_container_add(GTK_CONTAINER(viewer->widget), viewer->socket);
 		gtk_widget_realize(viewer->socket);
 		gtk_widget_show(viewer->socket);
-		g_signal_connect(G_OBJECT(viewer->socket), "destroy", 
-				 G_CALLBACK(socket_destroy_cb), viewer);
+
+		g_signal_connect(G_OBJECT(viewer->socket), "destroy",
+				G_CALLBACK(socket_destroy_cb), viewer);
 
 		gdkwin = gtk_widget_get_window(viewer->socket);
-		cmd = g_strdup_printf("dillo %s%s-x %d \"%s\"",
-				      (!load_images(viewer) ? "-l " : ""),
-				      (dillo_prefs.full ? "-f " : ""),
-				      (gint) GDK_WINDOW_XID(gdkwin),
-				      viewer->filename);
 
-		execute_command_line(cmd, TRUE, NULL);
+		/* Wait valid XID before spawning Dillo */
+		guint xid = GDK_WINDOW_XID(gdkwin);
+		int retries = 5;
+		while (xid == 0 && retries > 0) {
+			g_usleep(10000); /* 10 ms */
+			xid = GDK_WINDOW_XID(gdkwin);
+			retries--;
+		}
+		if (xid == 0) {
+			g_warning("Failed to get valid XID for Dillo socket, giving up");
+			return;
+		}
+
+		gchar *dillo_path = g_find_program_in_path("dillo");
+		debug_print("dillo path: %s\n", dillo_path);
+
+		if (dillo_path == NULL) {
+			g_warning("Cannot find 'dillo' in $PATH");
+			return;
+		}
+
+		cmd = g_strdup_printf("%s %s%s-x %d \"%s\"", dillo_path,
+				(!load_images(viewer) ? "-l " : ""),
+				(dillo_prefs.full    ? "-f " : ""),
+				(gint) GDK_WINDOW_XID(gdkwin),
+				viewer->filename);
+		debug_print("cmd: %s\n", cmd);
+		g_free(dillo_path);
+
+		/* Spawn Dillo asynchronously */
+		GPid pid = 0;
+		GError *error = NULL;
+		gchar **argv = NULL;
+		gint argc = 0;
+
+		if (!g_shell_parse_argv(cmd, &argc, &argv, &error)) {
+			g_warning("Failed to parse command line for Dillo: %s",
+				(error != NULL) ? error->message : "unknown");
+			if (error != NULL)
+				g_error_free(error);
+		} else {
+			if (!g_spawn_async(NULL, argv, NULL, 0, NULL, NULL,
+					&pid, &error)) {
+				g_warning("Failed to spawn Dillo: %s",
+					(error != NULL) ? error->message : "unknown");
+				if (error != NULL)
+					g_error_free(error);
+			} else {
+				debug_print("dillo_pid: %d\n", pid);
+				viewer->dillo_pid = pid;
+			}
+			g_strfreev(argv);
+		}
 		g_free(cmd);
+
 	}
 }
 
@@ -168,11 +219,19 @@ static void dillo_clear_viewer(MimeViewer *_viewer)
 	DilloViewer *viewer = (DilloViewer *) _viewer;
 
 	debug_print("dillo_clear_viewer\n");
-	debug_print("Removing dillo socket %p\n", viewer->socket);
 
-	if (viewer->socket) {
+ 	if (viewer->filename)
+		claws_unlink(viewer->filename);
+
+        if (viewer->dillo_pid > 0) {
+                debug_print("Killing Dillo PID %d\n", viewer->dillo_pid);
+                kill(viewer->dillo_pid, SIGTERM);
+                g_spawn_close_pid(viewer->dillo_pid);
+                viewer->dillo_pid = 0;
+        }
+
+	if (viewer->socket)
 		gtk_widget_destroy(viewer->socket);
-	}
 }
 
 static void dillo_destroy_viewer(MimeViewer *_viewer)
@@ -181,9 +240,8 @@ static void dillo_destroy_viewer(MimeViewer *_viewer)
 
 	debug_print("dillo_destroy_viewer\n");
 
-	if (viewer->socket) {
+	if (viewer->socket)
 		gtk_widget_destroy(viewer->socket);
-	}
 
 	g_object_unref(GTK_WIDGET(viewer->widget));
 	claws_unlink(viewer->filename);
