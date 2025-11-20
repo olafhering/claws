@@ -45,17 +45,17 @@ Clam AntiVirus daemon
 D-Bus (>= 0.60)
     for interprocess communication support
     https://www.freedesktop.org/wiki/Software/dbus
-Enchant (and dictionaries) (>= 1.0.0)
+Enchant (and dictionaries) (>= 1.4.0)
     for spell-checker support
     https://abiword.github.io/enchant/
-GnuPG (>= 1.2.1) and GPGME (>=  0.4.5)
+GnuPG (>= 1.2.1) and GPGME (>=  1.1.1)
     for GnuPG and S/MIME plugin support
     https://www.gnupg.org/
     https://www.gnupg.org/software/gpgme/
-GnuTLS (>= 0.4.2)
+GnuTLS (>= 3.4.0)
     for SSL support
     https://gnutls.org/
-GTK WebKit (>= 2.0)
+GTK WebKit (>= 2.18.0)
     for Fancy plugin support
     https://trac.webkit.org/wiki/WebKitGTK/
 Gs tool
