@@ -483,6 +483,7 @@ static void browse_python_scripts_dir(GtkAction *action, gpointer data)
 {
   gchar *uri;
   GdkAppLaunchContext *launch_context;
+  GdkDisplay *gdk_display;
   GError *error = NULL;
   MainWindow *mainwin;
 
@@ -491,7 +492,12 @@ static void browse_python_scripts_dir(GtkAction *action, gpointer data)
       debug_print("Browse Python scripts: Problems getting the mainwindow\n");
       return;
   }
-  launch_context = gdk_app_launch_context_new();
+  gdk_display = gdk_display_get_default();
+  if(!gdk_display) {
+      debug_print("Browse Python scripts: Problems getting the default display\n");
+      return;
+  }
+  launch_context = gdk_display_get_app_launch_context(gdk_display);
   gdk_app_launch_context_set_screen(launch_context, gtk_widget_get_screen(mainwin->window));
   uri = g_strconcat("file://", get_rc_dir(), G_DIR_SEPARATOR_S, PYTHON_SCRIPTS_BASE_DIR, G_DIR_SEPARATOR_S, NULL);
   g_app_info_launch_default_for_uri(uri, G_APP_LAUNCH_CONTEXT(launch_context), &error);
