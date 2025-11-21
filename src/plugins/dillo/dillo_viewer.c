@@ -220,8 +220,11 @@ static void dillo_clear_viewer(MimeViewer *_viewer)
 
 	debug_print("dillo_clear_viewer\n");
 
- 	if (viewer->filename)
-		claws_unlink(viewer->filename);
+	if (viewer->filename) {
+		if (claws_unlink(viewer->filename) < 0) {
+			g_warning("Failed to remove file: %s", viewer->filename);
+		}
+	}
 
         if (viewer->dillo_pid > 0) {
                 debug_print("Killing Dillo PID %d\n", viewer->dillo_pid);
