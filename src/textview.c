@@ -250,7 +250,7 @@ static GtkActionEntry textview_mail_popup_entries[] =
 	{"TextviewPopupMail/Compose",		NULL, N_("Write _new message"), NULL, NULL, G_CALLBACK(mail_to_uri_cb) },
 	{"TextviewPopupMail/ReplyTo",		NULL, N_("_Reply to this address"), NULL, NULL, G_CALLBACK(reply_to_uri_cb) },
 	{"TextviewPopupMail/AddAB",		NULL, N_("Add to _Address book"), NULL, NULL, G_CALLBACK(add_uri_to_addrbook_cb) },
-	{"TextviewPopupMail/Copy",		NULL, N_("Copy this add_ress"), NULL, NULL, G_CALLBACK(copy_mail_to_uri_cb) },
+	{"TextviewPopupMail/Copy",		NULL, N_("_Copy this address"), NULL, NULL, G_CALLBACK(copy_mail_to_uri_cb) },
 	{"TextviewPopupMail/LocatePK",		NULL, N_("Search for _PGP key"), NULL, NULL, G_CALLBACK(search_public_key_cb) },
 };
 
