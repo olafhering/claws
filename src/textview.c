@@ -233,6 +233,8 @@ static void mail_to_uri_cb 			(GtkAction	*action,
 						 TextView	*textview);
 static void copy_mail_to_uri_cb			(GtkAction	*action,
 						 TextView	*textview);
+static void search_public_key_cb		(GtkAction *action,
+						 TextView *textview);
 static void textview_show_tags(TextView *textview);
 
 static GtkActionEntry textview_link_popup_entries[] = 
@@ -249,6 +251,7 @@ static GtkActionEntry textview_mail_popup_entries[] =
 	{"TextviewPopupMail/ReplyTo",		NULL, N_("_Reply to this address"), NULL, NULL, G_CALLBACK(reply_to_uri_cb) },
 	{"TextviewPopupMail/AddAB",		NULL, N_("Add to _Address book"), NULL, NULL, G_CALLBACK(add_uri_to_addrbook_cb) },
 	{"TextviewPopupMail/Copy",		NULL, N_("Copy this add_ress"), NULL, NULL, G_CALLBACK(copy_mail_to_uri_cb) },
+	{"TextviewPopupMail/LocatePK",		NULL, N_("Search for _PGP key"), NULL, NULL, G_CALLBACK(search_public_key_cb) },
 };
 
 static gboolean move_textview_image_cb (gpointer data)
@@ -371,6 +374,8 @@ TextView *textview_create(void)
 			"TextviewPopupMail",
 			textview_mail_popup_entries,
 			G_N_ELEMENTS(textview_mail_popup_entries), (gpointer)textview);
+	textview->search_key_action = cm_menu_find_action(textview->mail_action_group,
+			"TextviewPopupMail/LocatePK");
 
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, "/", "Menus", "Menus", GTK_UI_MANAGER_MENUBAR)
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
@@ -390,6 +395,8 @@ TextView *textview_create(void)
 			"/Menus/TextviewPopupMail", "AddAB", "TextviewPopupMail/AddAB", GTK_UI_MANAGER_MENUITEM)
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
 			"/Menus/TextviewPopupMail", "Copy", "TextviewPopupMail/Copy", GTK_UI_MANAGER_MENUITEM)
+	MENUITEM_ADDUI_MANAGER(textview->ui_manager,
+			"/Menus/TextviewPopupMail", "LocatePK", "TextviewPopupMail/LocatePK", GTK_UI_MANAGER_MENUITEM)
 
 	textview->link_popup_menu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(
 				gtk_ui_manager_get_widget(textview->ui_manager, "/Menus/TextviewPopupLink")) );
@@ -3017,6 +3024,10 @@ static gboolean textview_uri_button_pressed(GtkTextTag *tag, GObject *obj,
 				return FALSE;
 		} else if (!g_ascii_strncasecmp(uri->uri, "mailto:", 7)) {
 			if (bevent->button == 3) {
+				if (privacy_system_can_locate_keys())
+					gtk_action_set_visible(textview->search_key_action, TRUE);
+				else
+					gtk_action_set_visible(textview->search_key_action, FALSE);
 				g_object_set_data(
 					G_OBJECT(textview->mail_popup_menu),
 					"menu_button", uri);
@@ -3288,6 +3299,40 @@ static void mail_to_uri_cb (GtkAction *action, TextView *textview)
 		compose = compose_new(account, uri->uri + 7, NULL);
 	}
 	compose_check_for_email_account(compose);
+}
+
+static void search_public_key_cb(GtkAction *action, TextView *textview)
+{
+	if (!privacy_system_can_locate_keys()) {
+		/* should never happen */
+		alertpanel_error("None of enabled privacy plugins can search for keys.");
+		return;
+	}
+
+	main_window_cursor_wait(mainwindow_get_mainwindow());
+	textview_cursor_wait(textview);
+	GTK_EVENTS_FLUSH();
+
+	ClickableText *uri = g_object_get_data(G_OBJECT(textview->mail_popup_menu),
+					   "menu_button");
+	if (uri == NULL)
+		return;
+
+	gchar *email_address = g_strdup(uri->uri + 7); // skip "mailto:"
+	extract_address(email_address);
+
+	if (privacy_system_locate_key(email_address)) {
+		messageview_update(textview->messageview, NULL);
+		alertpanel_notice("The public key for %s is now available in your keyring.",
+				  email_address);
+	}
+	g_free(email_address);
+
+	g_object_set_data(G_OBJECT(textview->mail_popup_menu), "menu_button",
+			  NULL);
+
+	main_window_cursor_normal(mainwindow_get_mainwindow());
+	textview_cursor_normal(textview);
 }
 
 static void copy_mail_to_uri_cb	(GtkAction *action, TextView *textview)

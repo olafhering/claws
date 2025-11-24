@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ struct _TextView
 	GtkActionGroup *link_action_group;
 	GtkWidget *link_popup_menu;
 	GtkActionGroup *mail_action_group;
+	GtkAction *search_key_action;
 	GtkWidget *mail_popup_menu;
 	GtkActionGroup *file_action_group;
 	GtkWidget *file_popup_menu;

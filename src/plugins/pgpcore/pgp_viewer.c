@@ -173,7 +173,7 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 		gchar *cmd_wkd = g_strdup_printf("\"%s\" --batch --no-tty --locate-keys \"%s\"",
 				(gpgbin ? gpgbin : "gpg2"), email_addr);
 
-		imported = sgpgme_propose_pgp_key_search(email_addr, partinfo);
+		imported = sgpgme_propose_pgp_key_search(email_addr);
 		if (imported) {
 			TEXTVIEW_INSERT("   ");
 			TEXTVIEW_INSERT(_("This key has been imported to your keyring."));

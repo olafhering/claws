@@ -1443,7 +1443,7 @@ sgpgme_download_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 }
 
 
-gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr, MimeInfo *mimeinfo)
+gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr)
 {
 	AlertValue val = G_ALERTDEFAULT;
 	gpgme_ctx_t ctx = NULL;
@@ -1489,7 +1489,7 @@ gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr, MimeInfo *mimein
 	gpgme_release(ctx);
 
 	if (!res) {
-		if(val == G_ALERTOTHER)
+		if (val == G_ALERTOTHER)
 			alertpanel_error(_("Cannot locate the missing key from Web Key Directory."));
 		else
 			alertpanel_error(_("Cannot locate the missing key from keyserver."));

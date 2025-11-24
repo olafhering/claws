@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2013 Hiroyuki Yamamoto and the Claws Mail team
+ * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,23 @@ GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *manager, const gc
 	gtk_action_group_add_actions(group, entries, num_entries, data);
 	gtk_ui_manager_insert_action_group(manager, group, 0);
 	return group;
+}
+
+static gint is_gtk_action_with_name(gconstpointer _action, gconstpointer _name)
+{
+	GtkAction *action = (GtkAction *)_action;
+	gchar *name = (gchar *)_name;
+	gchar *aname = gtk_action_get_name(action);
+	return g_strcmp0 (name, aname);
+}
+
+GtkAction *cm_menu_find_action(GtkActionGroup *group, gchar *name)
+{
+	GList* actions = gtk_action_group_list_actions (group);
+	GList* found = g_list_find_custom (actions, name, is_gtk_action_with_name);
+	if (found == NULL)
+		return NULL;
+	return (GtkAction*)found->data;
 }
 
 gchar *menu_translate(const gchar *path, gpointer data)
