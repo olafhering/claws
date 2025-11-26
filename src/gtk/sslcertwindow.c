@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2022 the Claws Mail team and Colin Leroy
+ * Copyright (C) 1999-2025 the Claws Mail team and Colin Leroy
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -455,7 +455,7 @@ static gboolean sslcertwindow_ask_expired_cert(SSLCertificate *cert)
 	const gchar *title;
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	buf = g_strdup_printf(_("Certificate for %s is expired.\n%sDo you want to continue?"), cert->host, invalid_str);
+	buf = g_strdup_printf(_("Certificate for %s has expired.\n%sDo you want to continue?"), cert->host, invalid_str);
 	g_free(invalid_str);
 
 	label = gtk_label_new(buf);
@@ -482,9 +482,9 @@ static gboolean sslcertwindow_ask_expired_cert(SSLCertificate *cert)
 	gtk_container_add(GTK_CONTAINER(button), cert_widget);
 
 	if (!ssl_certificate_check_subject_cn(cert))
-		title = _("TLS certificate is invalid and expired");
+		title = _("TLS certificate is invalid and has expired");
 	else
-		title = _("TLS certificate is expired");
+		title = _("TLS certificate has expired");
 
 	val = alertpanel_full(title, NULL,
 			      NULL, _("_Cancel connection"), NULL, _("_Accept"),

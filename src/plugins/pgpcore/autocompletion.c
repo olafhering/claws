@@ -1,7 +1,7 @@
 /*
  * PGP/Core keyring autocompletion
  *
- * Copyright (C) 2014 Christian Hesse <mail@eworm.de> and the Claws Mail team
+ * Copyright (C) 2014-2025 the Claws Mail team and Christian Hesse <mail@eworm.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ static gboolean pgp_autocompletion_hook(gpointer source, gpointer data)
 	}
 
 	if (gpg_err_code(err) != GPG_ERR_EOF) {
-		debug_print("can not list keys: %s\n", gpgme_strerror(err));
+		debug_print("cannot list keys: %s\n", gpgme_strerror(err));
 		return EXIT_FAILURE;
 	}
 	*((GList **)source) = addr_list;

@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2016-2023 The Claws Mail Team
+ * Copyright (C) 2016-2025 The Claws Mail Team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ gboolean primary_passphrase_is_correct(const gchar *input)
 			(rounds = atoi(tokens[1] + 17)) <= 0 || /* valid rounds # */
 			tokens[2] == NULL ||
 			strlen(tokens[2]) == 0) { /* string continues after } */
-		debug_print("Mangled primary_passphrase format in config, can not use it.\n");
+		debug_print("Mangled primary_passphrase format in config, cannot use it.\n");
 		g_strfreev(tokens);
 		return FALSE;
 	}

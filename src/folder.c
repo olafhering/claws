@@ -4735,7 +4735,7 @@ gboolean folder_local_name_ok(const gchar *name)
 		return FALSE;
 	}
 	if (name[strlen(name) - 1] == ' ') {
-		alertpanel_error(_("A folder name can not end with a space."));
+		alertpanel_error(_("A folder name cannot end with a space."));
 		return FALSE;
 	}
 #endif
