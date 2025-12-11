@@ -117,8 +117,7 @@ static gboolean scan_func(GNode *node, gpointer data)
 						break;
 					case VIRUS: 
 						name = clamd_get_virus_name(buf.msg);
-						msg = g_strconcat(_("Detected %s virus."),
-							name, NULL);
+						msg = g_strconcat(_("Detected "), name, _(" virus."), NULL);
 						g_free(name);
 						g_warning("%s", msg);
 						debug_print("show_recv_err: %d\n", prefs_common_get_prefs()->show_recv_err_dialog);

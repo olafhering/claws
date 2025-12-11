@@ -540,17 +540,13 @@ Clamd_Stat clamd_verify_email(const gchar* path, response* result) {
 		}
 		g_free(command);
 		memset(buf, '\0', sizeof(buf));
-		/* shouldn't we read only once here? we're checking the last response line anyway */
 		while ((n_read = read(sock, buf, BUFSIZ - 1)) > 0) {
 			buf[n_read] = '\0';
 			if (buf[n_read - 1] == '\n')
 				buf[n_read - 1] = '\0';
 			debug_print("response: %s\n", buf);
 		}
-		if (n_read == 0) {
-			buf[n_read] = '\0';
-			debug_print("response: %s\n", buf);
-		} else {
+		if (n_read < 0) {
 			/* in case read() fails */
 			debug_print("read error %d\n", errno);
 			result->msg = NULL;
