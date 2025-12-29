@@ -55,7 +55,7 @@ static gint is_gtk_action_with_name(gconstpointer _action, gconstpointer _name)
 {
 	GtkAction *action = (GtkAction *)_action;
 	gchar *name = (gchar *)_name;
-	gchar *aname = gtk_action_get_name(action);
+	const gchar *aname = gtk_action_get_name(action);
 	return g_strcmp0 (name, aname);
 }
 
