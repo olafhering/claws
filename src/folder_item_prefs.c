@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,8 @@ static PrefParam param[] = {
 	{"enable_processing_when_opening", "TRUE", &tmp_prefs.enable_processing_when_opening, P_BOOL,
 	 NULL, NULL, NULL},
 	{"newmailcheck", "TRUE", &tmp_prefs.newmailcheck, P_BOOL,
+	 NULL, NULL, NULL},
+	{"show_tags", "TRUE", &tmp_prefs.show_tags, P_BOOL,
 	 NULL, NULL, NULL},
 	{"offlinesync", "FALSE", &tmp_prefs.offlinesync, P_BOOL,
 	 NULL, NULL, NULL},
@@ -232,6 +234,7 @@ static FolderItemPrefs *folder_item_prefs_clear(FolderItemPrefs *prefs)
 	prefs->color.alpha = 1;
 
 	prefs->newmailcheck = TRUE;
+	prefs->show_tags = TRUE;
 	prefs->offlinesync = FALSE;
 	prefs->offlinesync_days = 0;
 	prefs->remove_old_bodies = FALSE;
@@ -296,6 +299,7 @@ void folder_item_prefs_copy_prefs(FolderItem * src, FolderItem * dest)
         tmp_prefs.enable_processing             = src->prefs->enable_processing;
         tmp_prefs.enable_processing_when_opening = src->prefs->enable_processing_when_opening;
 	tmp_prefs.newmailcheck                  = src->prefs->newmailcheck;
+	tmp_prefs.show_tags                  	= src->prefs->show_tags;
 	tmp_prefs.offlinesync                   = src->prefs->offlinesync;
 	tmp_prefs.offlinesync_days              = src->prefs->offlinesync_days;
 	tmp_prefs.remove_old_bodies             = src->prefs->remove_old_bodies;

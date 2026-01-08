@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@ struct _FolderItemGeneralPage
 	GtkWidget *checkbtn_enable_processing;
 	GtkWidget *checkbtn_enable_processing_when_opening;
 	GtkWidget *checkbtn_newmailcheck;
+	GtkWidget *checkbtn_show_tags;
 	GtkWidget *checkbtn_skip_on_goto_unread_or_new;
 	GtkWidget *checkbtn_offlinesync;
 	GtkWidget *label_offlinesync;
@@ -101,6 +102,7 @@ struct _FolderItemGeneralPage
 	GtkWidget *enable_processing_rec_checkbtn;
 	GtkWidget *enable_processing_when_opening_rec_checkbtn;
 	GtkWidget *newmailcheck_rec_checkbtn;
+	GtkWidget *show_tags_rec_checkbtn;
 	GtkWidget *skip_on_goto_unread_or_new_rec_checkbtn;
 	GtkWidget *offlinesync_rec_checkbtn;
 	GtkWidget *render_html_rec_checkbtn;
@@ -261,6 +263,7 @@ static void prefs_folder_item_general_create_widget_func(PrefsPage * page_,
 	GtkWidget *checkbtn_enable_processing;
 	GtkWidget *checkbtn_enable_processing_when_opening;
 	GtkWidget *checkbtn_newmailcheck;
+	GtkWidget *checkbtn_show_tags;
 	GtkWidget *checkbtn_skip_on_goto_unread_or_new;
 	GtkWidget *checkbtn_offlinesync;
 	GtkWidget *label_offlinesync;
@@ -281,6 +284,7 @@ static void prefs_folder_item_general_create_widget_func(PrefsPage * page_,
 	GtkWidget *enable_processing_rec_checkbtn;
 	GtkWidget *enable_processing_when_opening_rec_checkbtn;
 	GtkWidget *newmailcheck_rec_checkbtn;
+	GtkWidget *show_tags_rec_checkbtn;
 	GtkWidget *skip_on_goto_unread_or_new_rec_checkbtn;
 	GtkWidget *offlinesync_rec_checkbtn;
 	GtkWidget *render_html_rec_checkbtn;
@@ -525,6 +529,19 @@ static void prefs_folder_item_general_create_widget_func(PrefsPage * page_,
 
 	rowcount++;
 
+
+	checkbtn_show_tags = gtk_check_button_new_with_label(_("Show tags"));
+	CLAWS_SET_TIP(checkbtn_show_tags,
+			     _("Turn this option on to show message tags"));
+	gtk_grid_attach(GTK_GRID(table), checkbtn_show_tags, 0, rowcount, 1, 1);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_tags),
+								 item->prefs->show_tags);
+	show_tags_rec_checkbtn = gtk_check_button_new();
+	gtk_grid_attach(GTK_GRID(table), show_tags_rec_checkbtn, 2, rowcount, 1, 1);
+
+	rowcount++;
+
 	/* Render HTML messages as text? */
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, VSPACING_NARROW_2);
 	gtk_box_set_spacing(GTK_BOX(hbox), 8);
@@ -733,6 +750,7 @@ static void prefs_folder_item_general_create_widget_func(PrefsPage * page_,
 	page->checkbtn_enable_processing = checkbtn_enable_processing;
 	page->checkbtn_enable_processing_when_opening = checkbtn_enable_processing_when_opening;
 	page->checkbtn_newmailcheck = checkbtn_newmailcheck;
+	page->checkbtn_show_tags = checkbtn_show_tags;
 	page->checkbtn_skip_on_goto_unread_or_new = checkbtn_skip_on_goto_unread_or_new;
 	page->checkbtn_offlinesync = checkbtn_offlinesync;
 	page->label_offlinesync = label_offlinesync;
@@ -750,6 +768,7 @@ static void prefs_folder_item_general_create_widget_func(PrefsPage * page_,
 	page->enable_processing_rec_checkbtn = enable_processing_rec_checkbtn;
 	page->enable_processing_when_opening_rec_checkbtn = enable_processing_when_opening_rec_checkbtn;
 	page->newmailcheck_rec_checkbtn	     = newmailcheck_rec_checkbtn;
+	page->show_tags_rec_checkbtn	     = show_tags_rec_checkbtn;
 	page->skip_on_goto_unread_or_new_rec_checkbtn = skip_on_goto_unread_or_new_rec_checkbtn;
 	page->offlinesync_rec_checkbtn	     = offlinesync_rec_checkbtn;
 	page->render_html_rec_checkbtn = render_html_rec_checkbtn;
@@ -856,6 +875,11 @@ static void general_save_folder_prefs(FolderItem *folder, FolderItemGeneralPage 
 			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_newmailcheck));
 	}
 
+	if (all ||  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->show_tags_rec_checkbtn))) {
+		prefs->show_tags = 
+			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_tags));
+	}
+
 	if (all ||  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->skip_on_goto_unread_or_new_rec_checkbtn))) {
 		prefs->skip_on_goto_unread_or_new = 
 			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_skip_on_goto_unread_or_new));
@@ -899,6 +923,7 @@ static gboolean general_save_recurse_func(GNode *node, gpointer data)
 	      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->enable_processing_rec_checkbtn)) ||
 	      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->enable_processing_when_opening_rec_checkbtn)) ||
 	      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->newmailcheck_rec_checkbtn)) ||
+	      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->show_tags_rec_checkbtn)) ||
 	      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->offlinesync_rec_checkbtn)) ||
 		  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->skip_on_goto_unread_or_new_rec_checkbtn)) ||
 		  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->render_html_rec_checkbtn)) ||

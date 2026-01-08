@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -654,6 +654,7 @@ static void textview_add_part(TextView *textview, MimeInfo *mimeinfo)
 	const gchar *name;
 	gchar *content_type;
 	gint charcount;
+	FolderItem *folder_item = NULL;
 
 	START_TIMING("");
 
@@ -692,11 +693,14 @@ static void textview_add_part(TextView *textview, MimeInfo *mimeinfo)
 		}
 		headers = textview_scan_header(textview, fp);
 		if (headers) {
+			if (textview->messageview->msginfo && textview->messageview->msginfo->folder)
+				folder_item = textview->messageview->msginfo->folder;
 			if (charcount > 0)
 				gtk_text_buffer_insert(buffer, &iter, "\n", 1);
 			
 			if (procmime_mimeinfo_parent(mimeinfo) == NULL &&
-			    !prefs_common.display_header_pane)
+			    !prefs_common.display_header_pane &&
+			    (folder_item && folder_item->prefs && folder_item->prefs->show_tags))
 				textview_show_tags(textview);
 			textview_show_header(textview, headers);
 			procheader_header_array_destroy(headers);
