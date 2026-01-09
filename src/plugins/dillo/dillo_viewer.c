@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail Team
+ * Copyright (C) 1999-2026 the Claws Mail Team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #endif
 
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include <glib.h>
 #include <glib/gi18n.h>
@@ -124,6 +125,7 @@ static void dillo_show_mimepart(MimeViewer *_viewer,
 	if (viewer->filename != NULL) {
 		claws_unlink(viewer->filename);
 		g_free(viewer->filename);
+		viewer->filename = NULL;
 	}
 
 #ifdef GDK_WINDOWING_X11
@@ -217,6 +219,7 @@ static void dillo_show_mimepart(MimeViewer *_viewer,
 static void dillo_clear_viewer(MimeViewer *_viewer)
 {
 	DilloViewer *viewer = (DilloViewer *) _viewer;
+	int status;
 
 	debug_print("dillo_clear_viewer\n");
 
@@ -224,11 +227,14 @@ static void dillo_clear_viewer(MimeViewer *_viewer)
 		if (claws_unlink(viewer->filename) < 0) {
 			g_warning("Failed to remove file: %s", viewer->filename);
 		}
+		g_free(viewer->filename);
+		viewer->filename = NULL;
 	}
 
         if (viewer->dillo_pid > 0) {
                 debug_print("Killing Dillo PID %d\n", viewer->dillo_pid);
                 kill(viewer->dillo_pid, SIGTERM);
+		waitpid(viewer->dillo_pid, &status, 0);
                 g_spawn_close_pid(viewer->dillo_pid);
                 viewer->dillo_pid = 0;
         }
@@ -247,8 +253,10 @@ static void dillo_destroy_viewer(MimeViewer *_viewer)
 		gtk_widget_destroy(viewer->socket);
 
 	g_object_unref(GTK_WIDGET(viewer->widget));
-	claws_unlink(viewer->filename);
-	g_free(viewer->filename);
+	if (viewer->filename) {
+		claws_unlink(viewer->filename);
+		g_free(viewer->filename);
+	}
     	g_free(viewer);
 }
 
