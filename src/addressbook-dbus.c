@@ -36,8 +36,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib-bindings.h>
+#include <gio/gio.h>
 #include "dbus-contact.h"
 #include "addrgather.h"
 #include "folder.h"
@@ -45,36 +44,38 @@
 #include "hooks.h"
 
 #include "addressbook-dbus.h"
-#include "client-bindings.h"
 
-static DBusGProxy* proxy = NULL;
-static DBusGConnection* connection = NULL;
+static GDBusProxy* proxy = NULL;
+static GDBusConnection* connection = NULL;
 static Compose* compose_instance = NULL;
+static guint signal_subscription_id = 0;
 
-static GQuark client_object_error_quark() {
-        static GQuark quark = 0;
-        if (!quark)
-                quark = g_quark_from_static_string ("client_object_error");
-
-        return quark;
-}
+#define CLIENT_ERROR_QUARK (g_quark_from_static_string("client-object-error"))
 
 static gboolean init(GError** error) {
-    connection = dbus_g_bus_get (DBUS_BUS_SESSION, error);
+    if (connection != NULL && proxy != NULL)
+        return TRUE;
+
+    connection = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, error);
     if (connection == NULL || *error) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Unable to connect to dbus");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Unable to connect to dbus");
         g_warning("unable to connect to dbus: %s", (*error)->message);
         return FALSE;
     }
 
-    proxy = dbus_g_proxy_new_for_name (connection,
+    proxy = g_dbus_proxy_new_sync(connection,
+            G_DBUS_PROXY_FLAGS_NONE,
+            NULL,
             "org.clawsmail.Contacts",
             "/org/clawsmail/contacts",
-            "org.clawsmail.Contacts");
+            "org.clawsmail.Contacts",
+            NULL,
+            error);
     if (proxy == NULL) {
         g_warning("could not get a proxy object");
-        g_set_error(error, client_object_error_quark(), 1, "Could not get a proxy object");
+        if (! *error)
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Could not get a proxy object");
         return FALSE;
     }
 
@@ -87,11 +88,7 @@ static void dbus_contact_free(const DBusContact* contact) {
 }
 
 static GHashTable* hash_table_new(void) {
-    GHashTable* hash_table;
-
-    hash_table = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-
-    return hash_table;
+    return g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void g_value_email_free(gpointer data) {
@@ -134,174 +131,167 @@ static gchar* convert_2_utf8(gchar* locale) {
     return utf8;
 }
 
-static void format_contact(DBusContact* contact, ContactData* c) {
-    gchar* firstname;
-    gchar* lastname;
-    GArray* email = NULL;
-    GValue email_member = {0};
-    gchar* str;
+static GVariant* format_contact_data(ContactData* c) {
+    GVariantBuilder builder;
+    gchar* firstname = NULL;
+    gchar* lastname = NULL;
     gchar* image = NULL;
     gsize size;
 
-    contact->data = hash_table_new();
-    contact->emails = g_value_email_new();
-    firstname = lastname = NULL;
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{ss}"));
 
     if (c->name) {
         gchar* pos = strchr(c->name, ' ');
         if (pos) {
             firstname = g_strndup(c->name, pos - c->name);
             lastname = g_strdup(++pos);
-            g_hash_table_replace(contact->data,
-                g_strdup("first-name"), convert_2_utf8(firstname));
-            g_hash_table_replace(contact->data,
-                g_strdup("last-name"), convert_2_utf8(lastname));
+            g_variant_builder_add(&builder, "{ss}", "first-name", convert_2_utf8(firstname));
+            g_variant_builder_add(&builder, "{ss}", "last-name", convert_2_utf8(lastname));
         }
         else {
             lastname = g_strdup(c->name);
-            g_hash_table_replace(contact->data,
-                g_strdup("last-name"), convert_2_utf8(lastname));
+            g_variant_builder_add(&builder, "{ss}", "last-name", convert_2_utf8(lastname));
         }
         g_free(firstname);
         g_free(lastname);
     }
     if (c->cn) {
-        g_hash_table_replace(contact->data,
-        g_strdup("cn"), convert_2_utf8(c->cn));
+        g_variant_builder_add(&builder, "{ss}", "cn", convert_2_utf8(c->cn));
     }
 
     if (c->picture) {
-        gdk_pixbuf_save_to_buffer(
-        c->picture, &image, &size, "png", NULL, NULL);
-        g_hash_table_replace(contact->data,
-        g_strdup("image"), g_base64_encode((const guchar *) image, size));
+        gdk_pixbuf_save_to_buffer(c->picture, &image, &size, "png", NULL, NULL);
+        gchar* encoded = g_base64_encode((const guchar *) image, size);
+        g_variant_builder_add(&builder, "{ss}", "image", encoded);
+        g_free(encoded);
     }
 
-    email = g_array_new(FALSE, FALSE, sizeof(GValue*));
+    return g_variant_builder_end(&builder);
+}
+
+static GVariant* format_contact_emails(ContactData* c) {
+    GVariantBuilder builder;
+    GVariantBuilder email_builder;
+    gchar* str;
+
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("aas"));
+    g_variant_builder_init(&email_builder, G_VARIANT_TYPE("as"));
 
     /* Alias is not available but needed so make an empty string */
-    g_value_init(&email_member, G_TYPE_STRING);
-    g_value_set_string(&email_member, "");
-    g_array_append_val(email, email_member);
-    g_value_unset(&email_member);
+    g_variant_builder_add(&email_builder, "s", "");
 
     if (c->email)
         str = convert_2_utf8(c->email);
     else
         str = g_strdup("");
-
-    g_value_init(&email_member, G_TYPE_STRING);
-    g_value_set_string(&email_member, str);
-    g_array_append_val(email, email_member);
-    g_value_unset(&email_member);
+    g_variant_builder_add(&email_builder, "s", str);
     g_free(str);
 
     if (c->remarks)
         str = convert_2_utf8(c->remarks);
     else
         str = g_strdup("");
-
-    g_value_init(&email_member, G_TYPE_STRING);
-    g_value_set_string(&email_member, str);
-    g_array_append_val(email, email_member);
-    g_value_unset(&email_member);
+    g_variant_builder_add(&email_builder, "s", str);
     g_free(str);
 
-    g_ptr_array_add(contact->emails, email);
+    g_variant_builder_add(&builder, "as", &email_builder);
+
+    return g_variant_builder_end(&builder);
 }
 
-static DBusHandlerResult contact_add_signal(DBusConnection* bus,
-                                            DBusMessage* message,
-                                            gpointer data) {
-    DBusError error;
-    gchar *s = NULL;
+static void contact_signal_cb(GDBusConnection *conn,
+                               const gchar *sender_name,
+                               const gchar *object_path,
+                               const gchar *interface_name,
+                               const gchar *signal_name,
+                               GVariant *parameters,
+                               gpointer user_data) {
+    const gchar *address = NULL;
 
     if (! compose_instance) {
         g_message("Missing compose instance\n");
-        return DBUS_HANDLER_RESULT_HANDLED;
+        return;
     }
 
-    dbus_error_init (&error);
-
-    if (dbus_message_is_signal(message, "org.clawsmail.Contacts", "ContactMailTo")) {
-        if (dbus_message_get_args(
-            message, &error, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID)) {
-            debug_print("ContactMailTo address received: %s\n", s);
-            compose_entry_append(compose_instance, s, COMPOSE_TO, PREF_NONE);
-        }
-        else {
-            debug_print("ContactMailTo received with error: %s\n", error.message);
-            dbus_error_free(&error);
-        }
+    if (g_strcmp0(signal_name, "ContactMailTo") == 0) {
+        g_variant_get(parameters, "(&s)", &address);
+        debug_print("ContactMailTo address received: %s\n", address);
+        compose_entry_append(compose_instance, address, COMPOSE_TO, PREF_NONE);
     }
-    else if (dbus_message_is_signal(message, "org.clawsmail.Contacts", "ContactMailCc")) {
-        if (dbus_message_get_args(
-            message, &error, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID)) {
-            debug_print("ContactMailTo address received: %s\n", s);
-            compose_entry_append(compose_instance, s, COMPOSE_CC, PREF_NONE);
-        }
-        else {
-            debug_print("ContactMailTo received with error: %s\n", error.message);
-            dbus_error_free(&error);
-        }
+    else if (g_strcmp0(signal_name, "ContactMailCc") == 0) {
+        g_variant_get(parameters, "(&s)", &address);
+        debug_print("ContactMailCc address received: %s\n", address);
+        compose_entry_append(compose_instance, address, COMPOSE_CC, PREF_NONE);
     }
-    else if (dbus_message_is_signal(message, "org.clawsmail.Contacts", "ContactMailBcc")) {
-        if (dbus_message_get_args(
-            message, &error, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID)) {
-            debug_print("ContactMailTo address received: %s\n", s);
-            compose_entry_append(compose_instance, s, COMPOSE_BCC, PREF_NONE);
-        }
-        else {
-            debug_print("ContactMailTo received with error: %s\n", error.message);
-            dbus_error_free(&error);
-        }
+    else if (g_strcmp0(signal_name, "ContactMailBcc") == 0) {
+        g_variant_get(parameters, "(&s)", &address);
+        debug_print("ContactMailBcc address received: %s\n", address);
+        compose_entry_append(compose_instance, address, COMPOSE_BCC, PREF_NONE);
     }
     else {
-        if (error.message) {
-            g_warning("reception error: %s", error.message);
-            dbus_error_free(&error);
-        }
-        debug_print("Unhandled signal received\n");
-        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        debug_print("Unhandled signal received: %s\n", signal_name);
     }
-
-    return DBUS_HANDLER_RESULT_HANDLED;
 }
 
 gboolean addressbook_start_service(GError** error) {
+    GVariant* result = NULL;
     gchar* reply = NULL;
-    gboolean result = FALSE;
+    gboolean ret = FALSE;
 
     if (! init(error))
-        return result;
+        return FALSE;
 
-    if (!org_clawsmail_Contacts_ping(proxy, &reply, error)) {
+    result = g_dbus_proxy_call_sync(proxy,
+            "Ping",
+            NULL,
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
+        return FALSE;
     }
-    if (reply && strcmp("PONG", reply) == 0)
-        result = TRUE;
 
-    return result;
+    g_variant_get(result, "(s)", &reply);
+    if (reply && strcmp("PONG", reply) == 0)
+        ret = TRUE;
+
+    g_free(reply);
+    g_variant_unref(result);
+    return ret;
 }
 
 int addressbook_dbus_add_contact(ContactData* contact, GError** error) {
-    DBusContact dbus_contact;
+    GVariant* data_variant;
+    GVariant* emails_variant;
+    GVariant* result;
 
     if (! init(error))
         return -1;
 
-    format_contact(&dbus_contact, contact);
-    if (!org_clawsmail_Contacts_add_contact(
-        proxy, contact->book, dbus_contact.data, dbus_contact.emails, error)) {
+    data_variant = format_contact_data(contact);
+    emails_variant = format_contact_emails(contact);
+
+    result = g_dbus_proxy_call_sync(proxy,
+            "AddContact",
+            g_variant_new("(s@a{ss}@aas)", contact->book, data_variant, emails_variant),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
-        dbus_contact_free(&dbus_contact);
         return -1;
     }
-    dbus_contact_free(&dbus_contact);
+
+    g_variant_unref(result);
     return 0;
 }
 
@@ -312,24 +302,35 @@ gboolean addrindex_dbus_load_completion(gint (*callBackFunc)
                                          const gchar* alias,
                                          GList* grp_emails),
                                          GError** error) {
-    gchar **list = NULL, **contacts;
+    GVariant* result;
+    gchar **list = NULL;
+    gchar **contacts;
     gchar *name, *email;
 
     if (! init(error))
         return FALSE;
 
-    if (!org_clawsmail_Contacts_search_addressbook(
-        proxy, "*", NULL, &list, error)) {
+    result = g_dbus_proxy_call_sync(proxy,
+            "SearchAddressbook",
+            g_variant_new("(ss)", "*", ""),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
-        g_strfreev(list);
         return FALSE;
     }
+
+    g_variant_get(result, "(^as)", &list);
+
     for (contacts = list; *contacts != NULL; contacts += 1) {
         gchar* tmp = g_strdup(*contacts);
         gchar* pos = g_strrstr(tmp, "\"");
-    if (pos) {
+        if (pos) {
             /* Contact has a name as part of email address */
             *pos = '\0';
             name = tmp;
@@ -338,7 +339,7 @@ gboolean addrindex_dbus_load_completion(gint (*callBackFunc)
             email = pos;
             pos = g_strrstr(email, ">");
             if (pos)
-            *pos = '\0';
+                *pos = '\0';
         }
         else {
             name = "";
@@ -349,21 +350,37 @@ gboolean addrindex_dbus_load_completion(gint (*callBackFunc)
         g_free(tmp);
     }
 
+    g_strfreev(list);
+    g_variant_unref(result);
     return TRUE;
 }
 
 void addressbook_dbus_open(gboolean compose, GError** error) {
+    GVariant* result;
+
     if (! init(error))
         return;
 
-    if (!org_clawsmail_Contacts_show_addressbook(proxy, compose, error)) {
+    result = g_dbus_proxy_call_sync(proxy,
+            "ShowAddressbook",
+            g_variant_new("(b)", compose),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
+        return;
     }
+
+    g_variant_unref(result);
 }
 
 GSList* addressbook_dbus_get_books(GError** error) {
+    GVariant* result;
     gchar **book_names = NULL, **cur;
     GSList* books = NULL;
 
@@ -371,17 +388,28 @@ GSList* addressbook_dbus_get_books(GError** error) {
         return books;
     }
 
-    if (!org_clawsmail_Contacts_book_list(proxy, &book_names, error)) {
+    result = g_dbus_proxy_call_sync(proxy,
+            "BookList",
+            NULL,
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
-        g_strfreev(book_names);
         return books;
     }
+
+    g_variant_get(result, "(^as)", &book_names);
+
     for (cur = book_names; *cur; cur += 1)
         books = g_slist_prepend(books, g_strdup(*cur));
 
     g_strfreev(book_names);
+    g_variant_unref(result);
 
     return books;
 }
@@ -409,30 +437,40 @@ void addressbook_harvest(FolderItem *folderItem,
 }
 
 void addressbook_connect_signals(Compose* compose) {
-    DBusConnection* bus;
-    DBusError* error = NULL;
-
     g_return_if_fail(compose != NULL);
 
-    bus = dbus_bus_get (DBUS_BUS_SESSION, error);
-    if (!bus) {
-        g_warning("failed to connect to the D-BUS daemon: %s", error->message);
-        dbus_error_free(error);
-        return;
+    if (!connection) {
+        GError* error = NULL;
+        connection = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &error);
+        if (!connection) {
+            g_warning("failed to connect to the D-BUS daemon: %s", error->message);
+            g_error_free(error);
+            return;
+        }
     }
 
     debug_print("Compose: %p\n", compose);
     compose_instance = compose;
-    dbus_bus_add_match(bus, "type='signal',interface='org.clawsmail.Contacts'", error);
-    if (error) {
-        debug_print("Failed to add match to the D-BUS daemon: %s\n", error->message);
-        dbus_error_free(error);
-        return;
+
+    signal_subscription_id = g_dbus_connection_signal_subscribe(
+            connection,
+            "org.clawsmail.Contacts",
+            "org.clawsmail.Contacts",
+            NULL,
+            "/org/clawsmail/contacts",
+            NULL,
+            G_DBUS_SIGNAL_FLAGS_NONE,
+            contact_signal_cb,
+            NULL,
+            NULL);
+
+    if (signal_subscription_id == 0) {
+        debug_print("Failed to subscribe to D-BUS signals\n");
     }
-    dbus_connection_add_filter(bus, contact_add_signal, NULL, NULL);
 }
 
 gchar* addressbook_get_vcard(const gchar* account, GError** error) {
+    GVariant* result;
     gchar* vcard = NULL;
 
     g_return_val_if_fail(account != NULL, vcard);
@@ -441,25 +479,33 @@ gchar* addressbook_get_vcard(const gchar* account, GError** error) {
         return vcard;
     }
 
-    if (!org_clawsmail_Contacts_get_vcard(proxy, account, &vcard, error)) {
+    result = g_dbus_proxy_call_sync(proxy,
+            "GetVCard",
+            g_variant_new("(s)", account),
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            NULL,
+            error);
+
+    if (!result) {
         if (! *error)
-            g_set_error(error, client_object_error_quark(), 1, "Woops remote method failed");
+            g_set_error(error, CLIENT_ERROR_QUARK, 1, "Woops remote method failed");
         g_warning("woops remote method failed: %s", (*error)->message);
-        g_free(vcard);
-        vcard = NULL;
-}
+        return NULL;
+    }
+
+    g_variant_get(result, "(s)", &vcard);
+    g_variant_unref(result);
 
     return vcard;
 }
 
 gboolean addressbook_add_vcard(const gchar* abook, const gchar* vcard, GError** error) {
     gboolean result = FALSE;
-
     return result;
 }
 
 static gboolean my_compose_create_hook(gpointer source, gpointer user_data) {
-    //Compose *compose = (Compose*) source;
     GError* error = NULL;
 
     gchar* vcard = addressbook_get_vcard("test", &error);
@@ -470,7 +516,7 @@ static gboolean my_compose_create_hook(gpointer source, gpointer user_data) {
     else {
         debug_print("test.vcf:\n%s\n", vcard);
         g_free(vcard);
-}
+    }
 
     return FALSE;
 }
@@ -479,9 +525,8 @@ void addressbook_install_hooks(GError** error) {
     if ((guint)-1 == hooks_register_hook(COMPOSE_CREATED_HOOKLIST, my_compose_create_hook, NULL)) {
         g_warning("could not register hook for adding vCards");
         if (error) {
-            g_set_error(error, client_object_error_quark(), 1,
+            g_set_error(error, CLIENT_ERROR_QUARK, 1,
                 "Could not register hook for adding vCards");
         }
     }
 }
-

@@ -362,13 +362,7 @@ claws_mailinclude_HEADERS = \
 
 BUILT_SOURCES = \
 	matcher_parser_parse.h \
-	quote_fmt_parse.h \
-	client-bindings.h
-
-client-bindings.h: claws-contacts.xml
-if BUILD_ALTADDRBOOK
-	dbus-binding-tool --prefix=abook --mode=glib-client --output=$@ claws-contacts.xml
-endif
+	quote_fmt_parse.h
 
 CLEANFILES = \
 	     $(BUILT_SOURCES)

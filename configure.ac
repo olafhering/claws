@@ -735,13 +735,13 @@ dnl #######################################################################
 dnl # Check for D-Bus support
 dnl #######################################################################
 if test "x$enable_dbus" = "xyes"; then
-	PKG_CHECK_MODULES(DBUS, [dbus-1 >= 0.60, dbus-glib-1 >= 0.60],
+	PKG_CHECK_MODULES(DBUS, [gio-2.0 >= 2.26],
 	[
-		AC_DEFINE(HAVE_DBUS_GLIB, 1, [Define if glib bindings of D-Bus are available])
+		AC_DEFINE(HAVE_DBUS_GLIB, 1, [Define if D-Bus support via GDBus is available])
 		enable_dbus=yes
 	],
 	[
-		echo "D-Bus requirements not met. D-Bus support not activated."
+		echo "D-Bus requirements not met (GIO 2.26+ required). D-Bus support not activated."
 		enable_dbus=no
 	])
 	AC_SUBST(DBUS_CFLAGS)

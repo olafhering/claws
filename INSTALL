@@ -42,9 +42,9 @@ compface
 Clam AntiVirus daemon
     for Clamd plugin support
     https://www.clamav.net/
-D-Bus (>= 0.60)
-    for interprocess communication support
-    https://www.freedesktop.org/wiki/Software/dbus
+GIO (>= 2.26)
+    for interprocess communication support (part of GLib)
+    https://docs.gtk.org/gio/
 Enchant (and dictionaries) (>= 1.4.0)
     for spell-checker support
     https://abiword.github.io/enchant/

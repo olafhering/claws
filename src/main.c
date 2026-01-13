@@ -59,7 +59,7 @@
 #endif
 
 #ifdef HAVE_DBUS_GLIB
-#include <dbus/dbus-glib.h>
+#include <gio/gio.h>
 #endif
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
 #include <NetworkManager.h>
@@ -241,7 +241,10 @@ static void install_basic_sighandlers   (void);
 static void exit_claws			(MainWindow *mainwin);
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
+static void networkmanager_state_change_cb(GDBusProxy *proxy,
+																					 gchar *sender_name,
+																					 gchar *signal_name,
+																					 GVariant *parameters,
 																					 gpointer data);
 #endif
 
@@ -950,11 +953,11 @@ static void reset_statistics(void)
 int main(int argc, char *argv[])
 {
 #ifdef HAVE_DBUS_GLIB
-	DBusGConnection *connection;
+	GDBusConnection *connection;
 	GError *error;
 #endif
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-	DBusGProxy *nm_proxy;
+	GDBusProxy *nm_proxy;
 #endif
 	gchar *userrc;
 	MainWindow *mainwin;
@@ -1044,7 +1047,7 @@ int main(int argc, char *argv[])
 #endif
 #ifdef HAVE_DBUS_GLIB
 	error = NULL;
-	connection = dbus_g_bus_get(DBUS_BUS_SYSTEM, &error);
+	connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
 
 	if(!connection) {
 		debug_print("Failed to open connection to system bus: %s\n", error->message);
@@ -1052,15 +1055,21 @@ int main(int argc, char *argv[])
 	}
 	else {
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-		nm_proxy = dbus_g_proxy_new_for_name(connection,
+		nm_proxy = g_dbus_proxy_new_sync(connection,
+			G_DBUS_PROXY_FLAGS_NONE,
+			NULL,
 			"org.freedesktop.NetworkManager",
 			"/org/freedesktop/NetworkManager",
-			"org.freedesktop.NetworkManager");
+			"org.freedesktop.NetworkManager",
+			NULL,
+			&error);
 		if (nm_proxy) {
-			dbus_g_proxy_add_signal(nm_proxy, "StateChanged", G_TYPE_UINT, G_TYPE_INVALID);
-			dbus_g_proxy_connect_signal(nm_proxy, "StateChanged",
+			g_signal_connect(nm_proxy, "g-signal",
 				G_CALLBACK(networkmanager_state_change_cb),
-				NULL,NULL);
+				NULL);
+		} else if (error) {
+			debug_print("Failed to create NetworkManager proxy: %s\n", error->message);
+			g_error_free(error);
 		}
 #endif
 	}
@@ -1264,7 +1273,7 @@ int main(int argc, char *argv[])
 		exit(1);
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-	networkmanager_state_change_cb(nm_proxy,NULL,mainwin);
+	networkmanager_state_change_cb(nm_proxy, NULL, "StateChanged", NULL, mainwin);
 #endif
 
 	manage_window_focus_in(mainwin->window, NULL, NULL);
@@ -1589,7 +1598,7 @@ int main(int argc, char *argv[])
 #endif
 #ifdef HAVE_DBUS_GLIB
 	if(connection)
-		dbus_g_connection_unref(connection);
+		g_object_unref(connection);
 #endif
 	utils_free_regex();
 	exit_claws(mainwin);
@@ -2908,7 +2917,15 @@ static void install_basic_sighandlers()
 }
 
 #ifdef HAVE_NETWORKMANAGER_SUPPORT
-static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
+/* NetworkManager DBus integration
+ * Debug DBus traffic with: dbus-monitor --system
+ * Introspect interface with: busctl introspect org.freedesktop.NetworkManager \
+ *   /org/freedesktop/NetworkManager
+ */
+static void networkmanager_state_change_cb(GDBusProxy *proxy,
+																					 gchar *sender_name,
+																					 gchar *signal_name,
+																					 GVariant *parameters,
 					 gpointer data)
 {
 	MainWindow *mainWin;
@@ -2955,9 +2972,10 @@ static void networkmanager_state_change_cb(DBusGProxy *proxy, gchar *dev,
 /* Returns true (and sets error appropriately, if given) in case of error */
 gboolean networkmanager_is_online(GError **error)
 {
-	DBusGConnection *connection;
-	DBusGProxy *proxy;
+	GDBusConnection *connection;
+	GDBusProxy *proxy;
 	GError *tmp_error = NULL;
+	GVariant *result;
 	gboolean retVal;
 	guint32 state;
 
@@ -2966,7 +2984,7 @@ gboolean networkmanager_is_online(GError **error)
 
 	tmp_error = NULL;
 	proxy = NULL;
-	connection = dbus_g_bus_get(DBUS_BUS_SYSTEM, &tmp_error);
+	connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &tmp_error);
 
 	if(!connection) {
 		/* If calling code doesn't do error checking, at least print some debug */
@@ -2977,20 +2995,37 @@ gboolean networkmanager_is_online(GError **error)
 		return TRUE;
 	}
 
-	proxy = dbus_g_proxy_new_for_name(connection,
+	proxy = g_dbus_proxy_new_sync(connection,
+			G_DBUS_PROXY_FLAGS_NONE,
+			NULL,
 			"org.freedesktop.NetworkManager",
 			"/org/freedesktop/NetworkManager",
-			"org.freedesktop.NetworkManager");
+			"org.freedesktop.NetworkManager",
+			NULL,
+			&tmp_error);
 
-	retVal = dbus_g_proxy_call(proxy,"state",&tmp_error, G_TYPE_INVALID,
-			G_TYPE_UINT, &state, G_TYPE_INVALID);
+	if (!proxy) {
+		if((error == NULL) || (*error == NULL))
+			debug_print("Failed to create NetworkManager proxy: %s\n",
+							 tmp_error->message);
+		g_propagate_error(error, tmp_error);
+		g_object_unref(connection);
+		return TRUE;
+	}
+
+	result = g_dbus_proxy_call_sync(proxy, "state",
+			NULL,
+			G_DBUS_CALL_FLAGS_NONE,
+			-1,
+			NULL,
+			&tmp_error);
 
 	if(proxy)
 		g_object_unref(proxy);
 	if(connection)
-		dbus_g_connection_unref(connection);
+		g_object_unref(connection);
 
-	if(!retVal) {
+	if(!result) {
 		/* If calling code doesn't do error checking, at least print some debug */
 		if((error == NULL) || (*error == NULL))
 			debug_print("Failed to get state info from NetworkManager: %s\n",
@@ -2998,6 +3033,10 @@ gboolean networkmanager_is_online(GError **error)
 		g_propagate_error(error, tmp_error);
 		return TRUE;
 	}
+
+	g_variant_get(result, "(u)", &state);
+	g_variant_unref(result);
+
     	return (state == NM_STATE_CONNECTED_LOCAL ||
 		state == NM_STATE_CONNECTED_SITE ||
 		state == NM_STATE_CONNECTED_GLOBAL ||
