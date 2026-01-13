@@ -86,7 +86,7 @@ my %lang = (
 	},
 	'nl.po' => {
 		'out' => 1, 'name' => 'Dutch',
-		'last' => 'Marcel Pol <mpol@gmx.net>',
+		'last' => 'Marcel Pol <marcel@timelord.nl>',
 	},
 	'pl.po' => {
 		'out' => 1, 'name' => 'Polish',
