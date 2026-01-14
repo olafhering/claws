@@ -6575,7 +6575,8 @@ gtk_cmclist_undraw_focus (GtkWidget *widget)
   }
 
   row = clist->focus_row;
-  GTK_CMCLIST_GET_CLASS(GTK_CMCLIST(widget))->draw_row(clist, NULL, row, ROW_ELEMENT (clist, row)->data);
+  if (row)
+    GTK_CMCLIST_GET_CLASS(GTK_CMCLIST(widget))->draw_row(clist, NULL, row, ROW_ELEMENT (clist, row)->data);
 }
 
 static gint
