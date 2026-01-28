@@ -278,7 +278,7 @@ gboolean privacy_mimeinfo_system_locate_keys(const gchar *email_addr, MimeInfo *
 	if (system == NULL)
 		return FALSE;
 
-	return system->locate_keys(email_addr);
+	return system->locate_keys(email_addr, mimeinfo);
 }
 
 SignatureStatus privacy_mimeinfo_get_sig_status(MimeInfo *mimeinfo)
@@ -455,32 +455,6 @@ gboolean privacy_system_can_encrypt(const gchar *id)
 		return FALSE;
 
 	return system->can_encrypt;
-}
-
-gboolean privacy_system_can_locate_keys(void)
-{
-	GSList *cur;
-
-	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
-		if (system->locate_keys != NULL)
-			return TRUE;
-	}
-
-	return FALSE;
-}
-
-gboolean privacy_system_locate_key(gchar * email_address)
-{
-	GSList *cur;
-
-	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
-		if (system->locate_keys != NULL)
-			return system->locate_keys(email_address);
-	}
-
-	return FALSE;
 }
 
 gboolean privacy_sign(const gchar *id, MimeInfo *target, PrefsAccount *account, const gchar *from_addr)

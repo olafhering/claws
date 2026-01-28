@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2012 Hiroyuki Yamamoto and the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,6 @@ void cm_menu_set_sensitive_full(GtkUIManager *gui_manager, const gchar *menu, gb
 void cm_toggle_menu_set_active_full(GtkUIManager *gui_manager, gchar *menu, gboolean active);
 gchar *cm_menu_item_get_shortcut(GtkUIManager *gui_manager, gchar *menu);
 GtkWidget *cm_menu_item_new_label_from_url(gchar *label);
-GtkAction *cm_menu_find_action(GtkActionGroup *group, gchar *name);
 
 void menu_set_sensitive_all(GtkMenuShell *menu_shell, gboolean sensitive);
 
