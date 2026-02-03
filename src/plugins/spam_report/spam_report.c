@@ -290,6 +290,7 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 	}
 	g_free(reqbody);
 	g_free(geturl);
+	free(chunk.data);
 }
 
 static void report_spam_cb_ui(GtkAction *action, gpointer data)
