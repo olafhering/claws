@@ -104,7 +104,7 @@ struct _VCalAttendee {
 	gboolean org;
 };
 
-static GdkCursor *watch_cursor = NULL;
+static GdkCursor *watch_cursor;
 
 VCalAttendee *attendee_add(VCalMeeting *meet, gchar *address, gchar *name, gchar *partstat, gchar *cutype, gboolean first);
 
