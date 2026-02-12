@@ -1087,17 +1087,40 @@ int main(int argc, char *argv[])
 	if (!cmd.crash && crash_file_present)
 		claws_crashed_bool = TRUE;
 
-	if (is_file_exist("claws.log")) {
-		if (rename_force("claws.log", "claws.log.bak") < 0)
-			FILE_OP_ERROR("claws.log", "rename");
-	}
-	set_log_file(LOG_PROTOCOL, "claws.log");
+	{
+		gchar *logpath, *logdir;
+		long uid = (long)getuid();
 
-	if (is_file_exist("filtering.log")) {
-		if (rename_force("filtering.log", "filtering.log.bak") < 0)
-			FILE_OP_ERROR("filtering.log", "rename");
-	}
-	set_log_file(LOG_DEBUG_FILTERING, "filtering.log");
+		logdir = g_strdup_printf("/run/user/%ld", uid);
+		if (!logdir)
+			return 1;
+		if (access(logdir, F_OK) == 0) {
+			g_free(logdir);
+			logdir = g_strdup_printf("/run/user/%ld/" PACKAGE_TARNAME, uid);
+		} else {
+			g_free(logdir);
+			logdir = g_strdup_printf("/tmp/" PACKAGE_TARNAME ".%ld", uid);
+		}
+		if (!logdir)
+			return 1;
+		if (mkdir(logdir, S_IRWXU) < 0 && errno != EEXIST) {
+			g_free(logdir);
+			logdir = g_strdup_printf(".");
+			if (!logdir)
+				return 1;
+		}
+		logpath = g_strdup_printf("%s/claws.log", logdir);
+		if (!logpath)
+			return 1;
+		set_log_file(LOG_PROTOCOL, logpath);
+		g_free(logpath);
+		logpath = g_strdup_printf("%s/filtering.log", logdir);
+		if (!logpath)
+			return 1;
+		set_log_file(LOG_DEBUG_FILTERING, logpath);
+		g_free(logpath);
+		g_free(logdir);
+ 	}
 
 #ifdef G_OS_WIN32
 	CHDIR_EXEC_CODE_RETURN_VAL_IF_FAIL(get_home_dir(), 1, win32_close_log();
