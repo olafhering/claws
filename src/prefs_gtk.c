@@ -53,7 +53,7 @@ typedef enum {
 	DUMMY_PARAM
 } DummyEnum;
 
-static GHashTable *whole_cache = NULL;
+static GHashTable *whole_cache;
 
 static gboolean prefs_read_config_from_cache(PrefParam *param, const gchar *label, const gchar *rcfile);
 
@@ -830,7 +830,7 @@ void prefs_set_spinbtn(PrefParam *pparam)
 	}
 }
 
-static GSList *prefs_pages = NULL;
+static GSList *prefs_pages;
 
 static void prefs_gtk_window_closed_cb(PrefsWindow *prefswindow)
 {
