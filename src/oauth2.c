@@ -299,8 +299,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 {
 	g_autofree gchar *request = NULL;
 	g_autofree gchar *response = NULL;
-	gchar *body;
-	gchar *uri;
+	GString *token_body = g_string_sized_new(1024);
 	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
@@ -310,7 +309,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	const gchar *client_id;
 	const gchar *client_secret;
 	g_autofree gchar *token = NULL;
-	gchar *tmp;
 	gint i;
 
 	i = (int)provider - 1;
@@ -346,44 +344,40 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	else
 		client_id = OAUTH2info[i][OA2_CLIENT_ID];
 
-	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
+	g_string_append(token_body, "client_id=");
+	g_string_append(token_body, client_id);
+	g_string_append(token_body, "&code=");
+	g_string_append(token_body, token);
 
 	if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
 		client_secret = OAUTH2Data->custom_client_secret;
 	else
 		client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
 	if (client_secret) {
-		uri = g_uri_escape_string(client_secret, NULL, FALSE);
-		tmp = g_strconcat(body, "&client_secret=", uri, NULL);
-		g_free(body);
-		g_free(uri);
-		body = tmp;
+		g_autofree gchar *t = g_uri_escape_string(client_secret, NULL, FALSE);
+		g_string_append(token_body, "&client_secret=");
+		g_string_append(token_body, t);
 	}
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
-		tmp = g_strconcat(body, "&redirect_uri=", OAUTH2info[i][OA2_REDIRECT_URI], NULL);
-		g_free(body);
-		body = tmp;
+		g_string_append(token_body, "&redirect_uri=");
+		g_string_append(token_body, OAUTH2info[i][OA2_REDIRECT_URI]);
 	}
 	if (OAUTH2info[i][OA2_GRANT_TYPE_ACCESS]) {
-		tmp = g_strconcat(body, "&grant_type=", OAUTH2info[i][OA2_GRANT_TYPE_ACCESS], NULL);
-		g_free(body);
-		body = tmp;
+		g_string_append(token_body, "&grant_type=");
+		g_string_append(token_body, OAUTH2info[i][OA2_GRANT_TYPE_ACCESS]);
 	}
 	if (OAUTH2info[i][OA2_TENANT]) {
-		tmp = g_strconcat(body, "&tenant=", OAUTH2info[i][OA2_TENANT], NULL);
-		g_free(body);
-		body = tmp;
+		g_string_append(token_body, "&tenant=");
+		g_string_append(token_body, OAUTH2info[i][OA2_TENANT]);
 	}
 	if (OAUTH2info[i][OA2_SCOPE_FOR_ACCESS]) {
-		tmp = g_strconcat(body, "&scope=", OAUTH2info[i][OA2_SCOPE_FOR_ACCESS], NULL);
-		g_free(body);
-		body = tmp;
+		g_string_append(token_body, "&scope=");
+		g_string_append(token_body, OAUTH2info[i][OA2_SCOPE_FOR_ACCESS]);
 	}
 	if (OAUTH2info[i][OA2_STATE]) {
-		tmp = g_strconcat(body, "&state=", OAUTH2info[i][OA2_STATE], NULL);
-		g_free(body);
-		body = tmp;
+		g_string_append(token_body, "&state=");
+		g_string_append(token_body, OAUTH2info[i][OA2_STATE]);
 	}
 
 	if (OAUTH2info[i][OA2_HEADER_AUTH_BASIC]) {
@@ -394,7 +388,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		g_free(tmp_hd);
 	}
 
-	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
+	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, token_body->str);
 	if (request)
 		response = oauth2_contact_server(sock, request);
 
@@ -426,7 +420,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	sock_close(sock, TRUE);
-	g_free(body);
+	g_string_free(token_body, TRUE);
 	g_free(header);
 
 	return (ret);
