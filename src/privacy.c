@@ -160,7 +160,7 @@ gboolean privacy_mimeinfo_is_signed(MimeInfo *mimeinfo)
 	}
  try_others:
 	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
-		PrivacySystem *system = (PrivacySystem *) cur->data;
+		PrivacySystem *system = cur->data;
 
 		if (system->is_signed != NULL && system->is_signed(mimeinfo))
 			return TRUE;
