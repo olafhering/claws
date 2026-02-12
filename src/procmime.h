@@ -108,23 +108,29 @@ struct _MimeParser {
 struct _MimeInfo {
 	/* Internal data */
 	MimeContent content;
+	/* Content-Transfer-Encoding */
+	EncodingType encoding_type;
+	/* Content-Disposition */
+	DispositionType disposition;
+	/* Content-Type */
+	MimeMediaType type;
+
+	guint offset;
+	guint length;
+	gboolean tmp;
+	gboolean broken;
+
 	union {
 		gchar *filename;
 		gchar *mem;
 	} data;
-	gboolean tmp;
 
 	GNode *node;
 
 	/* --- NEW MIME STUFF --- */
-	/* Content-Type */
-	MimeMediaType type;
 	gchar *subtype;
 
 	GHashTable *typeparameters;
-
-	/* Content-Transfer-Encoding */
-	EncodingType encoding_type;
 
 	/* Content-Description */
 	gchar *description;
@@ -135,19 +141,12 @@ struct _MimeInfo {
 	/* Content-Location */
 	gchar *location;
 
-	guint offset;
-	guint length;
-
-	/* Content-Disposition */
-	DispositionType disposition;
 	GHashTable *dispositionparameters;
 
 	/* Privacy */
 	struct _PrivacyData *privacy;
 	GTask *last_sig_check_task;
 	SignatureData *sig_data;
-
-	gboolean broken;
 };
 
 #define IS_BOUNDARY(s, bnd, len) \
