@@ -349,7 +349,7 @@ static void grouplist_expand_upwards(GtkCMCTree *ctree, const gchar *name)
 
 static void grouplist_dialog_set_list(const gchar *pattern, gboolean refresh)
 {
-	static GdkCursor *watch_cursor = NULL;
+	static GdkCursor *watch_cursor;
 	GSList *cur;
 	GtkCMCTreeNode *node;
 	GPatternSpec *pspec;
