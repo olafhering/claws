@@ -90,8 +90,6 @@ void session_init(Session *session, const void *prefs_account)
 	session->data = NULL;
 	session->account = prefs_account;
 
-	session->ping_tag = -1;
-
 	session->proxy_info = NULL;
 }
 
@@ -855,10 +853,11 @@ void session_register_ping(Session *session, gboolean (*ping_cb)(gpointer data))
 {
 	if(!session)
 		return;
-	if (session->ping_tag > -1)
+	if (session->ping_tag) {
 		g_source_remove(session->ping_tag);
+		session->ping_tag = 0;
+	}
 
-	session->ping_tag = -1;
 
 	if (ping_cb != NULL)
 		session->ping_tag = g_timeout_add_seconds(60, ping_cb, session);
