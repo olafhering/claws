@@ -20,9 +20,13 @@ if test \( -d .git \); then
 	GIT_VERSION=`git describe --abbrev=6 --dirty --always`
 	echo "echo ${GIT_VERSION}" > ./version
     fi
+    date="`date -u -d @$(git --no-pager log -n1 --pretty=%at) +%Y%m%dT%H%M%S`"
+    hash="`git --no-pager log -n1 --pretty=%H | cut -b -8`"
+    echo "${date}.${hash}" > VERSION_UI
 else
     GIT_VERSION=`sh -c ". $srcdir/version"`
 fi
+VERSION_UI="`cat $srcdir/VERSION_UI`"
 
 if test \( -z "$GIT_VERSION" \); then
 	AC_MSG_ERROR([*** could not determine program version])
@@ -58,6 +62,7 @@ AC_SUBST(MINOR_VERSION)
 AC_SUBST(MICRO_VERSION)
 AC_SUBST(EXTRA_VERSION)
 AC_SUBST(GIT_VERSION)
+AC_SUBST(VERSION_UI)
 
 AC_CHECK_PROG(HAVE_GTK_ICON_CACHE, gtk-update-icon-cache, yes, no)
 AM_CONDITIONAL(UPDATE_GTK_ICON_CACHE, test x"$HAVE_GTK_ICON_CACHE" = xyes)

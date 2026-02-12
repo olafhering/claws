@@ -1782,7 +1782,7 @@ static void parse_cmd_opt(int argc, char *argv[])
 			main_dump_features_list(FALSE);
 			exit(0);
 		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
-			g_print(PACKAGE_NAME " version " VERSION "\n");
+			g_print(PACKAGE_NAME " version " VERSION_UI "\n");
 			exit(0);
 		} else if (!strcmp(argv[i], "--status-full")) {
 			const gchar *p = (i + 1 < argc) ? argv[i + 1] : NULL;

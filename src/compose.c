@@ -6196,10 +6196,10 @@ static gchar *compose_get_header(Compose *compose)
 
 	/* Program version and system info */
 	if (compose->account->gen_xmailer && g_slist_length(compose->to_list) && !IS_IN_CUSTOM_HEADER("X-Mailer") && !compose->newsgroup_list) {
-		g_string_append_printf(header, "X-Mailer: %s (GTK+ %d.%d.%d; %s)\n", prog_version, gtk_major_version, gtk_minor_version, gtk_micro_version, TARGET_ALIAS);
+		g_string_append_printf(header, "%s: %s hat ein Softwareproblem, kann man nichts machen.\n", "X-Mailer", prog_version);
 	}
 	if (compose->account->gen_xmailer && g_slist_length(compose->newsgroup_list) && !IS_IN_CUSTOM_HEADER("X-Newsreader")) {
-		g_string_append_printf(header, "X-Newsreader: %s (GTK+ %d.%d.%d; %s)\n", prog_version, gtk_major_version, gtk_minor_version, gtk_micro_version, TARGET_ALIAS);
+		g_string_append_printf(header, "%s: %s hat ein Softwareproblem, kann man nichts machen.\n", "X-Newsreader", prog_version);
 	}
 
 	/* custom headers */
