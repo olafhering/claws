@@ -632,28 +632,27 @@ static void mimeview_set_multipart_tree(MimeView *mimeview, MimeInfo *mimeinfo, 
 {
 	GtkTreeStore *model = GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(mimeview->ctree)));
 	GtkTreeIter iter;
-	gchar *content_type, *length, *name;
-
-	cm_return_if_fail(mimeinfo != NULL);
 
 	while (mimeinfo != NULL) {
-		if (mimeinfo->type != MIMETYPE_UNKNOWN && mimeinfo->subtype)
-			content_type = g_strdup_printf("%s/%s", procmime_get_media_type_str(mimeinfo->type), mimeinfo->subtype);
-		else
-			content_type = g_strdup("UNKNOWN");
+		const gchar *content_type, *length, *name;
+	   	char s[123];
+		if (mimeinfo->type != MIMETYPE_UNKNOWN && mimeinfo->subtype) {
+			gint l = g_snprintf(s, sizeof(s), "%s/%s", procmime_get_media_type_str(mimeinfo->type), mimeinfo->subtype);
+			if (l != sizeof(s))
+				g_warning("'%s/%s' truncated to '%s'", procmime_get_media_type_str(mimeinfo->type), mimeinfo->subtype, s);
+			content_type = s;
+		} else
+			content_type = "UNKNOWN";
 
-		length = g_strdup(to_human_readable((goffset) mimeinfo->length));
+		length = to_human_readable((goffset) mimeinfo->length);
 
 		if (prefs_common.attach_desc)
-			name = g_strdup(get_part_description(mimeinfo));
+			name = get_part_description(mimeinfo);
 		else
-			name = g_strdup(get_part_name(mimeinfo));
+			name = get_part_name(mimeinfo);
 
 		gtk_tree_store_append(model, &iter, parent);
 		gtk_tree_store_set(model, &iter, COL_MIMETYPE, content_type, COL_SIZE, length, COL_NAME, name, COL_DATA, mimeinfo, -1);
-		g_free(content_type);
-		g_free(length);
-		g_free(name);
 
 		if (mimeinfo->node->children)
 			mimeview_set_multipart_tree(mimeview, (MimeInfo *)mimeinfo->node->children->data, &iter);
