@@ -173,7 +173,7 @@ static void pgpview_show_mime_part(TextView *textview, MimeInfo *partinfo)
 
 		AlertValue val = G_ALERTDEFAULT;
 		if (!prefs_common_get_prefs()->work_offline) {
-			val = alertpanel(_("Key import"), _("This key is not in your keyring. Do you want " "Claws Mail to try to import it?"), _("_No"), _("from keyserver"), _("from Web Key Directory"), ALERTFOCUS_SECOND);
+			val = alertpanel(_("Key import"), _("This key is not in your keyring. Do you want Claws Mail to try to import it?"), _("_No"), _("from keyserver"), _("from Web Key Directory"), ALERTFOCUS_FIRST);
 			GTK_EVENTS_FLUSH();
 		}
 		if (val == G_ALERTDEFAULT) {

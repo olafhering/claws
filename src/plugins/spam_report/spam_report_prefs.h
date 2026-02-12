@@ -26,7 +26,7 @@
 #include "procmsg.h"
 #include "passwordstore.h"
 
-#define SPAM_REPORT_USERAGENT "Claws Mail SpamReport plugin "
+#define SPAM_REPORT_USERAGENT PACKAGE_NAME " SpamReport plugin "
 
 typedef struct _SpamReportPrefs SpamReportPrefs;
 

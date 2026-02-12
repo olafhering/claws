@@ -1528,7 +1528,7 @@ void *url_read_thread(void *data)
 		curl_easy_setopt(curl_ctx, CURLOPT_SSL_VERIFYHOST, 0);
 	}
 #endif
-	curl_easy_setopt(curl_ctx, CURLOPT_USERAGENT, "Claws Mail vCalendar plugin " "(" PLUGINS_URI ")");
+	curl_easy_setopt(curl_ctx, CURLOPT_USERAGENT, PACKAGE_NAME " vCalendar plugin " "(" PLUGINS_URI ")");
 	curl_easy_setopt(curl_ctx, CURLOPT_FOLLOWLOCATION, 1);
 	res = curl_easy_perform(curl_ctx);
 
@@ -1650,7 +1650,7 @@ gboolean vcal_curl_put(gchar *url, FILE *fp, gint filesize, const gchar *user, c
 		curl_easy_setopt(curl_ctx, CURLOPT_SSL_VERIFYHOST, 0);
 	}
 #endif
-	curl_easy_setopt(curl_ctx, CURLOPT_USERAGENT, "Claws Mail vCalendar plugin " "(" PLUGINS_URI ")");
+	curl_easy_setopt(curl_ctx, CURLOPT_USERAGENT, PACKAGE_NAME " vCalendar plugin " "(" PLUGINS_URI ")");
 	curl_easy_setopt(curl_ctx, CURLOPT_INFILESIZE, filesize);
 	res = curl_easy_perform(curl_ctx);
 	g_free(userpwd);
@@ -2062,7 +2062,7 @@ gchar *vcal_get_event_as_ical_str(VCalEvent *event)
 	gchar *ical;
 	icalcomponent *calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT,
 						      icalproperty_new_version("2.0"),
-						      icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
+						      icalproperty_new_prodid("-//" PACKAGE_NAME "//NONSGML " PACKAGE_NAME " Calendar//EN"),
 						      icalproperty_new_calscale("GREGORIAN"),
 						      (void *)0);
 	vcal_manager_event_dump(event, FALSE, FALSE, calendar, FALSE);

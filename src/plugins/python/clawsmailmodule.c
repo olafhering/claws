@@ -752,7 +752,7 @@ static PyMethodDef ClawsMailMethods[] = {
 	 "summaryview_select_messages(message_list) - select a list of messages in the summary view\n" "\n" "Select a list of clawsmail.MessageInfo objects in the summary view."},
 
 	{"is_exiting", is_exiting, METH_NOARGS,
-	 "is_exiting() - test whether Claws Mail is currently exiting\n" "\n" "Returns True if Claws Mail is currently exiting. The most common usage for this is to skip\n" "unnecessary cleanup tasks in a shutdown script when Claws Mail is exiting anyways. If the Python\n" "plugin is explicitly unloaded, the shutdown script will still be called, but this function will\n" "return False."},
+	 "is_exiting() - test whether " PACKAGE_NAME " is currently exiting\n" "\n" "Returns True if " PACKAGE_NAME " is currently exiting. The most common usage for this is to skip\n" "unnecessary cleanup tasks in a shutdown script when " PACKAGE_NAME " is exiting anyways. If the Python\n" "plugin is explicitly unloaded, the shutdown script will still be called, but this function will\n" "return False."},
 
 	{"move_messages", move_messages, METH_VARARGS,
 	 "move_messages(message_list, target_folder) - move a list of messages to a target folder\n" "\n" "Move a list of clawsmail.MessageInfo objects to a target folder.\n" "The target_folder argument has to be a clawsmail.Folder object."},
@@ -761,7 +761,7 @@ static PyMethodDef ClawsMailMethods[] = {
 	 "copy_messages(message_list, target_folder) - copy a list of messages to a target folder\n" "\n" "Copy a list of clawsmail.MessageInfo objects to a target folder.\n" "The target_folder argument has to be a clawsmail.Folder object."},
 
 	{"get_tags", get_tags, METH_NOARGS,
-	 "get_tags() - get a tuple of all tags that Claws Mail knows about\n" "\n" "Get a tuple of strings representing all tags that are defined in Claws Mail."},
+	 "get_tags() - get a tuple of all tags that " PACKAGE_NAME " knows about\n" "\n" "Get a tuple of strings representing all tags that are defined in " PACKAGE_NAME "."},
 
 	{"make_sure_tag_exists", make_sure_tag_exists, METH_VARARGS,
 	 "make_sure_tag_exists(tag) - make sure that the specified tag exists\n" "\n" "This function creates the given tag if it does not exist yet.\n" "It is not an error if the tag already exists. In this case, this function does nothing.\n" "However, if a reserved tag name is chosen, a ValueError exception is raised."},
@@ -773,7 +773,7 @@ static PyMethodDef ClawsMailMethods[] = {
 	 "rename_tag(old_tag, new_tag) - rename tag old_tag to new_tag\n" "\n" "This function renames an existing tag.\n" "Raises a KeyError exception if the tag does not exist.\n" "Raises a ValueError exception if the old or new tag name is a reserved name."},
 
 	{"get_accounts", get_accounts, METH_NOARGS,
-	 "get_accounts() - get a tuple of all accounts that Claws Mail knows about\n" "\n" "Get a tuple of Account objects representing all accounts that are defined in Claws Mail."},
+	 "get_accounts() - get a tuple of all accounts that " PACKAGE_NAME " knows about\n" "\n" "Get a tuple of Account objects representing all accounts that are defined in " PACKAGE_NAME "."},
 
 	{"get_current_account", get_current_account, METH_NOARGS,
 	 "get_current_account() - get the current account\n" "\n" "Return the object representing the currently selected account."},
@@ -782,7 +782,7 @@ static PyMethodDef ClawsMailMethods[] = {
 	 "get_default_account() - get the default account\n" "\n" "Return the object representing the default account."},
 
 	{"get_mailboxes", get_mailboxes, METH_NOARGS,
-	 "get_mailboxes() - get a tuple of all mailboxes that Claws Mail knows about\n" "\n" "Get a tuple of Mailbox objects representing all mailboxes that are defined in Claws Mail."},
+	 "get_mailboxes() - get a tuple of all mailboxes that " PACKAGE_NAME " knows about\n" "\n" "Get a tuple of Mailbox objects representing all mailboxes that are defined in " PACKAGE_NAME "."},
 
 	/* private */
 	{"__gobj", private_wrap_gobj, METH_VARARGS,
@@ -809,7 +809,7 @@ PyMODINIT_FUNC initclawsmail(void)
 	gboolean ok = TRUE;
 
 	/* create module */
-	cm_module = Py_InitModule3("clawsmail", ClawsMailMethods, "This module can be used to access some of Claws Mail's data structures\n" "in order to extend or modify the user interface or automate repetitive tasks.\n" "\n" "Whenever possible, the interface works with standard GTK+ widgets\n" "via the PyGTK bindings, so you can refer to the GTK+ / PyGTK documentation\n" "to find out about all possible options.\n" "\n" "The interface to Claws Mail in this module is extended on a 'as-needed' basis.\n" "If you're missing something specific, try contacting the author.");
+	cm_module = Py_InitModule3("clawsmail", ClawsMailMethods, "This module can be used to access some of " PACKAGE_NAME "'s data structures\n" "in order to extend or modify the user interface or automate repetitive tasks.\n" "\n" "Whenever possible, the interface works with standard GTK+ widgets\n" "via the PyGTK bindings, so you can refer to the GTK+ / PyGTK documentation\n" "to find out about all possible options.\n" "\n" "The interface to " PACKAGE_NAME " in this module is extended on a 'as-needed' basis.\n" "If you're missing something specific, try contacting the author.");
 
 	/* add module member "compose_window" set to None */
 	Py_INCREF(Py_None);

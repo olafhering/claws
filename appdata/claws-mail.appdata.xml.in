@@ -6,7 +6,7 @@
   <project_license>GPL-3.0+</project_license>
   <description>
     <_p>
-      Claws Mail is a fast, powerful and very extensible email client.
+      @PACKAGE_NAME@ is a fast, powerful and very extensible email client.
     </_p>
     <_p>
       It is highly configurable and handles hundreds of thousands of emails

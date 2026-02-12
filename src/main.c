@@ -947,7 +947,7 @@ int main(int argc, char *argv[])
 	install_basic_sighandlers();
 
 	if (cmd.status || cmd.status_full || cmd.search || cmd.statistics || cmd.reset_statistics || cmd.cancel_receiving || cmd.cancel_sending || cmd.debug) {
-		puts("0 Claws Mail not running.");
+		puts("0 " PACKAGE_NAME " not running.");
 		lock_socket_remove();
 		return 0;
 	}
@@ -1290,7 +1290,7 @@ int main(int argc, char *argv[])
 	/* if claws crashed, rebuild caches */
 	if (claws_crashed()) {
 		GTK_EVENTS_FLUSH();
-		debug_print("Claws Mail crashed, checking for new messages in local folders\n");
+		debug_print(PACKAGE_NAME " crashed, checking for new messages in local folders\n");
 		folder_item_update_thaw();
 		folderview_check_new(NULL);
 		folder_clean_cache_memory_force();
@@ -1778,11 +1778,11 @@ static void parse_cmd_opt(int argc, char *argv[])
 		} else if (!strcmp(argv[i], "--send")) {
 			cmd.send = TRUE;
 		} else if (!strcmp(argv[i], "--version-full") || !strcmp(argv[i], "-V")) {
-			g_print("Claws Mail version " VERSION_GIT_FULL "\n");
+			g_print(PACKAGE_NAME " version " VERSION_GIT_FULL "\n");
 			main_dump_features_list(FALSE);
 			exit(0);
 		} else if (!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
-			g_print("Claws Mail version " VERSION "\n");
+			g_print(PACKAGE_NAME " version " VERSION "\n");
 			exit(0);
 		} else if (!strcmp(argv[i], "--status-full")) {
 			const gchar *p = (i + 1 < argc) ? argv[i + 1] : NULL;
@@ -1875,7 +1875,7 @@ static void parse_cmd_opt(int argc, char *argv[])
 			g_print("%s\n", _("  --import-mbox file     import the specified mbox file\n"));
 			g_print("%s\n", _("  --online               switch to online mode"));
 			g_print("%s\n", _("  --offline              switch to offline mode"));
-			g_print("%s\n", _("  --exit --quit -q       exit Claws Mail"));
+			g_print("%s\n", _("  --exit --quit -q       exit " PACKAGE_NAME ""));
 			g_print("%s\n", _("  --debug -d             debug mode"));
 			g_print("%s\n", _("  --toggle-debug         toggle debug mode"));
 			g_print("%s\n", _("  --help -h              display this help"));
@@ -2213,7 +2213,7 @@ static gint prohibit_duplicate_launch(void)
 #endif
 	/* remote command mode */
 
-	debug_print("another Claws Mail instance is already running.\n");
+	debug_print("another " PACKAGE_NAME " instance is already running.\n");
 
 	if (cmd.receive_all) {
 		CM_FD_WRITE_ALL("receive_all\n");
@@ -2346,7 +2346,7 @@ static gint prohibit_duplicate_launch(void)
 		fd_gets(sock, buf, sizeof(buf) - 1);
 		buf[sizeof(buf) - 1] = '\0';
 		if (g_strcmp0(buf, x_display)) {
-			g_print("Claws Mail is already running on display %s.\n", buf);
+			g_print(PACKAGE_NAME " is already running on display %s.\n", buf);
 		} else {
 			fd_close(sock);
 			sock = fd_connect_unix(path);
