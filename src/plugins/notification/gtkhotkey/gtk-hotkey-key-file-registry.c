@@ -58,7 +58,7 @@ static GtkHotkeyInfo *get_hotkey_info_from_key_file(GKeyFile *keyfile, const gch
 
 static GList *get_all_hotkey_infos_from_key_file(GKeyFile *keyfile, const gchar *app_id);
 
-static gpointer gtk_hotkey_key_file_registry_parent_class = NULL;
+static gpointer gtk_hotkey_key_file_registry_parent_class;
 
 static
 GtkHotkeyInfo *gtk_hotkey_key_file_registry_real_get_hotkey(GtkHotkeyRegistry *base, const char *app_id, const char *key_id, GError **error)
@@ -402,7 +402,7 @@ static void gtk_hotkey_key_file_registry_finalize(GtkHotkeyKeyFileRegistry *self
 
 GType gtk_hotkey_key_file_registry_get_type(void)
 {
-	static GType gtk_hotkey_key_file_registry_type_id = 0;
+	static GType gtk_hotkey_key_file_registry_type_id;
 
 	if (G_UNLIKELY(gtk_hotkey_key_file_registry_type_id == 0)) {
 		static const GTypeInfo g_define_type_info = {
