@@ -585,6 +585,19 @@ static void connect_run(struct etpan_thread_op *op)
 	CHECK_IMAP();
 
 	r = do_mailimap_socket_connect(param->imap, param->server, param->port, param->proxy_info);
+	switch (r) {
+	case MAILIMAP_NO_ERROR:
+	case MAILIMAP_NO_ERROR_AUTHENTICATED:
+	case MAILIMAP_NO_ERROR_NON_AUTHENTICATED:
+	{
+		int fd = mailimap_idle_get_fd(param->imap);
+		if (fd >= 0)
+			socket_enable_keepalive(fd);
+		break;
+	}
+	default:
+		break;
+	}
 
 	result->error = r;
 }
@@ -638,6 +651,19 @@ static void connect_ssl_run(struct etpan_thread_op *op)
 	CHECK_IMAP();
 
 	r = do_mailimap_ssl_connect_with_callback(param->imap, param->server, param->port, etpan_connect_ssl_context_cb, param->account, param->proxy_info);
+	switch (r) {
+	case MAILIMAP_NO_ERROR:
+	case MAILIMAP_NO_ERROR_AUTHENTICATED:
+	case MAILIMAP_NO_ERROR_NON_AUTHENTICATED:
+	{
+		int fd = mailimap_idle_get_fd(param->imap);
+		if (fd >= 0)
+			socket_enable_keepalive(fd);
+		break;
+	}
+	default:
+		break;
+	}
 	result->error = r;
 }
 

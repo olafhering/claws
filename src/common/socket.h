@@ -112,4 +112,5 @@ gint fd_write_all(gint sock, const gchar *buf, gint len);
 gint fd_gets(gint sock, gchar *buf, gint len);
 gint fd_close(gint sock);
 
+void socket_enable_keepalive(int fd);
 #endif /* __SOCKET_H__ */
