@@ -99,7 +99,7 @@ static gboolean pgpmime_is_signed(MimeInfo *mimeinfo)
 		return FALSE;
 
 	/* check signature */
-	signature = parent->node->children->next != NULL ? (MimeInfo *)parent->node->children->next->data : NULL;
+	signature = parent->node->children->next != NULL ? parent->node->children->next->data : NULL;
 	if (signature == NULL)
 		return FALSE;
 	if ((signature->type != MIMETYPE_APPLICATION) || (g_ascii_strcasecmp(signature->subtype, "pgp-signature")))
@@ -167,13 +167,13 @@ static gboolean pgpmime_is_encrypted(MimeInfo *mimeinfo)
 	if (g_node_n_children(mimeinfo->node) != 2)
 		return FALSE;
 
-	tmpinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 0)->data;
+	tmpinfo = g_node_nth_child(mimeinfo->node, 0)->data;
 	if (tmpinfo->type != MIMETYPE_APPLICATION)
 		return FALSE;
 	if (g_ascii_strcasecmp(tmpinfo->subtype, "pgp-encrypted"))
 		return FALSE;
 
-	tmpinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 1)->data;
+	tmpinfo = g_node_nth_child(mimeinfo->node, 1)->data;
 	if (tmpinfo->type != MIMETYPE_APPLICATION)
 		return FALSE;
 	if (g_ascii_strcasecmp(tmpinfo->subtype, "octet-stream"))
@@ -220,7 +220,7 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 
 	cm_return_val_if_fail(pgpmime_is_encrypted(mimeinfo), NULL);
 
-	encinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 1)->data;
+	encinfo = g_node_nth_child(mimeinfo->node, 1)->data;
 
 	cipher = sgpgme_data_from_mimeinfo(encinfo);
 	plain = sgpgme_decrypt_verify(cipher, &sigstat, ctx);
@@ -364,7 +364,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	memset(&info, 0, sizeof info);
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
+	msgcontent = mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
 	/* create temporary multipart for content */
@@ -571,7 +571,7 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	debug_print("Encrypting message content\n");
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
+	msgcontent = mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
 	/* create temporary multipart for content */
