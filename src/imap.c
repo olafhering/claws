@@ -3369,7 +3369,6 @@ static void *imap_get_uncached_messages_thread(void *data)
 		unsigned int i;
 		int r;
 		carray *env_list;
-		int count;
 
 		if (session->cancelled)
 			break;
@@ -3388,7 +3387,6 @@ static void *imap_get_uncached_messages_thread(void *data)
 
 		session_set_access_time(SESSION(session));
 
-		count = 0;
 		for (i = 0; i < carray_count(env_list); i += 2) {
 			struct imap_fetch_env_info *info;
 			MsgInfo *msginfo;
@@ -3426,7 +3424,6 @@ static void *imap_get_uncached_messages_thread(void *data)
 				llast = g_slist_append(llast, msginfo);
 				llast = llast->next;
 			}
-			count++;
 		}
 
 		imap_fetch_env_free(env_list);
