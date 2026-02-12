@@ -62,11 +62,11 @@ typedef struct {
 } CmGDataContactsCache;
 
 static CmGDataContactsCache contacts_cache;
-static gboolean cm_gdata_contacts_query_running = FALSE;
-static gchar *contacts_group_id = NULL;
-static GDataOAuth2Authorizer *authorizer = NULL;
-static GDataContactsService *service = NULL;
-static GTimer *refresh_timer = NULL;
+static gboolean cm_gdata_contacts_query_running;
+static gchar *contacts_group_id;
+static GDataOAuth2Authorizer *authorizer;
+static GDataContactsService *service;
+static GTimer *refresh_timer;
 
 static void protect_fields_against_NULL(Contact *contact)
 {
@@ -427,7 +427,7 @@ static void cm_gdata_auth_ready(GDataOAuth2Authorizer *auth, GAsyncResult *res, 
 
 static void cm_gdata_interactive_auth()
 {
-	static gboolean interactive_auth_running = FALSE;
+	static gboolean interactive_auth_running;
 
 	gchar *auth_uri;
 
