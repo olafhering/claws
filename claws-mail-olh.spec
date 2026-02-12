@@ -47,6 +47,7 @@
 %bcond_without claws_plugin_tnef_parse
 %bcond_without claws_plugin_vcalendar
 %bcond_with    claws_plugin_demo
+%bcond_with    claws_fsanitize
 #
 %global  _buildshell /bin/bash
 # PACKAGE_TARNAME
@@ -410,6 +411,9 @@ CFLAGS='%optflags -Wno-deprecated-declarations -std=gnu99'
 %endif
 %if %{with claws_plugin_demo}
 	--enable-demo-plugin \
+%endif
+%if %{with claws_fsanitize}
+	--with-fsanitize \
 %endif
 	--with-config-dir=".%name"
 diff -u src/common/version.h{.in,} && exit 1
