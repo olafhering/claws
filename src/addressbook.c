@@ -1748,7 +1748,9 @@ static void addressbook_list_menu_setup(void)
 	gboolean canCut = FALSE;
 	gboolean canCopy = FALSE;
 	gboolean canPaste = FALSE;
+#ifdef USE_LDAP
 	gboolean canBrowse = FALSE;
+#endif
 	gboolean canMerge = FALSE;
 
 	pobj = gtk_cmctree_node_get_row_data(GTK_CMCTREE(addrbook.ctree), addrbook.treeSelected);
@@ -1807,8 +1809,10 @@ static void addressbook_list_menu_setup(void)
 			canDelete = canEdit;
 		}
 		if (iface->type == ADDR_IF_LDAP) {
+#ifdef USE_LDAP
 			if (obj)
 				canBrowse = TRUE;
+#endif
 			canEdit = TRUE;
 			canDelete = TRUE;
 		}
@@ -1828,7 +1832,9 @@ static void addressbook_list_menu_setup(void)
 	/* Disable edit or browse if more than one row selected */
 	if (GTK_CMCLIST(clist)->selection && GTK_CMCLIST(clist)->selection->next) {
 		canEdit = FALSE;
+#ifdef USE_LDAP
 		canBrowse = FALSE;
+#endif
 	}
 
 	/* Allow merging persons or emails are selected */
