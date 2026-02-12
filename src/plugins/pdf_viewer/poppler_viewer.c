@@ -733,7 +733,7 @@ static void pdf_viewer_button_press_events_cb(GtkWidget *widget, GdkEventButton 
 #ifdef HAVE_POPPLER_DEST_NAMED
 	PopplerDest *dest;
 #endif
-	static GdkCursor *hand_cur = NULL;
+	static GdkCursor *hand_cur;
 
 	if (!hand_cur)
 		hand_cur = gdk_cursor_new(GDK_FLEUR);
@@ -894,7 +894,7 @@ static void pdf_viewer_move_events_cb(GtkWidget *widget, GdkEventMotion *event, 
 	} else {
 		/* Link Mapping */
 		static GList *l;
-		static GdkCursor *link_cur = NULL;
+		static GdkCursor *link_cur;
 		static GtkRequisition size;
 		static gdouble x, y, x1, y1, x2, y2;
 		gboolean ccur;
@@ -979,7 +979,7 @@ static void pdf_viewer_move_events_cb(GtkWidget *widget, GdkEventMotion *event, 
 static gboolean pdf_viewer_scroll_cb(GtkWidget *widget, GdkEventScroll *event, PdfViewer *viewer)
 {
 	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(viewer->scrollwin));
-	static gboolean in_scroll_cb = FALSE;
+	static gboolean in_scroll_cb;
 	gboolean handled = FALSE;
 	gint cur_p = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(viewer->cur_page));
 
