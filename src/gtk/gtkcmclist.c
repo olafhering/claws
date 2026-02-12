@@ -450,35 +450,24 @@ static void drag_dest_cell            (GtkCMCList         *clist,
 
 
 
-static guint clist_signals[LAST_SIGNAL] = {0};
+static guint clist_signals[LAST_SIGNAL];
 
 static const GtkTargetEntry clist_target_table = { "gtk-clist-drag-reorder", 0, 0};
 
-static gpointer gtk_cmclist_parent_class = NULL;
+static gpointer gtk_cmclist_parent_class;
 
 GType
 gtk_cmclist_get_type (void)
 {
-  static GType clist_type = 0;
+  static GType clist_type;
 
   if (!clist_type)
     {
-      static const GTypeInfo clist_info =
-      {
-			sizeof (GtkCMCListClass),
-
-			(GBaseInitFunc) NULL,
-			(GBaseFinalizeFunc) NULL,
-
-			(GClassInitFunc) gtk_cmclist_class_init,
-			(GClassFinalizeFunc) NULL,
-			NULL,	/* class_data */
-
-			sizeof (GtkCMCList),
-			0,	/* n_preallocs */
-			(GInstanceInitFunc) gtk_cmclist_init,
-
-			(const GTypeValueTable *) NULL	/* value table */
+	static const GTypeInfo clist_info = {
+		.class_size = sizeof (GtkCMCListClass),
+		.class_init = (GClassInitFunc) gtk_cmclist_class_init,
+		.instance_size = sizeof (GtkCMCList),
+		.instance_init = (GInstanceInitFunc) gtk_cmclist_init,
 	};
 	clist_type = g_type_register_static (GTK_TYPE_CONTAINER, "GtkCMCList", &clist_info, (GTypeFlags)0);
     }
