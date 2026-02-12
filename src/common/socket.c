@@ -1243,18 +1243,21 @@ static gint ssl_write(gnutls_session_t ssl, const gchar *buf, gint len)
 	if (fd_check_io(GPOINTER_TO_INT(gnutls_transport_get_ptr(ssl)), G_IO_OUT) < 0)
 		return -1;
 
-	ret = gnutls_record_send(ssl, buf, len);
+	do {
+		ret = gnutls_record_send(ssl, buf, len);
 
-	switch (ret) {
-	case 0:
-		return -1;
-	case GNUTLS_E_AGAIN:
-	case GNUTLS_E_INTERRUPTED:
-		return 0;
+		switch (ret) {
+		case GNUTLS_E_AGAIN:
+		case GNUTLS_E_INTERRUPTED:
+			continue;
 
-	default:
-		return ret;
-	}
+		case 0:
+			ret = -1;
+			/* fall through */
+		default:
+			return ret;
+		}
+	} while (1);
 }
 
 #endif
