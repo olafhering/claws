@@ -85,7 +85,7 @@ static GtkActionEntry mainwindow_add_mailbox[] = { {
 						    }
 };
 
-static guint main_menu_id = 0;
+static guint main_menu_id;
 
 gint plugin_gtk_init(gchar **error)
 {
