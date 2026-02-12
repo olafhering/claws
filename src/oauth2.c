@@ -291,6 +291,7 @@ static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request)
 	if (timeout)
 		log_message(LOG_PROTOCOL, _("OAuth2 socket timeout error\n"));
 
+	debug_print("Response: %s\n", response->str);
 	return g_string_free(response, got_some_error || timeout);
 }
 
