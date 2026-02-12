@@ -29,9 +29,9 @@ typedef struct _Binding {
 	uint modifiers;
 } Binding;
 
-static GSList *bindings = NULL;
-static guint32 last_event_time = 0;
-static gboolean processing_event = FALSE;
+static GSList *bindings;
+static guint32 last_event_time;
+static gboolean processing_event;
 
 static guint num_lock_mask, caps_lock_mask, scroll_lock_mask;
 
