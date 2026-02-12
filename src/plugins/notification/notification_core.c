@@ -55,7 +55,7 @@ static GHashTable *msg_count_hash;
 static NotificationMsgCount msg_count;
 
 #ifdef HAVE_LIBCANBERRA_GTK
-static gboolean canberra_new_email_is_playing = FALSE;
+static gboolean canberra_new_email_is_playing;
 #endif
 
 static void msg_count_hash_update_func(FolderItem *, gpointer);
@@ -276,7 +276,7 @@ hook on MSGINFO_UPDATE_HOOKLIST
 /* This hash table holds all mails that we already notified about,
    and that still are marked as "new". The keys are the msgid's,
    the values are just 1's stored in a pointer. */
-static GHashTable *notified_hash = NULL;
+static GHashTable *notified_hash;
 
 /* Remove message from the notified_hash if
  *  - the message flags changed
@@ -600,7 +600,7 @@ gboolean notify_include_folder_type(FolderType ftype, gchar *uistr)
 
 static void fix_folderview_scroll(MainWindow *mainwin)
 {
-	static gboolean fix_done = FALSE;
+	static gboolean fix_done;
 
 	if (fix_done)
 		return;
