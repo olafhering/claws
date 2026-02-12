@@ -367,6 +367,14 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	msgcontent = mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
+	/* prepare to write message content to temporary file */
+	fp = my_tmpfile();
+	if (fp == NULL) {
+		perror("my_tmpfile");
+		privacy_set_error(_("Couldn't create temporary file: %s"), g_strerror(errno));
+		return FALSE;
+	}
+
 	/* create temporary multipart for content */
 	sigmultipart = procmime_mimeinfo_new();
 	sigmultipart->type = MIMETYPE_MULTIPART;
@@ -379,26 +387,17 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 
 	g_free(test_msg);
 
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"), g_strdup(boundary));
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"), boundary);
 	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("protocol"), g_strdup("application/pgp-signature"));
 	g_node_append(sigmultipart->node, msgcontent->node);
 	g_node_append(mimeinfo->node, sigmultipart->node);
 
-	/* write message content to temporary file */
-	fp = my_tmpfile();
-	if (fp == NULL) {
-		perror("my_tmpfile");
-		privacy_set_error(_("Couldn't create temporary file: %s"), g_strerror(errno));
-		g_free(boundary);
-		return FALSE;
-	}
 	procmime_write_mimeinfo(sigmultipart, fp);
 	rewind(fp);
 
 	/* read temporary file into memory */
 	textstr = get_canonical_content(fp, boundary);
 
-	g_free(boundary);
 	claws_fclose(fp);
 
 	gpgme_data_new_from_mem(&gpgtext, textstr, strlen(textstr), 0);
