@@ -115,7 +115,7 @@ extern "C" {
 
 	MimeView *mimeview_create(MainWindow *mainwin);
 	void mimeview_init(MimeView *mimeview);
-	void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, const gchar *file);
+	void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, gchar *file);
 	gboolean mimeview_show_part(MimeView *mimeview, MimeInfo *partinfo);
 	void mimeview_show_part_as_text(MimeView *mimeview, MimeInfo *partinfo);
 	void mimeview_destroy(MimeView *mimeview);

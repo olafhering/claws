@@ -423,18 +423,14 @@ static gboolean any_part_is_signed(MimeInfo *mimeinfo)
 	return FALSE;
 }
 
-void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, const gchar *file)
+void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, gchar *file)
 {
 	GtkTreeView *ctree = GTK_TREE_VIEW(mimeview->ctree);
 
 	mimeview_clear(mimeview);
 
-	cm_return_if_fail(file != NULL);
-	cm_return_if_fail(mimeinfo != NULL);
-
 	mimeview->mimeinfo = mimeinfo;
-
-	mimeview->file = g_strdup(file);
+	mimeview->file = file;
 
 	g_signal_handlers_block_by_func(G_OBJECT(ctree), mimeview_selected, mimeview);
 
