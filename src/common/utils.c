@@ -176,6 +176,11 @@ gchar *itos(gint n)
  */
 gchar *to_human_readable(goffset size)
 {
+	static gchar human_readable_string[123];
+	g_autofree gchar *hrstr = g_format_size(size);
+	g_strlcpy(human_readable_string, hrstr, sizeof(human_readable_string));
+	return human_readable_string;
+
 	static gchar str[14];
 	static gchar *b_format = NULL, *kb_format = NULL, *mb_format = NULL, *gb_format = NULL;
 	register int t = 0, r = 0;
