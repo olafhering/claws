@@ -50,7 +50,7 @@
 static gchar *OAUTH2info[5][17] = {
 	{
 		[OA2_BASE_URL] = "accounts.google.com",
-	 "",
+		[OA2_CLIENT_ID] = "",
 	 ".",
 	 "http://127.0.0.1:8888",
 	 "/o/oauth2/auth",
@@ -68,7 +68,7 @@ static gchar *OAUTH2info[5][17] = {
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-	 "",
+		[OA2_CLIENT_ID] = "",
 	 "",
 	 "http://127.0.0.1:8888",
 	 "/common/oauth2/v2.0/authorize",
@@ -86,7 +86,7 @@ static gchar *OAUTH2info[5][17] = {
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.com",
-	 "",
+		[OA2_CLIENT_ID] = "",
 	 "",
 	 "http://127.0.0.1:8888",
 	 "/common/oauth2/v2.0/authorize",
@@ -104,7 +104,7 @@ static gchar *OAUTH2info[5][17] = {
 	 ""},
 	{
 		[OA2_BASE_URL] = "login.microsoftonline.us",
-	 "",
+		[OA2_CLIENT_ID] = "",
 	 "",
 	 "http://127.0.0.1:8888",
 	 "/common/oauth2/v2.0/authorize",
@@ -122,7 +122,7 @@ static gchar *OAUTH2info[5][17] = {
 	 ""},
 	{
 		[OA2_BASE_URL] = "api.login.yahoo.com",
-	 "",
+		[OA2_CLIENT_ID] = "",
 	 ".",
 	 "oob",
 	 "/oauth2/request_auth",
