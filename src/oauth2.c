@@ -309,8 +309,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	gchar *expiry;
 	gint ret;
 	SockInfo *sock;
-	gchar *client_id;
-	gchar *client_secret;
+	const gchar *client_id;
+	const gchar *client_secret;
 	g_autofree gchar *token = NULL;
 	gchar *tmp;
 	gint i;
@@ -344,25 +344,25 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	}
 
 	if (OAUTH2Data->custom_client_id && strlen(OAUTH2Data->custom_client_id))
-		client_id = g_strdup(OAUTH2Data->custom_client_id);
+		client_id = OAUTH2Data->custom_client_id;
 	else
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+		client_id = OAUTH2info[i][OA2_CLIENT_ID];
 
 	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
 		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
-			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
+			client_secret = OAUTH2Data->custom_client_secret;
 		else
-			client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
+			client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
 		uri = g_uri_escape_string(client_secret, NULL, FALSE);
 		tmp = g_strconcat(body, "&client_secret=", uri, NULL);
 		g_free(body);
 		g_free(uri);
 		body = tmp;
 	} else {
-		client_secret = g_strconcat("", NULL);
+		client_secret = "";
 	}
 
 	if (OAUTH2info[i][OA2_REDIRECT_URI]) {
@@ -425,8 +425,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	sock_close(sock, TRUE);
 	g_free(body);
 	g_free(header);
-	g_free(client_id);
-	g_free(client_secret);
 
 	return (ret);
 }
@@ -444,8 +442,8 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	gchar *expiry = NULL;
 	gint ret;
 	SockInfo *sock;
-	gchar *client_id;
-	gchar *client_secret;
+	const gchar *client_id;
+	const gchar *client_secret;
 	gchar *tmp;
 	gint i;
 
@@ -471,9 +469,9 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	}
 
 	if (OAUTH2Data->custom_client_id && strlen(OAUTH2Data->custom_client_id))
-		client_id = g_strdup(OAUTH2Data->custom_client_id);
+		client_id = OAUTH2Data->custom_client_id;
 	else
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+		client_id = OAUTH2info[i][OA2_CLIENT_ID];
 
 	uri = g_uri_escape_string(client_id, NULL, FALSE);
 	body = g_strconcat("client_id=", uri, "&refresh_token=", OAUTH2Data->refresh_token, NULL);
@@ -482,16 +480,16 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	if (OAUTH2info[i][OA2_CLIENT_SECRET]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
 		if (OAUTH2Data->custom_client_secret && strlen(OAUTH2Data->custom_client_secret))
-			client_secret = g_strdup(OAUTH2Data->custom_client_secret);
+			client_secret = OAUTH2Data->custom_client_secret;
 		else
-			client_secret = oauth2_decode(OAUTH2info[i][OA2_CLIENT_SECRET]);
+			client_secret = OAUTH2info[i][OA2_CLIENT_SECRET];
 		uri = g_uri_escape_string(client_secret, NULL, FALSE);
 		tmp = g_strconcat(body, "&client_secret=", uri, NULL);
 		g_free(body);
 		g_free(uri);
 		body = tmp;
 	} else {
-		client_secret = g_strconcat("", NULL);
+		client_secret = "";
 	}
 
 	if (OAUTH2info[i][OA2_GRANT_TYPE_REFRESH]) {
@@ -552,8 +550,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	sock_close(sock, TRUE);
 	g_free(body);
 	g_free(header);
-	g_free(client_id);
-	g_free(client_secret);
 
 	return (ret);
 }
@@ -561,7 +557,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_client_id)
 {
 	gint i;
-	g_autofree gchar *client_id = NULL;
+	const gchar *client_id = NULL;
 	gchar *tmp;
 	GString *url;
 
@@ -579,7 +575,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 	if (custom_client_id && strlen(custom_client_id)) {
 		tmp = g_uri_escape_string(custom_client_id, NULL, FALSE);
 	} else {
-		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
+		client_id = OAUTH2info[i][OA2_CLIENT_ID];
 		tmp = g_uri_escape_string(client_id, NULL, FALSE);
 	}
    	g_string_append(url, tmp);
@@ -683,38 +679,6 @@ out:
 	g_free(uid);
 
 	return (ret);
-}
-
-/* returns allocated string which must be freed */
-guchar *oauth2_decode(const gchar *in)
-{
-	guchar *tmp;
-	gsize len;
-
-	tmp = g_base64_decode(in, &len);
-	passcrypt_decrypt(tmp, len);
-	return tmp;
-}
-
-/* For testing */
-void oauth2_encode(const gchar *in)
-{
-	guchar *tmp = g_strdup(in);
-	guchar *tmp2 = g_strdup(in);
-	gchar *result;
-	gsize len = strlen(in);
-
-	passcrypt_encrypt(tmp, len);
-	result = g_base64_encode(tmp, len);
-	tmp2 = oauth2_decode(result);
-
-	log_message(LOG_PROTOCOL, _("OAuth2 original: %s\n"), in);
-	log_message(LOG_PROTOCOL, _("OAuth2 encoded: %s\n"), result);
-	log_message(LOG_PROTOCOL, _("OAuth2 decoded: %s\n\n"), tmp2);
-
-	g_free(tmp);
-	g_free(tmp2);
-	g_free(result);
 }
 
 void oauth2_release(OAUTH2Data *OAUTH2Data)
