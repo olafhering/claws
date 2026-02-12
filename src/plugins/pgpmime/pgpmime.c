@@ -700,10 +700,8 @@ static PrivacySystem pgpmime_system = {
 	.is_encrypted = pgpmime_is_encrypted,
 	.decrypt = pgpmime_decrypt,
 
-	.can_sign = TRUE,
 	.sign = pgpmime_sign,
 
-	.can_encrypt = TRUE,
 	.get_encrypt_data = pgpmime_get_encrypt_data,
 	.encrypt = pgpmime_encrypt,
 	.get_encrypt_warning = pgpmime_get_encrypt_warning,

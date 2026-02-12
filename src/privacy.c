@@ -386,7 +386,7 @@ gboolean privacy_system_can_sign(const gchar *id)
 	if (system == NULL)
 		return FALSE;
 
-	return system->can_sign;
+	return !!system->sign;
 }
 
 gboolean privacy_system_can_encrypt(const gchar *id)
@@ -400,7 +400,7 @@ gboolean privacy_system_can_encrypt(const gchar *id)
 	if (system == NULL)
 		return FALSE;
 
-	return system->can_encrypt;
+	return !!system->encrypt;
 }
 
 gboolean privacy_sign(const gchar *id, MimeInfo *target, PrefsAccount *account, const gchar *from_addr)
@@ -410,9 +410,7 @@ gboolean privacy_sign(const gchar *id, MimeInfo *target, PrefsAccount *account, 
 	system = privacy_get_system(id);
 	if (system == NULL)
 		return FALSE;
-	if (!system->can_sign)
-		return FALSE;
-	if (system->sign == NULL)
+	if (!system->sign)
 		return FALSE;
 
 	return system->sign(target, account, from_addr);
@@ -429,8 +427,6 @@ gchar *privacy_get_encrypt_data(const gchar *id, GSList *recp_names)
 
 	system = privacy_get_system(id);
 	if (system == NULL)
-		return NULL;
-	if (!system->can_encrypt)
 		return NULL;
 	if (system->get_encrypt_data == NULL)
 		return NULL;
@@ -455,8 +451,6 @@ const gchar *privacy_get_encrypt_warning(const gchar *id)
 	system = privacy_get_system(id);
 	if (system == NULL)
 		return NULL;
-	if (!system->can_encrypt)
-		return NULL;
 	if (system->get_encrypt_warning == NULL)
 		return NULL;
 
@@ -471,8 +465,6 @@ void privacy_inhibit_encrypt_warning(const gchar *id, gboolean inhibit)
 
 	system = privacy_get_system(id);
 	if (system == NULL)
-		return;
-	if (!system->can_encrypt)
 		return;
 	if (system->inhibit_encrypt_warning == NULL)
 		return;
@@ -494,9 +486,7 @@ gboolean privacy_encrypt(const gchar *id, MimeInfo *mimeinfo, const gchar *encda
 	system = privacy_get_system(id);
 	if (system == NULL)
 		return FALSE;
-	if (!system->can_encrypt)
-		return FALSE;
-	if (system->encrypt == NULL)
+	if (!system->encrypt)
 		return FALSE;
 
 	return system->encrypt(mimeinfo, encdata);

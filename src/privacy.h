@@ -95,10 +95,8 @@ struct _PrivacySystem {
 	gboolean (*is_encrypted) (MimeInfo *mimeinfo);
 	MimeInfo *(*decrypt) (MimeInfo *mimeinfo);
 
-	gboolean can_sign;
 	gboolean (*sign) (MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from_addr);
 
-	gboolean can_encrypt;
 	gchar *(*get_encrypt_data) (GSList *recp_names);
 	gboolean (*encrypt) (MimeInfo *mimeinfo, const gchar *encrypt_data);
 	const gchar *(*get_encrypt_warning) (void);

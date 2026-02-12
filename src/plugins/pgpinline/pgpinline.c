@@ -836,10 +836,8 @@ static PrivacySystem pgpinline_system = {
 	.is_encrypted = pgpinline_is_encrypted,
 	.decrypt = pgpinline_decrypt,
 
-	.can_sign = TRUE,
 	.sign = pgpinline_sign,
 
-	.can_encrypt = TRUE,
 	.get_encrypt_data = pgpinline_get_encrypt_data,
 	.encrypt = pgpinline_encrypt,
 	.get_encrypt_warning = pgpinline_get_encrypt_warning,
