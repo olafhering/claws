@@ -774,7 +774,7 @@ typedef ULONG(*PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControl
 #define LDAP_START_TLS_S "ldap_start_tls_sA"
 typedef ULONG(*PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControlA *, PLDAPControlA *);
 #endif /* LDAP_UNICODE */
-PFldap_start_tls_s Win32_ldap_start_tls_s = NULL;
+PFldap_start_tls_s Win32_ldap_start_tls_s;
 #endif
 
 /**
