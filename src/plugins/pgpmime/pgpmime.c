@@ -335,11 +335,13 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 
 gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *from_addr)
 {
+	gboolean rc = FALSE;
 	MimeInfo *msgcontent, *sigmultipart, *newinfo;
-	gchar *textstr, *micalg = NULL;
 	FILE *fp;
+	g_autofree gchar *textstr = NULL;
+   	g_autofree gchar *micalg = NULL;
+	g_autofree gchar *sigcontent = NULL;
 	gchar *boundary = NULL;
-	gchar *sigcontent;
 	gpgme_ctx_t ctx;
 	gpgme_data_t gpgtext, gpgsig;
 	gpgme_error_t err;
@@ -352,7 +354,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if (fp == NULL) {
 		perror("my_tmpfile");
 		privacy_set_error(_("Couldn't create temporary file: %s"), g_strerror(errno));
-		return FALSE;
+		goto out;
 	}
 	procmime_write_mimeinfo(mimeinfo, fp);
 	rewind(fp);
@@ -405,15 +407,14 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
-		return FALSE;
+		goto error;
 	}
 	gpgme_set_textmode(ctx, 1);
 	gpgme_set_armor(ctx, 1);
 	gpgme_signers_clear(ctx);
 
 	if (!sgpgme_setup_signers(ctx, account, from_addr)) {
-		gpgme_release(ctx);
-		return FALSE;
+		goto error;
 	}
 
 	prefs_gpg_enable_agent(prefs_gpg_get_config()->use_gpg_agent);
@@ -427,11 +428,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	err = gpgme_op_sign_start(ctx, gpgtext, gpgsig, GPGME_SIG_MODE_DETACH);
 	if (err != GPG_ERR_NO_ERROR) {
 		privacy_set_error(_("Data signing failed, %s"), gpgme_strerror(err));
-		gpgme_release(ctx);
-		gpgme_data_release(gpgsig);
-		gpgme_data_release(gpgtext);
-		g_free(textstr);
-		return FALSE;
+		goto error;
 	}
 
 	do {
@@ -448,11 +445,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 				err = gpgme_cancel(ctx);
 				if (err != GPG_ERR_NO_ERROR)
 					g_warning("%s: cancel ctx %p: %s", __func__, ctx, gpgme_strerror(err));
-				gpgme_release(ctx);
-				gpgme_data_release(gpgsig);
-				gpgme_data_release(gpgtext);
-				g_free(textstr);
-				return FALSE;
+				goto error;
 			}
 			break;
 		}
@@ -469,8 +462,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 			privacy_set_error(_("Data signing failed, %s"), gpgme_strerror(err));
 			debug_print("gpgme_op_sign error : %x\n", err);
 		}
-		gpgme_release(ctx);
-		return FALSE;
+		goto error;
 	}
 	result = gpgme_op_sign_result(ctx);
 	if (result && result->signatures) {
@@ -493,31 +485,25 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 			privacy_set_error(_("Data signing failed due to invalid signer: %s"), gpgme_strerror(invalid->reason));
 			invalid = invalid->next;
 		}
-		gpgme_release(ctx);
-		return FALSE;
+		goto error;
 	} else {
 		/* can't get result (maybe no signing key?) */
 		debug_print("gpgme_op_sign_result error\n");
 		privacy_set_error(_("Data signing failed, no results."));
-		gpgme_release(ctx);
-		return FALSE;
+		goto error;
 	}
 
 	sigcontent = sgpgme_data_release_and_get_mem(gpgsig, &len);
-	gpgme_data_release(gpgtext);
-	g_free(textstr);
 
 	if (sigcontent == NULL || len <= 0) {
 		g_warning("sgpgme_data_release_and_get_mem failed");
 		privacy_set_error(_("Data signing failed, no contents."));
-		g_free(micalg);
-		g_free(sigcontent);
-		gpgme_release(ctx);
-		return FALSE;
+		goto error;
 	}
 
 	/* add signature */
 	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("micalg"), micalg);
+	micalg = NULL;
 
 	newinfo = procmime_mimeinfo_new();
 	newinfo->type = MIMETYPE_APPLICATION;
@@ -530,10 +516,15 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	newinfo->tmp = TRUE;
 	g_node_append(sigmultipart->node, newinfo->node);
 
-	g_free(sigcontent);
-	gpgme_release(ctx);
+	rc = TRUE;
 
-	return TRUE;
+error:
+	gpgme_release(ctx);
+	gpgme_data_release(gpgsig);
+	gpgme_data_release(gpgtext);
+
+out:
+	return rc;
 }
 
 gchar *pgpmime_get_encrypt_data(GSList *recp_names)
