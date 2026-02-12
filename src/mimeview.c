@@ -1140,9 +1140,6 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 {
 	MimeInfo *first_text;
 
-	cm_return_if_fail(mimeview != NULL);
-	cm_return_if_fail(selected != NULL);
-
 	if (selected->type == MIMETYPE_MESSAGE && !g_ascii_strcasecmp(selected->subtype, "rfc822")) {
 		/* if the first text part is signed, check that */
 		first_text = selected;
