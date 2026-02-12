@@ -45,10 +45,10 @@
 #include "mainwindow.h"
 #include "summaryview.h"
 
-static gboolean grab_all = FALSE;
+static gboolean grab_all;
 
 static gboolean pass_ack;
-static gchar *last_pass = NULL;
+static gchar *last_pass;
 
 static void passphrase_ok_cb(GtkWidget *widget, gpointer data);
 static void passphrase_cancel_cb(GtkWidget *widget, gpointer data);
