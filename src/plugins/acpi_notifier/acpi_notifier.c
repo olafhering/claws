@@ -595,8 +595,8 @@ static void acpi_set(gboolean on)
 	}
 }
 
-static guint should_quit = FALSE;
-static int last_blink = 0;
+static guint should_quit;
+static int last_blink;
 
 static gint acpi_blink(gpointer data)
 {
@@ -610,8 +610,8 @@ static gint acpi_blink(gpointer data)
 	}
 }
 
-static int blink_timeout_id = 0;
-static int alertpanel_blink_timeout_id = 0;
+static int blink_timeout_id;
+static int alertpanel_blink_timeout_id;
 static gint my_new = -1, my_unread = -1;
 static int my_action = -1;
 
