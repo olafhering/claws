@@ -48,10 +48,10 @@
 
 /* transient data */
 static struct _PersonEdit_dlg personeditdlg;
-static AddressBookFile *current_abf = NULL;
-static ItemPerson *current_person = NULL;
-static ItemFolder *current_parent_folder = NULL;
-static EditAddressPostUpdateCallback edit_person_close_post_update_cb = NULL;
+static AddressBookFile *current_abf;
+static ItemPerson *current_person;
+static ItemFolder *current_parent_folder;
+static EditAddressPostUpdateCallback edit_person_close_post_update_cb;
 
 typedef enum {
 	EMAIL_COL_EMAIL,
@@ -245,8 +245,8 @@ static gboolean edit_person_key_pressed(GtkWidget *widget, GdkEventKey *event, g
 	return FALSE;
 }
 
-static gchar *_title_new_ = NULL;
-static gchar *_title_edit_ = NULL;
+static gchar *_title_new_;
+static gchar *_title_edit_;
 
 static void edit_person_set_widgets_title(gchar *text)
 {
@@ -911,7 +911,7 @@ static void addressbook_edit_person_unset_picture_menu_cb(GtkAction *action, gpo
 	addressbook_edit_person_clear_picture();
 }
 
-static GtkWidget *editaddr_popup_menu = NULL;
+static GtkWidget *editaddr_popup_menu;
 static GtkActionEntry editaddr_popup_entries[] = {
 	{"EditAddressPopup", NULL, "EditAddressPopup", NULL, NULL, NULL},
 	{"EditAddressPopup/SetPicture", NULL, N_("_Set picture"), NULL, NULL, G_CALLBACK(addressbook_edit_person_set_picture_menu_cb)},
@@ -1044,7 +1044,7 @@ static void addressbook_edit_person_page_basic(gint pageNum, gchar *pageLbl)
 	personeditdlg.entry_nick = entry_nn;
 }
 
-static gboolean email_adding = FALSE, email_saving = FALSE;
+static gboolean email_adding, email_saving;
 
 static void edit_person_entry_email_changed(GtkWidget *entry, gpointer data)
 {
@@ -1259,7 +1259,7 @@ static void addressbook_edit_person_page_email(gint pageNum, gchar *pageLbl)
 	personeditdlg.email_add = buttonAdd;
 }
 
-static gboolean attrib_adding = FALSE, attrib_saving = FALSE;
+static gboolean attrib_adding, attrib_saving;
 
 static void edit_person_entry_att_changed(GtkWidget *entry, gpointer data)
 {
