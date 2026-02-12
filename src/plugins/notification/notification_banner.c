@@ -77,9 +77,9 @@ static GtkWidget *banner_popup;
 static GtkUIManager *banner_ui_manager;
 static GtkActionGroup *banner_action_group;
 
-static gboolean banner_popup_open = FALSE;
+static gboolean banner_popup_open;
 
-static MsgInfo *current_msginfo = NULL;
+static MsgInfo *current_msginfo;
 
 /* Corresponding mutexes */
 G_LOCK_DEFINE_STATIC(banner);
