@@ -78,13 +78,13 @@
 /patches
 /po/*.gmo
 /po/*.mo
+/po/*.pot
 /po/*.po~
 /po/.intltool-merge-cache
 /po/Makevars.template
 /po/POTFILES
 /po/Rules-quot
 /po/boldquot.sed
-/po/claws-mail.pot
 /po/en@boldquot.header
 /po/en@quot.header
 /po/insert-header.sin
