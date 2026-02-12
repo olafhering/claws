@@ -1416,8 +1416,7 @@ gint sock_close(SockInfo *sock, gboolean close_fd)
 		g_io_channel_unref(sock->sock_ch);
 
 #ifdef USE_GNUTLS
-	if (sock->ssl)
-		ssl_done_socket(sock);
+	ssl_done_socket(sock);
 	if (sock->g_source)
 		g_source_remove(sock->g_source);
 #endif
