@@ -39,7 +39,7 @@
 void notification_sock_puts(SockInfo *, gchar *);
 void notification_lcdproc_send(gchar *);
 
-static SockInfo *sock = NULL;
+static SockInfo *sock;
 
 void notification_lcdproc_connect(void)
 {
