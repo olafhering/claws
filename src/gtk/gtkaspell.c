@@ -101,7 +101,7 @@ static void button_press_intercept_cb(GtkTextView *gtktext, GtkMenu *menu, GtkAs
 /* Checker creation */
 static GtkAspeller *gtkaspeller_new(Dictionary *dict);
 static GtkAspeller *gtkaspeller_real_new(Dictionary *dict);
-static GtkAspeller *gtkaspeller_delete(GtkAspeller *gtkaspeller);
+static void gtkaspeller_delete(GtkAspeller *gtkaspeller);
 static GtkAspeller *gtkaspeller_real_delete(GtkAspeller *gtkaspeller);
 
 /* Checker configuration */
@@ -616,10 +616,8 @@ static GtkAspeller *gtkaspeller_real_new(Dictionary *dict)
 	return gtkaspeller;
 }
 
-static GtkAspeller *gtkaspeller_delete(GtkAspeller *gtkaspeller)
+static void gtkaspeller_delete(GtkAspeller *gtkaspeller)
 {
-	cm_return_val_if_fail(gtkaspellcheckers, NULL);
-
 	gtkaspellcheckers->checkers = g_slist_remove(gtkaspellcheckers->checkers, gtkaspeller);
 
 	debug_print("Aspell: Deleting gtkaspeller %p.\n", gtkaspeller);
@@ -627,8 +625,6 @@ static GtkAspeller *gtkaspeller_delete(GtkAspeller *gtkaspeller)
 	gtkaspeller_real_delete(gtkaspeller);
 
 	debug_print("Aspell: number of existing checkers %d\n", g_slist_length(gtkaspellcheckers->checkers));
-
-	return gtkaspeller;
 }
 
 static GtkAspeller *gtkaspeller_real_delete(GtkAspeller *gtkaspeller)
