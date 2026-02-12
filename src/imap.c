@@ -1076,7 +1076,6 @@ static IMAPSession *imap_session_new(Folder *folder, const PrefsAccount *account
 
 	session = g_new0(IMAPSession, 1);
 	session_init(SESSION(session), account, FALSE);
-	SESSION(session)->type = SESSION_IMAP;
 	SESSION(session)->server = g_strdup(account->recv_server);
 	SESSION(session)->port = port;
 	SESSION(session)->sock = NULL;
