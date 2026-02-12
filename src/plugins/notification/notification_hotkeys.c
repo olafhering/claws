@@ -31,7 +31,7 @@
 #define HOTKEYS_APP_ID PACKAGE_TARNAME
 #define HOTKEY_KEY_ID_TOGGLED "toggle-mainwindow"
 
-static GtkHotkeyInfo *hotkey_toggle_mainwindow = NULL;
+static GtkHotkeyInfo *hotkey_toggle_mainwindow;
 
 static void hotkey_toggle_mainwindow_activated(GtkHotkeyInfo *hotkey, guint event_time, gpointer data)
 {
