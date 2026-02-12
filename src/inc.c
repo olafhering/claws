@@ -67,12 +67,12 @@
 
 extern SessionStats session_stats;
 
-static GList *inc_dialog_list = NULL;
+static GList *inc_dialog_list;
 
-static time_t inc_offline_overridden_yes = 0;
-static time_t inc_offline_overridden_no = 0;
+static time_t inc_offline_overridden_yes;
+static time_t inc_offline_overridden_no;
 
-guint inc_lock_count = 0;
+guint inc_lock_count;
 
 static GdkPixbuf *currentpix;
 static GdkPixbuf *errorpix;
@@ -1305,8 +1305,8 @@ void inc_unlock_real(void)
 		inc_lock_count--;
 }
 
-static guint autocheck_timer = 0;
-static gpointer autocheck_data = NULL;
+static guint autocheck_timer;
+static gpointer autocheck_data;
 
 static void inc_notify_cmd(gint new_msgs, gboolean notify)
 {
