@@ -404,7 +404,8 @@ gboolean privacy_system_can_encrypt(const gchar *id)
 {
 	PrivacySystem *system;
 
-	cm_return_val_if_fail(id != NULL, FALSE);
+	if (!id)
+		return FALSE;
 
 	system = privacy_get_system(id);
 	if (system == NULL)
