@@ -170,7 +170,7 @@ static gchar *oauth2_post_request(gchar *host, gchar *resource, gchar *header, g
 	g_string_append_printf(request, s_Host, host);
 	g_string_append(request, s_Connection);
 	g_string_append(request, s_UserAgent);
-	if (header[0])
+	if (header)
 		g_string_append_printf(request, "%s\r\n", header);
 	g_string_append_printf(request, "\r\n%s", body);
 
@@ -301,7 +301,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
-	gchar *header;
+	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token;
 	gchar *expiry;
@@ -392,8 +392,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
 		g_free(tmp_hd);
-	} else {
-		header = g_strconcat("", NULL);
 	}
 
 	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
@@ -441,7 +439,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
-	gchar *header;
+	gchar *header = NULL;
 	gchar *tmp_hd, *tmp_hd_encoded;
 	gchar *access_token = NULL;
 	gchar *expiry = NULL;
@@ -522,8 +520,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		header = g_strconcat("Authorization: Basic ", tmp_hd_encoded, NULL);
 		g_free(tmp_hd_encoded);
 		g_free(tmp_hd);
-	} else {
-		header = g_strconcat("", NULL);
 	}
 
 	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
