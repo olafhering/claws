@@ -73,8 +73,8 @@ static struct _ExpHtml_Dlg {
 
 static struct _AddressFileSelection _exp_html_file_selector_;
 
-static ExportHtmlCtl *_exportCtl_ = NULL;
-static AddressCache *_addressCache_ = NULL;
+static ExportHtmlCtl *_exportCtl_;
+static AddressCache *_addressCache_;
 
 /**
  * Display message in status field.
