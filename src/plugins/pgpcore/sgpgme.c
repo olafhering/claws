@@ -494,7 +494,6 @@ gchar *sgpgme_sigstat_info_short(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 
 gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 {
-	gint i = 0;
 	GString *siginfo;
 	gpgme_signature_t sig = NULL;
 
@@ -589,7 +588,6 @@ gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 		}
 
 		g_string_append(siginfo, "\n");
-		i++;
 		sig = sig->next;
 		gpgme_key_unref(key);
 	}
