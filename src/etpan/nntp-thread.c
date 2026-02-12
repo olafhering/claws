@@ -51,11 +51,11 @@
 
 #define NNTP_BATCH_SIZE 5000
 
-static struct etpan_thread_manager *thread_manager = NULL;
-static chash *nntp_hash = NULL;
-static chash *session_hash = NULL;
-static guint thread_manager_signal = 0;
-static GIOChannel *io_channel = NULL;
+static struct etpan_thread_manager *thread_manager;
+static chash *nntp_hash;
+static chash *session_hash;
+static guint thread_manager_signal;
+static GIOChannel *io_channel;
 
 static int do_newsnntp_socket_connect(newsnntp *imap, const char *server, gushort port, ProxyInfo *proxy_info)
 {
