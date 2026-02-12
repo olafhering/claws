@@ -1223,16 +1223,14 @@ void sgpgme_check_create_key(void)
 	prefs_gpg_save_config();
 }
 
-void *sgpgme_data_release_and_get_mem(gpgme_data_t data, size_t *len)
+void *sgpgme_get_mem(gpgme_data_t data, size_t *len)
 {
 	char buf[BUFSIZ];
 	void *result = NULL;
 	ssize_t r = 0;
 	size_t w = 0;
 
-	cm_return_val_if_fail(data != NULL, NULL);
-	cm_return_val_if_fail(len != NULL, NULL);
-
+	*len = 0;
 	/* I know it's deprecated, but we don't compile with _LARGEFILE */
 	cm_gpgme_data_rewind(data);
 	while ((r = gpgme_data_read(data, buf, BUFSIZ)) > 0) {
@@ -1250,12 +1248,10 @@ void *sgpgme_data_release_and_get_mem(gpgme_data_t data, size_t *len)
 
 	*len = w;
 
-	gpgme_data_release(data);
 	if (r < 0) {
 		g_warning("gpgme_data_read() returned an error: %d", (int)r);
 		free(result);
-		*len = 0;
-		return NULL;
+		result = NULL;
 	}
 	return result;
 }
