@@ -906,7 +906,7 @@ static void update_signature_noticeview(MimeView *mimeview, gboolean special, Si
 	StockPixmap icon = STOCK_PIXMAP_PRIVACY_SIGNED;
 	SignatureStatus mycode = SIGNATURE_UNCHECKED;
 
-	if (mimeview == NULL || mimeview->siginfo == NULL)
+	if (mimeview->siginfo == NULL)
 		g_error("bad call to update noticeview");
 
 	if (special)
