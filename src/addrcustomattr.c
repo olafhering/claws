@@ -246,8 +246,8 @@ static GtkWidget *custom_attr_window_list_view_create(void)
 
 	model = GTK_TREE_MODEL(custom_attr_window_create_data_store());
 	list_view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
-	g_object_unref(model);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(model), CUSTOM_ATTR_NAME, GTK_SORT_ASCENDING);
+	g_object_unref(model);
 
 	gtk_tree_view_set_rules_hint(list_view, prefs_common.use_stripes_everywhere);
 
