@@ -98,13 +98,13 @@ const gchar *plugin_licence_tokens[] = {
 /**
  * List of all loaded plugins
  */
-GSList *plugins = NULL;
-GSList *plugin_types = NULL;
+GSList *plugins;
+GSList *plugin_types;
 
 /* 
  * List of plugins unloaded for some fixable reason
  */
-static GSList *unloaded_plugins = NULL;
+static GSList *unloaded_plugins;
 
 static gint list_find_by_string(gconstpointer data, gconstpointer str)
 {
