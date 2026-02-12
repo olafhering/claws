@@ -70,16 +70,16 @@
 #define bswap_32(x) (x)
 
 #define MMAP_TO_GUINT32(x)	\
-	(((x[0]&0xff)) |	\
-	 ((x[1]&0xff) << 8) |	\
-	 ((x[2]&0xff) << 16) |	\
-	 ((x[3]&0xff) << 24))
+	(((unsigned int)(x[0]&0xffU)) |	\
+	 ((unsigned int)(x[1]&0xffU) <<  8U) |	\
+	 ((unsigned int)(x[2]&0xffU) << 16U) |	\
+	 ((unsigned int)(x[3]&0xffU) << 24U))
 
 #define MMAP_TO_GUINT32_SWAPPED(x)	\
-	(((x[0]&0xff)) |		\
-	 ((x[1]&0xff) << 8) |		\
-	 ((x[2]&0xff) << 16) |		\
-	 ((x[3]&0xff) << 24))
+	(((unsigned int)(x[0]&0xffU)) |		\
+	 ((unsigned int)(x[1]&0xffU) <<  8U) |		\
+	 ((unsigned int)(x[2]&0xffU) << 16U) |		\
+	 ((unsigned int)(x[3]&0xffU) << 24U))
 
 #define msgcache_use_mmap_read 1
 #endif
