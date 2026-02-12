@@ -77,9 +77,9 @@
 #endif
 #endif
 
-static GList *folder_list = NULL;
-static GSList *class_list = NULL;
-static GSList *folder_unloaded_list = NULL;
+static GList *folder_list;
+static GSList *class_list;
+static GSList *folder_unloaded_list;
 
 void folder_init(Folder *folder, const gchar *name);
 
@@ -4064,7 +4064,7 @@ static Folder *folder_get_from_xml(GNode *node)
 
 gchar *folder_get_list_path(void)
 {
-	static gchar *filename = NULL;
+	static gchar *filename;
 
 	if (!filename)
 		filename = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDER_LIST, NULL);
@@ -4192,7 +4192,7 @@ static gchar * folder_item_get_tree_identifier(FolderItem * item)
 
 static FolderItem *folder_create_processing_folder(int account_id)
 {
-	static Folder *processing_folder = NULL;
+	static Folder *processing_folder;
 	FolderItem *processing_folder_item;
 
 	gchar *processing_folder_item_name = NULL;
@@ -4408,7 +4408,7 @@ void folder_item_apply_processing(FolderItem *item)
 /*
  *  functions for handling FolderItem content changes
  */
-static gint folder_item_update_freeze_cnt = 0;
+static gint folder_item_update_freeze_cnt;
 
 static void folder_item_update_with_msg(FolderItem *item, FolderItemUpdateFlags update_flags, MsgInfo *msg)
 {
