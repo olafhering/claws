@@ -34,7 +34,7 @@
 #define ID_TIME_OFFSET             998000000
 #define ADDRCACHE_MAX_SEARCH_COUNT 1000
 
-static int _nextCacheID__ = 0;
+static int _nextCacheID__;
 
 /*
  * Generate next cache ID.
