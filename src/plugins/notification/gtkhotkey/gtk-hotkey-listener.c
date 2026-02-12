@@ -36,9 +36,9 @@ enum {
 
 guint listener_signals[LAST_SIGNAL] = { 0 };
 
-static gpointer gtk_hotkey_listener_parent_class = NULL;
+static gpointer gtk_hotkey_listener_parent_class;
 
-static GtkHotkeyListener *default_listener = NULL;
+static GtkHotkeyListener *default_listener;
 static GType default_listener_type = G_TYPE_INVALID;
 
 /**
@@ -167,7 +167,7 @@ static void gtk_hotkey_listener_init(GtkHotkeyListener *self)
 
 GType gtk_hotkey_listener_get_type(void)
 {
-	static GType gtk_hotkey_listener_type_id = 0;
+	static GType gtk_hotkey_listener_type_id;
 
 	if (G_UNLIKELY(gtk_hotkey_listener_type_id == 0)) {
 		static const GTypeInfo g_define_type_info = {
