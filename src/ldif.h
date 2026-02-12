@@ -84,16 +84,16 @@
 /* LDIF file object */
 typedef struct _LdifFile LdifFile;
 struct _LdifFile {
-	FILE       *file;
-	gchar      *path;
-	gchar      *bufptr;
-	gint       retVal;
+	FILE *file;
+	gchar *path;
+	gchar *bufptr;
+	gint retVal;
 	GHashTable *hashFields;
-	GList      *tempList;
-	gboolean   dirtyFlag;
-	gboolean   accessFlag;
-	void       (*cbProgress)( void *, void *, void * );
-	gint       importCount;
+	GList *tempList;
+	gboolean dirtyFlag;
+	gboolean accessFlag;
+	void (*cbProgress)(void *, void *, void *);
+	gint importCount;
 };
 
 /* LDIF field record structure */
@@ -106,20 +106,18 @@ struct _Ldif_FieldRec_ {
 };
 
 /* Function prototypes */
-LdifFile *ldif_create		( void );
-void ldif_set_file		( LdifFile* ldifFile, const gchar *value );
-void ldif_set_accessed		( LdifFile* ldifFile, const gboolean value );
-void ldif_field_set_name	( Ldif_FieldRec *rec, const gchar *value );
-void ldif_field_set_selected	( Ldif_FieldRec *rec, const gboolean value );
-void ldif_field_toggle		( Ldif_FieldRec *rec );
-void ldif_free			( LdifFile *ldifFile );
-void ldif_print_file		( LdifFile *ldifFile, FILE *stream );
-gint ldif_import_data		( LdifFile *ldifFile, AddressCache *cache );
-gint ldif_read_tags		( LdifFile *ldifFile );
-GList *ldif_get_fieldlist	( LdifFile *ldifFile );
-gboolean ldif_write_value	( FILE *stream, const gchar *name,
-				  const gchar *value );
-void ldif_write_eor		( FILE *stream );
+LdifFile *ldif_create(void);
+void ldif_set_file(LdifFile *ldifFile, const gchar *value);
+void ldif_set_accessed(LdifFile *ldifFile, const gboolean value);
+void ldif_field_set_name(Ldif_FieldRec *rec, const gchar *value);
+void ldif_field_set_selected(Ldif_FieldRec *rec, const gboolean value);
+void ldif_field_toggle(Ldif_FieldRec *rec);
+void ldif_free(LdifFile *ldifFile);
+void ldif_print_file(LdifFile *ldifFile, FILE *stream);
+gint ldif_import_data(LdifFile *ldifFile, AddressCache *cache);
+gint ldif_read_tags(LdifFile *ldifFile);
+GList *ldif_get_fieldlist(LdifFile *ldifFile);
+gboolean ldif_write_value(FILE *stream, const gchar *name, const gchar *value);
+void ldif_write_eor(FILE *stream);
 
 #endif /* __LDIF_H__ */
-

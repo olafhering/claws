@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -40,8 +40,7 @@
 
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3,13,2,39),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 13, 2, 39), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	tzset();
@@ -70,18 +69,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin enables vCalendar message handling like that produced "
-		 "by Evolution or Outlook.\n\n"
-		 "When loaded, it will create a vCalendar mailbox in the Folder "
-		 "List, which will be populated by meetings that you have accepted "
-		 "or created.\n"
-		 "Meeting requests that you receive will be presented in an "
-		 "appropriate form and you will be able to accept or decline them.\n"
-		 "To create a meeting right-click on the vCalendar or "
-		 "Meetings folder and choose \"New meeting...\".\n\n"
-		 "You will also be able to subscribe to remote Webcal feeds, "
-		 "export your meetings and calendars, publish your free/busy "
-		 "information and retrieve that information from others.");
+	return _("This plugin enables vCalendar message handling like that produced " "by Evolution or Outlook.\n\n" "When loaded, it will create a vCalendar mailbox in the Folder " "List, which will be populated by meetings that you have accepted " "or created.\n" "Meeting requests that you receive will be presented in an " "appropriate form and you will be able to accept or decline them.\n" "To create a meeting right-click on the vCalendar or " "Meetings folder and choose \"New meeting...\".\n\n" "You will also be able to subscribe to remote Webcal feeds, " "export your meetings and calendars, publish your free/busy " "information and retrieve that information from others.");
 }
 
 const gchar *plugin_type(void)
@@ -101,9 +89,13 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_MIMEVIEWER, "text/calendar"},
-		  {PLUGIN_FOLDERCLASS, N_("Calendar")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_MIMEVIEWER, "text/calendar"},
+	{PLUGIN_FOLDERCLASS, N_("Calendar")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

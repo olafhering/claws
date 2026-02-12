@@ -39,40 +39,31 @@
 /* Harvester file object */
 typedef struct _AddressHarvester AddressHarvester;
 struct _AddressHarvester {
-	GList      *headerTable;
-	gchar      *path;
+	GList *headerTable;
+	gchar *path;
 	GHashTable *dupTable;
-	gint       folderSize;
-	gint       retVal;
-	gboolean   folderRecurse;
+	gint folderSize;
+	gint retVal;
+	gboolean folderRecurse;
 };
 
 #ifdef USE_ALT_ADDRBOOK
 typedef struct {
-    gchar* first_name;
-    gchar* last_name;
-    gchar* email;
+	gchar *first_name;
+	gchar *last_name;
+	gchar *email;
 } ContactEntry;
 #endif
 
 /* Function prototypes */
-AddressHarvester *addrharvest_create	( void );
-void addrharvest_free			( AddressHarvester *harvester );
-void addrharvest_set_path		( AddressHarvester *harvester,
-					  const gchar *value );
-void addrharvest_set_folder_size	( AddressHarvester* harvester,
-					  const gint value );
-void addrharvest_set_header		( AddressHarvester* harvester,
-					  const gchar *name,
-					  const gboolean value );
-void addrharvest_set_recurse		( AddressHarvester* harvester,
-					  const gboolean value );
-gint addrharvest_get_count		( AddressHarvester* harvester,
-					  const gchar *name );
-gint addrharvest_harvest		( AddressHarvester *harvester,
-					  AddressCache *cache,
-					  GList *msgList );
-gboolean addrharvest_check_header	( AddressHarvester *harvester );
+AddressHarvester *addrharvest_create(void);
+void addrharvest_free(AddressHarvester *harvester);
+void addrharvest_set_path(AddressHarvester *harvester, const gchar *value);
+void addrharvest_set_folder_size(AddressHarvester *harvester, const gint value);
+void addrharvest_set_header(AddressHarvester *harvester, const gchar *name, const gboolean value);
+void addrharvest_set_recurse(AddressHarvester *harvester, const gboolean value);
+gint addrharvest_get_count(AddressHarvester *harvester, const gchar *name);
+gint addrharvest_harvest(AddressHarvester *harvester, AddressCache *cache, GList *msgList);
+gboolean addrharvest_check_header(AddressHarvester *harvester);
 
 #endif /* __ADDRHARVEST_H__ */
-

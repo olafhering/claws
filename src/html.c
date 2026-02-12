@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -36,18 +36,12 @@
 #define HR_STR		"────────────────────────────────────────────────"
 #define LI_STR		"• "
 
-static SC_HTMLState sc_html_read_line	(SC_HTMLParser	*parser);
-static void sc_html_append_char			(SC_HTMLParser	*parser,
-					 gchar		 ch);
-static void sc_html_append_str			(SC_HTMLParser	*parser,
-					 const gchar	*str,
-					 gint		 len);
-static SC_HTMLState sc_html_parse_tag	(SC_HTMLParser	*parser);
-static void sc_html_parse_special		(SC_HTMLParser	*parser);
-static void sc_html_get_parenthesis		(SC_HTMLParser	*parser,
-					 gchar		*buf,
-					 gint		 len);
-
+static SC_HTMLState sc_html_read_line(SC_HTMLParser *parser);
+static void sc_html_append_char(SC_HTMLParser *parser, gchar ch);
+static void sc_html_append_str(SC_HTMLParser *parser, const gchar *str, gint len);
+static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser);
+static void sc_html_parse_special(SC_HTMLParser *parser);
+static void sc_html_get_parenthesis(SC_HTMLParser *parser, gchar *buf, gint len);
 
 SC_HTMLParser *sc_html_parser_new(FILE *fp, CodeConverter *conv)
 {
@@ -95,16 +89,16 @@ gchar *sc_html_parse(SC_HTMLParser *parser)
 
 	while (*parser->bufp != '\0') {
 		switch (*parser->bufp) {
-		case '<': {
-			SC_HTMLState st;
-			st = sc_html_parse_tag(parser);
-			/* when we see an href, we need to flush the str
-			 * buffer.  Then collect all the chars until we
-			 * see the end anchor tag
-			 */
-			if (SC_HTML_HREF_BEG == st || SC_HTML_HREF == st)
-				return parser->str->str;
-			} 
+		case '<':{
+				SC_HTMLState st;
+				st = sc_html_parse_tag(parser);
+				/* when we see an href, we need to flush the str
+				 * buffer.  Then collect all the chars until we
+				 * see the end anchor tag
+				 */
+				if (SC_HTML_HREF_BEG == st || SC_HTML_HREF == st)
+					return parser->str->str;
+			}
 			break;
 		case '&':
 			sc_html_parse_special(parser);
@@ -135,7 +129,7 @@ gchar *sc_html_parse(SC_HTMLParser *parser)
 static SC_HTMLState sc_html_read_line(SC_HTMLParser *parser)
 {
 	gchar buf[SC_HTMLBUFSIZE];
-	gchar buf2[SC_HTMLBUFSIZE*4];
+	gchar buf2[SC_HTMLBUFSIZE * 4];
 	gint index;
 	gint n;
 
@@ -204,7 +198,8 @@ static void sc_html_append_str(SC_HTMLParser *parser, const gchar *str, gint len
 		parser->space = FALSE;
 	}
 
-	if (len == 0) return;
+	if (len == 0)
+		return;
 	if (len < 0)
 		g_string_append(string, str);
 	else {
@@ -230,14 +225,14 @@ static SC_HTMLTag *sc_html_get_tag(const gchar *str)
 
 	cm_return_val_if_fail(str != NULL, NULL);
 
-	if (*str == '\0' || *str == '!') return NULL;
+	if (*str == '\0' || *str == '!')
+		return NULL;
 
 	Xstrdup_a(tmp, str, return NULL);
 
 	tag = g_new0(SC_HTMLTag, 1);
 
-	for (tmpp = tmp; *tmpp != '\0' && !g_ascii_isspace(*tmpp); tmpp++)
-		;
+	for (tmpp = tmp; *tmpp != '\0' && !g_ascii_isspace(*tmpp); tmpp++) ;
 
 	if (*tmpp == '\0') {
 		tag->name = g_utf8_strdown(tmp, -1);
@@ -254,20 +249,22 @@ static SC_HTMLTag *sc_html_get_tag(const gchar *str)
 		gchar *p;
 		gchar quote;
 
-		while (g_ascii_isspace(*tmpp)) tmpp++;
+		while (g_ascii_isspace(*tmpp))
+			tmpp++;
 		attr_name = tmpp;
 
-		while (*tmpp != '\0' && !g_ascii_isspace(*tmpp) &&
-		       *tmpp != '=')
+		while (*tmpp != '\0' && !g_ascii_isspace(*tmpp) && *tmpp != '=')
 			tmpp++;
 		if (*tmpp != '\0' && *tmpp != '=') {
 			*tmpp++ = '\0';
-			while (g_ascii_isspace(*tmpp)) tmpp++;
+			while (g_ascii_isspace(*tmpp))
+				tmpp++;
 		}
 
 		if (*tmpp == '=') {
 			*tmpp++ = '\0';
-			while (g_ascii_isspace(*tmpp)) tmpp++;
+			while (g_ascii_isspace(*tmpp))
+				tmpp++;
 
 			if (*tmpp == '"' || *tmpp == '\'') {
 				/* name="value" */
@@ -276,23 +273,23 @@ static SC_HTMLTag *sc_html_get_tag(const gchar *str)
 				attr_value = tmpp;
 				if ((p = strchr(attr_value, quote)) == NULL) {
 					if (debug_get_mode()) {
-						g_warning("sc_html_get_tag(): syntax error in tag: '%s'",
-								  str);
+						g_warning("sc_html_get_tag(): syntax error in tag: '%s'", str);
 					} else {
 						gchar *cut = g_strndup(str, 100);
-						g_warning("sc_html_get_tag(): syntax error in tag: '%s%s'",
-								  cut, strlen(str)>100?"...":".");
+						g_warning("sc_html_get_tag(): syntax error in tag: '%s%s'", cut, strlen(str) > 100 ? "..." : ".");
 						g_free(cut);
 					}
 					return tag;
 				}
 				tmpp = p;
 				*tmpp++ = '\0';
-				while (g_ascii_isspace(*tmpp)) tmpp++;
+				while (g_ascii_isspace(*tmpp))
+					tmpp++;
 			} else {
 				/* name=value */
 				attr_value = tmpp;
-				while (*tmpp != '\0' && !g_ascii_isspace(*tmpp)) tmpp++;
+				while (*tmpp != '\0' && !g_ascii_isspace(*tmpp))
+					tmpp++;
 				if (*tmpp != '\0')
 					*tmpp++ = '\0';
 			}
@@ -311,11 +308,12 @@ static SC_HTMLTag *sc_html_get_tag(const gchar *str)
 
 static void sc_html_free_tag(SC_HTMLTag *tag)
 {
-	if (!tag) return;
+	if (!tag)
+		return;
 
 	g_free(tag->name);
 	while (tag->attr != NULL) {
-		SC_HTMLAttr *attr = (SC_HTMLAttr *)tag->attr->data;
+		SC_HTMLAttr *attr = (SC_HTMLAttr *) tag->attr->data;
 		g_free(attr->name);
 		g_free(attr->value);
 		g_free(attr);
@@ -334,7 +332,7 @@ static void decode_href(SC_HTMLParser *parser)
 	tparser->bufp = tparser->buf->str;
 
 	tmp = sc_html_parse(tparser);
-	
+
 	g_free(parser->href);
 	parser->href = g_strdup(tmp);
 
@@ -351,7 +349,8 @@ static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser)
 	tag = sc_html_get_tag(buf);
 
 	parser->state = SC_HTML_UNKNOWN;
-	if (!tag) return SC_HTML_UNKNOWN;
+	if (!tag)
+		return SC_HTML_UNKNOWN;
 
 	if (!strcmp(tag->name, "br") || !strcmp(tag->name, "br/")) {
 		parser->space = FALSE;
@@ -364,9 +363,9 @@ static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser)
 			parser->href = NULL;
 		}
 		for (cur = tag->attr; cur != NULL; cur = cur->next) {
-			if (cur->data && !strcmp(((SC_HTMLAttr *)cur->data)->name, "href")) {
+			if (cur->data && !strcmp(((SC_HTMLAttr *) cur->data)->name, "href")) {
 				g_free(parser->href);
-				parser->href = g_strdup(((SC_HTMLAttr *)cur->data)->value);
+				parser->href = g_strdup(((SC_HTMLAttr *) cur->data)->value);
 				decode_href(parser);
 				parser->state = SC_HTML_HREF_BEG;
 				break;
@@ -381,7 +380,8 @@ static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser)
 		parser->space = FALSE;
 		if (!parser->empty_line) {
 			parser->space = FALSE;
-			if (!parser->newline) sc_html_append_char(parser, '\n');
+			if (!parser->newline)
+				sc_html_append_char(parser, '\n');
 			sc_html_append_char(parser, '\n');
 		}
 		parser->state = SC_HTML_PAR;
@@ -399,12 +399,7 @@ static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser)
 		sc_html_append_str(parser, HR_STR, -1);
 		sc_html_append_char(parser, '\n');
 		parser->state = SC_HTML_HR;
-	} else if (!strcmp(tag->name, "div")    ||
-		   !strcmp(tag->name, "ul")     ||
-		   !strcmp(tag->name, "li")     ||
-		   !strcmp(tag->name, "table")  ||
-		   !strcmp(tag->name, "dd")     ||
-		   !strcmp(tag->name, "tr")) {
+	} else if (!strcmp(tag->name, "div") || !strcmp(tag->name, "ul") || !strcmp(tag->name, "li") || !strcmp(tag->name, "table") || !strcmp(tag->name, "dd") || !strcmp(tag->name, "tr")) {
 		if (!parser->newline) {
 			parser->space = FALSE;
 			sc_html_append_char(parser, '\n');
@@ -425,25 +420,21 @@ static SC_HTMLState sc_html_parse_tag(SC_HTMLParser *parser)
 	} else if (!strcmp(tag->name, "/blockquote")) {
 		parser->state = SC_HTML_NORMAL;
 		parser->indent--;
-	} else if (!strcmp(tag->name, "/table") ||
-		   (tag->name[0] == '/' &&
-		    tag->name[1] == 'h' &&
-		    g_ascii_isdigit(tag->name[2]))) {
+	} else if (!strcmp(tag->name, "/table") || (tag->name[0] == '/' && tag->name[1] == 'h' && g_ascii_isdigit(tag->name[2]))) {
 		if (!parser->empty_line) {
 			parser->space = FALSE;
-			if (!parser->newline) sc_html_append_char(parser, '\n');
+			if (!parser->newline)
+				sc_html_append_char(parser, '\n');
 			sc_html_append_char(parser, '\n');
 		}
 		parser->state = SC_HTML_NORMAL;
-	} else if (!strcmp(tag->name, "/div")   ||
-		   !strcmp(tag->name, "/ul")    ||
-		   !strcmp(tag->name, "/li")) {
+	} else if (!strcmp(tag->name, "/div") || !strcmp(tag->name, "/ul") || !strcmp(tag->name, "/li")) {
 		if (!parser->newline) {
 			parser->space = FALSE;
 			sc_html_append_char(parser, '\n');
 		}
 		parser->state = SC_HTML_NORMAL;
-			}
+	}
 
 	sc_html_free_tag(tag);
 
@@ -461,7 +452,7 @@ static void sc_html_parse_special(SC_HTMLParser *parser)
 	if (entity != NULL) {
 		sc_html_append_str(parser, entity, -1);
 		g_free(entity);
-		while (*parser->bufp++ != ';');
+		while (*parser->bufp++ != ';') ;
 	} else {
 		/* output literal `&' */
 		sc_html_append_char(parser, *parser->bufp++);
@@ -496,30 +487,38 @@ static void sc_html_get_parenthesis(SC_HTMLParser *parser, gchar *buf, gint len)
 	if (!strncmp(parser->bufp, "<!--", 4)) {
 		parser->bufp += 4;
 		while ((p = strstr(parser->bufp, "-->")) == NULL)
-			if (sc_html_read_line(parser) == SC_HTML_EOF) return;
+			if (sc_html_read_line(parser) == SC_HTML_EOF)
+				return;
 		parser->bufp = p + 3;
 		return;
 	}
 	if (!g_ascii_strncasecmp(parser->bufp, "<style", 6)) {
 		parser->bufp += 6;
 		while ((p = sc_html_find_tag(parser, "</style>")) == NULL)
-			if (sc_html_read_line(parser) == SC_HTML_EOF) return;
+			if (sc_html_read_line(parser) == SC_HTML_EOF)
+				return;
 		parser->bufp = p + 8;
 		return;
 	}
 	if (!g_ascii_strncasecmp(parser->bufp, "<script", 7)) {
 		parser->bufp += 7;
 		while ((p = sc_html_find_tag(parser, "</script>")) == NULL)
-			if (sc_html_read_line(parser) == SC_HTML_EOF) return;
+			if (sc_html_read_line(parser) == SC_HTML_EOF)
+				return;
 		parser->bufp = p + 9;
 		return;
 	}
 
 	parser->bufp++;
 	while ((p = strchr(parser->bufp, '>')) == NULL)
-		if (sc_html_read_line(parser) == SC_HTML_EOF) return;
+		if (sc_html_read_line(parser) == SC_HTML_EOF)
+			return;
 
 	strncpy2(buf, parser->bufp, MIN(p - parser->bufp + 1, len));
 	g_strstrip(buf);
 	parser->bufp = p + 1;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

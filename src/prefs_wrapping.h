@@ -20,7 +20,7 @@
 #ifndef PREFS_WRAPPING_H
 #define PREFS_WRAPPING_H
 
-void prefs_wrapping_init	(void);
-void prefs_wrapping_done	(void);
+void prefs_wrapping_init(void);
+void prefs_wrapping_done(void);
 
-#endif /* PREFS_WRAPPING_H */ 
+#endif /* PREFS_WRAPPING_H */

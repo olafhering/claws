@@ -49,10 +49,8 @@ GSList *editors = NULL;
 static void sieve_editor_destroy(SieveEditorPage *page);
 
 void sieve_editor_set_position(void *obj, gint pos);
-gboolean sieve_editor_search_string(void *obj,
-	const gchar *str, gboolean case_sens);
-gboolean sieve_editor_search_string_backward(void *obj,
-	const gchar *str, gboolean case_sens);
+gboolean sieve_editor_search_string(void *obj, const gchar *str, gboolean case_sens);
+gboolean sieve_editor_search_string_backward(void *obj, const gchar *str, gboolean case_sens);
 static void sieve_editor_save_cb(GtkAction *action, SieveEditorPage *page);
 static void sieve_editor_check_cb(GtkAction *action, SieveEditorPage *page);
 static void sieve_editor_changed_cb(GtkTextBuffer *, SieveEditorPage *page);
@@ -65,8 +63,7 @@ static void sieve_editor_copy_cb(GtkAction *action, SieveEditorPage *page);
 static void sieve_editor_paste_cb(GtkAction *action, SieveEditorPage *page);
 static void sieve_editor_allsel_cb(GtkAction *action, SieveEditorPage *page);
 static void sieve_editor_find_cb(GtkAction *action, SieveEditorPage *page);
-static void sieve_editor_set_modified(SieveEditorPage *page,
-		gboolean modified);
+static void sieve_editor_set_modified(SieveEditorPage *page, gboolean modified);
 
 static SearchInterface search_interface = {
 	.set_position = sieve_editor_set_position,
@@ -74,41 +71,39 @@ static SearchInterface search_interface = {
 	.search_string = sieve_editor_search_string,
 };
 
-static GtkActionEntry sieve_editor_entries[] =
-{
-	{"Menu",				NULL, "Menu", NULL, NULL, NULL },
+static GtkActionEntry sieve_editor_entries[] = {
+	{"Menu", NULL, "Menu", NULL, NULL, NULL},
 /* menus */
-	{"Filter",			NULL, N_("_Filter"), NULL, NULL, NULL  },
-	{"Edit",			NULL, N_("_Edit"), NULL, NULL, NULL  },
+	{"Filter", NULL, N_("_Filter"), NULL, NULL, NULL},
+	{"Edit", NULL, N_("_Edit"), NULL, NULL, NULL},
 /* Filter menu */
 
-	{"Filter/Save",		NULL, N_("_Save"), "<control>S", NULL, G_CALLBACK(sieve_editor_save_cb) },
-	{"Filter/CheckSyntax",		NULL, N_("Chec_k Syntax"), "<control>K", NULL, G_CALLBACK(sieve_editor_check_cb) },
-	{"Filter/Revert",		NULL, N_("Re_vert"), NULL, NULL, G_CALLBACK(sieve_editor_revert_cb) },
-	{"Filter/Close",		NULL, N_("_Close"), "<control>W", NULL, G_CALLBACK(sieve_editor_close_cb) },
+	{"Filter/Save", NULL, N_("_Save"), "<control>S", NULL, G_CALLBACK(sieve_editor_save_cb)},
+	{"Filter/CheckSyntax", NULL, N_("Chec_k Syntax"), "<control>K", NULL, G_CALLBACK(sieve_editor_check_cb)},
+	{"Filter/Revert", NULL, N_("Re_vert"), NULL, NULL, G_CALLBACK(sieve_editor_revert_cb)},
+	{"Filter/Close", NULL, N_("_Close"), "<control>W", NULL, G_CALLBACK(sieve_editor_close_cb)},
 
 /* Edit menu */
-	{"Edit/Undo",			NULL, N_("_Undo"), "<control>Z", NULL, G_CALLBACK(sieve_editor_undo_cb) },
-	{"Edit/Redo",			NULL, N_("_Redo"), "<control>Y", NULL, G_CALLBACK(sieve_editor_redo_cb) },
-	/* {"Edit/---",			NULL, "---", NULL, NULL, NULL }, */
+	{"Edit/Undo", NULL, N_("_Undo"), "<control>Z", NULL, G_CALLBACK(sieve_editor_undo_cb)},
+	{"Edit/Redo", NULL, N_("_Redo"), "<control>Y", NULL, G_CALLBACK(sieve_editor_redo_cb)},
+	/* {"Edit/---",                 NULL, "---", NULL, NULL, NULL }, */
 
-	{"Edit/Cut",			NULL, N_("Cu_t"), "<control>X", NULL, G_CALLBACK(sieve_editor_cut_cb) },
-	{"Edit/Copy",			NULL, N_("_Copy"), "<control>C", NULL, G_CALLBACK(sieve_editor_copy_cb) },
-	{"Edit/Paste",			NULL, N_("_Paste"), "<control>V", NULL, G_CALLBACK(sieve_editor_paste_cb) },
+	{"Edit/Cut", NULL, N_("Cu_t"), "<control>X", NULL, G_CALLBACK(sieve_editor_cut_cb)},
+	{"Edit/Copy", NULL, N_("_Copy"), "<control>C", NULL, G_CALLBACK(sieve_editor_copy_cb)},
+	{"Edit/Paste", NULL, N_("_Paste"), "<control>V", NULL, G_CALLBACK(sieve_editor_paste_cb)},
 
-	{"Edit/SelectAll",		NULL, N_("Select _all"), "<control>A", NULL, G_CALLBACK(sieve_editor_allsel_cb) },
+	{"Edit/SelectAll", NULL, N_("Select _all"), "<control>A", NULL, G_CALLBACK(sieve_editor_allsel_cb)},
 
-	{"Edit/---",			NULL, "---", NULL, NULL, NULL },
-	{"Edit/Find",		NULL, N_("_Find"), "<control>F", NULL, G_CALLBACK(sieve_editor_find_cb) },
+	{"Edit/---", NULL, "---", NULL, NULL, NULL},
+	{"Edit/Find", NULL, N_("_Find"), "<control>F", NULL, G_CALLBACK(sieve_editor_find_cb)},
 };
-
 
 void sieve_editors_close()
 {
 	if (editors) {
 		GSList *list = editors;
 		editors = NULL;
-		g_slist_free_full(list, (GDestroyNotify)sieve_editor_close);
+		g_slist_free_full(list, (GDestroyNotify) sieve_editor_close);
 	}
 }
 
@@ -119,16 +114,14 @@ void sieve_editor_append_text(SieveEditorPage *page, gchar *text, gint len)
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(page->text));
 
-	g_signal_handlers_block_by_func(G_OBJECT(buffer),
-			 G_CALLBACK(sieve_editor_changed_cb), page);
+	g_signal_handlers_block_by_func(G_OBJECT(buffer), G_CALLBACK(sieve_editor_changed_cb), page);
 
 	undo_block(page->undostruct);
 	gtk_text_buffer_get_end_iter(buffer, &iter);
 	gtk_text_buffer_insert(buffer, &iter, text, len);
 	undo_unblock(page->undostruct);
 
-	g_signal_handlers_unblock_by_func(G_OBJECT(buffer),
-			 G_CALLBACK(sieve_editor_changed_cb), page);
+	g_signal_handlers_unblock_by_func(G_OBJECT(buffer), G_CALLBACK(sieve_editor_changed_cb), page);
 }
 
 static gint sieve_editor_get_text(SieveEditorPage *page, gchar **text)
@@ -158,8 +151,7 @@ static void sieve_editor_set_status_icon(SieveEditorPage *page, const gchar *img
 		gtk_image_clear(img);
 }
 
-static void sieve_editor_append_status(SieveEditorPage *page,
-		const gchar *new_status)
+static void sieve_editor_append_status(SieveEditorPage *page, const gchar *new_status)
 {
 	GtkLabel *label = GTK_LABEL(page->status_text);
 	const gchar *prev_status = gtk_label_get_text(label);
@@ -170,13 +162,11 @@ static void sieve_editor_append_status(SieveEditorPage *page,
 }
 
 /* Update the status icon and text from a response. */
-static void sieve_editor_update_status(SieveEditorPage *page,
-		SieveResult *result)
+static void sieve_editor_update_status(SieveEditorPage *page, SieveResult *result)
 {
 	if (result->has_status) {
 		/* set status icon */
-		sieve_editor_set_status_icon(page,
-			result->success ? GTK_STOCK_DIALOG_INFO : GTK_STOCK_DIALOG_ERROR);
+		sieve_editor_set_status_icon(page, result->success ? GTK_STOCK_DIALOG_INFO : GTK_STOCK_DIALOG_ERROR);
 		/* clear status text */
 		sieve_editor_set_status(page, "");
 	}
@@ -230,7 +220,6 @@ static void sieve_editor_paste_cb(GtkAction *action, SieveEditorPage *page)
 	gtk_text_buffer_insert(buf, &start_iter, contents, strlen(contents));
 }
 
-
 static void sieve_editor_allsel_cb(GtkAction *action, SieveEditorPage *page)
 {
 	GtkTextIter start, end;
@@ -252,8 +241,7 @@ void sieve_editor_set_position(void *obj, gint pos)
 	gtkut_text_view_set_position(text, pos);
 }
 
-gboolean sieve_editor_search_string(void *obj,
-	const gchar *str, gboolean case_sens)
+gboolean sieve_editor_search_string(void *obj, const gchar *str, gboolean case_sens)
 {
 	SieveEditorPage *page = (SieveEditorPage *)obj;
 	GtkTextView *text = GTK_TEXT_VIEW(page->text);
@@ -261,8 +249,7 @@ gboolean sieve_editor_search_string(void *obj,
 	return gtkut_text_view_search_string(text, str, case_sens);
 }
 
-gboolean sieve_editor_search_string_backward(void *obj,
-	const gchar *str, gboolean case_sens)
+gboolean sieve_editor_search_string_backward(void *obj, const gchar *str, gboolean case_sens)
 {
 	SieveEditorPage *page = (SieveEditorPage *)obj;
 	GtkTextView *text = GTK_TEXT_VIEW(page->text);
@@ -277,9 +264,7 @@ static void sieve_editor_search(SieveEditorPage *page)
 
 /* Actions */
 
-static void got_data_reverting(SieveSession *session, gboolean abort,
-		gchar *contents,
-		SieveEditorPage *page)
+static void got_data_reverting(SieveSession *session, gboolean abort, gchar *contents, SieveEditorPage *page)
 {
 	if (abort)
 		return;
@@ -324,21 +309,16 @@ static void sieve_editor_revert(SieveEditorPage *page)
 	gtk_widget_set_sensitive(page->text, FALSE);
 	sieve_editor_set_status(page, _("Reverting..."));
 	sieve_editor_set_status_icon(page, NULL);
-	sieve_session_get_script(page->session, page->script_name,
-			(sieve_session_data_cb_fn)got_data_reverting, page);
+	sieve_session_get_script(page->session, page->script_name, (sieve_session_data_cb_fn) got_data_reverting, page);
 }
 
 static void sieve_editor_revert_cb(GtkAction *action, SieveEditorPage *page)
 {
-	if (!page->modified ||
-			alertpanel(_("Revert script"),
-				_("This script has been modified. Revert the unsaved changes?"),
-				_("_Revert"), NULL, GTK_STOCK_CANCEL, ALERTFOCUS_FIRST) == G_ALERTDEFAULT)
+	if (!page->modified || alertpanel(_("Revert script"), _("This script has been modified. Revert the unsaved changes?"), _("_Revert"), NULL, GTK_STOCK_CANCEL, ALERTFOCUS_FIRST) == G_ALERTDEFAULT)
 		sieve_editor_revert(page);
 }
 
-static void got_data_saved(SieveSession *session, gboolean abort,
-		SieveResult *result, SieveEditorPage *page)
+static void got_data_saved(SieveSession *session, gboolean abort, SieveResult *result, SieveEditorPage *page)
 {
 	if (abort)
 		return;
@@ -356,8 +336,7 @@ static void got_data_saved(SieveSession *session, gboolean abort,
 		if (page->is_new) {
 			/* notify manager windows of newly created script */
 			page->is_new = FALSE;
-			sieve_manager_script_created(session,
-					page->script_name);
+			sieve_manager_script_created(session, page->script_name);
 		}
 	}
 	sieve_editor_update_status(page, result);
@@ -369,8 +348,7 @@ static void sieve_editor_save(SieveEditorPage *page)
 	gint len = sieve_editor_get_text(page, &text);
 	sieve_editor_set_status(page, _("Saving..."));
 	sieve_editor_set_status_icon(page, NULL);
-	sieve_session_put_script(page->session, page->script_name, len, text,
-			(sieve_session_data_cb_fn)got_data_saved, page);
+	sieve_session_put_script(page->session, page->script_name, len, text, (sieve_session_data_cb_fn) got_data_saved, page);
 	g_free(text);
 }
 
@@ -384,8 +362,7 @@ static void sieve_editor_find_cb(GtkAction *action, SieveEditorPage *page)
 	sieve_editor_search(page);
 }
 
-static void got_data_checked(SieveSession *session, gboolean abort,
-		SieveResult *result, SieveEditorPage *page)
+static void got_data_checked(SieveSession *session, gboolean abort, SieveResult *result, SieveEditorPage *page)
 {
 	if (abort)
 		return;
@@ -398,13 +375,11 @@ static void sieve_editor_check_cb(GtkAction *action, SieveEditorPage *page)
 	gint len = sieve_editor_get_text(page, &text);
 	sieve_editor_set_status(page, _("Checking syntax..."));
 	sieve_editor_set_status_icon(page, NULL);
-	sieve_session_check_script(page->session, len, text,
-			(sieve_session_data_cb_fn)got_data_checked, page);
+	sieve_session_check_script(page->session, len, text, (sieve_session_data_cb_fn) got_data_checked, page);
 	g_free(text);
 }
 
-static void sieve_editor_changed_cb(GtkTextBuffer *textbuf,
-		SieveEditorPage *page)
+static void sieve_editor_changed_cb(GtkTextBuffer *textbuf, SieveEditorPage *page)
 {
 	if (!page->modified) {
 		sieve_editor_set_modified(page, TRUE);
@@ -421,7 +396,7 @@ static void sieve_editor_destroy(SieveEditorPage *page)
 
 void sieve_editor_close(SieveEditorPage *page)
 {
-	editors = g_slist_remove(editors, (gconstpointer)page);
+	editors = g_slist_remove(editors, (gconstpointer) page);
 	sieve_sessions_discard_callbacks(page);
 	sieve_editor_destroy(page);
 }
@@ -429,18 +404,15 @@ void sieve_editor_close(SieveEditorPage *page)
 static gboolean sieve_editor_confirm_close(SieveEditorPage *page)
 {
 	if (page->modified) {
-		switch (alertpanel(_("Save changes"),
-				_("This script has been modified. Save the latest changes?"),
-				_("_Discard"), _("_Save"), GTK_STOCK_CANCEL,
-				ALERTFOCUS_SECOND)) {
-			case G_ALERTDEFAULT:
-				return TRUE;
-			case G_ALERTALTERNATE:
-				page->closing = TRUE;
-				sieve_editor_save(page);
-				return FALSE;
-			default:
-				return FALSE;
+		switch (alertpanel(_("Save changes"), _("This script has been modified. Save the latest changes?"), _("_Discard"), _("_Save"), GTK_STOCK_CANCEL, ALERTFOCUS_SECOND)) {
+		case G_ALERTDEFAULT:
+			return TRUE;
+		case G_ALERTALTERNATE:
+			page->closing = TRUE;
+			sieve_editor_save(page);
+			return FALSE;
+		default:
+			return FALSE;
 		}
 	}
 	return TRUE;
@@ -453,8 +425,7 @@ static void sieve_editor_close_cb(GtkAction *action, SieveEditorPage *page)
 	}
 }
 
-static gint sieve_editor_delete_cb(GtkWidget *widget, GdkEventAny *event,
-		SieveEditorPage *page)
+static gint sieve_editor_delete_cb(GtkWidget *widget, GdkEventAny *event, SieveEditorPage *page)
 {
 	sieve_editor_close_cb(NULL, page);
 	return TRUE;
@@ -465,8 +436,7 @@ static gint sieve_editor_delete_cb(GtkWidget *widget, GdkEventAny *event,
  *
  * Change the sensivity of the menuentries undo and redo
  **/
-static void sieve_editor_undo_state_changed(UndoMain *undostruct,
-		gint undo_state, gint redo_state, gpointer data)
+static void sieve_editor_undo_state_changed(UndoMain *undostruct, gint undo_state, gint redo_state, gpointer data)
 {
 	SieveEditorPage *page = (SieveEditorPage *)data;
 
@@ -517,7 +487,6 @@ static void sieve_editor_undo_state_changed(UndoMain *undostruct,
 	}
 }
 
-
 SieveEditorPage *sieve_editor_new(SieveSession *session, gchar *script_name)
 {
 	SieveEditorPage *page;
@@ -538,45 +507,34 @@ SieveEditorPage *sieve_editor_new(SieveSession *session, gchar *script_name)
 	/* window */
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "sieveeditor");
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
-	MANAGE_WINDOW_SIGNALS_CONNECT (window);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(sieve_editor_delete_cb), page);
+	MANAGE_WINDOW_SIGNALS_CONNECT(window);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(sieve_editor_delete_cb), page);
 
 	vbox = gtk_vbox_new(FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(window), vbox);
 
 	ui_manager = gtk_ui_manager_new();
-	cm_menu_create_action_group_full(ui_manager,
-			"Menu", sieve_editor_entries, G_N_ELEMENTS(sieve_editor_entries),
-			page);
+	cm_menu_create_action_group_full(ui_manager, "Menu", sieve_editor_entries, G_N_ELEMENTS(sieve_editor_entries), page);
 
 	MENUITEM_ADDUI_MANAGER(ui_manager, "/", "Menu", NULL, GTK_UI_MANAGER_MENUBAR)
-
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu", "Filter", "Filter", GTK_UI_MANAGER_MENU)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu", "Edit", "Edit", GTK_UI_MANAGER_MENU)
-
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu", "Filter", "Filter", GTK_UI_MANAGER_MENU)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu", "Edit", "Edit", GTK_UI_MANAGER_MENU)
 /* Filter menu */
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Save", "Filter/Save", GTK_UI_MANAGER_MENUITEM)
-MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "CheckSyntax", "Filter/CheckSyntax", GTK_UI_MANAGER_MENUITEM)
-MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Revert", "Filter/Revert", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Close", "Filter/Close", GTK_UI_MANAGER_MENUITEM)
-
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Save", "Filter/Save", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "CheckSyntax", "Filter/CheckSyntax", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Revert", "Filter/Revert", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Close", "Filter/Close", GTK_UI_MANAGER_MENUITEM)
 /* Edit menu */
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Undo", "Edit/Undo", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Redo", "Edit/Redo", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Separator1", "Edit/---", GTK_UI_MANAGER_SEPARATOR)
-
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Cut", "Edit/Cut", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Copy", "Edit/Copy", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Paste", "Edit/Paste", GTK_UI_MANAGER_MENUITEM)
-
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "SelectAll", "Edit/SelectAll", GTK_UI_MANAGER_MENUITEM)
-
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Separator2", "Edit/---", GTK_UI_MANAGER_SEPARATOR)
-
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Find", "Edit/Find", GTK_UI_MANAGER_MENUITEM)
-
-	menubar = gtk_ui_manager_get_widget(ui_manager, "/Menu");
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Undo", "Edit/Undo", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Redo", "Edit/Redo", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Separator1", "Edit/---", GTK_UI_MANAGER_SEPARATOR)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Cut", "Edit/Cut", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Copy", "Edit/Copy", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Paste", "Edit/Paste", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "SelectAll", "Edit/SelectAll", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Separator2", "Edit/---", GTK_UI_MANAGER_SEPARATOR)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Edit", "Find", "Edit/Find", GTK_UI_MANAGER_MENUITEM)
+	    menubar = gtk_ui_manager_get_widget(ui_manager, "/Menu");
 
 	gtk_window_add_accel_group(GTK_WINDOW(window), gtk_ui_manager_get_accel_group(ui_manager));
 	gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, TRUE, 0);
@@ -586,12 +544,9 @@ MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Revert", "Filter/Revert", GT
 
 	/* text */
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_size_request (scrolledwin, 660, 408);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
-					    GTK_SHADOW_IN);
+	gtk_widget_set_size_request(scrolledwin, 660, 408);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
 	gtk_box_pack_start(GTK_BOX(vbox), scrolledwin, TRUE, TRUE, 0);
 
 	text = gtk_text_view_new();
@@ -600,49 +555,40 @@ MENUITEM_ADDUI_MANAGER(ui_manager, "/Menu/Filter", "Revert", "Filter/Revert", GT
 	gtk_container_add(GTK_CONTAINER(scrolledwin), text);
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-	g_signal_connect(G_OBJECT(buffer), "changed",
-			 G_CALLBACK(sieve_editor_changed_cb), page);
+	g_signal_connect(G_OBJECT(buffer), "changed", G_CALLBACK(sieve_editor_changed_cb), page);
 
 	/* set text font */
 	if (prefs_common_get_prefs()->textfont) {
 		PangoFontDescription *font_desc;
 
-		font_desc = pango_font_description_from_string
-			(prefs_common_get_prefs()->textfont);
+		font_desc = pango_font_description_from_string(prefs_common_get_prefs()->textfont);
 		if (font_desc) {
 			gtk_widget_modify_font(text, font_desc);
 			pango_font_description_free(font_desc);
 		}
 	}
 
-	hbox = gtk_hbox_new (FALSE, 8);
-	gtk_box_pack_end (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 8);
+	hbox = gtk_hbox_new(FALSE, 8);
+	gtk_box_pack_end(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 8);
 
 	/* status */
-	status_icon = gtk_image_new ();
-	gtk_box_pack_start (GTK_BOX (hbox), status_icon, FALSE, FALSE, 0);
-	status_text = gtk_label_new ("");
-	gtk_box_pack_start (GTK_BOX (hbox), status_text, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (status_text), GTK_JUSTIFY_LEFT);
+	status_icon = gtk_image_new();
+	gtk_box_pack_start(GTK_BOX(hbox), status_icon, FALSE, FALSE, 0);
+	status_text = gtk_label_new("");
+	gtk_box_pack_start(GTK_BOX(hbox), status_text, FALSE, FALSE, 0);
+	gtk_label_set_justify(GTK_LABEL(status_text), GTK_JUSTIFY_LEFT);
 
 	/* buttons */
-	gtkut_stock_with_text_button_set_create(&hbox1,
-			&close_btn, GTK_STOCK_CANCEL, _("_Close"),
-			&check_btn, GTK_STOCK_OK, _("Chec_k Syntax"),
-			&save_btn, GTK_STOCK_SAVE, _("_Save"));
-	gtk_box_pack_end (GTK_BOX (hbox), hbox1, FALSE, FALSE, 0);
-	gtk_widget_grab_default (save_btn);
-	g_signal_connect (G_OBJECT (close_btn), "clicked",
-			  G_CALLBACK (sieve_editor_close_cb), page);
-	g_signal_connect (G_OBJECT (check_btn), "clicked",
-			  G_CALLBACK (sieve_editor_check_cb), page);
-	g_signal_connect (G_OBJECT (save_btn), "clicked",
-			  G_CALLBACK (sieve_editor_save_cb), page);
+	gtkut_stock_with_text_button_set_create(&hbox1, &close_btn, GTK_STOCK_CANCEL, _("_Close"), &check_btn, GTK_STOCK_OK, _("Chec_k Syntax"), &save_btn, GTK_STOCK_SAVE, _("_Save"));
+	gtk_box_pack_end(GTK_BOX(hbox), hbox1, FALSE, FALSE, 0);
+	gtk_widget_grab_default(save_btn);
+	g_signal_connect(G_OBJECT(close_btn), "clicked", G_CALLBACK(sieve_editor_close_cb), page);
+	g_signal_connect(G_OBJECT(check_btn), "clicked", G_CALLBACK(sieve_editor_check_cb), page);
+	g_signal_connect(G_OBJECT(save_btn), "clicked", G_CALLBACK(sieve_editor_save_cb), page);
 
 	undostruct = undo_init(text);
-	undo_set_change_state_func(undostruct, &sieve_editor_undo_state_changed,
-			page);
+	undo_set_change_state_func(undostruct, &sieve_editor_undo_state_changed, page);
 
 	page->window = window;
 	page->ui_manager = ui_manager;
@@ -666,8 +612,7 @@ SieveEditorPage *sieve_editor_get(SieveSession *session, gchar *script_name)
 	SieveEditorPage *page;
 	for (item = editors; item; item = item->next) {
 		page = (SieveEditorPage *)item->data;
-		if (page->session == session &&
-				strcmp(script_name, page->script_name) == 0)
+		if (page->session == session && strcmp(script_name, page->script_name) == 0)
 			return page;
 	}
 	return NULL;
@@ -683,18 +628,15 @@ void sieve_editor_show(SieveEditorPage *page)
 	gtk_widget_show_all(GTK_WIDGET(page->window));
 }
 
-static void sieve_editor_set_modified(SieveEditorPage *page,
-		gboolean modified)
+static void sieve_editor_set_modified(SieveEditorPage *page, gboolean modified)
 {
 	gchar *title;
 
 	page->modified = modified;
-	cm_menu_set_sensitive_full(page->ui_manager, "Menu/Filter/Revert",
-			modified);
+	cm_menu_set_sensitive_full(page->ui_manager, "Menu/Filter/Revert", modified);
 
-	title = g_strdup_printf(_("%s - Sieve Filter%s"), page->script_name,
-			modified ? _(" [Edited]") : "");
-	gtk_window_set_title (GTK_WINDOW (page->window), title);
+	title = g_strdup_printf(_("%s - Sieve Filter%s"), page->script_name, modified ? _(" [Edited]") : "");
+	gtk_window_set_title(GTK_WINDOW(page->window), title);
 	g_free(title);
 
 	if (modified) {
@@ -703,8 +645,7 @@ static void sieve_editor_set_modified(SieveEditorPage *page,
 	}
 }
 
-static void got_data_loading(SieveSession *session, gboolean aborted,
-		gchar *contents, SieveEditorPage *page)
+static void got_data_loading(SieveSession *session, gboolean aborted, gchar *contents, SieveEditorPage *page)
 {
 	if (aborted)
 		return;
@@ -735,14 +676,16 @@ static void got_data_loading(SieveSession *session, gboolean aborted,
 }
 
 /* load the script for this editor */
-void sieve_editor_load(SieveEditorPage *page,
-		sieve_session_cb_fn on_load_error, gpointer load_error_data)
+void sieve_editor_load(SieveEditorPage *page, sieve_session_cb_fn on_load_error, gpointer load_error_data)
 {
 	page->first_line = TRUE;
 	page->on_load_error = on_load_error;
 	page->on_load_error_data = load_error_data;
 	sieve_editor_set_status(page, _("Loading..."));
 	sieve_editor_set_status_icon(page, NULL);
-	sieve_session_get_script(page->session, page->script_name,
-			(sieve_session_data_cb_fn)got_data_loading, page);
+	sieve_session_get_script(page->session, page->script_name, (sieve_session_data_cb_fn) got_data_loading, page);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

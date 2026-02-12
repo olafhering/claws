@@ -21,72 +21,76 @@
 #include "common/utils.h"
 #include "stock_pixmap.h"
 
-static GdkPixbuf* notification_pixbuf[NOTIFICATION_PIXBUF_LAST];
+static GdkPixbuf *notification_pixbuf[NOTIFICATION_PIXBUF_LAST];
 
-GdkPixbuf* notification_pixbuf_get(NotificationPixbuf wanted)
+GdkPixbuf *notification_pixbuf_get(NotificationPixbuf wanted)
 {
-  if(!notification_pixbuf[wanted]) {
-    switch(wanted) {
-    case NOTIFICATION_CM_LOGO_64x64:
+	if (!notification_pixbuf[wanted]) {
+		switch (wanted) {
+		case NOTIFICATION_CM_LOGO_64x64:
 			priv_pixbuf_gdk(PRIV_PIXMAP_CLAWS_MAIL_ICON_64, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NEWMAIL:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NEWMAIL:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NEWMAIL, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NEWMAIL_OFFLINE:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NEWMAIL_OFFLINE:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NEWMAIL_OFFLINE, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NEWMARKEDMAIL:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NEWMARKEDMAIL:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NEWMARKEDMAIL, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NEWMARKEDMAIL_OFFLINE:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NEWMARKEDMAIL_OFFLINE:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NEWMARKEDMAIL_OFFLINE, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NOMAIL:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NOMAIL:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NOMAIL, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_NOMAIL_OFFLINE:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_NOMAIL_OFFLINE:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_NOMAIL_OFFLINE, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_UNREADMAIL:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_UNREADMAIL:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_UNREADMAIL, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_UNREADMAIL_OFFLINE:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_UNREADMAIL_OFFLINE:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_UNREADMAIL_OFFLINE, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_UNREADMARKEDMAIL:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_UNREADMARKEDMAIL:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_UNREADMARKEDMAIL, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_TRAYICON_UNREADMARKEDMAIL_OFFLINE:
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_TRAYICON_UNREADMARKEDMAIL_OFFLINE:
 			stock_pixbuf_gdk(STOCK_PIXMAP_TRAY_UNREADMARKEDMAIL_OFFLINE, &(notification_pixbuf[wanted]));
-      g_object_ref(notification_pixbuf[wanted]);
-      break;
-    case NOTIFICATION_PIXBUF_LAST:
-      break;
-    }
-  }
-  cm_return_val_if_fail(wanted < NOTIFICATION_PIXBUF_LAST, NULL);
-  return notification_pixbuf[wanted];
+			g_object_ref(notification_pixbuf[wanted]);
+			break;
+		case NOTIFICATION_PIXBUF_LAST:
+			break;
+		}
+	}
+	cm_return_val_if_fail(wanted < NOTIFICATION_PIXBUF_LAST, NULL);
+	return notification_pixbuf[wanted];
 }
 
 void notification_pixbuf_free_all(void)
 {
-  gint ii;
+	gint ii;
 
-  for(ii = NOTIFICATION_CM_LOGO_64x64; ii < NOTIFICATION_PIXBUF_LAST; ii++) {
-    if(notification_pixbuf[ii]) {
-      g_object_unref(notification_pixbuf[ii]);
-      notification_pixbuf[ii] = NULL;
-    }
-  }
+	for (ii = NOTIFICATION_CM_LOGO_64x64; ii < NOTIFICATION_PIXBUF_LAST; ii++) {
+		if (notification_pixbuf[ii]) {
+			g_object_unref(notification_pixbuf[ii]);
+			notification_pixbuf[ii] = NULL;
+		}
+	}
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

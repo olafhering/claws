@@ -21,7 +21,6 @@
 /* heavily modified for GnuPG by <werner.koch@guug.de> */
 /* modified again for Sylpheed by <wk@gnupg.org> 2001-02-11 */
 
-
 /* Test values:
  * ""                  D4 1D 8C D9 8F 00 B2 04  E9 80 09 98 EC F8 42 7E
  * "a"                 0C C1 75 B9 C0 F1 B6 A8  31 C3 99 E2 69 77 26 61
@@ -48,12 +47,10 @@
  * Rotate a 32 bit integer by n bytes
  */
 #if defined(__GNUC__) && defined(__i386__)
-static inline guint32
-rol( guint32 x, int n)
+static inline guint32 rol(guint32 x, int n)
 {
-	__asm__("roll %%cl,%0"
-		:"=r" (x)
-		:"0" (x),"c" (n));
+ __asm__("roll %%cl,%0":"=r"(x)
+ :		"0"(x), "c"(n));
 	return x;
 }
 #else
@@ -61,15 +58,14 @@ rol( guint32 x, int n)
 #endif
 
 typedef struct {
-    guint32 A,B,C,D;
-    guint32  nblocks;
-    unsigned char buf[64];
-    int  count;
-    int  finalized;
+	guint32 A, B, C, D;
+	guint32 nblocks;
+	unsigned char buf[64];
+	int count;
+	int finalized;
 } MD5_CONTEXT;
 
-static void
-md5_init(MD5_CONTEXT *ctx)
+static void md5_init(MD5_CONTEXT *ctx)
 {
 	ctx->A = 0x67452301;
 	ctx->B = 0xefcdab89;
@@ -90,12 +86,10 @@ md5_init(MD5_CONTEXT *ctx)
 #define FH(b, c, d) (b ^ c ^ d)
 #define FI(b, c, d) (c ^ (b | ~d))
 
-
 /****************
  * transform n*64 bytes
  */
-static void
-transform(MD5_CONTEXT *ctx, const unsigned char *data)
+static void transform(MD5_CONTEXT *ctx, const unsigned char *data)
 {
 	guint32 correct_words[16];
 	guint32 A = ctx->A;
@@ -110,8 +104,7 @@ transform(MD5_CONTEXT *ctx, const unsigned char *data)
 		unsigned char *p2;
 		const unsigned char *p1;
 
-		for (i = 0, p1 = data, p2 = (unsigned char*)correct_words;
-		     i < 16; i++, p2 += 4) {
+		for (i = 0, p1 = data, p2 = (unsigned char *)correct_words; i < 16; i++, p2 += 4) {
 			p2[3] = *p1++;
 			p2[2] = *p1++;
 			p2[1] = *p1++;
@@ -121,7 +114,6 @@ transform(MD5_CONTEXT *ctx, const unsigned char *data)
 #else
 	memcpy(correct_words, data, 64);
 #endif
-
 
 #define OP(a, b, c, d, s, T)				\
 	do {						\
@@ -137,22 +129,22 @@ transform(MD5_CONTEXT *ctx, const unsigned char *data)
 	 */
 
 	/* Round 1.  */
-	OP (A, B, C, D,  7, 0xd76aa478);
-	OP (D, A, B, C, 12, 0xe8c7b756);
-	OP (C, D, A, B, 17, 0x242070db);
-	OP (B, C, D, A, 22, 0xc1bdceee);
-	OP (A, B, C, D,  7, 0xf57c0faf);
-	OP (D, A, B, C, 12, 0x4787c62a);
-	OP (C, D, A, B, 17, 0xa8304613);
-	OP (B, C, D, A, 22, 0xfd469501);
-	OP (A, B, C, D,  7, 0x698098d8);
-	OP (D, A, B, C, 12, 0x8b44f7af);
-	OP (C, D, A, B, 17, 0xffff5bb1);
-	OP (B, C, D, A, 22, 0x895cd7be);
-	OP (A, B, C, D,  7, 0x6b901122);
-	OP (D, A, B, C, 12, 0xfd987193);
-	OP (C, D, A, B, 17, 0xa679438e);
-	OP (B, C, D, A, 22, 0x49b40821);
+	OP(A, B, C, D, 7, 0xd76aa478);
+	OP(D, A, B, C, 12, 0xe8c7b756);
+	OP(C, D, A, B, 17, 0x242070db);
+	OP(B, C, D, A, 22, 0xc1bdceee);
+	OP(A, B, C, D, 7, 0xf57c0faf);
+	OP(D, A, B, C, 12, 0x4787c62a);
+	OP(C, D, A, B, 17, 0xa8304613);
+	OP(B, C, D, A, 22, 0xfd469501);
+	OP(A, B, C, D, 7, 0x698098d8);
+	OP(D, A, B, C, 12, 0x8b44f7af);
+	OP(C, D, A, B, 17, 0xffff5bb1);
+	OP(B, C, D, A, 22, 0x895cd7be);
+	OP(A, B, C, D, 7, 0x6b901122);
+	OP(D, A, B, C, 12, 0xfd987193);
+	OP(C, D, A, B, 17, 0xa679438e);
+	OP(B, C, D, A, 22, 0x49b40821);
 
 #undef OP
 #define OP(f, a, b, c, d, k, s, T)  \
@@ -163,58 +155,58 @@ transform(MD5_CONTEXT *ctx, const unsigned char *data)
 	} while (0)
 
 	/* Round 2.  */
-	OP (FG, A, B, C, D,  1,  5, 0xf61e2562);
-	OP (FG, D, A, B, C,  6,  9, 0xc040b340);
-	OP (FG, C, D, A, B, 11, 14, 0x265e5a51);
-	OP (FG, B, C, D, A,  0, 20, 0xe9b6c7aa);
-	OP (FG, A, B, C, D,  5,  5, 0xd62f105d);
-	OP (FG, D, A, B, C, 10,  9, 0x02441453);
-	OP (FG, C, D, A, B, 15, 14, 0xd8a1e681);
-	OP (FG, B, C, D, A,  4, 20, 0xe7d3fbc8);
-	OP (FG, A, B, C, D,  9,  5, 0x21e1cde6);
-	OP (FG, D, A, B, C, 14,  9, 0xc33707d6);
-	OP (FG, C, D, A, B,  3, 14, 0xf4d50d87);
-	OP (FG, B, C, D, A,  8, 20, 0x455a14ed);
-	OP (FG, A, B, C, D, 13,  5, 0xa9e3e905);
-	OP (FG, D, A, B, C,  2,  9, 0xfcefa3f8);
-	OP (FG, C, D, A, B,  7, 14, 0x676f02d9);
-	OP (FG, B, C, D, A, 12, 20, 0x8d2a4c8a);
+	OP(FG, A, B, C, D, 1, 5, 0xf61e2562);
+	OP(FG, D, A, B, C, 6, 9, 0xc040b340);
+	OP(FG, C, D, A, B, 11, 14, 0x265e5a51);
+	OP(FG, B, C, D, A, 0, 20, 0xe9b6c7aa);
+	OP(FG, A, B, C, D, 5, 5, 0xd62f105d);
+	OP(FG, D, A, B, C, 10, 9, 0x02441453);
+	OP(FG, C, D, A, B, 15, 14, 0xd8a1e681);
+	OP(FG, B, C, D, A, 4, 20, 0xe7d3fbc8);
+	OP(FG, A, B, C, D, 9, 5, 0x21e1cde6);
+	OP(FG, D, A, B, C, 14, 9, 0xc33707d6);
+	OP(FG, C, D, A, B, 3, 14, 0xf4d50d87);
+	OP(FG, B, C, D, A, 8, 20, 0x455a14ed);
+	OP(FG, A, B, C, D, 13, 5, 0xa9e3e905);
+	OP(FG, D, A, B, C, 2, 9, 0xfcefa3f8);
+	OP(FG, C, D, A, B, 7, 14, 0x676f02d9);
+	OP(FG, B, C, D, A, 12, 20, 0x8d2a4c8a);
 
 	/* Round 3.  */
-	OP (FH, A, B, C, D,  5,  4, 0xfffa3942);
-	OP (FH, D, A, B, C,  8, 11, 0x8771f681);
-	OP (FH, C, D, A, B, 11, 16, 0x6d9d6122);
-	OP (FH, B, C, D, A, 14, 23, 0xfde5380c);
-	OP (FH, A, B, C, D,  1,  4, 0xa4beea44);
-	OP (FH, D, A, B, C,  4, 11, 0x4bdecfa9);
-	OP (FH, C, D, A, B,  7, 16, 0xf6bb4b60);
-	OP (FH, B, C, D, A, 10, 23, 0xbebfbc70);
-	OP (FH, A, B, C, D, 13,  4, 0x289b7ec6);
-	OP (FH, D, A, B, C,  0, 11, 0xeaa127fa);
-	OP (FH, C, D, A, B,  3, 16, 0xd4ef3085);
-	OP (FH, B, C, D, A,  6, 23, 0x04881d05);
-	OP (FH, A, B, C, D,  9,  4, 0xd9d4d039);
-	OP (FH, D, A, B, C, 12, 11, 0xe6db99e5);
-	OP (FH, C, D, A, B, 15, 16, 0x1fa27cf8);
-	OP (FH, B, C, D, A,  2, 23, 0xc4ac5665);
+	OP(FH, A, B, C, D, 5, 4, 0xfffa3942);
+	OP(FH, D, A, B, C, 8, 11, 0x8771f681);
+	OP(FH, C, D, A, B, 11, 16, 0x6d9d6122);
+	OP(FH, B, C, D, A, 14, 23, 0xfde5380c);
+	OP(FH, A, B, C, D, 1, 4, 0xa4beea44);
+	OP(FH, D, A, B, C, 4, 11, 0x4bdecfa9);
+	OP(FH, C, D, A, B, 7, 16, 0xf6bb4b60);
+	OP(FH, B, C, D, A, 10, 23, 0xbebfbc70);
+	OP(FH, A, B, C, D, 13, 4, 0x289b7ec6);
+	OP(FH, D, A, B, C, 0, 11, 0xeaa127fa);
+	OP(FH, C, D, A, B, 3, 16, 0xd4ef3085);
+	OP(FH, B, C, D, A, 6, 23, 0x04881d05);
+	OP(FH, A, B, C, D, 9, 4, 0xd9d4d039);
+	OP(FH, D, A, B, C, 12, 11, 0xe6db99e5);
+	OP(FH, C, D, A, B, 15, 16, 0x1fa27cf8);
+	OP(FH, B, C, D, A, 2, 23, 0xc4ac5665);
 
 	/* Round 4.  */
-	OP (FI, A, B, C, D,  0,  6, 0xf4292244);
-	OP (FI, D, A, B, C,  7, 10, 0x432aff97);
-	OP (FI, C, D, A, B, 14, 15, 0xab9423a7);
-	OP (FI, B, C, D, A,  5, 21, 0xfc93a039);
-	OP (FI, A, B, C, D, 12,  6, 0x655b59c3);
-	OP (FI, D, A, B, C,  3, 10, 0x8f0ccc92);
-	OP (FI, C, D, A, B, 10, 15, 0xffeff47d);
-	OP (FI, B, C, D, A,  1, 21, 0x85845dd1);
-	OP (FI, A, B, C, D,  8,  6, 0x6fa87e4f);
-	OP (FI, D, A, B, C, 15, 10, 0xfe2ce6e0);
-	OP (FI, C, D, A, B,  6, 15, 0xa3014314);
-	OP (FI, B, C, D, A, 13, 21, 0x4e0811a1);
-	OP (FI, A, B, C, D,  4,  6, 0xf7537e82);
-	OP (FI, D, A, B, C, 11, 10, 0xbd3af235);
-	OP (FI, C, D, A, B,  2, 15, 0x2ad7d2bb);
-	OP (FI, B, C, D, A,  9, 21, 0xeb86d391);
+	OP(FI, A, B, C, D, 0, 6, 0xf4292244);
+	OP(FI, D, A, B, C, 7, 10, 0x432aff97);
+	OP(FI, C, D, A, B, 14, 15, 0xab9423a7);
+	OP(FI, B, C, D, A, 5, 21, 0xfc93a039);
+	OP(FI, A, B, C, D, 12, 6, 0x655b59c3);
+	OP(FI, D, A, B, C, 3, 10, 0x8f0ccc92);
+	OP(FI, C, D, A, B, 10, 15, 0xffeff47d);
+	OP(FI, B, C, D, A, 1, 21, 0x85845dd1);
+	OP(FI, A, B, C, D, 8, 6, 0x6fa87e4f);
+	OP(FI, D, A, B, C, 15, 10, 0xfe2ce6e0);
+	OP(FI, C, D, A, B, 6, 15, 0xa3014314);
+	OP(FI, B, C, D, A, 13, 21, 0x4e0811a1);
+	OP(FI, A, B, C, D, 4, 6, 0xf7537e82);
+	OP(FI, D, A, B, C, 11, 10, 0xbd3af235);
+	OP(FI, C, D, A, B, 2, 15, 0x2ad7d2bb);
+	OP(FI, B, C, D, A, 9, 21, 0xeb86d391);
 
 	/* Put checksum in context given as argument.  */
 	ctx->A += A;
@@ -223,17 +215,14 @@ transform(MD5_CONTEXT *ctx, const unsigned char *data)
 	ctx->D += D;
 }
 
-
-
 /* The routine updates the message-digest context to
  * account for the presence of each of the characters inBuf[0..inLen-1]
  * in the message whose digest is being computed.
  */
-static void
-md5_update(MD5_CONTEXT *hd, const unsigned char *inbuf, size_t inlen)
+static void md5_update(MD5_CONTEXT *hd, const unsigned char *inbuf, size_t inlen)
 {
 	if (hd->count == 64) { /* flush the buffer */
-		transform( hd, hd->buf );
+		transform(hd, hd->buf);
 		hd->count = 0;
 		hd->nblocks++;
 	}
@@ -259,16 +248,13 @@ md5_update(MD5_CONTEXT *hd, const unsigned char *inbuf, size_t inlen)
 		hd->buf[hd->count++] = *inbuf++;
 }
 
-
-
 /* The routine final terminates the message-digest computation and
  * ends with the desired message digest in mdContext->digest[0...15].
  * The handle is prepared for a new MD5 cycle.
  * Returns 16 bytes representing the digest.
  */
 
-static void
-do_final(MD5_CONTEXT *hd)
+static void do_final(MD5_CONTEXT *hd)
 {
 	guint32 t, msb, lsb;
 	unsigned char *p;
@@ -277,36 +263,36 @@ do_final(MD5_CONTEXT *hd)
 
 	msb = 0;
 	t = hd->nblocks;
-	if ((lsb = t << 6) < t) /* multiply by 64 to make a byte count */
+	if ((lsb = t << 6) < t)	/* multiply by 64 to make a byte count */
 		msb++;
 	msb += t >> 26;
 	t = lsb;
 	if ((lsb = t + hd->count) < t) /* add the count */
 		msb++;
 	t = lsb;
-	if ((lsb = t << 3) < t) /* multiply by 8 to make a bit count */
+	if ((lsb = t << 3) < t)	/* multiply by 8 to make a bit count */
 		msb++;
 	msb += t >> 29;
 
 	if (hd->count < 56) { /* enough room */
 		hd->buf[hd->count++] = 0x80; /* pad */
-		while(hd->count < 56)
-			hd->buf[hd->count++] = 0;  /* pad */
+		while (hd->count < 56)
+			hd->buf[hd->count++] = 0; /* pad */
 	} else { /* need one extra block */
 		hd->buf[hd->count++] = 0x80; /* pad character */
 		while (hd->count < 64)
 			hd->buf[hd->count++] = 0;
-		md5_update(hd, NULL, 0);  /* flush */
-		memset(hd->buf, 0, 56); /* fill next block with zeroes */
+		md5_update(hd, NULL, 0); /* flush */
+		memset(hd->buf, 0, 56);	/* fill next block with zeroes */
 	}
 
 	/* append the 64 bit count */
-	hd->buf[56] = lsb      ;
-	hd->buf[57] = lsb >>  8;
+	hd->buf[56] = lsb;
+	hd->buf[57] = lsb >> 8;
 	hd->buf[58] = lsb >> 16;
 	hd->buf[59] = lsb >> 24;
-	hd->buf[60] = msb      ;
-	hd->buf[61] = msb >>  8;
+	hd->buf[60] = msb;
+	hd->buf[61] = msb >> 8;
 	hd->buf[62] = msb >> 16;
 	hd->buf[63] = msb >> 24;
 	transform(hd, hd->buf);
@@ -316,7 +302,7 @@ do_final(MD5_CONTEXT *hd)
 #define X(a) do { *p++ = hd->a      ; *p++ = hd->a >> 8;      \
 		  *p++ = hd->a >> 16; *p++ = hd->a >> 24; } while(0)
 #else /* little endian */
-	/*#define X(a) do { *(guint32*)p = hd->##a ; p += 4; } while(0)*/
+	/*#define X(a) do { *(guint32*)p = hd->##a ; p += 4; } while(0) */
 	/* Unixware's cpp doesn't like the above construct so we do it his way:
 	 * (reported by Allan Clark) */
 #define X(a) do { *(guint32*)p = (*hd).a ; p += 4; } while(0)
@@ -329,8 +315,7 @@ do_final(MD5_CONTEXT *hd)
 	hd->finalized = 1;
 }
 
-static void
-md5_final(unsigned char *digest, MD5_CONTEXT *ctx)
+static void md5_final(unsigned char *digest, MD5_CONTEXT *ctx)
 {
 	if (!ctx->finalized)
 		do_final(ctx);
@@ -341,8 +326,7 @@ md5_final(unsigned char *digest, MD5_CONTEXT *ctx)
  * Creates a MD5 digest in hex fomrat (lowercase letters) from the
  * string S.  hextdigest but be buffer of at lease 33 bytes!
  */
-static void
-md5_hex_digest_binary(char *hexdigest, const unsigned char *s, size_t len)
+static void md5_hex_digest_binary(char *hexdigest, const unsigned char *s, size_t len)
 {
 	int i;
 	MD5_CONTEXT context;
@@ -356,10 +340,9 @@ md5_hex_digest_binary(char *hexdigest, const unsigned char *s, size_t len)
 		sprintf(hexdigest + 2 * i, "%02x", digest[i]);
 }
 
-int 
-md5_hex_digest_file(char *hexdigest, const unsigned char *file)
+int md5_hex_digest_file(char *hexdigest, const unsigned char *file)
 {
-	int READ_BLOCK_SIZE=4096;
+	int READ_BLOCK_SIZE = 4096;
 	int len;
 	char *buf = malloc(READ_BLOCK_SIZE); /* alloc the first block */
 	char *lastp = buf; /* point to the start of the buffer */
@@ -372,12 +355,12 @@ md5_hex_digest_file(char *hexdigest, const unsigned char *file)
 		free(buf);
 		return -1;
 	}
-	
+
 	while ((len = read(fd, lastp, READ_BLOCK_SIZE)) > 0) { /* read one block (which is allocated) */
 		total += len; /* update the total length */
 		num_alloc++; /* increase number of allocs */
-		buf = realloc(buf, READ_BLOCK_SIZE*num_alloc); /* allocate one more block for next read */
-		lastp = buf+total; /* point to the end of read stuff to buf */
+		buf = realloc(buf, READ_BLOCK_SIZE * num_alloc); /* allocate one more block for next read */
+		lastp = buf + total; /* point to the end of read stuff to buf */
 	}
 
 	close(fd);
@@ -391,8 +374,7 @@ md5_hex_digest_file(char *hexdigest, const unsigned char *file)
  * Creates a MD5 digest in hex fomrat (lowercase letters) from the
  * string S.  hextdigest but be buffer of at lease 33 bytes!
  */
-void
-md5_hex_digest(char *hexdigest, const unsigned char *s)
+void md5_hex_digest(char *hexdigest, const unsigned char *s)
 {
 	g_return_if_fail(hexdigest != NULL);
 	g_return_if_fail(s != NULL);
@@ -404,18 +386,15 @@ md5_hex_digest(char *hexdigest, const unsigned char *s)
 ** taken from the file rfc2104.txt
 ** written by Martin Schaaf <mascha@ma-scha.de>
 */
-static void
-md5_hmac(unsigned char *digest,
-	 const unsigned char* text, int text_len,
-	 const unsigned char* key, int key_len)
+static void md5_hmac(unsigned char *digest, const unsigned char *text, int text_len, const unsigned char *key, int key_len)
 {
 	MD5_CONTEXT context;
-	unsigned char k_ipad[64];    /* inner padding -
-				      * key XORd with ipad
-				      */
-	unsigned char k_opad[64];    /* outer padding -
-				      * key XORd with opad
-				      */
+	unsigned char k_ipad[64]; /* inner padding -
+				   * key XORd with ipad
+				   */
+	unsigned char k_opad[64]; /* outer padding -
+				   * key XORd with opad
+				   */
 	/* unsigned char tk[16]; */
 	int i;
 
@@ -446,7 +425,6 @@ md5_hmac(unsigned char *digest,
 	 * and text is the data being protected
 	 */
 
-
 	/* XOR key with ipad and opad values */
 	for (i = 0; i < 64; i++) {
 		k_ipad[i] ^= 0x36;
@@ -456,27 +434,23 @@ md5_hmac(unsigned char *digest,
 	/*
 	 * perform inner MD5
 	 */
-	md5_init(&context);		      /* init context for 1st
-					       * pass */
-	md5_update(&context, k_ipad, 64);     /* start with inner pad */
+	md5_init(&context); /* init context for 1st
+			     * pass */
+	md5_update(&context, k_ipad, 64); /* start with inner pad */
 	md5_update(&context, text, text_len); /* then text of datagram */
-	md5_final(digest, &context);	      /* finish up 1st pass */
+	md5_final(digest, &context); /* finish up 1st pass */
 	/*
 	 * perform outer MD5
 	 */
-	md5_init(&context);		      /* init context for 2nd
-					       * pass */
-	md5_update(&context, k_opad, 64);     /* start with outer pad */
-	md5_update(&context, digest, 16);     /* then results of 1st
-					       * hash */
-	md5_final(digest, &context);	      /* finish up 2nd pass */
+	md5_init(&context); /* init context for 2nd
+			     * pass */
+	md5_update(&context, k_opad, 64); /* start with outer pad */
+	md5_update(&context, digest, 16); /* then results of 1st
+					   * hash */
+	md5_final(digest, &context); /* finish up 2nd pass */
 }
 
-
-void
-md5_hex_hmac(char *hexdigest,
-	     const unsigned char* text, int text_len,
-	     const unsigned char* key, int key_len)
+void md5_hex_hmac(char *hexdigest, const unsigned char *text, int text_len, const unsigned char *key, int key_len)
 {
 	unsigned char digest[16];
 	int i;
@@ -491,3 +465,7 @@ md5_hex_hmac(char *hexdigest,
 	for (i = 0; i < 16; i++)
 		sprintf(hexdigest + 2 * i, "%02x", digest[i]);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

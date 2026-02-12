@@ -20,7 +20,7 @@
 #ifndef PREFS_QUOTE_H
 #define PREFS_QUOTE_H
 
-void prefs_quote_init	(void);
-void prefs_quote_done	(void);
+void prefs_quote_init(void);
+void prefs_quote_done(void);
 
-#endif /* PREFS_QUOTE_H */ 
+#endif /* PREFS_QUOTE_H */

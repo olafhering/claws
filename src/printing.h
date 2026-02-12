@@ -26,24 +26,21 @@
 #include "claws-features.h"
 #endif
 
-typedef struct _PrintData		PrintData;
+typedef struct _PrintData PrintData;
 
 typedef struct _PrintRenderer {
-	PangoContext *(*get_pango_context)(gpointer renderer_data);
+	PangoContext *(*get_pango_context) (gpointer renderer_data);
 	gpointer (*get_data_to_print)(gpointer renderer_data, gint sel_start, gint sel_end);
-	void (*cb_begin_print)(GtkPrintOperation *op, GtkPrintContext *context,
-				gpointer user_data);
-	void (*cb_draw_page)(GtkPrintOperation* op, GtkPrintContext*, gint page_nr,
-			     gpointer user_data);
+	void (*cb_begin_print)(GtkPrintOperation *op, GtkPrintContext *context, gpointer user_data);
+	void (*cb_draw_page)(GtkPrintOperation *op, GtkPrintContext *, gint page_nr, gpointer user_data);
 } PrintRenderer;
 
-void printing_print(GtkTextView*, GtkWindow*, gint, gint, GtkImage *avatar);
-void printing_print_full(GtkWindow *parent, PrintRenderer *renderer, gpointer renderer_data, 
-			 gint sel_start, gint sel_end, GtkImage *avatar);
-void printing_page_setup(GtkWindow*);
+void printing_print(GtkTextView *, GtkWindow *, gint, gint, GtkImage *avatar);
+void printing_print_full(GtkWindow *parent, PrintRenderer *renderer, gpointer renderer_data, gint sel_start, gint sel_end, GtkImage *avatar);
+void printing_page_setup(GtkWindow *);
 gpointer printing_get_renderer_data(PrintData *print_data);
-gdouble  printing_get_zoom(PrintData *print_data);
-void     printing_set_n_pages(PrintData *print_data, gint n_pages);
+gdouble printing_get_zoom(PrintData *print_data);
+void printing_set_n_pages(PrintData *print_data, gint n_pages);
 GtkPrintSettings *printing_get_settings(void);
 GtkPageSetup *printing_get_page_setup(void);
 void printing_store_settings(GtkPrintSettings *new_settings);

@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -41,7 +41,8 @@ gint rssyl_folder_depth(FolderItem *item)
 {
 	gint i;
 
-	for( i = -1; item != NULL; item = folder_item_parent(item), i++ ) {}
+	for (i = -1; item != NULL; item = folder_item_parent(item), i++) {
+	}
 	return i;
 }
 
@@ -52,7 +53,7 @@ gint rssyl_folder_depth(FolderItem *item)
  * folders up to the root). */
 void rssyl_opml_import_func(gchar *title, gchar *url, gint depth, gpointer data)
 {
-	OPMLImportCtx *ctx = (OPMLImportCtx *)data;
+	OPMLImportCtx *ctx = (OPMLImportCtx *) data;
 	gchar *tmp = NULL;
 	FolderItem *new_item;
 	gboolean nulltitle = FALSE;
@@ -65,22 +66,20 @@ void rssyl_opml_import_func(gchar *title, gchar *url, gint depth, gpointer data)
 		ctx->depth--;
 	}
 
-	debug_print("OPML_IMPORT: %s %s (%s)\n",
-			(url != NULL ? "feed": "folder"), title, url);
+	debug_print("OPML_IMPORT: %s %s (%s)\n", (url != NULL ? "feed" : "folder"), title, url);
 
-	if( title == NULL ) {
+	if (title == NULL) {
 		debug_print("NULL title received, substituting a placeholder title\n");
 		title = g_strdup(_("Untitled"));
 		nulltitle = TRUE;
 	}
 
 	/* If URL is not given, then it's a folder */
-	if( url == NULL ) {
+	if (url == NULL) {
 		/* Find an unused name for new folder */
 		tmp = g_strdup(title);
 		while (folder_find_child_item_by_name((FolderItem *)ctx->current->data, tmp)) {
-			debug_print("RSSyl: Folder '%s' already exists, trying another name\n",
-					title);
+			debug_print("RSSyl: Folder '%s' already exists, trying another name\n", title);
 			g_free(tmp);
 			tmp = g_strdup_printf("%s__%d", title, ++i);
 		}
@@ -101,15 +100,16 @@ void rssyl_opml_import_func(gchar *title, gchar *url, gint depth, gpointer data)
 		ctx->depth++;
 	} else {
 		/* We have URL, try to add new feed... */
-		new_item = rssyl_subscribe((FolderItem *)ctx->current->data,
-				url, RSSYL_SHOW_ERRORS);
+		new_item = rssyl_subscribe((FolderItem *)ctx->current->data, url, RSSYL_SHOW_ERRORS);
 		/* ...and rename it if needed */
 		if (new_item != NULL && strcmp(title, new_item->name)) {
 			if (folder_item_rename(new_item, title) < 0) {
-				alertpanel_error(_("Error while subscribing feed\n"
-							"%s\n\nFolder name '%s' is not allowed."),
-						url, title);
+				alertpanel_error(_("Error while subscribing feed\n" "%s\n\nFolder name '%s' is not allowed."), url, title);
 			}
 		}
 	}
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

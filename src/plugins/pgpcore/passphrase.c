@@ -16,7 +16,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 
 #if USE_GPGME
@@ -26,9 +26,9 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef GDK_WINDOWING_X11
-#  include <gdk/gdkx.h>
+#include <gdk/gdkx.h>
 #endif /* GDK_WINDOWING_X11 */
-#include <gtk/gtk.h> 
+#include <gtk/gtk.h>
 #include <string.h>
 #include <sys/types.h>
 #ifdef G_OS_WIN32
@@ -52,308 +52,274 @@ static gchar *last_pass = NULL;
 
 static void passphrase_ok_cb(GtkWidget *widget, gpointer data);
 static void passphrase_cancel_cb(GtkWidget *widget, gpointer data);
-static gint passphrase_deleted(GtkWidget *widget, GdkEventAny *event,
-			       gpointer data);
-static gboolean passphrase_key_pressed(GtkWidget *widget, GdkEventKey *event,
-				       gpointer data);
+static gint passphrase_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data);
+static gboolean passphrase_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data);
 
 static GtkWidget *create_description(const gchar *uid_hint, gint prev_bad, gint new_key);
 
-void
-gpgmegtk_set_passphrase_grab(gint yes)
+void gpgmegtk_set_passphrase_grab(gint yes)
 {
-    grab_all = yes;
+	grab_all = yes;
 }
 
-gchar*
-passphrase_mbox(const gchar *uid_hint, const gchar *pass_hint, gint prev_bad, gint new_key)
+gchar *passphrase_mbox(const gchar *uid_hint, const gchar *pass_hint, gint prev_bad, gint new_key)
 {
-    gchar *the_passphrase = NULL;
-    GtkWidget *vbox, *hbox;
-    GtkWidget *confirm_box;
-    GtkWidget *window;
-    GtkWidget *pass_entry;
-    GtkWidget *ok_button;
-    GtkWidget *cancel_button;
-    GdkWindow *gdkwin;
+	gchar *the_passphrase = NULL;
+	GtkWidget *vbox, *hbox;
+	GtkWidget *confirm_box;
+	GtkWidget *window;
+	GtkWidget *pass_entry;
+	GtkWidget *ok_button;
+	GtkWidget *cancel_button;
+	GdkWindow *gdkwin;
 
-    SummaryView *summaryview = mainwindow_get_mainwindow()->summaryview;
-    
-    gtk_menu_popdown(GTK_MENU(summaryview->popupmenu));
+	SummaryView *summaryview = mainwindow_get_mainwindow()->summaryview;
 
-    window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "passphrase");
-    gtk_window_set_title(GTK_WINDOW(window), _("Passphrase"));
-    gtk_window_set_default_size(GTK_WINDOW(window), 375, 100);
-    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
-    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-    gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-    gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-    g_signal_connect(G_OBJECT(window), "delete_event",
-                     G_CALLBACK(passphrase_deleted), NULL);
-    g_signal_connect(G_OBJECT(window), "key_press_event",
-                     G_CALLBACK(passphrase_key_pressed), NULL);
-    MANAGE_WINDOW_SIGNALS_CONNECT(window);
-    manage_window_set_transient(GTK_WINDOW(window));
+	gtk_menu_popdown(GTK_MENU(summaryview->popupmenu));
 
-    vbox = gtk_vbox_new(FALSE, 8);
-    gtk_container_add(GTK_CONTAINER(window), vbox);
-    gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
+	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "passphrase");
+	gtk_window_set_title(GTK_WINDOW(window), _("Passphrase"));
+	gtk_window_set_default_size(GTK_WINDOW(window), 375, 100);
+	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(passphrase_deleted), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(passphrase_key_pressed), NULL);
+	MANAGE_WINDOW_SIGNALS_CONNECT(window);
+	manage_window_set_transient(GTK_WINDOW(window));
 
-    if (uid_hint || pass_hint) {
-        GtkWidget *label, *icon;
-        label = create_description (uid_hint, prev_bad, new_key);
-	icon = gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION,
-        			GTK_ICON_SIZE_DIALOG); 
+	vbox = gtk_vbox_new(FALSE, 8);
+	gtk_container_add(GTK_CONTAINER(window), vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
 
-	hbox = gtk_hbox_new (FALSE, 12);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
-	gtk_widget_show (hbox);
-        gtk_box_pack_start (GTK_BOX(hbox), icon, FALSE, FALSE, 0);
-        gtk_box_pack_start (GTK_BOX(hbox), label, FALSE, FALSE, 0);
-        gtk_box_pack_start (GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-    }
+	if (uid_hint || pass_hint) {
+		GtkWidget *label, *icon;
+		label = create_description(uid_hint, prev_bad, new_key);
+		icon = gtk_image_new_from_stock(GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG);
 
-    pass_entry = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(vbox), pass_entry, FALSE, FALSE, 0);
-    gtk_entry_set_visibility(GTK_ENTRY(pass_entry), FALSE);
-    gtk_widget_grab_focus(pass_entry);
-
-    gtkut_stock_button_set_create(&confirm_box, 
-				  &cancel_button, GTK_STOCK_CANCEL,
-		    		  &ok_button, GTK_STOCK_OK,
-				  NULL, NULL);
-
-    gtk_box_pack_end(GTK_BOX(vbox), confirm_box, FALSE, FALSE, 0);
-    gtk_widget_grab_default(ok_button);
-
-    g_signal_connect(G_OBJECT(ok_button), "clicked",
-                     G_CALLBACK(passphrase_ok_cb), NULL);
-    g_signal_connect(G_OBJECT(pass_entry), "activate",
-                     G_CALLBACK(passphrase_ok_cb), NULL);
-    g_signal_connect(G_OBJECT(cancel_button), "clicked",
-                     G_CALLBACK(passphrase_cancel_cb), NULL);
-
-    gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-    if (grab_all)   
-        gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-    
-    gtk_widget_show_all(window);
-
-    if (grab_all) {
-        int err = 0, cnt = 0;
-        /* make sure that window is viewable */
-        gtk_widget_show_now(window);
-	gdkwin = gtk_widget_get_window(window);
-	gdk_window_process_updates(gdkwin, TRUE);
-	gdk_flush();
-	while(gtk_events_pending()) {
-		gtk_main_iteration();
+		hbox = gtk_hbox_new(FALSE, 12);
+		gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
+		gtk_widget_show(hbox);
+		gtk_box_pack_start(GTK_BOX(hbox), icon, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 	}
-try_again:
-        if ((err = gdk_pointer_grab(gdkwin, TRUE, 0,
-                             gdkwin, NULL, GDK_CURRENT_TIME))) {
-	    if (err == GDK_GRAB_NOT_VIEWABLE && cnt < 10) {
-	        cnt++;
-		g_warning("trying to grab mouse again");
-		gtk_main_iteration();
-		goto try_again;
-            } else {
-                g_warning("OOPS: Could not grab mouse");
-                gtk_widget_destroy(window);
-                return NULL;
-	    }
-        }
-        if (gdk_keyboard_grab(gdkwin, FALSE, GDK_CURRENT_TIME)) {
-            gdk_display_pointer_ungrab(gdk_display_get_default(),
-			 	       GDK_CURRENT_TIME);
-            g_warning("OOPS: Could not grab keyboard");
-            gtk_widget_destroy(window);
-            return NULL;
-        }
-    }
 
-    gtk_main();
+	pass_entry = gtk_entry_new();
+	gtk_box_pack_start(GTK_BOX(vbox), pass_entry, FALSE, FALSE, 0);
+	gtk_entry_set_visibility(GTK_ENTRY(pass_entry), FALSE);
+	gtk_widget_grab_focus(pass_entry);
 
-    if (grab_all) {
-        gdk_display_keyboard_ungrab(gdk_display_get_default(),
-				    GDK_CURRENT_TIME);
-        gdk_display_pointer_ungrab(gdk_display_get_default(), GDK_CURRENT_TIME);
-        gdk_flush();
-    }
+	gtkut_stock_button_set_create(&confirm_box, &cancel_button, GTK_STOCK_CANCEL, &ok_button, GTK_STOCK_OK, NULL, NULL);
 
-    manage_window_focus_out(window, NULL, NULL);
+	gtk_box_pack_end(GTK_BOX(vbox), confirm_box, FALSE, FALSE, 0);
+	gtk_widget_grab_default(ok_button);
 
-    if (pass_ack) {
-        const gchar *entry_text;
-        entry_text = gtk_entry_get_text(GTK_ENTRY(pass_entry));
-	the_passphrase = g_locale_from_utf8(entry_text, -1, NULL, NULL, NULL);
-        if (the_passphrase == NULL) 
-            the_passphrase = g_strdup (entry_text);
-    }
-    gtk_widget_destroy (window);
+	g_signal_connect(G_OBJECT(ok_button), "clicked", G_CALLBACK(passphrase_ok_cb), NULL);
+	g_signal_connect(G_OBJECT(pass_entry), "activate", G_CALLBACK(passphrase_ok_cb), NULL);
+	g_signal_connect(G_OBJECT(cancel_button), "clicked", G_CALLBACK(passphrase_cancel_cb), NULL);
 
-    return the_passphrase;
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	if (grab_all)
+		gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+
+	gtk_widget_show_all(window);
+
+	if (grab_all) {
+		int err = 0, cnt = 0;
+		/* make sure that window is viewable */
+		gtk_widget_show_now(window);
+		gdkwin = gtk_widget_get_window(window);
+		gdk_window_process_updates(gdkwin, TRUE);
+		gdk_flush();
+		while (gtk_events_pending()) {
+			gtk_main_iteration();
+		}
+ try_again:
+		if ((err = gdk_pointer_grab(gdkwin, TRUE, 0, gdkwin, NULL, GDK_CURRENT_TIME))) {
+			if (err == GDK_GRAB_NOT_VIEWABLE && cnt < 10) {
+				cnt++;
+				g_warning("trying to grab mouse again");
+				gtk_main_iteration();
+				goto try_again;
+			} else {
+				g_warning("OOPS: Could not grab mouse");
+				gtk_widget_destroy(window);
+				return NULL;
+			}
+		}
+		if (gdk_keyboard_grab(gdkwin, FALSE, GDK_CURRENT_TIME)) {
+			gdk_display_pointer_ungrab(gdk_display_get_default(), GDK_CURRENT_TIME);
+			g_warning("OOPS: Could not grab keyboard");
+			gtk_widget_destroy(window);
+			return NULL;
+		}
+	}
+
+	gtk_main();
+
+	if (grab_all) {
+		gdk_display_keyboard_ungrab(gdk_display_get_default(), GDK_CURRENT_TIME);
+		gdk_display_pointer_ungrab(gdk_display_get_default(), GDK_CURRENT_TIME);
+		gdk_flush();
+	}
+
+	manage_window_focus_out(window, NULL, NULL);
+
+	if (pass_ack) {
+		const gchar *entry_text;
+		entry_text = gtk_entry_get_text(GTK_ENTRY(pass_entry));
+		the_passphrase = g_locale_from_utf8(entry_text, -1, NULL, NULL, NULL);
+		if (the_passphrase == NULL)
+			the_passphrase = g_strdup(entry_text);
+	}
+	gtk_widget_destroy(window);
+
+	return the_passphrase;
 }
 
-
-static void 
-passphrase_ok_cb(GtkWidget *widget, gpointer data)
+static void passphrase_ok_cb(GtkWidget *widget, gpointer data)
 {
-    pass_ack = TRUE;
-    gtk_main_quit();
+	pass_ack = TRUE;
+	gtk_main_quit();
 }
 
-static void 
-passphrase_cancel_cb(GtkWidget *widget, gpointer data)
+static void passphrase_cancel_cb(GtkWidget *widget, gpointer data)
 {
-    pass_ack = FALSE;
-    gtk_main_quit();
+	pass_ack = FALSE;
+	gtk_main_quit();
 }
 
-
-static gint
-passphrase_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data)
+static gint passphrase_deleted(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
-    passphrase_cancel_cb(NULL, NULL);
-    return TRUE;
+	passphrase_cancel_cb(NULL, NULL);
+	return TRUE;
 }
 
-
-static gboolean
-passphrase_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
+static gboolean passphrase_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-    if (event && event->keyval == GDK_KEY_Escape)
-        passphrase_cancel_cb(NULL, NULL);
-    return FALSE;
+	if (event && event->keyval == GDK_KEY_Escape)
+		passphrase_cancel_cb(NULL, NULL);
+	return FALSE;
 }
 
-static gint 
-linelen (const gchar *s)
+static gint linelen(const gchar *s)
 {
-    gint i;
+	gint i;
 
-    for (i = 0; *s && *s != '\n'; s++, i++)
-        ;
+	for (i = 0; *s && *s != '\n'; s++, i++) ;
 
-    return i;
+	return i;
 }
 
-static GtkWidget *
-create_description(const gchar *uid_hint, gint prev_bad, gint new_key)
+static GtkWidget *create_description(const gchar *uid_hint, gint prev_bad, gint new_key)
 {
-    const gchar *uid = NULL;
-    gchar *buf;
-    GtkWidget *label;
-    gchar *my_uid = NULL;
-    if (!uid_hint)
-        uid = _("[no user id]");
-    else
-        uid = uid_hint;
+	const gchar *uid = NULL;
+	gchar *buf;
+	GtkWidget *label;
+	gchar *my_uid = NULL;
+	if (!uid_hint)
+		uid = _("[no user id]");
+	else
+		uid = uid_hint;
 
-    my_uid = g_strdup(uid);
-    while (strchr(my_uid, '<')) 
-    	*(strchr(my_uid, '<')) = '(';
-    while (strchr(my_uid, '>')) 
-    	*(strchr(my_uid, '>')) = ')';
+	my_uid = g_strdup(uid);
+	while (strchr(my_uid, '<'))
+		*(strchr(my_uid, '<')) = '(';
+	while (strchr(my_uid, '>'))
+		*(strchr(my_uid, '>')) = ')';
 
-    if (new_key == 1) {
-	    buf = g_strdup_printf ("<span weight=\"bold\" size=\"larger\">%s%s</span>\n\n%.*s\n",
-                           prev_bad ? _("Passphrases did not match.\n") : "",
-                           _("Please enter the passphrase for the new key:"),
-                           linelen (my_uid), my_uid);
-    } else if (new_key == 2) {
-	    buf = g_strdup_printf ("<span weight=\"bold\" size=\"larger\">%s</span>\n\n%.*s\n",
-                           _("Please re-enter the passphrase for the new key:"),
-                           linelen (my_uid), my_uid);
-    } else {
-	    buf = g_strdup_printf ("<span weight=\"bold\" size=\"larger\">%s%s</span>\n\n%.*s\n",
-                           prev_bad ? _("Bad passphrase.\n") : "",
-                           _("Please enter the passphrase for:"),
-                           linelen (my_uid), my_uid);
-    }
-    g_free(my_uid);
-    label = gtk_label_new (buf);
-    gtk_label_set_use_markup(GTK_LABEL (label), TRUE);
-    gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
-    gtk_label_set_line_wrap(GTK_LABEL (label), TRUE);
-    g_free (buf);
+	if (new_key == 1) {
+		buf = g_strdup_printf("<span weight=\"bold\" size=\"larger\">%s%s</span>\n\n%.*s\n", prev_bad ? _("Passphrases did not match.\n") : "", _("Please enter the passphrase for the new key:"), linelen(my_uid), my_uid);
+	} else if (new_key == 2) {
+		buf = g_strdup_printf("<span weight=\"bold\" size=\"larger\">%s</span>\n\n%.*s\n", _("Please re-enter the passphrase for the new key:"), linelen(my_uid), my_uid);
+	} else {
+		buf = g_strdup_printf("<span weight=\"bold\" size=\"larger\">%s%s</span>\n\n%.*s\n", prev_bad ? _("Bad passphrase.\n") : "", _("Please enter the passphrase for:"), linelen(my_uid), my_uid);
+	}
+	g_free(my_uid);
+	label = gtk_label_new(buf);
+	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+	g_free(buf);
 
-    return label;
+	return label;
 }
 
 static int free_passphrase(gpointer _unused)
 {
-    if (last_pass != NULL) {
+	if (last_pass != NULL) {
 #ifndef G_PLATFORM_WIN32
-        munlock(last_pass, strlen(last_pass));
+		munlock(last_pass, strlen(last_pass));
 #endif
-        g_free(last_pass);
-        last_pass = NULL;
-        debug_print("%% passphrase removed\n");
-    }
-    
-    return FALSE;
+		g_free(last_pass);
+		last_pass = NULL;
+		debug_print("%% passphrase removed\n");
+	}
+
+	return FALSE;
 }
 
-gpgme_error_t
-gpgmegtk_passphrase_cb(void *opaque, const char *uid_hint,
-        const char *passphrase_hint, int prev_bad, int fd)
+gpgme_error_t gpgmegtk_passphrase_cb(void *opaque, const char *uid_hint, const char *passphrase_hint, int prev_bad, int fd)
 {
-    char *pass = NULL;
+	char *pass = NULL;
 
-    if (prefs_gpg_get_config()->store_passphrase && last_pass && !prev_bad)
-        pass = g_strdup(last_pass);
-    else {
-	gpgmegtk_set_passphrase_grab (prefs_gpg_get_config()->passphrase_grab);
-	debug_print ("%% requesting passphrase for '%s'\n", uid_hint);
-	pass = passphrase_mbox (uid_hint, passphrase_hint, prev_bad, FALSE);
-	gpgmegtk_free_passphrase();
-	if (!pass) {
-            debug_print ("%% cancel passphrase entry\n");
-            if (write(fd, "\n", 1) != 1)
+	if (prefs_gpg_get_config()->store_passphrase && last_pass && !prev_bad)
+		pass = g_strdup(last_pass);
+	else {
+		gpgmegtk_set_passphrase_grab(prefs_gpg_get_config()->passphrase_grab);
+		debug_print("%% requesting passphrase for '%s'\n", uid_hint);
+		pass = passphrase_mbox(uid_hint, passphrase_hint, prev_bad, FALSE);
+		gpgmegtk_free_passphrase();
+		if (!pass) {
+			debug_print("%% cancel passphrase entry\n");
+			if (write(fd, "\n", 1) != 1)
 				debug_print("short write\n");
 
-            return GPG_ERR_CANCELED;
-	}
-	else {
-            if (prefs_gpg_get_config()->store_passphrase) {
-        	last_pass = g_strdup(pass);
+			return GPG_ERR_CANCELED;
+		} else {
+			if (prefs_gpg_get_config()->store_passphrase) {
+				last_pass = g_strdup(pass);
 #ifndef G_PLATFORM_WIN32
-        	if (mlock(last_pass, strlen(last_pass)) == -1)
-                    debug_print("%% locking passphrase failed\n");
+				if (mlock(last_pass, strlen(last_pass)) == -1)
+					debug_print("%% locking passphrase failed\n");
 #endif
-        	if (prefs_gpg_get_config()->store_passphrase_timeout > 0) {
-                	g_timeout_add(prefs_gpg_get_config()
-                                      ->store_passphrase_timeout*60*1000,
-                                      free_passphrase, NULL);
-        	}
-            }
-            debug_print ("%% sending passphrase\n");
+				if (prefs_gpg_get_config()->store_passphrase_timeout > 0) {
+					g_timeout_add(prefs_gpg_get_config()
+						      ->store_passphrase_timeout * 60 * 1000, free_passphrase, NULL);
+				}
+			}
+			debug_print("%% sending passphrase\n");
+		}
 	}
-    }
 
 #ifdef G_OS_WIN32
-    {
-        /* Under Windows FD is actually a System handle. */
-        DWORD nwritten;
-        WriteFile ((HANDLE)fd, pass, strlen (pass), &nwritten, NULL);
-        WriteFile ((HANDLE)fd, "\n", 1, &nwritten, NULL);
-    }
+	{
+		/* Under Windows FD is actually a System handle. */
+		DWORD nwritten;
+		WriteFile((HANDLE) fd, pass, strlen(pass), &nwritten, NULL);
+		WriteFile((HANDLE) fd, "\n", 1, &nwritten, NULL);
+	}
 #else
-    if (write(fd, pass, strlen(pass)) != strlen(pass))
+	if (write(fd, pass, strlen(pass)) != strlen(pass))
 		debug_print("short write\n");
 
-    if (write(fd, "\n", 1) != 1)
+	if (write(fd, "\n", 1) != 1)
 		debug_print("short write\n");
 #endif
-    g_free(pass);
+	g_free(pass);
 
-    return GPG_ERR_NO_ERROR;
+	return GPG_ERR_NO_ERROR;
 }
 
 void gpgmegtk_free_passphrase()
 {
-    (void)free_passphrase(NULL); /* could be inline */
+	(void)free_passphrase(NULL); /* could be inline */
 }
 
 #endif /* USE_GPGME */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

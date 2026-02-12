@@ -32,8 +32,7 @@
 
 #define PREFS_BLOCK_NAME "LiteHTML"
 
-static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window,
-		gpointer data);
+static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window, gpointer data);
 static void destroy_lh_prefs_page(PrefsPage *page);
 static void save_lh_prefs_page(PrefsPage *page);
 static void save_prefs(void);
@@ -49,13 +48,13 @@ struct _LHPrefsPage {
 typedef struct _LHPrefsPage LHPrefsPage;
 
 static PrefParam param[] = {
-	{ "enable_remote_content", "FALSE", &lh_prefs.enable_remote_content, P_BOOL,
-		NULL, NULL, NULL },
-	{ "image_cache_size", "20", &lh_prefs.image_cache_size, P_INT,
-		NULL, NULL, NULL },
-	{ "default_font", "Sans 16", &lh_prefs.default_font, P_STRING,
-		NULL, NULL, NULL },
-	{ NULL, NULL, NULL, 0, NULL, NULL, NULL }
+	{"enable_remote_content", "FALSE", &lh_prefs.enable_remote_content, P_BOOL,
+	 NULL, NULL, NULL},
+	{"image_cache_size", "20", &lh_prefs.image_cache_size, P_INT,
+	 NULL, NULL, NULL},
+	{"default_font", "Sans 16", &lh_prefs.default_font, P_STRING,
+	 NULL, NULL, NULL},
+	{NULL, NULL, NULL, 0, NULL, NULL, NULL}
 };
 
 static LHPrefsPage lh_prefs_page;
@@ -84,18 +83,17 @@ void lh_prefs_init(void)
 	lh_prefs_page.page.destroy_widget = destroy_lh_prefs_page;
 	lh_prefs_page.page.save_page = save_lh_prefs_page;
 	lh_prefs_page.page.weight = 30.0;
-	prefs_gtk_register_page((PrefsPage *) &lh_prefs_page);
+	prefs_gtk_register_page((PrefsPage *)&lh_prefs_page);
 }
 
 void lh_prefs_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) &lh_prefs_page);
+	prefs_gtk_unregister_page((PrefsPage *)&lh_prefs_page);
 }
 
-static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window,
-		gpointer data)
+static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window, gpointer data)
 {
-	LHPrefsPage *prefs_page = (LHPrefsPage *)page;
+	LHPrefsPage *prefs_page = (LHPrefsPage *) page;
 	GtkWidget *vbox;
 	GtkWidget *vbox_remote;
 	GtkWidget *hbox;
@@ -113,14 +111,11 @@ static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window,
 	/* Enable remote content */
 	vbox_remote = gtkut_get_options_frame(vbox, &frame, _("Remote resources"));
 
-	label = gtk_label_new(_("Loading remote resources can lead to some privacy issues.\n"
-				"When remote content loading is disabled, nothing will be requested\n"
-				"from the network."));
+	label = gtk_label_new(_("Loading remote resources can lead to some privacy issues.\n" "When remote content loading is disabled, nothing will be requested\n" "from the network."));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
 
 	enable_remote_content = gtk_check_button_new_with_label(_("Enable loading of remote content"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enable_remote_content),
-			lh_prefs.enable_remote_content);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enable_remote_content), lh_prefs.enable_remote_content);
 
 	gtk_box_pack_start(GTK_BOX(vbox_remote), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox_remote), enable_remote_content, FALSE, FALSE, 0);
@@ -137,8 +132,7 @@ static void create_lh_prefs_page(PrefsPage *page, GtkWindow *window,
 	image_cache_size = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1, 0);
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(image_cache_size), TRUE);
 	gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(image_cache_size), FALSE);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(image_cache_size),
-			lh_prefs.image_cache_size);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(image_cache_size), lh_prefs.image_cache_size);
 	gtk_box_pack_start(GTK_BOX(hbox), image_cache_size, FALSE, FALSE, 0);
 	gtk_widget_show_all(hbox);
 
@@ -167,17 +161,14 @@ static void destroy_lh_prefs_page(PrefsPage *page)
 
 static void save_lh_prefs_page(PrefsPage *page)
 {
-	LHPrefsPage *prefs_page = (LHPrefsPage *)page;
+	LHPrefsPage *prefs_page = (LHPrefsPage *) page;
 
-	lh_prefs.enable_remote_content = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(prefs_page->enable_remote_content));
+	lh_prefs.enable_remote_content = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(prefs_page->enable_remote_content));
 
-	lh_prefs.image_cache_size = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(prefs_page->image_cache_size));
+	lh_prefs.image_cache_size = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(prefs_page->image_cache_size));
 
 	g_free(lh_prefs.default_font);
-	lh_prefs.default_font = g_strdup(gtk_font_button_get_font_name(
-			GTK_FONT_BUTTON(prefs_page->default_font)));
+	lh_prefs.default_font = g_strdup(gtk_font_button_get_font_name(GTK_FONT_BUTTON(prefs_page->default_font)));
 
 	save_prefs();
 }
@@ -186,7 +177,7 @@ static void save_prefs(void)
 {
 	PrefFile *pref_file;
 	gchar *rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			COMMON_RC, NULL);
+				    COMMON_RC, NULL);
 
 	pref_file = prefs_write_open(rcpath);
 
@@ -196,7 +187,7 @@ static void save_prefs(void)
 		return;
 	}
 	if (prefs_set_block_label(pref_file, PREFS_BLOCK_NAME) < 0) {
-		g_warning("failed to set block label "PREFS_BLOCK_NAME);
+		g_warning("failed to set block label " PREFS_BLOCK_NAME);
 		g_free(rcpath);
 		return;
 	}
@@ -218,3 +209,7 @@ static void save_prefs(void)
 
 	g_free(rcpath);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

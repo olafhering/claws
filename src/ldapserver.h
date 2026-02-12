@@ -65,51 +65,49 @@
 typedef struct _LdapServer LdapServer;
 struct _LdapServer {
 	AddressBookType type;
-	AddressCache    *addressCache;
-	gint            retVal;
-	LdapControl     *control;
-	gboolean        searchFlag;
-	GList           *listQuery;
+	AddressCache *addressCache;
+	gint retVal;
+	LdapControl *control;
+	gboolean searchFlag;
+	GList *listQuery;
 };
 
 /* Function prototypes */
-LdapServer *ldapsvr_create_noctl( void );
-LdapServer *ldapsvr_create	( void );
-void ldapsvr_set_name		( LdapServer *server, const gchar *value );
-void ldapsvr_set_accessed	( LdapServer *server, const gboolean value );
-void ldapsvr_force_refresh	( LdapServer *server );
-void ldapsvr_free_all_query	( LdapServer *server );
-void ldapsvr_free		( LdapServer *server );
-gint ldapsvr_get_status		( LdapServer *server );
-gboolean ldapsvr_get_accessed	( LdapServer *server );
-gchar *ldapsvr_get_name		( LdapServer *server );
-gboolean ldapsvr_get_modified	( LdapServer *server );
-void ldapsvr_set_modified	( LdapServer *server, const gboolean value );
-gboolean ldapsvr_get_read_flag	( LdapServer *server );
-gboolean ldapsvr_get_search_flag( LdapServer *server );
-void ldapsvr_set_search_flag	( LdapServer *server, const gboolean value );
-gint ldapsvr_read_data ( LdapServer *server );
+LdapServer *ldapsvr_create_noctl(void);
+LdapServer *ldapsvr_create(void);
+void ldapsvr_set_name(LdapServer *server, const gchar *value);
+void ldapsvr_set_accessed(LdapServer *server, const gboolean value);
+void ldapsvr_force_refresh(LdapServer *server);
+void ldapsvr_free_all_query(LdapServer *server);
+void ldapsvr_free(LdapServer *server);
+gint ldapsvr_get_status(LdapServer *server);
+gboolean ldapsvr_get_accessed(LdapServer *server);
+gchar *ldapsvr_get_name(LdapServer *server);
+gboolean ldapsvr_get_modified(LdapServer *server);
+void ldapsvr_set_modified(LdapServer *server, const gboolean value);
+gboolean ldapsvr_get_read_flag(LdapServer *server);
+gboolean ldapsvr_get_search_flag(LdapServer *server);
+void ldapsvr_set_search_flag(LdapServer *server, const gboolean value);
+gint ldapsvr_read_data(LdapServer *server);
 
 #ifdef DEBUG_LDAP
-void ldapsvr_print_data		( LdapServer *server, FILE *stream );
+void ldapsvr_print_data(LdapServer *server, FILE *stream);
 #endif
-void ldapsvr_cancel_read	( LdapServer *server );
+void ldapsvr_cancel_read(LdapServer *server);
 
-ItemFolder *ldapsvr_get_root_folder	( LdapServer *server );
-GList *ldapsvr_get_list_person	( LdapServer *server );
-GList *ldapsvr_get_list_folder	( LdapServer *server );
+ItemFolder *ldapsvr_get_root_folder(LdapServer *server);
+GList *ldapsvr_get_list_person(LdapServer *server);
+GList *ldapsvr_get_list_folder(LdapServer *server);
 
-void ldapsvr_stop_query_id	( LdapServer *server, const gint queryID );
-void ldapsvr_stop_all_query	( LdapServer *server );
-void ldapsvr_cancel_all_query	( LdapServer *server );
-void ldapsvr_retire_query	( LdapServer *server );
+void ldapsvr_stop_query_id(LdapServer *server, const gint queryID);
+void ldapsvr_stop_all_query(LdapServer *server);
+void ldapsvr_cancel_all_query(LdapServer *server);
+void ldapsvr_retire_query(LdapServer *server);
 
-gboolean ldapsvr_reuse_previous	( const LdapServer *server,
-				  const QueryRequest *req );
-void ldapsrv_set_options (gint secs, LDAP *ld);
+gboolean ldapsvr_reuse_previous(const LdapServer *server, const QueryRequest *req);
+void ldapsrv_set_options(gint secs, LDAP *ld);
 LDAP *ldapsvr_connect(LdapControl *ctl);
 void ldapsvr_disconnect(LDAP *ld);
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __LDAPSERVER_H__ */
-

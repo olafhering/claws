@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -43,41 +43,27 @@
 
 static gchar monthstr[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
-typedef char *(*getlinefunc) (char *, size_t, void *);
-typedef int (*peekcharfunc) (void *);
-typedef int (*getcharfunc) (void *);
-typedef gint (*get_one_field_func) (gchar **, void *, HeaderEntry[]);
+typedef char *(*getlinefunc)(char *, size_t, void *);
+typedef int (*peekcharfunc)(void *);
+typedef int (*getcharfunc)(void *);
+typedef gint (*get_one_field_func)(gchar **, void *, HeaderEntry[]);
 
-static gint string_get_one_field(gchar **buf, char **str,
-				 HeaderEntry hentry[]);
+static gint string_get_one_field(gchar **buf, char **str, HeaderEntry hentry[]);
 
 static char *string_getline(char *buf, size_t len, char **str);
 static int string_peekchar(char **str);
 static int file_peekchar(FILE *fp);
-static gint generic_get_one_field(gchar **bufptr, void *data,
-				  HeaderEntry hentry[],
-				  getlinefunc getline, 
-				  peekcharfunc peekchar,
-				  gboolean unfold);
-static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
-			     gboolean full, gboolean decrypted);
+static gint generic_get_one_field(gchar **bufptr, void *data, HeaderEntry hentry[], getlinefunc getline, peekcharfunc peekchar, gboolean unfold);
+static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags, gboolean full, gboolean decrypted);
 
-
-gint procheader_get_one_field(gchar **buf, FILE *fp,
-			      HeaderEntry hentry[])
+gint procheader_get_one_field(gchar **buf, FILE *fp, HeaderEntry hentry[])
 {
-	return generic_get_one_field(buf, fp, hentry,
-				     (getlinefunc)fgets_crlf, (peekcharfunc)file_peekchar,
-				     TRUE);
+	return generic_get_one_field(buf, fp, hentry, (getlinefunc) fgets_crlf, (peekcharfunc) file_peekchar, TRUE);
 }
 
-static gint string_get_one_field(gchar **buf, char **str,
-				 HeaderEntry hentry[])
+static gint string_get_one_field(gchar **buf, char **str, HeaderEntry hentry[])
 {
-	return generic_get_one_field(buf, str, hentry,
-				     (getlinefunc)string_getline,
-				     (peekcharfunc)string_peekchar,
-				     TRUE);
+	return generic_get_one_field(buf, str, hentry, (getlinefunc) string_getline, (peekcharfunc) string_peekchar, TRUE);
 }
 
 gboolean procheader_skip_headers(FILE *fp)
@@ -97,7 +83,6 @@ gboolean procheader_skip_headers(FILE *fp)
 	return TRUE;
 }
 
-
 static char *string_getline(char *buf, size_t len, char **str)
 {
 	gboolean is_cr = FALSE;
@@ -109,16 +94,16 @@ static char *string_getline(char *buf, size_t len, char **str)
 	for (; **str && len > 1; --len) {
 		is_cr = (**str == '\r');
 		if ((*buf++ = *(*str)++) == '\n') {
-		    break;
+			break;
 		}
 		if (last_was_cr) {
 			*(--buf) = '\n';
 			buf++;
-		    break;
+			break;
 		}
 		last_was_cr = is_cr;
 	}
-		
+
 	*buf = '\0';
 
 	return buf;
@@ -134,16 +119,13 @@ static int file_peekchar(FILE *fp)
 	return ungetc(getc(fp), fp);
 }
 
-static gint generic_get_one_field(gchar **bufptr, void *data,
-			  HeaderEntry *hentry,
-			  getlinefunc getline, peekcharfunc peekchar,
-			  gboolean unfold)
+static gint generic_get_one_field(gchar **bufptr, void *data, HeaderEntry *hentry, getlinefunc getline, peekcharfunc peekchar, gboolean unfold)
 {
 	/* returns -1 in case of failure of any kind, whatever it's a parsing error
 	   or an allocation error. if returns -1, *bufptr is always NULL, and vice-versa,
 	   and if returning 0 (OK), *bufptr is always non-NULL, so callers just have to
 	   test the return value
-	*/
+	 */
 	gint nexthead;
 	gint hnum = 0;
 	HeaderEntry *hp = NULL;
@@ -174,10 +156,8 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 				}
 			} while (buf[0] == ' ' || buf[0] == '\t');
 
-			for (hp = hentry, hnum = 0; hp->name != NULL;
-			     hp++, hnum++) {
-				if (!g_ascii_strncasecmp(hp->name, buf,
-						 strlen(hp->name)))
+			for (hp = hentry, hnum = 0; hp->name != NULL; hp++, hnum++) {
+				if (!g_ascii_strncasecmp(hp->name, buf, strlen(hp->name)))
 					break;
 			}
 		} while (hp->name == NULL);
@@ -197,7 +177,7 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 		}
 	}
 	/* reduce initial buffer to its useful part */
-	len = strlen(buf)+1;
+	len = strlen(buf) + 1;
 	buf = g_realloc(buf, len);
 	if (buf == NULL) {
 		debug_print("generic_get_one_field: reallocation error\n");
@@ -221,7 +201,7 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 				strretchomp(buf);
 
 			buflen = strlen(buf);
-			
+
 			/* read next line */
 			tmpbuf = g_malloc(BUFFSIZE);
 
@@ -229,7 +209,7 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 				g_free(tmpbuf);
 				break;
 			}
-			tmplen = strlen(tmpbuf)+1;
+			tmplen = strlen(tmpbuf) + 1;
 
 			/* extend initial buffer and concatenate next line */
 			len += tmplen;
@@ -240,7 +220,7 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 				*bufptr = NULL;
 				return -1;
 			}
-			memcpy(buf+buflen, tmpbuf, tmplen);
+			memcpy(buf + buflen, tmpbuf, tmplen);
 			g_free(tmpbuf);
 			if (skiptab) { /* replace tab with space */
 				*(buf + buflen) = ' ';
@@ -259,10 +239,7 @@ static gint generic_get_one_field(gchar **bufptr, void *data,
 
 gint procheader_get_one_field_asis(gchar **buf, FILE *fp)
 {
-	return generic_get_one_field(buf, fp, NULL,
-				     (getlinefunc)fgets_crlf, 
-				     (peekcharfunc)file_peekchar,
-				     FALSE);
+	return generic_get_one_field(buf, fp, NULL, (getlinefunc) fgets_crlf, (peekcharfunc) file_peekchar, FALSE);
 }
 
 GPtrArray *procheader_get_header_array(FILE *fp)
@@ -302,7 +279,8 @@ void procheader_header_array_destroy(GPtrArray *harray)
 
 void procheader_header_free(Header *header)
 {
-	if (!header) return;
+	if (!header)
+		return;
 
 	g_free(header->name);
 	g_free(header->body);
@@ -314,7 +292,7 @@ void procheader_header_free(Header *header)
   remove the trailing ':' or ' ' before comparing
 */
 
-gboolean procheader_headername_equal(char * hdr1, char * hdr2)
+gboolean procheader_headername_equal(char *hdr1, char *hdr2)
 {
 	int len1;
 	int len2;
@@ -340,16 +318,17 @@ gboolean procheader_headername_equal(char * hdr1, char * hdr2)
 static gboolean header_is_addr_field(const gchar *hdr)
 {
 	static char *addr_headers[] = {
-				"To:",
-				"Cc:",
-				"Bcc:",
-				"From:",
-				"Reply-To:",
-				"Followup-To:",
-				"Followup-and-Reply-To:",
-				"Disposition-Notification-To:",
-				"Return-Receipt-To:",
-				NULL};
+		"To:",
+		"Cc:",
+		"Bcc:",
+		"From:",
+		"Reply-To:",
+		"Followup-To:",
+		"Followup-and-Reply-To:",
+		"Disposition-Notification-To:",
+		"Return-Receipt-To:",
+		NULL
+	};
 	int i;
 
 	if (!hdr)
@@ -362,10 +341,10 @@ static gboolean header_is_addr_field(const gchar *hdr)
 	return FALSE;
 }
 
-Header * procheader_parse_header(gchar * buf)
+Header *procheader_parse_header(gchar *buf)
 {
 	gchar *p;
-	Header * header;
+	Header *header;
 	gboolean addr_field = FALSE;
 
 	cm_return_val_if_fail(buf != NULL, NULL);
@@ -373,13 +352,14 @@ Header * procheader_parse_header(gchar * buf)
 	if ((*buf == ':') || (*buf == ' '))
 		return NULL;
 
-	for (p = buf; *p ; p++) {
+	for (p = buf; *p; p++) {
 		if ((*p == ':') || (*p == ' ')) {
 			header = g_new(Header, 1);
 			header->name = g_strndup(buf, p - buf + 1);
 			addr_field = header_is_addr_field(header->name);
 			p++;
-			while (*p == ' ' || *p == '\t') p++;
+			while (*p == ' ' || *p == '\t')
+				p++;
 			header->body = conv_unmime_header(p, NULL, addr_field);
 			return header;
 		}
@@ -394,18 +374,19 @@ void procheader_get_header_fields(FILE *fp, HeaderEntry hentry[])
 	gint hnum;
 	gchar *p;
 
-	if (hentry == NULL) return;
+	if (hentry == NULL)
+		return;
 
 	while ((hnum = procheader_get_one_field(&buf, fp, hentry)) != -1) {
 		hp = hentry + hnum;
 
 		p = buf + strlen(hp->name);
-		while (*p == ' ' || *p == '\t') p++;
+		while (*p == ' ' || *p == '\t')
+			p++;
 
 		if (hp->body == NULL)
 			hp->body = g_strdup(p);
-		else if (procheader_headername_equal(hp->name, "To") ||
-			 procheader_headername_equal(hp->name, "Cc")) {
+		else if (procheader_headername_equal(hp->name, "To") || procheader_headername_equal(hp->name, "Cc")) {
 			gchar *tp = hp->body;
 			hp->body = g_strconcat(tp, ", ", p, NULL);
 			g_free(tp);
@@ -415,8 +396,7 @@ void procheader_get_header_fields(FILE *fp, HeaderEntry hentry[])
 	}
 }
 
-MsgInfo *procheader_parse_file(const gchar *file, MsgFlags flags,
-			       gboolean full, gboolean decrypted)
+MsgInfo *procheader_parse_file(const gchar *file, MsgFlags flags, gboolean full, gboolean decrypted)
 {
 #ifdef G_OS_WIN32
 	GFile *f;
@@ -431,8 +411,7 @@ MsgInfo *procheader_parse_file(const gchar *file, MsgFlags flags,
 
 #ifdef G_OS_WIN32
 	f = g_file_new_for_path(file);
-	fi = g_file_query_info(f, "standard::size,standard::type,time::modified",
-			G_FILE_QUERY_INFO_NONE, NULL, &error);
+	fi = g_file_query_info(f, "standard::size,standard::type,time::modified", G_FILE_QUERY_INFO_NONE, NULL, &error);
 	if (error != NULL) {
 		g_warning(error->message);
 		g_error_free(error);
@@ -474,7 +453,6 @@ MsgInfo *procheader_parse_file(const gchar *file, MsgFlags flags,
 		msginfo->mtime = s.st_mtime;
 #endif
 	}
-
 #ifdef G_OS_WIN32
 	g_object_unref(fi);
 	g_object_unref(f);
@@ -483,14 +461,12 @@ MsgInfo *procheader_parse_file(const gchar *file, MsgFlags flags,
 	return msginfo;
 }
 
-MsgInfo *procheader_parse_str(const gchar *str, MsgFlags flags, gboolean full,
-			      gboolean decrypted)
+MsgInfo *procheader_parse_str(const gchar *str, MsgFlags flags, gboolean full, gboolean decrypted)
 {
 	return parse_stream(&str, TRUE, flags, full, decrypted);
 }
 
-enum
-{
+enum {
 	H_DATE = 0,
 	H_FROM,
 	H_TO,
@@ -523,70 +499,71 @@ enum
 };
 
 static HeaderEntry hentry_full[] = {
-				   {"Date:",		NULL, FALSE},
-				   {"From:",		NULL, TRUE},
-				   {"To:",		NULL, TRUE},
-				   {"Cc:",		NULL, TRUE},
-				   {"Newsgroups:",	NULL, TRUE},
-				   {"Subject:",		NULL, TRUE},
-				   {"Message-ID:",	NULL, FALSE},
-				   {"References:",	NULL, FALSE},
-				   {"In-Reply-To:",	NULL, FALSE},
-				   {"Content-Type:",	NULL, FALSE},
-				   {"Seen:",		NULL, FALSE},
-				   {"Status:",          NULL, FALSE},
-				   {"From ",		NULL, FALSE},
-				   {"SC-Marked-For-Download:", NULL, FALSE},
-				   {"SC-Message-Size:", NULL, FALSE},
-				   {"Face:",		NULL, FALSE},
-				   {"X-Face:",		NULL, FALSE},
-				   {"Disposition-Notification-To:", NULL, FALSE},
-				   {"Return-Receipt-To:", NULL, FALSE},
-				   {"SC-Partially-Retrieved:", NULL, FALSE},
-				   {"SC-Account-Server:", NULL, FALSE},
-				   {"SC-Account-Login:",NULL, FALSE},
-				   {"List-Post:",	NULL, TRUE},
-				   {"List-Subscribe:",	NULL, TRUE},
-				   {"List-Unsubscribe:",NULL, TRUE},
-				   {"List-Help:",	NULL, TRUE},
- 				   {"List-Archive:",	NULL, TRUE},
- 				   {"List-Owner:",	NULL, TRUE},
- 				   {"Resent-From:",	NULL, TRUE},
-				   {NULL,		NULL, FALSE}};
+	{"Date:", NULL, FALSE},
+	{"From:", NULL, TRUE},
+	{"To:", NULL, TRUE},
+	{"Cc:", NULL, TRUE},
+	{"Newsgroups:", NULL, TRUE},
+	{"Subject:", NULL, TRUE},
+	{"Message-ID:", NULL, FALSE},
+	{"References:", NULL, FALSE},
+	{"In-Reply-To:", NULL, FALSE},
+	{"Content-Type:", NULL, FALSE},
+	{"Seen:", NULL, FALSE},
+	{"Status:", NULL, FALSE},
+	{"From ", NULL, FALSE},
+	{"SC-Marked-For-Download:", NULL, FALSE},
+	{"SC-Message-Size:", NULL, FALSE},
+	{"Face:", NULL, FALSE},
+	{"X-Face:", NULL, FALSE},
+	{"Disposition-Notification-To:", NULL, FALSE},
+	{"Return-Receipt-To:", NULL, FALSE},
+	{"SC-Partially-Retrieved:", NULL, FALSE},
+	{"SC-Account-Server:", NULL, FALSE},
+	{"SC-Account-Login:", NULL, FALSE},
+	{"List-Post:", NULL, TRUE},
+	{"List-Subscribe:", NULL, TRUE},
+	{"List-Unsubscribe:", NULL, TRUE},
+	{"List-Help:", NULL, TRUE},
+	{"List-Archive:", NULL, TRUE},
+	{"List-Owner:", NULL, TRUE},
+	{"Resent-From:", NULL, TRUE},
+	{NULL, NULL, FALSE}
+};
 
 static HeaderEntry hentry_short[] = {
-				    {"Date:",		NULL, FALSE},
-				    {"From:",		NULL, TRUE},
-				    {"To:",		NULL, TRUE},
-				    {"Cc:",		NULL, TRUE},
-				    {"Newsgroups:",	NULL, TRUE},
-				    {"Subject:",	NULL, TRUE},
-				    {"Message-ID:",	NULL, FALSE},
-				    {"References:",	NULL, FALSE},
-				    {"In-Reply-To:",	NULL, FALSE},
-				    {"Content-Type:",	NULL, FALSE},
-				    {"Seen:",		NULL, FALSE},
-				    {"Status:",		NULL, FALSE},
-				    {"From ",		NULL, FALSE},
-				    {"SC-Marked-For-Download:", NULL, FALSE},
-				    {"SC-Message-Size:",NULL, FALSE},
-				    {NULL,		NULL, FALSE}};
+	{"Date:", NULL, FALSE},
+	{"From:", NULL, TRUE},
+	{"To:", NULL, TRUE},
+	{"Cc:", NULL, TRUE},
+	{"Newsgroups:", NULL, TRUE},
+	{"Subject:", NULL, TRUE},
+	{"Message-ID:", NULL, FALSE},
+	{"References:", NULL, FALSE},
+	{"In-Reply-To:", NULL, FALSE},
+	{"Content-Type:", NULL, FALSE},
+	{"Seen:", NULL, FALSE},
+	{"Status:", NULL, FALSE},
+	{"From ", NULL, FALSE},
+	{"SC-Marked-For-Download:", NULL, FALSE},
+	{"SC-Message-Size:", NULL, FALSE},
+	{NULL, NULL, FALSE}
+};
 
-static HeaderEntry* procheader_get_headernames(gboolean full)
+static HeaderEntry *procheader_get_headernames(gboolean full)
 {
 	return full ? hentry_full : hentry_short;
 }
 
-MsgInfo *procheader_parse_stream(FILE *fp, MsgFlags flags, gboolean full,
-				 gboolean decrypted)
+MsgInfo *procheader_parse_stream(FILE *fp, MsgFlags flags, gboolean full, gboolean decrypted)
 {
 	return parse_stream(fp, FALSE, flags, full, decrypted);
 }
 
 static gboolean avatar_from_some_face(gpointer source, gpointer userdata)
 {
-	AvatarCaptureData *acd = (AvatarCaptureData *)source;
-	
+	AvatarCaptureData *acd = (AvatarCaptureData *) source;
+
 	if (*(acd->content) == '\0') /* won't be null, but may be empty */
 		return FALSE;
 
@@ -605,8 +582,7 @@ static gboolean avatar_from_some_face(gpointer source, gpointer userdata)
 
 static gulong avatar_hook_id = HOOK_NONE;
 
-static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
-			     gboolean full, gboolean decrypted)
+static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags, gboolean full, gboolean decrypted)
 {
 	MsgInfo *msginfo;
 	gchar *buf = NULL;
@@ -616,30 +592,25 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 	gint hnum;
 	void *orig_data = data;
 
-	get_one_field_func get_one_field =
-		isstring ? (get_one_field_func)string_get_one_field
-			 : (get_one_field_func)procheader_get_one_field;
+	get_one_field_func get_one_field = isstring ? (get_one_field_func) string_get_one_field : (get_one_field_func) procheader_get_one_field;
 
 	hentry = procheader_get_headernames(full);
 
 	if (MSG_IS_QUEUED(flags) || MSG_IS_DRAFT(flags)) {
 		while (get_one_field(&buf, data, NULL) != -1) {
-			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1",
-				strlen("X-Claws-End-Special-Headers:"))) ||
-			    (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1",
-				strlen("X-Sylpheed-End-Special-Headers:")))) {
+			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1", strlen("X-Claws-End-Special-Headers:"))) || (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1", strlen("X-Sylpheed-End-Special-Headers:")))) {
 				g_free(buf);
 				buf = NULL;
 				break;
 			}
 			/* from other mailers */
 			if (!strncmp(buf, "Date: ", 6)
-			||  !strncmp(buf, "To: ", 4)
-			||  !strncmp(buf, "From: ", 6)
-			||  !strncmp(buf, "Subject: ", 9)) {
+			    || !strncmp(buf, "To: ", 4)
+			    || !strncmp(buf, "From: ", 6)
+			    || !strncmp(buf, "Subject: ", 9)) {
 				if (isstring)
 					data = orig_data;
-				else 
+				else
 					rewind((FILE *)data);
 				g_free(buf);
 				buf = NULL;
@@ -651,52 +622,48 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 	}
 
 	msginfo = procmsg_msginfo_new();
-	
-	if (flags.tmp_flags || flags.perm_flags) 
+
+	if (flags.tmp_flags || flags.perm_flags)
 		msginfo->flags = flags;
-	else 
+	else
 		MSG_SET_PERM_FLAGS(msginfo->flags, MSG_NEW | MSG_UNREAD);
-	
+
 	msginfo->inreplyto = NULL;
 
-	if (avatar_hook_id == HOOK_NONE &&
-	    (prefs_common.enable_avatars & (AVATARS_ENABLE_CAPTURE | AVATARS_ENABLE_RENDER))) {
-		avatar_hook_id = hooks_register_hook(AVATAR_HEADER_UPDATE_HOOKLIST,
-						     avatar_from_some_face, NULL);
-	} else if (avatar_hook_id != HOOK_NONE &&
-		   !(prefs_common.enable_avatars & AVATARS_ENABLE_CAPTURE)) {
+	if (avatar_hook_id == HOOK_NONE && (prefs_common.enable_avatars & (AVATARS_ENABLE_CAPTURE | AVATARS_ENABLE_RENDER))) {
+		avatar_hook_id = hooks_register_hook(AVATAR_HEADER_UPDATE_HOOKLIST, avatar_from_some_face, NULL);
+	} else if (avatar_hook_id != HOOK_NONE && !(prefs_common.enable_avatars & AVATARS_ENABLE_CAPTURE)) {
 		hooks_unregister_hook(AVATAR_HEADER_UPDATE_HOOKLIST, avatar_hook_id);
 		avatar_hook_id = HOOK_NONE;
 	}
 
 	while ((hnum = get_one_field(&buf, data, hentry)) != -1) {
 		hp = buf + strlen(hentry[hnum].name);
-		while (*hp == ' ' || *hp == '\t') hp++;
+		while (*hp == ' ' || *hp == '\t')
+			hp++;
 
 		switch (hnum) {
 		case H_DATE:
-			if (msginfo->date) break;
-			msginfo->date_t =
-				procheader_date_parse(NULL, hp, 0);
+			if (msginfo->date)
+				break;
+			msginfo->date_t = procheader_date_parse(NULL, hp, 0);
 			if (g_utf8_validate(hp, -1, NULL)) {
 				msginfo->date = g_strdup(hp);
 			} else {
-				gchar *utf = conv_codeset_strdup(
-					hp, 
-					conv_get_locale_charset_str_no_utf8(),
-					CS_INTERNAL);
-				if (utf == NULL || 
-				    !g_utf8_validate(utf, -1, NULL)) {
+				gchar *utf = conv_codeset_strdup(hp,
+								 conv_get_locale_charset_str_no_utf8(),
+								 CS_INTERNAL);
+				if (utf == NULL || !g_utf8_validate(utf, -1, NULL)) {
 					g_free(utf);
-					utf = g_malloc(strlen(buf)*2+1);
-					conv_localetodisp(utf, 
-						strlen(hp)*2+1, hp);
+					utf = g_malloc(strlen(buf) * 2 + 1);
+					conv_localetodisp(utf, strlen(hp) * 2 + 1, hp);
 				}
 				msginfo->date = utf;
 			}
 			break;
 		case H_FROM:
-			if (msginfo->from) break;
+			if (msginfo->from)
+				break;
 			msginfo->from = conv_unmime_header(hp, NULL, TRUE);
 			msginfo->fromname = procheader_get_fromname(msginfo->from);
 			remove_return(msginfo->from);
@@ -707,57 +674,54 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 			remove_return(tmp);
 			if (msginfo->to) {
 				p = msginfo->to;
-				msginfo->to =
-					g_strconcat(p, ", ", tmp, NULL);
+				msginfo->to = g_strconcat(p, ", ", tmp, NULL);
 				g_free(p);
 			} else
 				msginfo->to = g_strdup(tmp);
-                        g_free(tmp);                                
+			g_free(tmp);
 			break;
 		case H_CC:
 			tmp = conv_unmime_header(hp, NULL, TRUE);
 			remove_return(tmp);
 			if (msginfo->cc) {
 				p = msginfo->cc;
-				msginfo->cc =
-					g_strconcat(p, ", ", tmp, NULL);
+				msginfo->cc = g_strconcat(p, ", ", tmp, NULL);
 				g_free(p);
 			} else
 				msginfo->cc = g_strdup(tmp);
-                        g_free(tmp);                                
+			g_free(tmp);
 			break;
 		case H_NEWSGROUPS:
 			if (msginfo->newsgroups) {
 				p = msginfo->newsgroups;
-				msginfo->newsgroups =
-					g_strconcat(p, ",", hp, NULL);
+				msginfo->newsgroups = g_strconcat(p, ",", hp, NULL);
 				g_free(p);
 			} else
 				msginfo->newsgroups = g_strdup(hp);
 			break;
 		case H_SUBJECT:
-			if (msginfo->subject) break;
+			if (msginfo->subject)
+				break;
 			msginfo->subject = conv_unmime_header(hp, NULL, FALSE);
 			unfold_line(msginfo->subject);
-                       break;
+			break;
 		case H_MSG_ID:
-			if (msginfo->msgid) break;
+			if (msginfo->msgid)
+				break;
 
 			extract_parenthesis(hp, '<', '>');
 			remove_space(hp);
 			msginfo->msgid = g_strdup(hp);
 			break;
 		case H_REFERENCES:
-			msginfo->references =
-				references_list_prepend(msginfo->references,
-							hp);
+			msginfo->references = references_list_prepend(msginfo->references, hp);
 			break;
 		case H_IN_REPLY_TO:
-			if (msginfo->inreplyto) break;
+			if (msginfo->inreplyto)
+				break;
 
 			eliminate_parenthesis(hp, '(', ')');
-			if ((p = strrchr(hp, '<')) != NULL &&
-			    strchr(p + 1, '>') != NULL) {
+			if ((p = strrchr(hp, '<')) != NULL && strchr(p + 1, '>') != NULL) {
 				extract_parenthesis(p, '<', '>');
 				remove_space(p);
 				if (*p != '\0')
@@ -771,36 +735,42 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 		case H_DISPOSITION_NOTIFICATION_TO:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->dispositionnotificationto) break;
+			if (msginfo->extradata->dispositionnotificationto)
+				break;
 			msginfo->extradata->dispositionnotificationto = g_strdup(hp);
 			break;
 		case H_RETURN_RECEIPT_TO:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->returnreceiptto) break;
+			if (msginfo->extradata->returnreceiptto)
+				break;
 			msginfo->extradata->returnreceiptto = g_strdup(hp);
 			break;
-/* partial download infos */			
+/* partial download infos */
 		case H_SC_PARTIALLY_RETRIEVED:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->partial_recv) break;
+			if (msginfo->extradata->partial_recv)
+				break;
 			msginfo->extradata->partial_recv = g_strdup(hp);
 			break;
 		case H_SC_ACCOUNT_SERVER:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->account_server) break;
+			if (msginfo->extradata->account_server)
+				break;
 			msginfo->extradata->account_server = g_strdup(hp);
 			break;
 		case H_SC_ACCOUNT_LOGIN:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->account_login) break;
+			if (msginfo->extradata->account_login)
+				break;
 			msginfo->extradata->account_login = g_strdup(hp);
 			break;
 		case H_SC_MESSAGE_SIZE:
-			if (msginfo->total_size) break;
+			if (msginfo->total_size)
+				break;
 			msginfo->total_size = atoi(hp);
 			break;
 		case H_SC_PLANNED_DOWNLOAD:
@@ -808,51 +778,59 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 			break;
 /* end partial download infos */
 		case H_FROM_SPACE:
-			if (msginfo->fromspace) break;
+			if (msginfo->fromspace)
+				break;
 			msginfo->fromspace = g_strdup(hp);
 			remove_return(msginfo->fromspace);
 			break;
 /* list infos */
- 		case H_LIST_POST:
+		case H_LIST_POST:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_post) break;
+			if (msginfo->extradata->list_post)
+				break;
 			msginfo->extradata->list_post = g_strdup(hp);
 			break;
 		case H_LIST_SUBSCRIBE:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_subscribe) break;
+			if (msginfo->extradata->list_subscribe)
+				break;
 			msginfo->extradata->list_subscribe = g_strdup(hp);
 			break;
 		case H_LIST_UNSUBSCRIBE:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_unsubscribe) break;
+			if (msginfo->extradata->list_unsubscribe)
+				break;
 			msginfo->extradata->list_unsubscribe = g_strdup(hp);
 			break;
 		case H_LIST_HELP:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_help) break;
+			if (msginfo->extradata->list_help)
+				break;
 			msginfo->extradata->list_help = g_strdup(hp);
 			break;
 		case H_LIST_ARCHIVE:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_archive) break;
+			if (msginfo->extradata->list_archive)
+				break;
 			msginfo->extradata->list_archive = g_strdup(hp);
 			break;
 		case H_LIST_OWNER:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->list_owner) break;
+			if (msginfo->extradata->list_owner)
+				break;
 			msginfo->extradata->list_owner = g_strdup(hp);
 			break;
 		case H_RESENT_FROM:
 			if (!msginfo->extradata)
 				msginfo->extradata = g_new0(MsgInfoExtraData, 1);
-			if (msginfo->extradata->resent_from) break;
+			if (msginfo->extradata->resent_from)
+				break;
 			msginfo->extradata->resent_from = g_strdup(hp);
 			break;
 /* end list infos */
@@ -866,7 +844,7 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 			/* no extra memory is wasted, hooks are expected to
 			   take care of copying members when needed */
 			acd->msginfo = msginfo;
-			acd->header  = hentry_full[hnum].name;
+			acd->header = hentry_full[hnum].name;
 			acd->content = hp;
 			hooks_invoke(AVATAR_HEADER_UPDATE_HOOKLIST, (gpointer)acd);
 			g_free(acd);
@@ -876,8 +854,7 @@ static MsgInfo *parse_stream(void *data, gboolean isstring, MsgFlags flags,
 	}
 
 	if (!msginfo->inreplyto && msginfo->references)
-		msginfo->inreplyto =
-			g_strdup((gchar *)msginfo->references->data);
+		msginfo->inreplyto = g_strdup((gchar *)msginfo->references->data);
 
 	return msginfo;
 }
@@ -914,12 +891,12 @@ gchar *procheader_get_fromname(const gchar *str)
 
 static gint procheader_remove_comment_in_date_string(gchar *o_str)
 {
-	gchar str[strlen(o_str)+1];
+	gchar str[strlen(o_str) + 1];
 	int i, j = 0;
 	int in_comment_nest_level = 0;
 	gboolean flag_escape_backslash = FALSE;
 
-	for (i=0; i < strlen(o_str); i++) {
+	for (i = 0; i < strlen(o_str); i++) {
 		switch (o_str[i]) {
 		case '(':
 			in_comment_nest_level++;
@@ -960,12 +937,7 @@ static gint procheader_remove_comment_in_date_string(gchar *o_str)
 	return TRUE;
 }
 
-
-static gint procheader_scan_date_string(const gchar *o_str,
-					gchar *weekday, gint *day,
-					gchar *month, gint *year,
-					gint *hh, gint *mm, gint *ss,
-					gchar *zone)
+static gint procheader_scan_date_string(const gchar *o_str, gchar *weekday, gint *day, gchar *month, gint *year, gint *hh, gint *mm, gint *ss, gchar *zone)
 {
 	gint result;
 	gint month_n;
@@ -977,73 +949,70 @@ static gint procheader_scan_date_string(const gchar *o_str,
 	if (o_str == NULL)
 		return -1;
 
-	gchar str[strlen(o_str)+1];
+	gchar str[strlen(o_str) + 1];
 
 	strcpy(str, o_str);
 	if (strchr(str, '(') != NULL)
 		procheader_remove_comment_in_date_string(str);
 
-	result = sscanf(str, "%10s %d %9s %d %2d:%2d:%2d %6s",
-			weekday, day, month, year, hh, mm, ss, zone);
-	if (result == 8) return 0;
+	result = sscanf(str, "%10s %d %9s %d %2d:%2d:%2d %6s", weekday, day, month, year, hh, mm, ss, zone);
+	if (result == 8)
+		return 0;
 
 	/* RFC2822 */
-	result = sscanf(str, "%3s,%d %9s %d %2d:%2d:%2d %6s",
-			weekday, day, month, year, hh, mm, ss, zone);
-	if (result == 8) return 0;
+	result = sscanf(str, "%3s,%d %9s %d %2d:%2d:%2d %6s", weekday, day, month, year, hh, mm, ss, zone);
+	if (result == 8)
+		return 0;
 
-	result = sscanf(str, "%3s %3s %d %2d:%2d:%2d %d %6s",
-			weekday, month, day, hh, mm, ss, year, zone);
-	if (result == 8) return 0;
+	result = sscanf(str, "%3s %3s %d %2d:%2d:%2d %d %6s", weekday, month, day, hh, mm, ss, year, zone);
+	if (result == 8)
+		return 0;
 
-	result = sscanf(str, "%d %9s %d %2d:%2d:%2d %6s",
-			day, month, year, hh, mm, ss, zone);
-	if (result == 7) return 0;
+	result = sscanf(str, "%d %9s %d %2d:%2d:%2d %6s", day, month, year, hh, mm, ss, zone);
+	if (result == 7)
+		return 0;
 
 	*zone = '\0';
-	result = sscanf(str, "%10s %d %9s %d %2d:%2d:%2d",
-			weekday, day, month, year, hh, mm, ss);
-	if (result == 7) return 0;
+	result = sscanf(str, "%10s %d %9s %d %2d:%2d:%2d", weekday, day, month, year, hh, mm, ss);
+	if (result == 7)
+		return 0;
 
-	result = sscanf(str, "%3s %3s %d %2d:%2d:%2d %d",
-			weekday, month, day, hh, mm, ss, year);
-	if (result == 7) return 0;
+	result = sscanf(str, "%3s %3s %d %2d:%2d:%2d %d", weekday, month, day, hh, mm, ss, year);
+	if (result == 7)
+		return 0;
 
-	result = sscanf(str, "%d %9s %d %2d:%2d:%2d",
-			day, month, year, hh, mm, ss);
-	if (result == 6) return 0;
+	result = sscanf(str, "%d %9s %d %2d:%2d:%2d", day, month, year, hh, mm, ss);
+	if (result == 6)
+		return 0;
 
 	*ss = 0;
-	result = sscanf(str, "%10s %d %9s %d %2d:%2d %6s",
-			weekday, day, month, year, hh, mm, zone);
-	if (result == 7) return 0;
+	result = sscanf(str, "%10s %d %9s %d %2d:%2d %6s", weekday, day, month, year, hh, mm, zone);
+	if (result == 7)
+		return 0;
 
-	result = sscanf(str, "%d %9s %d %2d:%2d %5s",
-			day, month, year, hh, mm, zone);
-	if (result == 6) return 0;
+	result = sscanf(str, "%d %9s %d %2d:%2d %5s", day, month, year, hh, mm, zone);
+	if (result == 6)
+		return 0;
 
 	*zone = '\0';
-	result = sscanf(str, "%10s %d %9s %d %2d:%2d",
-			weekday, day, month, year, hh, mm);
-	if (result == 6) return 0;
+	result = sscanf(str, "%10s %d %9s %d %2d:%2d", weekday, day, month, year, hh, mm);
+	if (result == 6)
+		return 0;
 
-	result = sscanf(str, "%d %9s %d %2d:%2d",
-			day, month, year, hh, mm);
-	if (result == 5) return 0;
+	result = sscanf(str, "%d %9s %d %2d:%2d", day, month, year, hh, mm);
+	if (result == 5)
+		return 0;
 
 	*weekday = '\0';
 
 	/* RFC3339 subset, with fraction of second */
-	result = sscanf(str, "%4d-%2d-%2d%c%2d:%2d:%2d.%d%6s",
-			year, &month_n, day, &sep1, hh, mm, ss, &secfract, zonestr);
-	if (result == 9
-			&& (sep1 == 'T' || sep1 == 't' || sep1 == ' ')) {
+	result = sscanf(str, "%4d-%2d-%2d%c%2d:%2d:%2d.%d%6s", year, &month_n, day, &sep1, hh, mm, ss, &secfract, zonestr);
+	if (result == 9 && (sep1 == 'T' || sep1 == 't' || sep1 == ' ')) {
 		if (month_n >= 1 && month_n <= 12) {
-			strncpy2(month, monthstr+((month_n-1)*3), 4);
+			strncpy2(month, monthstr + ((month_n - 1) * 3), 4);
 			if (zonestr[0] == 'z' || zonestr[0] == 'Z') {
 				strcat(zone, "+00:00");
-			} else if (sscanf(zonestr, "%c%2d:%2d",
-						&offset_sign, &zone1, &zone2) == 3) {
+			} else if (sscanf(zonestr, "%c%2d:%2d", &offset_sign, &zone1, &zone2) == 3) {
 				strcat(zone, zonestr);
 			}
 			return 0;
@@ -1051,16 +1020,13 @@ static gint procheader_scan_date_string(const gchar *o_str,
 	}
 
 	/* RFC3339 subset, no fraction of second */
-	result = sscanf(str, "%4d-%2d-%2d%c%2d:%2d:%2d%6s",
-			year, &month_n, day, &sep1, hh, mm, ss, zonestr);
-	if (result == 8
-			&& (sep1 == 'T' || sep1 == 't' || sep1 == ' ')) {
+	result = sscanf(str, "%4d-%2d-%2d%c%2d:%2d:%2d%6s", year, &month_n, day, &sep1, hh, mm, ss, zonestr);
+	if (result == 8 && (sep1 == 'T' || sep1 == 't' || sep1 == ' ')) {
 		if (month_n >= 1 && month_n <= 12) {
-			strncpy2(month, monthstr+((month_n-1)*3), 4);
+			strncpy2(month, monthstr + ((month_n - 1) * 3), 4);
 			if (zonestr[0] == 'z' || zonestr[0] == 'Z') {
 				strcat(zone, "+00:00");
-			} else if (sscanf(zonestr, "%c%2d:%2d",
-						&offset_sign, &zone1, &zone2) == 3) {
+			} else if (sscanf(zonestr, "%c%2d:%2d", &offset_sign, &zone1, &zone2) == 3) {
 				strcat(zone, zonestr);
 			}
 			return 0;
@@ -1071,22 +1037,20 @@ static gint procheader_scan_date_string(const gchar *o_str,
 
 	/* RFC3339 subset, no fraction of second, and no timezone offset */
 	/* This particular "subset" is invalid, RFC requires the offset */
-	result = sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d",
-			year, &month_n, day, hh, mm, ss);
+	result = sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d", year, &month_n, day, hh, mm, ss);
 	if (result == 6) {
 		if (1 <= month_n && month_n <= 12) {
-			strncpy2(month, monthstr+((month_n-1)*3), 4);
+			strncpy2(month, monthstr + ((month_n - 1) * 3), 4);
 			return 0;
 		}
 	}
 
 	/* ISO8601 format with just date (YYYY-MM-DD) */
-	result = sscanf(str, "%4d-%2d-%2d",
-			year, &month_n, day);
+	result = sscanf(str, "%4d-%2d-%2d", year, &month_n, day);
 	if (result == 3) {
 		*hh = *mm = *ss = 0;
 		if (1 <= month_n && month_n <= 12) {
-			strncpy2(month, monthstr+((month_n-1)*3), 4);
+			strncpy2(month, monthstr + ((month_n - 1) * 3), 4);
 			return 0;
 		}
 	}
@@ -1110,11 +1074,10 @@ gboolean procheader_date_parse_to_tm(const gchar *src, struct tm *t, char *zone)
 
 	if (!t)
 		return FALSE;
-	
-	memset(t, 0, sizeof *t);	
 
-	if (procheader_scan_date_string(src, weekday, &day, month, &year,
-					&hh, &mm, &ss, zone) < 0) {
+	memset(t, 0, sizeof *t);
+
+	if (procheader_scan_date_string(src, weekday, &day, month, &year, &hh, &mm, &ss, zone) < 0) {
 		g_warning("invalid date: %s", src);
 		return FALSE;
 	}
@@ -1162,8 +1125,7 @@ time_t procheader_date_parse(gchar *dest, const gchar *src, gint len)
 	gchar *p;
 	time_t timer;
 
-	if (procheader_scan_date_string(src, weekday, &day, month, &year,
-					&hh, &mm, &ss, zone) < 0) {
+	if (procheader_scan_date_string(src, weekday, &day, month, &year, &hh, &mm, &ss, zone) < 0) {
 		if (dest && len > 0)
 			strncpy2(dest, src, len);
 		return 0;
@@ -1190,7 +1152,7 @@ time_t procheader_date_parse(gchar *dest, const gchar *src, gint len)
 #endif
 	dt = g_date_time_new(tz, 1, 1, 1, 0, 0, 0);
 	g_time_zone_unref(tz);
-	dt2 = g_date_time_add_full(dt, year-1, dmonth-1, day-1, hh, mm, ss);
+	dt2 = g_date_time_add_full(dt, year - 1, dmonth - 1, day - 1, hh, mm, ss);
 	g_date_time_unref(dt);
 
 	timer = g_date_time_to_unix(dt2);
@@ -1267,8 +1229,9 @@ gint procheader_get_header_from_msginfo(MsgInfo *msginfo, gchar **buf, gchar *he
 {
 	gchar *file;
 	FILE *fp;
-	HeaderEntry hentry[]={ { NULL, NULL, TRUE  },
-						   { NULL, NULL, FALSE } };
+	HeaderEntry hentry[] = { {NULL, NULL, TRUE},
+	{NULL, NULL, FALSE}
+	};
 	gint val;
 
 	cm_return_val_if_fail(msginfo != NULL, -1);
@@ -1316,7 +1279,8 @@ HeaderEntry *procheader_entries_from_str(const gchar *str)
 		return NULL;
 	}
 	while (*s != '\0') {
-		if (*s == ' ') ++numh;
+		if (*s == ' ')
+			++numh;
 		++s;
 	}
 	if (numh == 0) {
@@ -1338,7 +1302,7 @@ HeaderEntry *procheader_entries_from_str(const gchar *str)
 	return entries;
 }
 
-void procheader_entries_free (HeaderEntry *entries)
+void procheader_entries_free(HeaderEntry *entries)
 {
 	if (entries != NULL) {
 		HeaderEntry *he = entries;
@@ -1346,7 +1310,7 @@ void procheader_entries_free (HeaderEntry *entries)
 			g_free(he->name);
 			if (he->body != NULL)
 				g_free(he->body);
-			++he;			
+			++he;
 		}
 		g_free(entries);
 	}
@@ -1370,13 +1334,17 @@ gboolean procheader_header_is_internal(const gchar *hdr_name)
 		"X-Sylpheed-Encrypt:",
 		"X-Sylpheed-Privacy-System:",
 		"X-Sylpheed-End-Special-Headers:",
-	         NULL
+		NULL
 	};
 	int i;
 
 	for (i = 0; internal_hdrs[i]; i++) {
-	        if (!strcmp(hdr_name, internal_hdrs[i]))
-	                return TRUE;
+		if (!strcmp(hdr_name, internal_hdrs[i]))
+			return TRUE;
 	}
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

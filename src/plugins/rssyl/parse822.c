@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -62,12 +62,12 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 
 	debug_print("RSSyl: parsing '%s'\n", path);
 
-	if( !g_file_get_contents(path, &contents, NULL, &error) ) {
+	if (!g_file_get_contents(path, &contents, NULL, &error)) {
 		g_warning("error: '%s'", error->message);
 		g_error_free(error);
 	}
 
-	if( contents != NULL ) {
+	if (contents != NULL) {
 		lines = strsplit_no_copy(contents, '\n');
 	} else {
 		g_warning("badly formatted file found, ignoring: '%s'", path);
@@ -81,67 +81,64 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 	item = feed_item_new(NULL);
 	item->data = ctx;
 
-	while( lines[i] ) {
-		if( parsing_headers && lines[i] && !strlen(lines[i]) ) {
+	while (lines[i]) {
+		if (parsing_headers && lines[i] && !strlen(lines[i])) {
 			parsing_headers = FALSE;
 			debug_print("RSSyl: finished parsing headers\n");
 		}
 
-		if( parsing_headers ) {
+		if (parsing_headers) {
 			line = g_strsplit(lines[i], ": ", 2);
-			if( line[0] && line[1] && strlen(line[0]) && lines[i][0] != ' ') {
+			if (line[0] && line[1] && strlen(line[0]) && lines[i][0] != ' ') {
 				started_author = FALSE;
 				started_subject = FALSE;
 				started_link = FALSE;
 				started_clink = FALSE;
 
 				/* Author */
-				if( !strcmp(line[0], "From") ) {
+				if (!strcmp(line[0], "From")) {
 					feed_item_set_author(item, line[1]);
 					debug_print("RSSyl: got author '%s'\n", feed_item_get_author(item));
 					started_author = TRUE;
 				}
 
 				/* Date (set both FeedItem timestamps) */
-				if( !strcmp(line[0], "Date") ) {
-					feed_item_set_date_modified(item,
-							procheader_date_parse(NULL, line[1], 0));
-					feed_item_set_date_published(item,
-							feed_item_get_date_modified(item));
-					debug_print("RSSyl: got date \n" );
+				if (!strcmp(line[0], "Date")) {
+					feed_item_set_date_modified(item, procheader_date_parse(NULL, line[1], 0));
+					feed_item_set_date_published(item, feed_item_get_date_modified(item));
+					debug_print("RSSyl: got date \n");
 				}
 
 				/* Title */
-				if( !strcmp(line[0], "Subject") && !got_original_title ) {
-					feed_item_set_title(item,line[1]);
+				if (!strcmp(line[0], "Subject") && !got_original_title) {
+					feed_item_set_title(item, line[1]);
 					debug_print("RSSyl: got title '%s'\n", feed_item_get_title(item));
 					started_subject = TRUE;
 				}
 
 				/* Original (including HTML) title - Atom feeds */
-				if( !strcmp(line[0], "X-RSSyl-OrigTitle") ) {
+				if (!strcmp(line[0], "X-RSSyl-OrigTitle")) {
 					feed_item_set_title(item, line[1]);
-					debug_print("RSSyl: got original title '%s'\n",
-							feed_item_get_title(item));
+					debug_print("RSSyl: got original title '%s'\n", feed_item_get_title(item));
 					got_original_title = TRUE;
 				}
 
 				/* URL */
-				if( !strcmp(line[0], "X-RSSyl-URL") ) {
+				if (!strcmp(line[0], "X-RSSyl-URL")) {
 					feed_item_set_url(item, line[1]);
 					debug_print("RSSyl: got link '%s'\n", feed_item_get_url(item));
 					started_link = TRUE;
 				}
 
 				/* Last-Seen timestamp */
-				if( !strcmp(line[0], "X-RSSyl-Last-Seen") ) {
+				if (!strcmp(line[0], "X-RSSyl-Last-Seen")) {
 					ctx->last_seen = atol(line[1]);
-					debug_print("RSSyl: got last_seen timestamp %"CM_TIME_FORMAT"\n", ctx->last_seen);
+					debug_print("RSSyl: got last_seen timestamp %" CM_TIME_FORMAT "\n", ctx->last_seen);
 				}
 
 				/* ID */
-				if( !strcmp(line[0], "Message-ID") ) {
-					if (line[1][0] != '<' || line[1][strlen(line[1])-1] != '>') {
+				if (!strcmp(line[0], "Message-ID")) {
+					if (line[1][0] != '<' || line[1][strlen(line[1]) - 1] != '>') {
 						debug_print("RSSyl: malformed Message-ID, ignoring...\n");
 					} else {
 						/* Get the ID from within < and >. */
@@ -153,16 +150,16 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 				}
 
 				/* Feed comments */
-				if( !strcmp(line[0], "X-RSSyl-Comments") ) {
+				if (!strcmp(line[0], "X-RSSyl-Comments")) {
 					feed_item_set_comments_url(item, line[1]);
 					debug_print("RSSyl: got clink '%s'\n", feed_item_get_comments_url(item));
 					started_clink = TRUE;
 				}
 
 				/* References */
-				if( !strcmp(line[0], "References") ) {
+				if (!strcmp(line[0], "References")) {
 					splid = g_strsplit_set(line[1], "<>", 3);
-					if( strlen(splid[1]) != 0 )
+					if (strlen(splid[1]) != 0)
 						feed_item_set_parent_id(item, line[1]);
 					g_strfreev(splid);
 				}
@@ -171,42 +168,41 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 				gchar *tmp = NULL;
 				/* continuation line */
 				if (started_author) {
-					tmp = g_strdup_printf("%s %s", feed_item_get_author(item), lines[i]+1);
+					tmp = g_strdup_printf("%s %s", feed_item_get_author(item), lines[i] + 1);
 					feed_item_set_author(item, tmp);
 					debug_print("RSSyl: updated author to '%s'\n", tmp);
 					g_free(tmp);
 				} else if (started_subject) {
-					tmp = g_strdup_printf("%s %s", feed_item_get_title(item), lines[i]+1);
+					tmp = g_strdup_printf("%s %s", feed_item_get_title(item), lines[i] + 1);
 					feed_item_set_title(item, tmp);
 					debug_print("RSSyl: updated title to '%s'\n", tmp);
 					g_free(tmp);
 				} else if (started_link) {
-					tmp = g_strdup_printf("%s%s", feed_item_get_url(item), lines[i]+1);
+					tmp = g_strdup_printf("%s%s", feed_item_get_url(item), lines[i] + 1);
 					feed_item_set_url(item, tmp);
 					debug_print("RSSyl: updated link to '%s'\n", tmp);
 					g_free(tmp);
 				} else if (started_clink) {
-					tmp = g_strdup_printf("%s%s", feed_item_get_comments_url(item), lines[i]+1);
+					tmp = g_strdup_printf("%s%s", feed_item_get_comments_url(item), lines[i] + 1);
 					feed_item_set_comments_url(item, tmp);
 					debug_print("RSSyl: updated comments_link to '%s'\n", tmp);
 				}
 			}
 			g_strfreev(line);
 		} else {
-			if( !strcmp(lines[i], RSSYL_TEXT_START) ) {
+			if (!strcmp(lines[i], RSSYL_TEXT_START)) {
 				debug_print("RSSyl: Leading html tag found at line %d\n", i);
 				past_html_tag = TRUE;
-				if (body)
-				{
+				if (body) {
 					g_warning("unexpected leading html tag found at line %d", i);
-				    g_string_free(body, TRUE);
+					g_string_free(body, TRUE);
 				}
 				body = g_string_new("");
 				i++;
 				continue;
 			}
-			while( past_html_tag && !past_endhtml_tag && lines[i] ) {
-				if( !strcmp(lines[i], RSSYL_TEXT_END) ) {
+			while (past_html_tag && !past_endhtml_tag && lines[i]) {
+				if (!strcmp(lines[i], RSSYL_TEXT_END)) {
 					debug_print("RSSyl: Trailing html tag found at line %d\n", i);
 					past_endhtml_tag = TRUE;
 					continue;
@@ -224,7 +220,7 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 		i++;
 	}
 
-	if (body != NULL ) {
+	if (body != NULL) {
 		if (past_html_tag && past_endhtml_tag && body->str != NULL)
 			feed_item_set_text(item, body->str);
 		g_string_free(body, TRUE);
@@ -238,9 +234,9 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 static void rssyl_flush_folder_func(gpointer data, gpointer user_data)
 {
 	FeedItem *item = (FeedItem *)data;
-	RFeedCtx *ctx = (RFeedCtx *)item->data;
+	RFeedCtx *ctx = (RFeedCtx *) item->data;
 
-	if( ctx != NULL && ctx->path != NULL) {
+	if (ctx != NULL && ctx->path != NULL) {
 		g_free(ctx->path);
 	}
 	feed_item_free(item);
@@ -264,29 +260,28 @@ static void rssyl_folder_read_existing_real(RFolderItem *ritem)
 	debug_print("RSSyl: reading existing items from '%s'\n", path);
 
 	/* Flush contents if any, so we can add new */
-	if( g_slist_length(ritem->items) > 0 ) {
-		g_slist_foreach(ritem->items, (GFunc)rssyl_flush_folder_func, NULL);
+	if (g_slist_length(ritem->items) > 0) {
+		g_slist_foreach(ritem->items, (GFunc) rssyl_flush_folder_func, NULL);
 		g_slist_free(ritem->items);
 	}
 	ritem->items = NULL;
 	ritem->last_update = 0;
 
-	if( (dp = g_dir_open(path, 0, &error)) == NULL ) {
-		debug_print("g_dir_open on \"%s\" failed with error %d (%s)\n",
-				path, error->code, error->message);
+	if ((dp = g_dir_open(path, 0, &error)) == NULL) {
+		debug_print("g_dir_open on \"%s\" failed with error %d (%s)\n", path, error->code, error->message);
 		g_error_free(error);
 		g_free(path);
 		return;
 	}
 
-	while( (d = g_dir_read_name(dp)) != NULL ) {
-		if( claws_is_exiting() ) {
+	while ((d = g_dir_read_name(dp)) != NULL) {
+		if (claws_is_exiting()) {
 			g_dir_close(dp);
 			g_free(path);
 			return;
 		}
 
-		if( d[0] != '.' && (num = to_number(d)) > 0 ) {
+		if (d[0] != '.' && (num = to_number(d)) > 0) {
 			fname = g_strdup_printf("%s%c%s", path, G_DIR_SEPARATOR, d);
 			if (!g_file_test(fname, G_FILE_TEST_IS_REGULAR)) {
 				debug_print("RSSyl: not a regular file: '%s', ignoring it\n", fname);
@@ -295,10 +290,10 @@ static void rssyl_folder_read_existing_real(RFolderItem *ritem)
 			}
 
 			debug_print("RSSyl: starting to parse '%s'\n", d);
-			if( (item = rssyl_parse_folder_item_file(fname)) != NULL ) {
+			if ((item = rssyl_parse_folder_item_file(fname)) != NULL) {
 				/* Find latest timestamp */
-				ctx = (RFeedCtx *)item->data;
-				if( ritem->last_update < ctx->last_seen )
+				ctx = (RFeedCtx *) item->data;
+				if (ritem->last_update < ctx->last_seen)
 					ritem->last_update = ctx->last_seen;
 				debug_print("RSSyl: Appending '%s'\n", feed_item_get_title(item));
 				ritem->items = g_slist_prepend(ritem->items, item);
@@ -316,7 +311,7 @@ static void rssyl_folder_read_existing_real(RFolderItem *ritem)
 #ifdef USE_PTHREAD
 static void *rssyl_read_existing_thr(void *arg)
 {
-	RParseCtx *ctx = (RParseCtx *)arg;
+	RParseCtx *ctx = (RParseCtx *) arg;
 
 	rssyl_folder_read_existing_real(ctx->ritem);
 	ctx->ready = TRUE;
@@ -333,20 +328,18 @@ void rssyl_folder_read_existing(RFolderItem *ritem)
 
 	g_return_if_fail(ritem != NULL);
 
-
 #ifdef USE_PTHREAD
 	ctx = g_new0(RParseCtx, 1);
 	ctx->ritem = ritem;
 	ctx->ready = FALSE;
 
-	if( pthread_create(&pt, NULL, rssyl_read_existing_thr,
-				(void *)ctx) != 0 ) {
+	if (pthread_create(&pt, NULL, rssyl_read_existing_thr, (void *)ctx) != 0) {
 		/* Couldn't create thread, let's continue non-threaded. */
 		rssyl_folder_read_existing_real(ritem);
 	} else {
 		/* Thread started, wait until it is done. */
 		debug_print("RSSyl: waiting for thread to finish\n");
-		while( !ctx->ready ) {
+		while (!ctx->ready) {
 			claws_do_idle();
 		}
 
@@ -359,3 +352,7 @@ void rssyl_folder_read_existing(RFolderItem *ritem)
 	rssyl_folder_read_existing_real(ritem);
 #endif
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

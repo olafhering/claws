@@ -33,8 +33,7 @@
 #define EVENT_LATER_ID "later-events@vcal"
 typedef struct _VCalEvent VCalEvent;
 
-struct _VCalEvent 
-{
+struct _VCalEvent {
 	gchar *uid;
 	gchar *organizer;
 	gchar *orgname;
@@ -49,7 +48,7 @@ struct _VCalEvent
 	gchar *description;
 	GSList *answers;
 	enum icalproperty_method method;
-	gint sequence;	
+	gint sequence;
 	gchar *url;
 	enum icalcomponent_kind type;
 	time_t postponed;
@@ -72,34 +71,15 @@ typedef enum {
 	EVENT_THISWEEK,
 	EVENT_LATER
 } EventTime;
-VCalEvent *vcal_manager_new_event	(const gchar 	*uid, 
-					 const gchar	*organizer,
-					 const gchar	*orgname,
-					 const gchar	*location,
-					 const gchar	*summary,
-					 const gchar	*description,
-					 const gchar	*dtstart,
-					 const gchar	*dtend,
-					 const gchar	*recur,
-					 const gchar	*tzid,
-					 const gchar	*url,
-					 enum icalproperty_method method,
-					 gint		 sequence,
-					 enum icalcomponent_kind type);
-					 
-void vcal_manager_free_event (VCalEvent *event);
-void vcal_manager_save_event (VCalEvent *event, gboolean export_after);
-void vcal_manager_update_answer (VCalEvent 	*event, 
-				 const gchar 	*attendee,
-				 const gchar 	*name,
-				 enum icalparameter_partstat ans,
-				 enum icalparameter_cutype cutype);
+VCalEvent *vcal_manager_new_event(const gchar *uid, const gchar *organizer, const gchar *orgname, const gchar *location, const gchar *summary, const gchar *description, const gchar *dtstart, const gchar *dtend, const gchar *recur, const gchar *tzid, const gchar *url, enum icalproperty_method method, gint sequence, enum icalcomponent_kind type);
 
-VCalEvent *vcal_manager_load_event (const gchar *uid);
-gboolean vcal_manager_reply (PrefsAccount 	*account, 
-			     VCalEvent 		*event);
-gboolean vcal_manager_request (PrefsAccount 	*account, 
-			       VCalEvent 	*event);
+void vcal_manager_free_event(VCalEvent *event);
+void vcal_manager_save_event(VCalEvent *event, gboolean export_after);
+void vcal_manager_update_answer(VCalEvent *event, const gchar *attendee, const gchar *name, enum icalparameter_partstat ans, enum icalparameter_cutype cutype);
+
+VCalEvent *vcal_manager_load_event(const gchar *uid);
+gboolean vcal_manager_reply(PrefsAccount *account, VCalEvent *event);
+gboolean vcal_manager_request(PrefsAccount *account, VCalEvent *event);
 
 GSList *vcal_manager_get_answers_emails(VCalEvent *event);
 gchar *vcal_manager_get_attendee_name(VCalEvent *event, const gchar *attendee);
@@ -109,8 +89,7 @@ enum icalparameter_partstat vcal_manager_get_reply_for_attendee(VCalEvent *event
 enum icalparameter_cutype vcal_manager_get_cutype_for_attendee(VCalEvent *event, const gchar *att);
 gchar *vcal_manager_get_event_path(void);
 gchar *vcal_manager_get_event_file(const gchar *uid);
-gchar *vcal_manager_event_dump(VCalEvent *event, gboolean change_date, gboolean
-		change_from, icalcomponent *use_calendar, gboolean modif);
+gchar *vcal_manager_event_dump(VCalEvent *event, gboolean change_date, gboolean change_from, icalcomponent *use_calendar, gboolean modif);
 gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcomponent *use_calendar);
 gchar *vcal_manager_dateevent_dump(const gchar *uid, FolderItem *item);
 
@@ -123,8 +102,5 @@ void vcal_manager_event_print(VCalEvent *event);
 EventTime event_to_today(VCalEvent *event, time_t t);
 const gchar *event_to_today_str(VCalEvent *event, time_t t);
 void vcal_manager_copy_attendees(VCalEvent *src, VCalEvent *dest);
-Answer *answer_new(const gchar *attendee, 
-			  const gchar *name,
-			  enum icalparameter_partstat ans,
-			  enum icalparameter_cutype cutype);
+Answer *answer_new(const gchar *attendee, const gchar *name, enum icalparameter_partstat ans, enum icalparameter_cutype cutype);
 #endif

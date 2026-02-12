@@ -25,12 +25,9 @@
 /* multiply cache interval time pref for missing items */
 #define LIBRAVATAR_MISSING_TIME (libravatarprefs.cache_interval * 3600 * 7)
 
-GHashTable *missing_load_from_file	(const gchar *filename);
-gint missing_save_to_file		(GHashTable *table,
-					 const gchar *filename);
-void missing_add_md5			(GHashTable *table,
-					 const gchar *md5);
-gboolean is_missing_md5			(GHashTable *table,
-					 const gchar *md5);
+GHashTable *missing_load_from_file(const gchar *filename);
+gint missing_save_to_file(GHashTable *table, const gchar *filename);
+void missing_add_md5(GHashTable *table, const gchar *md5);
+gboolean is_missing_md5(GHashTable *table, const gchar *md5);
 
 #endif

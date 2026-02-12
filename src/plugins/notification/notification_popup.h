@@ -19,7 +19,7 @@
 #define NOTIFICATION_POPUP_H NOTIFICATION_POPUP_H
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_POPUP
@@ -28,7 +28,7 @@
 
 #define POPUP_SPECIFIC_FOLDER_ID_STR "popup"
 
-void notification_popup_msg(MsgInfo*);
+void notification_popup_msg(MsgInfo *);
 
 #endif /* NOTIFICATION_POPUP */
 

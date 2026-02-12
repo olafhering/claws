@@ -18,10 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #include <glib.h>
@@ -35,8 +34,7 @@
 
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3,8,1,46),
-				VERSION_NUMERIC, "Mailmbox", error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 8, 1, 46), VERSION_NUMERIC, "Mailmbox", error))
 		return -1;
 
 	folder_register_class(claws_mailmbox_get_class());
@@ -69,7 +67,7 @@ const gchar *plugin_type(void)
 
 const gchar *plugin_licence(void)
 {
-		return "GPL3+";
+	return "GPL3+";
 }
 
 const gchar *plugin_version(void)
@@ -79,8 +77,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_FOLDERCLASS, N_("MBOX")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_FOLDERCLASS, N_("MBOX")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

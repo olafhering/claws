@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -37,7 +37,7 @@
 static size_t write_image_data_cb(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	size_t written = claws_fwrite(ptr, size, nmemb, (FILE *)stream);
-	debug_print("received %"G_GSIZE_FORMAT" bytes from avatar server\n", written);
+	debug_print("received %" G_GSIZE_FORMAT " bytes from avatar server\n", written);
 
 	return written;
 }
@@ -52,9 +52,8 @@ static GdkPixbuf *image_pixbuf_from_filename(const gchar *filename)
 
 	if (w != AVATAR_SIZE || h != AVATAR_SIZE)
 		/* server can provide a different size from the requested in URL */
-		picture = gdk_pixbuf_new_from_file_at_scale(
-				filename, AVATAR_SIZE, AVATAR_SIZE, TRUE, &error);
-	else	/* exact size */
+		picture = gdk_pixbuf_new_from_file_at_scale(filename, AVATAR_SIZE, AVATAR_SIZE, TRUE, &error);
+	else /* exact size */
 		picture = gdk_pixbuf_new_from_file(filename, &error);
 
 	if (error != NULL) {
@@ -68,7 +67,8 @@ static GdkPixbuf *image_pixbuf_from_filename(const gchar *filename)
 	return picture;
 }
 
-static GdkPixbuf *pixbuf_from_url(const gchar *url, const gchar *md5, const gchar *filename) {
+static GdkPixbuf *pixbuf_from_url(const gchar *url, const gchar *md5, const gchar *filename)
+{
 	GdkPixbuf *image = NULL;
 	FILE *file;
 	CURL *curl;
@@ -91,20 +91,14 @@ static GdkPixbuf *pixbuf_from_url(const gchar *url, const gchar *md5, const gcha
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_image_data_cb);
 	/* make sure timeout is less than general IO timeout */
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT,
-			(libravatarprefs.timeout == 0
-				|| libravatarprefs.timeout
-					> prefs_common_get_prefs()->io_timeout_secs)
-			? prefs_common_get_prefs()->io_timeout_secs
-			: libravatarprefs.timeout);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, (libravatarprefs.timeout == 0 || libravatarprefs.timeout > prefs_common_get_prefs()->io_timeout_secs)
+			 ? prefs_common_get_prefs()->io_timeout_secs : libravatarprefs.timeout);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
 	if (libravatarprefs.allow_redirects) {
 		long maxredirs = (libravatarprefs.default_mode == DEF_MODE_URL)
-			? libravatarprefs.max_redirects_url
-			: ((libravatarprefs.default_mode == DEF_MODE_MM)
-				? libravatarprefs.max_redirects_mm
-				: libravatarprefs.max_redirects_url);
+		    ? libravatarprefs.max_redirects_url : ((libravatarprefs.default_mode == DEF_MODE_MM)
+							   ? libravatarprefs.max_redirects_mm : libravatarprefs.max_redirects_url);
 		debug_print("setting max redirects to %ld\n", maxredirs);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_MAXREDIRS, maxredirs);
@@ -142,7 +136,8 @@ static GdkPixbuf *pixbuf_from_url(const gchar *url, const gchar *md5, const gcha
 	return image;
 }
 
-static void *get_image_thread(void *arg) {
+static void *get_image_thread(void *arg)
+{
 	AvatarImageFetch *ctx = (AvatarImageFetch *)arg;
 
 	/* get image */
@@ -168,10 +163,10 @@ GdkPixbuf *libravatar_image_fetch(AvatarImageFetch *ctx)
 	} else {
 		debug_print("waiting for thread completion\n");
 		/*
-		while (!ctx->ready ) {
-			claws_do_idle();
-		}
-		*/
+		   while (!ctx->ready ) {
+		   claws_do_idle();
+		   }
+		 */
 		pthread_join(pt, NULL);
 		debug_print("thread completed\n");
 	}
@@ -184,3 +179,7 @@ GdkPixbuf *libravatar_image_fetch(AvatarImageFetch *ctx)
 	}
 	return ctx->pixbuf;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -26,34 +26,35 @@
 #include <gtk/gtk.h>
 
 static const char INVALID_UNIX_CHARS[] = {
-		'?', '%', '*', ':', '"', '|', '<', '>',
-		'(', ')', '#', ',', '\0'};
+	'?', '%', '*', ':', '"', '|', '<', '>',
+	'(', ')', '#', ',', '\0'
+};
 
 struct ArchivePage {
-	gchar*		path;
-	gchar*		name;
-	gboolean	response;
-	gboolean	force_overwrite;
-	gboolean	md5;
-	gboolean	rename;
-	GtkWidget*	folder;
-	GtkWidget*	file;
-	guint		files;
-	guint		total_size;
-	GSList*		compress_methods;
-	GSList*		archive_formats;
-	GtkWidget*	recursive;
-	GtkWidget*	md5sum;
-	GtkWidget*	rename_files;
-	gboolean	cancelled;
-    GtkWidget*  isoDate;
-    gboolean    unlink;
-    GtkWidget*  unlink_files;
+	gchar *path;
+	gchar *name;
+	gboolean response;
+	gboolean force_overwrite;
+	gboolean md5;
+	gboolean rename;
+	GtkWidget *folder;
+	GtkWidget *file;
+	guint files;
+	guint total_size;
+	GSList *compress_methods;
+	GSList *archive_formats;
+	GtkWidget *recursive;
+	GtkWidget *md5sum;
+	GtkWidget *rename_files;
+	gboolean cancelled;
+	GtkWidget *isoDate;
+	gboolean unlink;
+	GtkWidget *unlink_files;
 };
 
 void archiver_gtk_show(void);
-void archiver_gtk_done(struct ArchivePage* page, GtkWidget* widget);
-void set_progress_file_label(const gchar* file);
+void archiver_gtk_done(struct ArchivePage *page, GtkWidget *widget);
+void set_progress_file_label(const gchar *file);
 void set_progress_print_all(guint fraction, guint total, guint step);
 void stop_archiving(void);
 

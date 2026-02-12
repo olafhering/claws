@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -66,7 +66,7 @@ void rssyl_update_comments(RFolderItem *ritem)
 
 	g_return_if_fail(ritem != NULL);
 
-	if( ritem->fetch_comments == FALSE )
+	if (ritem->fetch_comments == FALSE)
 		return;
 
 	path = folder_item_get_path(item);
@@ -74,9 +74,8 @@ void rssyl_update_comments(RFolderItem *ritem)
 
 	debug_print("RSSyl: starting to parse comments, path is '%s'\n", path);
 
-	if( (dp = g_dir_open(path, 0, &error)) == NULL ) {
-		debug_print("g_dir_open on \"%s\" failed with error %d (%s)\n",
-				path, error->code, error->message);
+	if ((dp = g_dir_open(path, 0, &error)) == NULL) {
+		debug_print("g_dir_open on \"%s\" failed with error %d (%s)\n", path, error->code, error->message);
 		g_error_free(error);
 		g_free(path);
 		return;
@@ -84,7 +83,7 @@ void rssyl_update_comments(RFolderItem *ritem)
 
 	ritem->fetching_comments = TRUE;
 
-	while( (d = g_dir_read_name(dp)) != NULL ) {
+	while ((d = g_dir_read_name(dp)) != NULL) {
 		if (claws_is_exiting()) {
 			g_dir_close(dp);
 			g_free(path);
@@ -92,7 +91,7 @@ void rssyl_update_comments(RFolderItem *ritem)
 			return;
 		}
 
-		if( (num = to_number(d)) > 0) {
+		if ((num = to_number(d)) > 0) {
 			fname = g_strdup_printf("%s%c%s", path, G_DIR_SEPARATOR, d);
 			if (!g_file_test(fname, G_FILE_TEST_IS_REGULAR)) {
 				g_free(fname);
@@ -101,15 +100,11 @@ void rssyl_update_comments(RFolderItem *ritem)
 
 			debug_print("RSSyl: starting to parse '%s'\n", d);
 
-			if( (fi = rssyl_parse_folder_item_file(fname)) != NULL ) {
-				feedctx = (RFeedCtx *)fi->data;
-				if( feed_item_get_comments_url(fi) && feed_item_get_id(fi) &&
-						(ritem->fetch_comments_max_age == -1 ||
-						 time(NULL) - feed_item_get_date_modified(fi) <= ritem->fetch_comments_max_age*86400)) {
-					msg = g_strdup_printf(_("Updating comments for '%s'..."),
-							feed_item_get_title(fi));
-					debug_print("RSSyl: updating comments for '%s' (%s)\n",
-							feed_item_get_title(fi), feed_item_get_comments_url(fi));
+			if ((fi = rssyl_parse_folder_item_file(fname)) != NULL) {
+				feedctx = (RFeedCtx *) fi->data;
+				if (feed_item_get_comments_url(fi) && feed_item_get_id(fi) && (ritem->fetch_comments_max_age == -1 || time(NULL) - feed_item_get_date_modified(fi) <= ritem->fetch_comments_max_age * 86400)) {
+					msg = g_strdup_printf(_("Updating comments for '%s'..."), feed_item_get_title(fi));
+					debug_print("RSSyl: updating comments for '%s' (%s)\n", feed_item_get_title(fi), feed_item_get_comments_url(fi));
 					STATUSBAR_PUSH(mainwin, msg);
 
 					fetchctx = rssyl_prep_fetchctx_from_url(feed_item_get_comments_url(fi));
@@ -117,15 +112,14 @@ void rssyl_update_comments(RFolderItem *ritem)
 						feed_set_ssl_verify_peer(fetchctx->feed, ritem->ssl_verify_peer);
 
 						rssyl_fetch_feed(fetchctx, 0);
-					
-						if( fetchctx->success && feed_n_items(fetchctx->feed) > 0 ) {
+
+						if (fetchctx->success && feed_n_items(fetchctx->feed) > 0) {
 							g_free(fetchctx->feed->title);
 							fetchctx->feed->title = g_strdup(ritem->official_title);
 
-							feed_foreach_item(fetchctx->feed, rssyl_update_reference_func,
-									feed_item_get_id(fi));
+							feed_foreach_item(fetchctx->feed, rssyl_update_reference_func, feed_item_get_id(fi));
 
-							if( !rssyl_parse_feed(ritem, fetchctx->feed) ) {
+							if (!rssyl_parse_feed(ritem, fetchctx->feed)) {
 								debug_print("RSSyl: Error processing comments feed\n");
 								log_error(LOG_PROTOCOL, RSSYL_LOG_ERROR_PROC, fetchctx->feed->url);
 							}
@@ -150,3 +144,7 @@ void rssyl_update_comments(RFolderItem *ritem)
 
 	debug_print("RSSyl: rssyl_update_comments() is done\n");
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

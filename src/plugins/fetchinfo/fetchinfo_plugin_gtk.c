@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #include "defs.h"
@@ -37,10 +37,9 @@
 
 #include "fetchinfo_plugin.h"
 
-struct FetchinfoPage
-{
+struct FetchinfoPage {
 	PrefsPage page;
-	
+
 	GtkWidget *fetchinfo_enable;
 	GtkWidget *fetchinfo_uidl;
 	GtkWidget *fetchinfo_account;
@@ -60,10 +59,9 @@ static void fetchinfo_set_sensitive(struct FetchinfoPage *page, gboolean enable)
 
 static void fetchinfo_enable_cb(GtkWidget *widget, gpointer data)
 {
-	struct FetchinfoPage *page = (struct FetchinfoPage *) data;
+	struct FetchinfoPage *page = (struct FetchinfoPage *)data;
 
-	fetchinfo_set_sensitive(page, gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_enable)));
+	fetchinfo_set_sensitive(page, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_enable)));
 }
 
 #define ADD_NEW_CHECKBOX(button, text, tip) \
@@ -72,30 +70,29 @@ static void fetchinfo_enable_cb(GtkWidget *widget, gpointer data)
 	gtk_box_pack_start(GTK_BOX(hdr_vbox), button, FALSE, FALSE, 0); \
 	gtk_widget_set_tooltip_text(GTK_WIDGET(button), tip);
 
-static void fetchinfo_create_widget_func(PrefsPage * _page, GtkWindow *window, gpointer data)
+static void fetchinfo_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct FetchinfoPage *page = (struct FetchinfoPage *) _page;
+	struct FetchinfoPage *page = (struct FetchinfoPage *)_page;
 	FetchinfoConfig *config;
 	GtkWidget *vbox, *frame, *hdr_vbox;
 	GtkWidget *fetchinfo_enable;
-  	GtkWidget *fetchinfo_uidl;
-  	GtkWidget *fetchinfo_account;
-  	GtkWidget *fetchinfo_server;
-  	GtkWidget *fetchinfo_userid;
-  	GtkWidget *fetchinfo_time;
+	GtkWidget *fetchinfo_uidl;
+	GtkWidget *fetchinfo_account;
+	GtkWidget *fetchinfo_server;
+	GtkWidget *fetchinfo_userid;
+	GtkWidget *fetchinfo_time;
 
 	vbox = gtk_vbox_new(FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
 	gtk_widget_show(vbox);
 
 	/* TRANSLATORS: Heading of a preferences section determining which headers to add */
-	fetchinfo_enable = gtk_check_button_new_with_label (_("Add fetchinfo headers"));
-	gtk_widget_show (fetchinfo_enable);
+	fetchinfo_enable = gtk_check_button_new_with_label(_("Add fetchinfo headers"));
+	gtk_widget_show(fetchinfo_enable);
 	gtk_box_pack_start(GTK_BOX(vbox), fetchinfo_enable, FALSE, FALSE, 5);
 
-	PACK_FRAME (vbox, frame, _("Headers to be added"))
-
-	hdr_vbox = gtk_vbox_new(FALSE, 0);
+	PACK_FRAME(vbox, frame, _("Headers to be added"))
+	    hdr_vbox = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(hdr_vbox);
 	gtk_container_add(GTK_CONTAINER(frame), hdr_vbox);
 	gtk_container_set_border_width(GTK_CONTAINER(hdr_vbox), 8);
@@ -113,33 +110,27 @@ static void fetchinfo_create_widget_func(PrefsPage * _page, GtkWindow *window, g
 
 	config = fetchinfo_get_config();
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_enable),
-				     config->fetchinfo_enable);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_uidl),
-				     config->fetchinfo_uidl);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_account),
-				     config->fetchinfo_account);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_server),
-				     config->fetchinfo_server);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_userid),
-				     config->fetchinfo_userid);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_time),
-				     config->fetchinfo_time);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_enable), config->fetchinfo_enable);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_uidl), config->fetchinfo_uidl);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_account), config->fetchinfo_account);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_server), config->fetchinfo_server);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_userid), config->fetchinfo_userid);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fetchinfo_time), config->fetchinfo_time);
 
-	g_signal_connect(G_OBJECT(fetchinfo_enable), "released",
-			 G_CALLBACK(fetchinfo_enable_cb), page);
+	g_signal_connect(G_OBJECT(fetchinfo_enable), "released", G_CALLBACK(fetchinfo_enable_cb), page);
 
-	page->fetchinfo_enable	= fetchinfo_enable;
-	page->fetchinfo_uidl	= fetchinfo_uidl;
-	page->fetchinfo_account	= fetchinfo_account;
-	page->fetchinfo_server	= fetchinfo_server;
-	page->fetchinfo_userid	= fetchinfo_userid;
-	page->fetchinfo_time	= fetchinfo_time;
+	page->fetchinfo_enable = fetchinfo_enable;
+	page->fetchinfo_uidl = fetchinfo_uidl;
+	page->fetchinfo_account = fetchinfo_account;
+	page->fetchinfo_server = fetchinfo_server;
+	page->fetchinfo_userid = fetchinfo_userid;
+	page->fetchinfo_time = fetchinfo_time;
 
 	page->page.widget = vbox;
 
 	fetchinfo_set_sensitive(page, config->fetchinfo_enable);
 }
+
 #undef ADD_NEW_CHECKBOX
 
 static void fetchinfo_destroy_widget_func(PrefsPage *_page)
@@ -149,25 +140,19 @@ static void fetchinfo_destroy_widget_func(PrefsPage *_page)
 
 static void fetchinfo_save_func(PrefsPage *_page)
 {
-	struct FetchinfoPage *page = (struct FetchinfoPage *) _page;
+	struct FetchinfoPage *page = (struct FetchinfoPage *)_page;
 	FetchinfoConfig *config;
 
 	debug_print("Saving Fetchinfo Page\n");
 
 	config = fetchinfo_get_config();
 
-	config->fetchinfo_enable  = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_enable) );
-	config->fetchinfo_uidl	  = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_uidl)   );
-	config->fetchinfo_account = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_account));
-	config->fetchinfo_server  = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_server) );
-	config->fetchinfo_userid  = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_userid) );
-	config->fetchinfo_time	  = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->fetchinfo_time)   );
+	config->fetchinfo_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_enable));
+	config->fetchinfo_uidl = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_uidl));
+	config->fetchinfo_account = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_account));
+	config->fetchinfo_server = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_server));
+	config->fetchinfo_userid = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_userid));
+	config->fetchinfo_time = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->fetchinfo_time));
 
 	fetchinfo_save_config();
 }
@@ -187,16 +172,20 @@ gint fetchinfo_gtk_init(void)
 	fetchinfo_page.page.destroy_widget = fetchinfo_destroy_widget_func;
 	fetchinfo_page.page.save_page = fetchinfo_save_func;
 	fetchinfo_page.page.weight = 40.0;
-	
-	prefs_gtk_register_page((PrefsPage *) &fetchinfo_page);
+
+	prefs_gtk_register_page((PrefsPage *)&fetchinfo_page);
 
 	debug_print("Fetchinfo GTK plugin loaded\n");
-	return 0;	
+	return 0;
 }
 
 void fetchinfo_gtk_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) &fetchinfo_page);
+	prefs_gtk_unregister_page((PrefsPage *)&fetchinfo_page);
 
 	debug_print("Fetchinfo GTK plugin unloaded\n");
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

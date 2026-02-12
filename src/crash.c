@@ -63,20 +63,17 @@
 
 /***/
 
-static GtkWidget	*crash_dialog_show		(const gchar *text, 
-							 const gchar *debug_output);
-static void		 crash_create_debugger_file	(void);
-static void		 crash_save_crash_log		(GtkButton *, const gchar *);
-static void		 crash_create_bug_report	(GtkButton *, const gchar *);
-static void		 crash_debug			(unsigned long crash_pid, 
-							 gchar   *exe_image,
-							 GString *debug_output);
-static gchar		*get_compiled_in_features   (void);
-static gchar		*get_lib_version        (void);
-static gchar		*get_operating_system       (void);
-static gboolean		 is_crash_dialog_allowed	(void);
-static void		 crash_handler			(int sig);
-static void		 crash_cleanup_exit		(void);
+static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output);
+static void crash_create_debugger_file(void);
+static void crash_save_crash_log(GtkButton *, const gchar *);
+static void crash_create_bug_report(GtkButton *, const gchar *);
+static void crash_debug(unsigned long crash_pid, gchar *exe_image, GString *debug_output);
+static gchar *get_compiled_in_features(void);
+static gchar *get_lib_version(void);
+static gchar *get_operating_system(void);
+static gboolean is_crash_dialog_allowed(void);
+static void crash_handler(int sig);
+static void crash_cleanup_exit(void);
 
 /***/
 
@@ -89,10 +86,11 @@ static const gchar *DEBUG_SCRIPT = "thread all apply\nbt full\nkill\nq";
  */
 void crash_install_handlers(void)
 {
-#if CRASH_DIALOG 
+#if CRASH_DIALOG
 	sigset_t mask;
 
-	if (!is_crash_dialog_allowed()) return;
+	if (!is_crash_dialog_allowed())
+		return;
 
 	sigemptyset(&mask);
 
@@ -100,7 +98,7 @@ void crash_install_handlers(void)
 	signal(SIGSEGV, crash_handler);
 	sigaddset(&mask, SIGSEGV);
 #endif
-	
+
 #ifdef SIGFPE
 	signal(SIGFPE, crash_handler);
 	sigaddset(&mask, SIGFPE);
@@ -117,7 +115,7 @@ void crash_install_handlers(void)
 #endif
 
 	sigprocmask(SIG_UNBLOCK, &mask, 0);
-#endif /* CRASH_DIALOG */	
+#endif /* CRASH_DIALOG */
 }
 
 /***/
@@ -125,9 +123,9 @@ void crash_install_handlers(void)
 /*!
  *\brief	crash dialog entry point 
  */
-void crash_main(const char *arg) 
+void crash_main(const char *arg)
 {
-#if CRASH_DIALOG 
+#if CRASH_DIALOG
 	gchar *text;
 	gchar **tokens;
 	unsigned long pid;
@@ -137,10 +135,9 @@ void crash_main(const char *arg)
 	tokens = g_strsplit(arg, ",", 0);
 
 	pid = atol(tokens[0]);
-	text = g_strdup_printf(_("Claws Mail process (%ld) received signal %ld"),
-			       pid, atol(tokens[1]));
+	text = g_strdup_printf(_("Claws Mail process (%ld) received signal %ld"), pid, atol(tokens[1]));
 
-	output = g_string_new("");     
+	output = g_string_new("");
 	crash_debug(pid, tokens[2], output);
 
 	/*
@@ -152,7 +149,7 @@ void crash_main(const char *arg)
 	g_string_free(output, TRUE);
 	g_free(text);
 	g_strfreev(tokens);
-#endif /* CRASH_DIALOG */	
+#endif /* CRASH_DIALOG */
 }
 
 /*!
@@ -177,12 +174,12 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	GtkWidget *button3;
 	GtkWidget *button4;
 	GtkWidget *button5;
-	gchar	  *crash_report;
+	gchar *crash_report;
 	GtkTextBuffer *buffer;
 	GtkTextIter iter;
 	gchar *features = get_compiled_in_features();
 	gchar *os = get_operating_system();
-	gchar *lversion = get_lib_version();    
+	gchar *lversion = get_lib_version();
 
 	window1 = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "crash");
 	gtk_container_set_border_width(GTK_CONTAINER(window1), 5);
@@ -191,7 +188,6 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	gtk_window_set_type_hint(GTK_WINDOW(window1), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_window_set_modal(GTK_WINDOW(window1), TRUE);
 	gtk_window_set_default_size(GTK_WINDOW(window1), 460, 272);
-
 
 	vbox1 = gtk_vbox_new(FALSE, 2);
 	gtk_widget_show(vbox1);
@@ -202,8 +198,7 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, TRUE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox1), 4);
 
-	label1 = gtk_label_new
-	    (g_strdup_printf(_("%s.\nPlease file a bug report and include the information below."), text));
+	label1 = gtk_label_new(g_strdup_printf(_("%s.\nPlease file a bug report and include the information below."), text));
 	gtk_widget_show(label1);
 	gtk_box_pack_start(GTK_BOX(hbox1), label1, TRUE, TRUE, 0);
 	gtk_misc_set_alignment(GTK_MISC(label1), 7.45058e-09, 0.5);
@@ -216,26 +211,14 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	gtk_widget_show(scrolledwindow1);
 	gtk_container_add(GTK_CONTAINER(frame1), scrolledwindow1);
 	gtk_container_set_border_width(GTK_CONTAINER(scrolledwindow1), 3);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow1),
-				       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
 	text1 = gtk_text_view_new();
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text1), FALSE);
 	gtk_widget_show(text1);
 	gtk_container_add(GTK_CONTAINER(scrolledwindow1), text1);
 
-	crash_report = g_strdup_printf(
-		"Claws Mail version %s\n"
-		"GTK+ version %d.%d.%d / GLib %d.%d.%d\n"
-		"Locale: %s (charset: %s)\n"
-		"Features:%s\n"
-		"Operating system: %s\n"
-		"C Library: %s\n--\n%s",
-		VERSION,
-		gtk_major_version, gtk_minor_version, gtk_micro_version,
-		glib_major_version, glib_minor_version, glib_micro_version,
-		conv_get_current_locale(), conv_get_locale_charset_str(),
-		features, os, lversion, debug_output);
+	crash_report = g_strdup_printf("Claws Mail version %s\n" "GTK+ version %d.%d.%d / GLib %d.%d.%d\n" "Locale: %s (charset: %s)\n" "Features:%s\n" "Operating system: %s\n" "C Library: %s\n--\n%s", VERSION, gtk_major_version, gtk_minor_version, gtk_micro_version, glib_major_version, glib_minor_version, glib_micro_version, conv_get_current_locale(), conv_get_locale_charset_str(), features, os, lversion, debug_output);
 	g_free(features);
 	g_free(os);
 	g_free(lversion);
@@ -266,15 +249,11 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	gtk_widget_show(button5);
 	gtk_container_add(GTK_CONTAINER(hbuttonbox4), button5);
 	gtk_widget_set_can_default(button5, TRUE);
-	
-	g_signal_connect(G_OBJECT(window1), "delete_event",
-			 G_CALLBACK(gtk_main_quit), NULL);
-	g_signal_connect(G_OBJECT(button3),   "clicked",
-			 G_CALLBACK(gtk_main_quit), NULL);
-	g_signal_connect(G_OBJECT(button4), "clicked",
-			 G_CALLBACK(crash_save_crash_log), crash_report);
-	g_signal_connect(G_OBJECT(button5), "clicked",
-			 G_CALLBACK(crash_create_bug_report), NULL);
+
+	g_signal_connect(G_OBJECT(window1), "delete_event", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(G_OBJECT(button4), "clicked", G_CALLBACK(crash_save_crash_log), crash_report);
+	g_signal_connect(G_OBJECT(button5), "clicked", G_CALLBACK(crash_create_bug_report), NULL);
 
 	MANAGE_WINDOW_SIGNALS_CONNECT(window1);
 
@@ -284,7 +263,6 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	return window1;
 }
 
-
 /*!
  *\brief	create debugger script file in claws directory.
  *		all the other options (creating temp files) looked too 
@@ -293,7 +271,7 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 static void crash_create_debugger_file(void)
 {
 	gchar *filespec = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, DEBUGGERRC, NULL);
-	
+
 	str_write_to_file(DEBUG_SCRIPT, filespec, TRUE);
 	g_free(filespec);
 }
@@ -313,9 +291,9 @@ static void crash_save_crash_log(GtkButton *button, const gchar *text)
 	lt = localtime_r(&timer, &buft);
 	strftime(buf, sizeof buf, "claws-crash-log-%Y-%m-%d-%H-%M-%S.txt", lt);
 	if (NULL != (filename = filesel_select_file_save(_("Save crash information"), buf))
-	&&  *filename)
+	    && *filename)
 		str_write_to_file(text, filename, TRUE);
-	g_free(filename);	
+	g_free(filename);
 }
 
 /*!
@@ -329,9 +307,7 @@ static void crash_create_bug_report(GtkButton *button, const gchar *data)
 /*!
  *\brief	launches debugger and attaches it to crashed claws
  */
-static void crash_debug(unsigned long crash_pid, 
-			gchar *exe_image,
-			GString *debug_output)
+static void crash_debug(unsigned long crash_pid, gchar *exe_image, GString *debug_output)
 {
 	int choutput[2];
 	pid_t pid;
@@ -354,7 +330,7 @@ static void crash_debug(unsigned long crash_pid,
 		/*
 		 * setup debugger to attach to crashed claws
 		 */
-		*argptr++ = "gdb"; 
+		*argptr++ = "gdb";
 		*argptr++ = "--nw";
 		*argptr++ = "--nx";
 		*argptr++ = "--quiet";
@@ -363,7 +339,7 @@ static void crash_debug(unsigned long crash_pid,
 		*argptr++ = filespec;
 		*argptr++ = exe_image;
 		*argptr++ = g_strdup_printf("%ld", crash_pid);
-		*argptr   = NULL;
+		*argptr = NULL;
 
 		/*
 		 * redirect output to write end of pipe
@@ -372,12 +348,12 @@ static void crash_debug(unsigned long crash_pid,
 		if (dup(choutput[1]) < 0)
 			perror("dup");
 		close(choutput[0]);
-		if (-1 == execvp("gdb", argp)) 
+		if (-1 == execvp("gdb", argp))
 			perror("execvp");
 	} else {
 		char buf[100];
 		int r;
-	
+
 		waitpid(pid, NULL, 0);
 
 		/*
@@ -396,14 +372,14 @@ static void crash_debug(unsigned long crash_pid,
 				g_string_append(debug_output, buf);
 			}
 		} while (r > 0);
-		
+
 		close(choutput[0]);
 		close(choutput[1]);
-		
+
 		/*
 		 * kill the process we attached to
 		 */
-		kill(crash_pid, SIGCONT); 
+		kill(crash_pid, SIGCONT);
 	}
 }
 
@@ -416,33 +392,33 @@ static gchar *get_compiled_in_features(void)
 {
 	return g_strdup_printf("%s",
 #if INET6
-		   " IPv6"
+			       " IPv6"
 #endif
 #if HAVE_ICONV
-		   " iconv"
+			       " iconv"
 #endif
 #if HAVE_LIBCOMPFACE
-		   " compface"
+			       " compface"
 #endif
 #if USE_GNUTLS
-		   " GnuTLS"
+			       " GnuTLS"
 #endif
 #if USE_LDAP
-		   " LDAP"
+			       " LDAP"
 #endif
 #if USE_JPILOT
-		   " JPilot"
+			       " JPilot"
 #endif
 #if USE_ENCHANT
-		   " GNU/aspell"
+			       " GNU/aspell"
 #endif
 #if HAVE_LIBETPAN
-		   " libetpan"
+			       " libetpan"
 #endif
 #if HAVE_LIBSM
-		   " libSM"
+			       " libSM"
 #endif
-	"");
+			       "");
 }
 
 /***/
@@ -471,13 +447,10 @@ static gchar *get_operating_system(void)
 #if HAVE_SYS_UTSNAME_H
 	struct utsname utsbuf;
 	uname(&utsbuf);
-	return g_strdup_printf("%s %s (%s)",
-			       utsbuf.sysname,
-			       utsbuf.release,
-			       utsbuf.machine);
+	return g_strdup_printf("%s %s (%s)", utsbuf.sysname, utsbuf.release, utsbuf.machine);
 #else
 	return g_strdup(_("Unknown"));
-	
+
 #endif
 }
 
@@ -507,17 +480,17 @@ static void crash_handler(int sig)
 	 */
 	extern gchar *argv0;
 
-
 	/*
 	 * besides guarding entrancy it's probably also better 
 	 * to mask off signals
 	 */
-	if (crashed_) return;
+	if (crashed_)
+		return;
 
 	crashed_++;
 
 #ifdef SIGTERM
-	if (sig == SIGTERM) 
+	if (sig == SIGTERM)
 		clean_quit(NULL);
 #endif
 
@@ -531,13 +504,13 @@ static void crash_handler(int sig)
 	if (0 == (pid = fork())) {
 		char buf[50];
 		char *args[5];
-	
+
 		/*
 		 * probably also some other parameters (like GTK+ ones).
 		 * also we pass the full startup dir and the real command
 		 * line typed in (argv0)
 		 */
-		args[0] = argv0; 
+		args[0] = argv0;
 		args[1] = "--debug";
 		args[2] = "--crash";
 		sprintf(buf, "%d,%d,%s", getppid(), sig, argv0);
@@ -548,7 +521,7 @@ static void crash_handler(int sig)
 			FILE_OP_ERROR(claws_get_startup_dir(), "chdir");
 		if (setgid(getgid()) != 0)
 			perror("setgid");
-		if (setuid(getuid()) != 0 )
+		if (setuid(getuid()) != 0)
 			perror("setuid");
 		execvp(argv0, args);
 		perror("execvp");
@@ -572,3 +545,7 @@ static void crash_cleanup_exit(void)
 }
 
 #endif
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

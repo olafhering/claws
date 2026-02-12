@@ -25,10 +25,9 @@
 
 #include "log.h"
 
-typedef struct _LogWindow	LogWindow;
+typedef struct _LogWindow LogWindow;
 
-struct _LogWindow
-{
+struct _LogWindow {
 	GtkWidget *window;
 	GtkWidget *scrolledwin;
 	GtkWidget *text;
@@ -43,8 +42,8 @@ struct _LogWindow
 	GdkColor status_skip_color;
 
 	gboolean clip;
-	guint	 clip_length;
-	gulong 	 hook_id;
+	guint clip_length;
+	gulong hook_id;
 	GtkTextBuffer *buffer;
 	GtkTextTag *error_tag;
 	GtkTextMark *end_mark;

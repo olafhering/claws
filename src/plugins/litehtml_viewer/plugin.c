@@ -73,9 +73,13 @@ const gchar *plugin_version(void)
 struct PluginFeature *plugin_provides(void)
 {
 	static struct PluginFeature features[] = {
-		{ PLUGIN_MIMEVIEWER, "text/html" },
-		{ PLUGIN_NOTHING, NULL }
+		{PLUGIN_MIMEVIEWER, "text/html"},
+		{PLUGIN_NOTHING, NULL}
 	};
 
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

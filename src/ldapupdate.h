@@ -33,7 +33,6 @@
 /* Function proto types */
 void ldapsvr_update_book(LdapServer *server, ItemPerson *item);
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __LDAPUPDATE_H__ */
-

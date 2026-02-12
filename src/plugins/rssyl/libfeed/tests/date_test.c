@@ -4,9 +4,7 @@
 
 #include "date.h"
 
-
-static void
-test_createRFC822Date (void)
+static void test_createRFC822Date(void)
 {
 	gchar *buf;
 	time_t t = 0;
@@ -25,8 +23,7 @@ test_createRFC822Date (void)
 	g_free(buf);
 }
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
@@ -34,3 +31,7 @@ main (int argc, char *argv[])
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

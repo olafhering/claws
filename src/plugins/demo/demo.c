@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-
 #include "version.h"
 #include "claws.h"
 #include "plugin.h"
@@ -34,7 +33,7 @@
 
 gboolean my_log_hook(gpointer source, gpointer data)
 {
-	LogText *logtext = (LogText *)source;
+	LogText *logtext = (LogText *) source;
 
 	g_print("*** Demo Plugin log: %s\n", logtext->text);
 
@@ -45,8 +44,7 @@ static gulong hook_id = HOOK_NONE;
 
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	hook_id = hooks_register_hook(LOG_APPEND_TEXT_HOOKLIST, my_log_hook, NULL);
@@ -75,10 +73,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin is only a demo of how to write plugins for Claws Mail. "
-	         "It installs a hook for new log output and writes it to stdout."
-	         "\n\n"
-	         "It is not really useful.");
+	return _("This plugin is only a demo of how to write plugins for Claws Mail. " "It installs a hook for new log output and writes it to stdout." "\n\n" "It is not really useful.");
 }
 
 const gchar *plugin_type(void)
@@ -98,8 +93,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_OTHER, N_("Demo")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_OTHER, N_("Demo")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -36,8 +36,7 @@ struct _oldrssyl_ctx {
 	GSList *oldfeeds;
 };
 
-static void _elparse_start_oldrssyl(void *data, const gchar *el,
-		const gchar **attr)
+static void _elparse_start_oldrssyl(void *data, const gchar *el, const gchar **attr)
 {
 	struct _oldrssyl_ctx *ctx = data;
 	OldRFeed *of;
@@ -62,8 +61,7 @@ static void _elparse_start_oldrssyl(void *data, const gchar *el,
 		of->silent_update = GETVAL_INT("silent_update");
 		of->ssl_verify_peer = GETVAL_INT("ssl_verify_peer");
 
-		debug_print("RSSyl: old feeds.xml: Adding '%s' (%s).\n", of->name,
-				of->url);
+		debug_print("RSSyl: old feeds.xml: Adding '%s' (%s).\n", of->name, of->url);
 
 		ctx->oldfeeds = g_slist_prepend(ctx->oldfeeds, of);
 	}
@@ -89,8 +87,7 @@ GSList *rssyl_old_feed_metadata_parse(gchar *filepath)
 
 	/* Read contents of the file into memory */
 	if (!g_file_get_contents(filepath, &contents, &length, &error)) {
-		alertpanel_error(_("Couldn't read contents of old feeds.xml file:\n%s"),
-				error->message);
+		alertpanel_error(_("Couldn't read contents of old feeds.xml file:\n%s"), error->message);
 		debug_print("RSSyl: Couldn't read contents of feeds.xml\n");
 		g_error_free(error);
 		return NULL;
@@ -102,9 +99,7 @@ GSList *rssyl_old_feed_metadata_parse(gchar *filepath)
 	ctx = g_new0(struct _oldrssyl_ctx, 1);
 	ctx->oldfeeds = NULL;
 	XML_SetUserData(parser, ctx);
-	XML_SetElementHandler(parser,
-			_elparse_start_oldrssyl,
-			_elparse_end_oldrssyl);
+	XML_SetElementHandler(parser, _elparse_start_oldrssyl, _elparse_end_oldrssyl);
 
 	/* Parse the XML, our output ending up in oldfeeds */
 	XML_Parse(parser, contents, length, 1);
@@ -115,15 +110,14 @@ GSList *rssyl_old_feed_metadata_parse(gchar *filepath)
 	oldfeeds = ctx->oldfeeds;
 	g_free(ctx);
 
-	debug_print("RSSyl: old feeds.xml: added %d items in total\n",
-			g_slist_length(oldfeeds));
+	debug_print("RSSyl: old feeds.xml: added %d items in total\n", g_slist_length(oldfeeds));
 
 	return oldfeeds;
 }
 
 static void _free_old_feed_entry(gpointer d, gpointer user_data)
 {
-	OldRFeed *of = (OldRFeed *)d;
+	OldRFeed *of = (OldRFeed *) d;
 
 	if (of == NULL)
 		return;
@@ -146,7 +140,7 @@ void rssyl_old_feed_metadata_free(GSList *oldfeeds)
 
 static gint _old_feed_find_by_url(gconstpointer a, gconstpointer b)
 {
-	OldRFeed *of = (OldRFeed *)a;
+	OldRFeed *of = (OldRFeed *) a;
 	gchar *name = (gchar *)b;
 
 	if (of == NULL || of->name == NULL || of->url == NULL || name == NULL)
@@ -163,8 +157,12 @@ OldRFeed *rssyl_old_feed_get_by_name(GSList *oldfeeds, gchar *name)
 	g_return_val_if_fail(name != NULL, NULL);
 
 	if ((needle = g_slist_find_custom(oldfeeds, name, _old_feed_find_by_url))
-			!= NULL)
-		return (OldRFeed *)needle->data;
-	
+	    != NULL)
+		return (OldRFeed *) needle->data;
+
 	return NULL;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

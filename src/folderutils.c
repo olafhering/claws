@@ -31,17 +31,15 @@
 
 static gboolean folderutils_mark_all_read_node_func(GNode *node, gpointer data);
 
-
-gint folderutils_delete_duplicates(FolderItem *item,
-				   DeleteDuplicatesMode mode)
+gint folderutils_delete_duplicates(FolderItem *item, DeleteDuplicatesMode mode)
 {
 	GHashTable *table;
 	GSList *msglist, *cur, *duplist = NULL;
 	guint dups;
-	
+
 	if (item->folder->klass->remove_msg == NULL)
 		return -1;
-	
+
 	debug_print("Deleting duplicated messages...\n");
 
 	msglist = folder_item_get_msg_list(item);
@@ -51,18 +49,17 @@ gint folderutils_delete_duplicates(FolderItem *item,
 
 	folder_item_update_freeze();
 	for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
-		MsgInfo *msginfo = (MsgInfo *) cur->data;
+		MsgInfo *msginfo = (MsgInfo *)cur->data;
 		MsgInfo *msginfo_dup = NULL;
 
 		if (!msginfo || !msginfo->msgid || !*msginfo->msgid)
 			continue;
-		
+
 		msginfo_dup = g_hash_table_lookup(table, msginfo->msgid);
 		if (msginfo_dup == NULL)
 			g_hash_table_insert(table, msginfo->msgid, msginfo);
 		else {
-			if ((MSG_IS_UNREAD(msginfo->flags) && !MSG_IS_UNREAD(msginfo_dup->flags)) || 
-			    (MSG_IS_UNREAD(msginfo->flags) == MSG_IS_UNREAD(msginfo_dup->flags))) {
+			if ((MSG_IS_UNREAD(msginfo->flags) && !MSG_IS_UNREAD(msginfo_dup->flags)) || (MSG_IS_UNREAD(msginfo->flags) == MSG_IS_UNREAD(msginfo_dup->flags))) {
 				duplist = g_slist_prepend(duplist, msginfo);
 			} else {
 				duplist = g_slist_prepend(duplist, msginfo_dup);
@@ -73,31 +70,30 @@ gint folderutils_delete_duplicates(FolderItem *item,
 
 	if (duplist) {
 		switch (mode) {
-		case DELETE_DUPLICATES_REMOVE: {
-			FolderItem *trash = NULL;
-			gboolean in_trash = FALSE;
-			PrefsAccount *ac;
+		case DELETE_DUPLICATES_REMOVE:{
+				FolderItem *trash = NULL;
+				gboolean in_trash = FALSE;
+				PrefsAccount *ac;
 
-			if (NULL != (ac = account_find_from_item(item))) {
-				trash = account_get_special_folder(ac, F_TRASH);
-				in_trash = (trash != NULL && trash == item);
+				if (NULL != (ac = account_find_from_item(item))) {
+					trash = account_get_special_folder(ac, F_TRASH);
+					in_trash = (trash != NULL && trash == item);
+				}
+				if (trash == NULL)
+					trash = item->folder->trash;
+
+				if (folder_has_parent_of_type(item, F_TRASH) || trash == NULL || in_trash)
+					folder_item_remove_msgs(item, duplist);
+				else
+					folder_item_move_msgs(trash, duplist);
+				break;
 			}
-			if (trash == NULL)
-				trash = item->folder->trash;
-
-			if (folder_has_parent_of_type(item, F_TRASH) || trash == NULL || in_trash)
-				folder_item_remove_msgs(item, duplist);
-			else 			
-				folder_item_move_msgs(trash, duplist);
-			break;
-		}
 		case DELETE_DUPLICATES_SETFLAG:
 			for (cur = duplist; cur != NULL; cur = g_slist_next(cur)) {
-				MsgInfo *msginfo = (MsgInfo *) cur->data;
+				MsgInfo *msginfo = (MsgInfo *)cur->data;
 
 				procmsg_msginfo_set_to_folder(msginfo, NULL);
-				procmsg_msginfo_unset_flags(msginfo, MSG_MARKED, 
-					MSG_MOVE | MSG_COPY | MSG_MOVE_DONE);
+				procmsg_msginfo_unset_flags(msginfo, MSG_MARKED, MSG_MOVE | MSG_COPY | MSG_MOVE_DONE);
 				procmsg_msginfo_set_flags(msginfo, MSG_DELETED, 0);
 			}
 			break;
@@ -111,7 +107,7 @@ gint folderutils_delete_duplicates(FolderItem *item,
 	g_hash_table_destroy(table);
 
 	for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
-		MsgInfo *msginfo = (MsgInfo *) cur->data;
+		MsgInfo *msginfo = (MsgInfo *)cur->data;
 
 		procmsg_msginfo_free(&msginfo);
 	}
@@ -129,16 +125,14 @@ void folderutils_mark_all_read(FolderItem *item, gboolean mark_as_read)
 	MsgInfoList *msglist, *cur;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 	int i = 0, m = 0;
-	gchar *msg = mark_as_read?"read":"unread";
-	void(*summary_mark_func)(SummaryView*, gboolean) =
-			mark_as_read?summary_mark_all_read:summary_mark_all_unread;
+	gchar *msg = mark_as_read ? "read" : "unread";
+	void (*summary_mark_func)(SummaryView *, gboolean) = mark_as_read ? summary_mark_all_read : summary_mark_all_unread;
 
-	debug_print("marking all %s in item %s\n", msg, (item==NULL)?"NULL":item->name);
+	debug_print("marking all %s in item %s\n", msg, (item == NULL) ? "NULL" : item->name);
 	cm_return_if_fail(item != NULL);
 
 	folder_item_update_freeze();
-	if (mainwin && mainwin->summaryview &&
-	    mainwin->summaryview->folder_item == item) {
+	if (mainwin && mainwin->summaryview && mainwin->summaryview->folder_item == item) {
 		debug_print("folder opened, using summary\n");
 		summary_mark_func(mainwin->summaryview, FALSE);
 	} else {
@@ -177,12 +171,12 @@ void folderutils_mark_all_read(FolderItem *item, gboolean mark_as_read)
 static gboolean folderutils_mark_all_read_node_func(GNode *node, gpointer data)
 {
 	if (node) {
-		FolderItem *sub_item = (FolderItem *) node->data;
+		FolderItem *sub_item = (FolderItem *)node->data;
 		if (prefs_common.run_processingrules_before_mark_all)
 			folderview_run_processing(sub_item);
-		folderutils_mark_all_read(sub_item, (gboolean) GPOINTER_TO_INT(data));
+		folderutils_mark_all_read(sub_item, (gboolean)GPOINTER_TO_INT(data));
 	}
-	return(FALSE);
+	return (FALSE);
 }
 
 void folderutils_mark_all_read_recursive(FolderItem *item, gboolean mark_as_read)
@@ -192,7 +186,9 @@ void folderutils_mark_all_read_recursive(FolderItem *item, gboolean mark_as_read
 	cm_return_if_fail(item->folder != NULL);
 	cm_return_if_fail(item->folder->node != NULL);
 
-	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-		folderutils_mark_all_read_node_func,
-		GINT_TO_POINTER(mark_as_read));
+	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folderutils_mark_all_read_node_func, GINT_TO_POINTER(mark_as_read));
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

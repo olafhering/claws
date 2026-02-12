@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -38,11 +38,15 @@
 #include "socket.h"
 #include "utils.h"
 
-static RecvUIFunc	recv_ui_func;
-static gpointer		recv_ui_func_data;
+static RecvUIFunc recv_ui_func;
+static gpointer recv_ui_func_data;
 
 void recv_set_ui_func(RecvUIFunc func, gpointer data)
 {
 	recv_ui_func = func;
 	recv_ui_func_data = data;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -83,3 +83,7 @@ gchar *pgp_locate_armor_header(const gchar *haystack, const gchar *needle)
 }
 
 #endif /* USE_GPGME */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

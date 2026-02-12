@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -37,10 +37,9 @@
 
 AddressKeeperPrefs addkeeperprefs;
 
-struct AddressKeeperPrefsPage
-{
+struct AddressKeeperPrefsPage {
 	PrefsPage page;
-	
+
 	GtkWidget *addressbook_folder;
 	GtkWidget *keep_to_addrs_check;
 	GtkWidget *keep_cc_addrs_check;
@@ -52,20 +51,21 @@ struct AddressKeeperPrefsPage addkeeperprefs_page;
 
 static PrefParam param[] = {
 	{"addressbook_folder", "", &addkeeperprefs.addressbook_folder,
-         P_STRING, NULL, NULL, NULL},
+	 P_STRING, NULL, NULL, NULL},
 	{"keep_to_addrs", "TRUE", &addkeeperprefs.keep_to_addrs,
-         P_BOOL, NULL, NULL, NULL},
+	 P_BOOL, NULL, NULL, NULL},
 	{"keep_cc_addrs", "TRUE", &addkeeperprefs.keep_cc_addrs,
-         P_BOOL, NULL, NULL, NULL},
+	 P_BOOL, NULL, NULL, NULL},
 	{"keep_bcc_addrs", "FALSE", &addkeeperprefs.keep_bcc_addrs,
-         P_BOOL, NULL, NULL, NULL},
+	 P_BOOL, NULL, NULL, NULL},
 	{"block_matching_addrs", "", &addkeeperprefs.block_matching_addrs,
 	 P_STRING, NULL, NULL, NULL},
 	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
 };
 
 #ifndef USE_ALT_ADDRBOOK
-static void select_addressbook_clicked_cb(GtkWidget *widget, gpointer data) {
+static void select_addressbook_clicked_cb(GtkWidget *widget, gpointer data)
+{
 	const gchar *folderpath = NULL;
 	gchar *new_path = NULL;
 
@@ -78,11 +78,9 @@ static void select_addressbook_clicked_cb(GtkWidget *widget, gpointer data) {
 }
 #endif
 
-static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
-					       GtkWindow * window,
-					       gpointer data)
+static void addkeeper_prefs_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct AddressKeeperPrefsPage *page = (struct AddressKeeperPrefsPage *) _page;
+	struct AddressKeeperPrefsPage *page = (struct AddressKeeperPrefsPage *)_page;
 	GtkWidget *path_frame;
 	GtkWidget *path_hbox;
 	GtkWidget *path_vbox;
@@ -104,8 +102,7 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 
 	vbox = gtk_vbox_new(FALSE, 6);
 
-	path_vbox = gtkut_get_options_frame(vbox, &path_frame,
-		_("Address book location"));
+	path_vbox = gtkut_get_options_frame(vbox, &path_frame, _("Address book location"));
 	gtk_container_set_border_width(GTK_CONTAINER(path_frame), 6);
 	path_hbox = gtk_hbox_new(FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(path_vbox), path_hbox, FALSE, FALSE, 0);
@@ -123,9 +120,7 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 	path_button = gtk_button_new_with_label(_("Select..."));
 	gtk_box_pack_start(GTK_BOX(path_hbox), path_button, FALSE, FALSE, 0);
 #ifndef USE_ALT_ADDRBOOK
-	g_signal_connect(G_OBJECT (path_button), "clicked",
-			 G_CALLBACK (select_addressbook_clicked_cb),
-			 path_entry);
+	g_signal_connect(G_OBJECT(path_button), "clicked", G_CALLBACK(select_addressbook_clicked_cb), path_entry);
 #else
 	gtk_widget_set_sensitive(path_button, FALSE);
 #endif
@@ -135,16 +130,14 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 
 	page->addressbook_folder = path_entry;
 
-	keep_hbox = gtkut_get_options_frame(vbox, &keep_frame,
-		_("Fields to keep addresses from"));
+	keep_hbox = gtkut_get_options_frame(vbox, &keep_frame, _("Fields to keep addresses from"));
 	gtk_container_set_border_width(GTK_CONTAINER(keep_frame), 6);
 
 	keep_to_checkbox = gtk_check_button_new_with_label(prefs_common_translated_header_name("To"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keep_to_checkbox), addkeeperprefs.keep_to_addrs);
 	gtk_box_pack_start(GTK_BOX(keep_hbox), keep_to_checkbox, FALSE, FALSE, 0);
 	gtk_widget_show(keep_to_checkbox);
-	tr = g_strdup(C_("address keeper: %s stands for a header name",
-			"Keep addresses which appear in '%s' headers"));
+	tr = g_strdup(C_("address keeper: %s stands for a header name", "Keep addresses which appear in '%s' headers"));
 	text = g_strdup_printf(tr, prefs_common_translated_header_name("To"));
 	CLAWS_SET_TIP(keep_to_checkbox, text);
 	g_free(tr);
@@ -157,8 +150,7 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keep_cc_checkbox), addkeeperprefs.keep_cc_addrs);
 	gtk_box_pack_start(GTK_BOX(keep_hbox), keep_cc_checkbox, FALSE, FALSE, 0);
 	gtk_widget_show(keep_cc_checkbox);
-	tr = g_strdup(C_("address keeper: %s stands for a header name",
-			"Keep addresses which appear in '%s' headers"));
+	tr = g_strdup(C_("address keeper: %s stands for a header name", "Keep addresses which appear in '%s' headers"));
 	text = g_strdup_printf(tr, prefs_common_translated_header_name("Cc"));
 	CLAWS_SET_TIP(keep_cc_checkbox, text);
 	g_free(text);
@@ -171,8 +163,7 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keep_bcc_checkbox), addkeeperprefs.keep_bcc_addrs);
 	gtk_box_pack_start(GTK_BOX(keep_hbox), keep_bcc_checkbox, FALSE, FALSE, 0);
 	gtk_widget_show(keep_bcc_checkbox);
-	tr = g_strdup(C_("address keeper: %s stands for a header name",
-			"Keep addresses which appear in '%s' headers"));
+	tr = g_strdup(C_("address keeper: %s stands for a header name", "Keep addresses which appear in '%s' headers"));
 	text = g_strdup_printf(tr, prefs_common_translated_header_name("Bcc"));
 	CLAWS_SET_TIP(keep_bcc_checkbox, text);
 	g_free(text);
@@ -181,25 +172,21 @@ static void addkeeper_prefs_create_widget_func(PrefsPage * _page,
 
 	page->keep_bcc_addrs_check = keep_bcc_checkbox;
 
-	blocked_vbox = gtkut_get_options_frame(vbox, &blocked_frame,
-		_("Exclude addresses matching the following regular expressions (one per line)"));
+	blocked_vbox = gtkut_get_options_frame(vbox, &blocked_frame, _("Exclude addresses matching the following regular expressions (one per line)"));
 	gtk_container_set_border_width(GTK_CONTAINER(blocked_frame), 6);
 
 	page->block_matching_addrs = gtk_text_view_new();
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(page->block_matching_addrs));
 	gtk_text_buffer_set_text(buffer, addkeeperprefs.block_matching_addrs, -1);
-	
+
 	blocked_scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy
-		(GTK_SCROLLED_WINDOW (blocked_scrolledwin),
-		 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type
-		(GTK_SCROLLED_WINDOW (blocked_scrolledwin), GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(blocked_scrolledwin), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(blocked_scrolledwin), GTK_SHADOW_IN);
 
 	gtk_container_add(GTK_CONTAINER(blocked_scrolledwin), page->block_matching_addrs);
 	gtk_widget_set_size_request(page->block_matching_addrs, -1, 72);
 	gtk_box_pack_start(GTK_BOX(blocked_vbox), blocked_scrolledwin, FALSE, FALSE, 0);
-	
+
 	gtk_widget_show_all(vbox);
 
 	page->page.widget = vbox;
@@ -227,29 +214,25 @@ static void addkeeper_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
-
-static void addkeeper_prefs_save_func(PrefsPage * _page)
+static void addkeeper_prefs_save_func(PrefsPage *_page)
 {
-	struct AddressKeeperPrefsPage *page = (struct AddressKeeperPrefsPage *) _page;
+	struct AddressKeeperPrefsPage *page = (struct AddressKeeperPrefsPage *)_page;
 	const gchar *text;
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 
 	text = gtk_entry_get_text(GTK_ENTRY(page->addressbook_folder));
 	addkeeperprefs.addressbook_folder = g_strdup(text);
-	addkeeperprefs.keep_to_addrs = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->keep_to_addrs_check));
-	addkeeperprefs.keep_cc_addrs = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->keep_cc_addrs_check));
-	addkeeperprefs.keep_bcc_addrs = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->keep_bcc_addrs_check));
+	addkeeperprefs.keep_to_addrs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->keep_to_addrs_check));
+	addkeeperprefs.keep_cc_addrs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->keep_cc_addrs_check));
+	addkeeperprefs.keep_bcc_addrs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->keep_bcc_addrs_check));
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(page->block_matching_addrs));
 	gtk_text_buffer_get_start_iter(buffer, &start);
@@ -269,7 +252,7 @@ void address_keeper_prefs_init(void)
 	static gchar *path[3];
 	gchar *rcpath;
 	gchar *tmp;
-	
+
 	path[0] = _("Plugins");
 	path[1] = _("Address Keeper");
 	path[2] = NULL;
@@ -290,10 +273,14 @@ void address_keeper_prefs_init(void)
 	addkeeperprefs_page.page.save_page = addkeeper_prefs_save_func;
 	addkeeperprefs_page.page.weight = 40.0;
 
-	prefs_gtk_register_page((PrefsPage *) &addkeeperprefs_page);
+	prefs_gtk_register_page((PrefsPage *)&addkeeperprefs_page);
 }
 
 void address_keeper_prefs_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) &addkeeperprefs_page);
+	prefs_gtk_unregister_page((PrefsPage *)&addkeeperprefs_page);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

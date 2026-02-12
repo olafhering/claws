@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #include "defs.h"
@@ -48,24 +48,24 @@ static gulong mail_receive_hook_id = HOOK_NONE;
 static FetchinfoConfig config;
 
 static PrefParam param[] = {
-	{"fetchinfo_enable",  "FALSE", &config.fetchinfo_enable, P_BOOL, NULL, NULL, NULL},
-	{"fetchinfo_uidl",    "TRUE", &config.fetchinfo_uidl, P_BOOL, NULL, NULL, NULL},
+	{"fetchinfo_enable", "FALSE", &config.fetchinfo_enable, P_BOOL, NULL, NULL, NULL},
+	{"fetchinfo_uidl", "TRUE", &config.fetchinfo_uidl, P_BOOL, NULL, NULL, NULL},
 	{"fetchinfo_account", "TRUE", &config.fetchinfo_account, P_BOOL, NULL, NULL, NULL},
-	{"fetchinfo_server",  "TRUE", &config.fetchinfo_server, P_BOOL,	NULL, NULL, NULL},
-	{"fetchinfo_userid",  "TRUE", &config.fetchinfo_userid, P_BOOL,	NULL, NULL, NULL},
-	{"fetchinfo_time",    "TRUE", &config.fetchinfo_time, P_BOOL, NULL, NULL, NULL},
+	{"fetchinfo_server", "TRUE", &config.fetchinfo_server, P_BOOL, NULL, NULL, NULL},
+	{"fetchinfo_userid", "TRUE", &config.fetchinfo_userid, P_BOOL, NULL, NULL, NULL},
+	{"fetchinfo_time", "TRUE", &config.fetchinfo_time, P_BOOL, NULL, NULL, NULL},
 
 	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
 };
 
-gchar *fetchinfo_add_header(gchar **data, const gchar *header,const gchar *value)
+gchar *fetchinfo_add_header(gchar **data, const gchar *header, const gchar *value)
 {
 	gchar *line;
 	gchar *qpline;
 	gchar *newdata;
 
 	line = g_strdup_printf("%s: %s", header, value);
-	qpline = g_malloc(strlen(line)*4);
+	qpline = g_malloc(strlen(line) * 4);
 	qp_encode_line(qpline, line);
 	newdata = g_strconcat(*data, qpline, NULL);
 	g_free(line);
@@ -82,36 +82,27 @@ static gboolean mail_receive_hook(gpointer source, gpointer data)
 	gchar *newheaders;
 	gchar *newdata;
 	gchar date[RFC822_DATE_BUFFSIZE];
-	
+
 	if (!config.fetchinfo_enable) {
 		return FALSE;
 	}
 
-	g_return_val_if_fail( 
-			      mail_receive_data
-			      && mail_receive_data->session
-			      && mail_receive_data->data,
-			      FALSE );
+	g_return_val_if_fail(mail_receive_data && mail_receive_data->session && mail_receive_data->data, FALSE);
 
 	session = mail_receive_data->session;
 	get_rfc822_date(date, sizeof(date));
 	newheaders = g_strdup("");
 
 	if (config.fetchinfo_uidl)
-		fetchinfo_add_header(&newheaders, "X-FETCH-UIDL", 
-			session->msg[session->cur_msg].uidl);
+		fetchinfo_add_header(&newheaders, "X-FETCH-UIDL", session->msg[session->cur_msg].uidl);
 	if (config.fetchinfo_account)
-		fetchinfo_add_header(&newheaders, "X-FETCH-ACCOUNT", 
-			session->ac_prefs->account_name);
+		fetchinfo_add_header(&newheaders, "X-FETCH-ACCOUNT", session->ac_prefs->account_name);
 	if (config.fetchinfo_server)
-		fetchinfo_add_header(&newheaders, "X-FETCH-SERVER", 
-			session->ac_prefs->recv_server);
+		fetchinfo_add_header(&newheaders, "X-FETCH-SERVER", session->ac_prefs->recv_server);
 	if (config.fetchinfo_userid)
-		fetchinfo_add_header(&newheaders, "X-FETCH-USERID", 
-			session->ac_prefs->userid);
+		fetchinfo_add_header(&newheaders, "X-FETCH-USERID", session->ac_prefs->userid);
 	if (config.fetchinfo_time)
-		fetchinfo_add_header(&newheaders, "X-FETCH-TIME", 
-			date);
+		fetchinfo_add_header(&newheaders, "X-FETCH-TIME", date);
 
 	newdata = g_strconcat(newheaders, mail_receive_data->data, NULL);
 	g_free(newheaders);
@@ -145,19 +136,18 @@ void fetchinfo_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
 gint plugin_init(gchar **error)
 {
 	gchar *rcpath;
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, _("Fetchinfo"), error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, _("Fetchinfo"), error))
 		return -1;
 
 	mail_receive_hook_id = hooks_register_hook(MAIL_RECEIVE_HOOKLIST, mail_receive_hook, NULL);
@@ -199,12 +189,7 @@ const gchar *plugin_desc(void)
 	 * Translation of "Plugins" part of preferences path should to be
 	 * the same as translation of "Plugins" string in Claws Mail message
 	 * catalog. */
-	return _("This plugin modifies the downloaded messages. "
-	         "It inserts headers containing some download "
-		 "information: UIDL, Claws Mail account name, "
-		 "POP server, user ID and retrieval time.\n"
-	     "\n"
-	     "Options can be found in /Configuration/Preferences/Plugins/Fetchinfo");
+	return _("This plugin modifies the downloaded messages. " "It inserts headers containing some download " "information: UIDL, Claws Mail account name, " "POP server, user ID and retrieval time.\n" "\n" "Options can be found in /Configuration/Preferences/Plugins/Fetchinfo");
 }
 
 const gchar *plugin_type(void)
@@ -214,7 +199,7 @@ const gchar *plugin_type(void)
 
 const gchar *plugin_licence(void)
 {
-		return "GPL3+";
+	return "GPL3+";
 }
 
 const gchar *plugin_version(void)
@@ -224,9 +209,14 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		/* TRANSLATORS: Description of functionality added by this plugin */
-		{ {PLUGIN_UTILITY, N_("Mail marking")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] =
+	    /* TRANSLATORS: Description of functionality added by this plugin */
+	{ {PLUGIN_UTILITY, N_("Mail marking")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -54,10 +54,10 @@ gboolean privacy_peek_error(void)
 	return (privacy_last_error != NULL);
 }
 
-const gchar *privacy_get_error (void)
+const gchar *privacy_get_error(void)
 {
 	if (privacy_last_error) {
-		strncpy2(tmp_privacy_error, privacy_last_error, BUFSIZ-1);
+		strncpy2(tmp_privacy_error, privacy_last_error, BUFSIZ - 1);
 		privacy_reset_error();
 		return tmp_privacy_error;
 	} else {
@@ -73,6 +73,7 @@ static PrivacySystem *privacy_data_get_system(PrivacyData *data)
 	else
 		return NULL;
 }
+
 /**
  * Register a new Privacy System
  *
@@ -102,7 +103,7 @@ void privacy_unregister_system(PrivacySystem *system)
 void privacy_free_privacydata(PrivacyData *privacydata)
 {
 	PrivacySystem *system = NULL;
-	
+
 	cm_return_if_fail(privacydata != NULL);
 
 	system = privacy_data_get_system(privacydata);
@@ -122,7 +123,7 @@ void privacy_free_signature_data(SignatureData *sig_data)
 
 void privacy_free_sig_check_task_result(gpointer data)
 {
-	SigCheckTaskResult *result = (SigCheckTaskResult *)data;
+	SigCheckTaskResult *result = (SigCheckTaskResult *) data;
 
 	privacy_free_signature_data(result->sig_data);
 	if (result->newinfo)
@@ -145,8 +146,7 @@ gboolean privacy_mimeinfo_is_signed(MimeInfo *mimeinfo)
 	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
 	if (mimeinfo->privacy != NULL) {
-		PrivacySystem *system = 
-			privacy_data_get_system(mimeinfo->privacy);
+		PrivacySystem *system = privacy_data_get_system(mimeinfo->privacy);
 
 		if (system == NULL) {
 			mimeinfo->privacy = NULL;
@@ -158,11 +158,11 @@ gboolean privacy_mimeinfo_is_signed(MimeInfo *mimeinfo)
 		else
 			return FALSE;
 	}
-try_others:
-	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
+ try_others:
+	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_signed != NULL && system->is_signed(mimeinfo))
+		if (system->is_signed != NULL && system->is_signed(mimeinfo))
 			return TRUE;
 	}
 
@@ -179,7 +179,7 @@ static void msginfo_set_signed_flag(GNode *node, gpointer data)
 	struct SignedState *sstate = (struct SignedState *)data;
 	MsgInfo *msginfo = sstate->msginfo;
 	MimeInfo *mimeinfo = node->data;
-	
+
 	if (privacy_mimeinfo_is_signed(mimeinfo)) {
 		procmsg_msginfo_set_flags(msginfo, 0, MSG_SIGNED);
 		if (sstate->system && !*(sstate->system) && mimeinfo->privacy)
@@ -214,10 +214,7 @@ void privacy_msginfo_get_signed_state(MsgInfo *msginfo, gchar **system)
  * \return Error code indicating the result of the check,
  *         < 0 if an error occurred
  */
-gint privacy_mimeinfo_check_signature(MimeInfo *mimeinfo,
-	GCancellable *cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data)
+gint privacy_mimeinfo_check_signature(MimeInfo *mimeinfo, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data)
 {
 	PrivacySystem *system;
 
@@ -298,10 +295,10 @@ gboolean privacy_mimeinfo_is_encrypted(MimeInfo *mimeinfo)
 	GSList *cur;
 	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 
-	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
+	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
+		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return TRUE;
 	}
 
@@ -312,16 +309,16 @@ static gint decrypt(MimeInfo *mimeinfo, PrivacySystem *system)
 {
 	MimeInfo *decryptedinfo, *parentinfo;
 	gint childnumber;
-	
+
 	cm_return_val_if_fail(system->decrypt != NULL, -1);
-	
+
 	decryptedinfo = system->decrypt(mimeinfo);
 	if (decryptedinfo == NULL)
 		return -1;
 
 	parentinfo = procmime_mimeinfo_parent(mimeinfo);
 	childnumber = g_node_child_index(parentinfo->node, mimeinfo);
-	
+
 	procmime_mimeinfo_free_all(&mimeinfo);
 
 	g_node_insert(parentinfo->node, childnumber, decryptedinfo->node);
@@ -336,10 +333,10 @@ gint privacy_mimeinfo_decrypt(MimeInfo *mimeinfo)
 
 	procmime_decode_content(mimeinfo);
 
-	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
+	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
+		if (system->is_encrypted != NULL && system->is_encrypted(mimeinfo))
 			return decrypt(mimeinfo, system);
 	}
 
@@ -351,7 +348,7 @@ GSList *privacy_get_system_ids()
 	GSList *cur;
 	GSList *ret = NULL;
 
-	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
+	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
 		ret = g_slist_append(ret, g_strdup(system->id));
@@ -366,10 +363,10 @@ static PrivacySystem *privacy_get_system(const gchar *id)
 
 	cm_return_val_if_fail(id != NULL, NULL);
 
-	for(cur = systems; cur != NULL; cur = g_slist_next(cur)) {
+	for (cur = systems; cur != NULL; cur = g_slist_next(cur)) {
 		PrivacySystem *system = (PrivacySystem *) cur->data;
 
-		if(strcmp(id, system->id) == 0)
+		if (strcmp(id, system->id) == 0)
 			return system;
 	}
 
@@ -451,12 +448,12 @@ gchar *privacy_get_encrypt_data(const gchar *id, GSList *recp_names)
 		return NULL;
 
 	for (cur = recp_names; cur; cur = cur->next) {
-		if (!g_slist_find_custom(uniq_names, cur->data, (GCompareFunc)strcmp)) {
+		if (!g_slist_find_custom(uniq_names, cur->data, (GCompareFunc) strcmp)) {
 			uniq_names = g_slist_prepend(uniq_names, cur->data);
 		}
 	}
 	ret = system->get_encrypt_data(uniq_names);
-	
+
 	g_slist_free(uniq_names);
 	return ret;
 }
@@ -537,3 +534,7 @@ gboolean privacy_auto_check_signatures(MimeInfo *mimeinfo)
 
 	return system->auto_check_signatures();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

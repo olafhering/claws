@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
+#include <sys/wait.h>
 #endif
 #include <signal.h>
 #include <unistd.h>
@@ -48,23 +48,19 @@ static int tag_max_id = 0;
 void tags_read_tags(void)
 {
 	gchar *file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			TAGS_RC, NULL);
+				  TAGS_RC, NULL);
 	gchar tmp[255];
 	gint id;
 	FILE *fp = claws_fopen(file, "rb");
-	
+
 	g_free(file);
 
 	if (tags_table == NULL)
-		tags_table = g_hash_table_new_full(
-				g_direct_hash, g_direct_equal,
-				NULL, g_free);
+		tags_table = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
 	if (tags_reverse_table == NULL)
-		tags_reverse_table = g_hash_table_new_full(
-				g_str_hash, g_str_equal,
-				g_free, NULL);
-		
-	if (!fp) 
+		tags_reverse_table = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+
+	if (!fp)
 		return;
 	if (fscanf(fp, "max_id %d\n", &tag_max_id) != 1) {
 		claws_fclose(fp);
@@ -72,39 +68,36 @@ void tags_read_tags(void)
 	}
 	while (claws_fgets(tmp, sizeof(tmp), fp) != NULL) {
 		gchar *sep = strchr(tmp, '\t');
-		gchar *tag_name = sep?(sep+1):NULL;
-		
+		gchar *tag_name = sep ? (sep + 1) : NULL;
+
 		if (!tag_name || !sep)
 			continue;
 		g_strstrip(tag_name);
 		*(sep) = '\0';
 		if (IS_NOT_RESERVED_TAG(tag_name)) {
 			id = atoi(tmp);
-			g_hash_table_insert(tags_table,
-					    GINT_TO_POINTER(id), g_strdup(tag_name));
-			g_hash_table_insert(tags_reverse_table,
-					    g_strdup(tag_name), GINT_TO_POINTER(id));
+			g_hash_table_insert(tags_table, GINT_TO_POINTER(id), g_strdup(tag_name));
+			g_hash_table_insert(tags_reverse_table, g_strdup(tag_name), GINT_TO_POINTER(id));
 		}
 	}
-	
+
 	claws_fclose(fp);
 }
 
-typedef struct _TagWriteData
-{
+typedef struct _TagWriteData {
 	FILE *fp;
 	gboolean error;
 } TagWriteData;
 
 static void tag_write(gpointer key, gpointer value, gpointer user_data)
 {
-	TagWriteData *data = (TagWriteData *)user_data;
+	TagWriteData *data = (TagWriteData *) user_data;
 	const gchar *str = value;
 	gint id = GPOINTER_TO_INT(key);
 
 	if (data->error)
 		return;
-		
+
 	if (fprintf(data->fp, "%d\t%s\n", id, str) <= 0) {
 		FILE_OP_ERROR("tagsrc", "fprintf");
 		data->error = TRUE;
@@ -114,20 +107,20 @@ static void tag_write(gpointer key, gpointer value, gpointer user_data)
 void tags_write_tags(void)
 {
 	gchar *file = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			TAGS_RC, ".tmp", NULL);
+				  TAGS_RC, ".tmp", NULL);
 	gchar *file_new = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			TAGS_RC, NULL);
+				      TAGS_RC, NULL);
 	TagWriteData data;
 
 	FILE *fp = claws_fopen(file, "wb");
-			
+
 	if (!fp) {
 		FILE_OP_ERROR(file, "claws_fopen");
 		g_free(file);
 		g_free(file_new);
 		return;
 	}
-	
+
 	data.fp = fp;
 	data.error = FALSE;
 
@@ -144,7 +137,7 @@ void tags_write_tags(void)
 		g_free(file_new);
 		return;
 	}
-	
+
 	if (claws_safe_fclose(fp) == EOF) {
 		FILE_OP_ERROR(file, "claws_fclose");
 		g_free(file);
@@ -170,10 +163,8 @@ gint tags_add_tag(const gchar *tag)
 
 	if (IS_NOT_RESERVED_TAG(tag)) {
 		tag_max_id++;
-		g_hash_table_insert(tags_table, GINT_TO_POINTER(tag_max_id), 
-			g_strdup(tag));
-		g_hash_table_insert(tags_reverse_table, g_strdup(tag),
-			GINT_TO_POINTER(tag_max_id));
+		g_hash_table_insert(tags_table, GINT_TO_POINTER(tag_max_id), g_strdup(tag));
+		g_hash_table_insert(tags_reverse_table, g_strdup(tag), GINT_TO_POINTER(tag_max_id));
 
 		return tag_max_id;
 	} else {
@@ -204,17 +195,14 @@ void tags_update_tag(gint id, const gchar *tag)
 			g_hash_table_remove(tags_reverse_table, old_tag);
 		}
 
-		g_hash_table_replace(tags_table, GINT_TO_POINTER(id), 
-			g_strdup(tag));
-		g_hash_table_insert(tags_reverse_table, g_strdup(tag),
-			GINT_TO_POINTER(id));
+		g_hash_table_replace(tags_table, GINT_TO_POINTER(id), g_strdup(tag));
+		g_hash_table_insert(tags_reverse_table, g_strdup(tag), GINT_TO_POINTER(id));
 	}
 }
 
 const gchar *tags_get_tag(gint id)
 {
-	return (const gchar *)g_hash_table_lookup(tags_table,
-				GINT_TO_POINTER(id));
+	return (const gchar *)g_hash_table_lookup(tags_table, GINT_TO_POINTER(id));
 }
 
 gint tags_get_id_for_str(const gchar *str)
@@ -232,7 +220,7 @@ typedef struct _TagListData {
 
 static void tag_add_list(gpointer key, gpointer value, gpointer user_data)
 {
-	TagListData *data = (TagListData *)user_data;
+	TagListData *data = (TagListData *) user_data;
 
 	data->list = g_slist_prepend(data->list, GINT_TO_POINTER(key));
 }
@@ -245,7 +233,7 @@ GSList *tags_get_list(void)
 	g_hash_table_foreach(tags_table, tag_add_list, &data);
 
 	data.list = g_slist_reverse(data.list);
-	
+
 	return data.list;
 }
 
@@ -253,3 +241,7 @@ guint tags_get_size(void)
 {
 	return g_hash_table_size(tags_table);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

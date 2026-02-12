@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -38,8 +38,7 @@
 
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	prefs_gpg_init();
@@ -68,16 +67,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin handles PGP core operations and provides address "
-		 "autocompletion from the GPG keyring. It is used by other "
-		 "plugins, like PGP/Mime.\n"
-                 "\n"
-		 "Options can be found in /Configuration/Preferences/Plugins/GPG "
-		 "and /Configuration/[Account Preferences]/Plugins/GPG\n"
-		 "\n"
-		 "The plugin uses the GPGME library as a wrapper for GnuPG.\n"
-		 "\n"
-		 "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>");
+	return _("This plugin handles PGP core operations and provides address " "autocompletion from the GPG keyring. It is used by other " "plugins, like PGP/Mime.\n" "\n" "Options can be found in /Configuration/Preferences/Plugins/GPG " "and /Configuration/[Account Preferences]/Plugins/GPG\n" "\n" "The plugin uses the GPGME library as a wrapper for GnuPG.\n" "\n" "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>");
 }
 
 const gchar *plugin_type(void)
@@ -97,8 +87,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_PRIVACY, N_("Core operations")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_PRIVACY, N_("Core operations")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

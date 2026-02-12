@@ -29,23 +29,13 @@ typedef enum {
 	LOCK_FLOCK
 } LockType;
 
+gint proc_mbox(FolderItem *dest, const gchar *mbox, gboolean apply_filter, PrefsAccount *account);
+gint lock_mbox(const gchar *base, LockType type);
+gint unlock_mbox(const gchar *base, gint fd, LockType type);
+gint copy_mbox(gint srcfd, const gchar *dest);
+void empty_mbox(const gchar *mbox);
 
-gint proc_mbox		(FolderItem	*dest,
-			 const gchar	*mbox,
-			 gboolean	 apply_filter,
-			 PrefsAccount	*account);
-gint lock_mbox		(const gchar	*base,
-			 LockType	 type);
-gint unlock_mbox	(const gchar	*base,
-			 gint		 fd,
-			 LockType	 type);
-gint copy_mbox		(gint		 srcfd,
-			 const gchar	*dest);
-void empty_mbox		(const gchar	*mbox);
-
-gint export_to_mbox	(FolderItem	*src,
-			 const gchar	*mbox);
-gint export_list_to_mbox(GSList 	*mlist, 
-			 const gchar 	*mbox);
+gint export_to_mbox(FolderItem *src, const gchar *mbox);
+gint export_list_to_mbox(GSList *mlist, const gchar *mbox);
 
 #endif /* __MBOX_H__ */

@@ -26,8 +26,7 @@
 #include "procmsg.h"
 #include "viewtypes.h"
 
-struct _HeaderView
-{
+struct _HeaderView {
 	GtkWidget *hbox;
 
 	GtkWidget *from_header_label;
@@ -44,13 +43,11 @@ struct _HeaderView
 	GtkWidget *image;
 };
 
-HeaderView *headerview_create	(void);
-void headerview_init		(HeaderView	*headerview);
-void headerview_show		(HeaderView	*headerview,
-				 MsgInfo	*msginfo);
-void headerview_clear		(HeaderView	*headerview);
-void headerview_set_visibility	(HeaderView	*headerview,
-				 gboolean	 visibility);
-void headerview_destroy		(HeaderView	*headerview);
-void headerview_set_font	(HeaderView 	*headerview);
+HeaderView *headerview_create(void);
+void headerview_init(HeaderView *headerview);
+void headerview_show(HeaderView *headerview, MsgInfo *msginfo);
+void headerview_clear(HeaderView *headerview);
+void headerview_set_visibility(HeaderView *headerview, gboolean visibility);
+void headerview_destroy(HeaderView *headerview);
+void headerview_set_font(HeaderView *headerview);
 #endif /* __HEADERVIEW_H__ */

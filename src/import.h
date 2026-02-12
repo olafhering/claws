@@ -23,6 +23,6 @@
 
 #include "folder.h"
 
-gint import_mbox(FolderItem *default_dest, const gchar* mbox_file);
+gint import_mbox(FolderItem *default_dest, const gchar *mbox_file);
 
 #endif /* __IMPORT_H__ */

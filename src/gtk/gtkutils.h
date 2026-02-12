@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #if HAVE_WCHAR_H
-#  include <wchar.h>
+#include <wchar.h>
 #endif
 
 #include "gtkcmctree.h"
@@ -55,96 +55,57 @@
 #define GTKUT_COLOR_BUTTON() \
 	gtk_button_new_with_label("\x20\xE2\x80\x83\x20")
 
-gboolean gtkut_get_font_size		(GtkWidget	*widget,
-					 gint		*width,
-					 gint		*height);
+gboolean gtkut_get_font_size(GtkWidget *widget, gint *width, gint *height);
 
-void gtkut_convert_int_to_gdk_color	(gint		 rgbvalue,
-					 GdkColor	*color);
-gint gtkut_convert_gdk_color_to_int	(GdkColor 	*color);
+void gtkut_convert_int_to_gdk_color(gint rgbvalue, GdkColor *color);
+gint gtkut_convert_gdk_color_to_int(GdkColor *color);
 
 void gtkut_stock_button_add_help(GtkWidget *bbox, GtkWidget **help_btn);
 
-void gtkut_stock_button_set_create_with_help(GtkWidget **bbox,
-		GtkWidget **help_button,
-		GtkWidget **button1, const gchar *label1,
-		GtkWidget **button2, const gchar *label2,
-		GtkWidget **button3, const gchar *label3);
+void gtkut_stock_button_set_create_with_help(GtkWidget **bbox, GtkWidget **help_button, GtkWidget **button1, const gchar *label1, GtkWidget **button2, const gchar *label2, GtkWidget **button3, const gchar *label3);
 
-void gtkut_stock_button_set_create	(GtkWidget	**bbox,
-					 GtkWidget	**button1,
-					 const gchar	 *label1,
-					 GtkWidget	**button2,
-					 const gchar	 *label2,
-					 GtkWidget	**button3,
-					 const gchar	 *label3);
+void gtkut_stock_button_set_create(GtkWidget **bbox, GtkWidget **button1, const gchar *label1, GtkWidget **button2, const gchar *label2, GtkWidget **button3, const gchar *label3);
 
-void gtkut_stock_with_text_button_set_create(GtkWidget **bbox,
-				   GtkWidget **button1, const gchar *label1, const gchar *text1,
-				   GtkWidget **button2, const gchar *label2, const gchar *text2,
-				   GtkWidget **button3, const gchar *label3, const gchar *text3);
+void gtkut_stock_with_text_button_set_create(GtkWidget **bbox, GtkWidget **button1, const gchar *label1, const gchar *text1, GtkWidget **button2, const gchar *label2, const gchar *text2, GtkWidget **button3, const gchar *label3, const gchar *text3);
 
-void gtkut_ctree_node_move_if_on_the_edge
-					(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node,
-					 gint		 _row);
-gint gtkut_ctree_get_nth_from_node	(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-GtkCMCTreeNode *gtkut_ctree_node_next	(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-GtkCMCTreeNode *gtkut_ctree_node_prev	(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-gboolean gtkut_ctree_node_is_selected	(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-GtkCMCTreeNode *gtkut_ctree_find_collapsed_parent
-					(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-void gtkut_ctree_expand_parent_all	(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
-gboolean gtkut_ctree_node_is_parent	(GtkCMCTreeNode 	*parent, 
-					 GtkCMCTreeNode 	*node);
-void gtkut_ctree_set_focus_row		(GtkCMCTree	*ctree,
-					 GtkCMCTreeNode	*node);
+void gtkut_ctree_node_move_if_on_the_edge(GtkCMCTree *ctree, GtkCMCTreeNode *node, gint _row);
+gint gtkut_ctree_get_nth_from_node(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+GtkCMCTreeNode *gtkut_ctree_node_next(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+GtkCMCTreeNode *gtkut_ctree_node_prev(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+gboolean gtkut_ctree_node_is_selected(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+GtkCMCTreeNode *gtkut_ctree_find_collapsed_parent(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+void gtkut_ctree_expand_parent_all(GtkCMCTree *ctree, GtkCMCTreeNode *node);
+gboolean gtkut_ctree_node_is_parent(GtkCMCTreeNode *parent, GtkCMCTreeNode *node);
+void gtkut_ctree_set_focus_row(GtkCMCTree *ctree, GtkCMCTreeNode *node);
 
-void gtkut_clist_set_focus_row		(GtkCMCList	*clist,
-					 gint		 row);
+void gtkut_clist_set_focus_row(GtkCMCList *clist, gint row);
 
-void gtkut_container_remove		(GtkContainer	*container,
-					 GtkWidget	*widget);
+void gtkut_container_remove(GtkContainer *container, GtkWidget *widget);
 
-gchar *gtkut_text_view_get_selection	(GtkTextView	*textview);
-void gtkut_text_view_set_position		(GtkTextView *text, gint pos);
-gboolean gtkut_text_view_search_string	(GtkTextView *text, const gchar *str,
-					gboolean case_sens);
-gboolean gtkut_text_view_search_string_backward	(GtkTextView *text, const gchar *str,
-					gboolean case_sens);
+gchar *gtkut_text_view_get_selection(GtkTextView *textview);
+void gtkut_text_view_set_position(GtkTextView *text, gint pos);
+gboolean gtkut_text_view_search_string(GtkTextView *text, const gchar *str, gboolean case_sens);
+gboolean gtkut_text_view_search_string_backward(GtkTextView *text, const gchar *str, gboolean case_sens);
 
 GtkWidget *label_window_create(const gchar *str);
 void label_window_destroy(GtkWidget *widget);
 
-void gtkut_window_popup			(GtkWidget	*window);
-GtkWidget *gtkut_window_new		(GtkWindowType	 type,
-					 const gchar	*class);
+void gtkut_window_popup(GtkWidget *window);
+GtkWidget *gtkut_window_new(GtkWindowType type, const gchar *class);
 
+void gtkut_widget_get_uposition(GtkWidget *widget, gint *px, gint *py);
+void gtkut_widget_draw_now(GtkWidget *widget);
+void gtkut_widget_init(void);
 
-void gtkut_widget_get_uposition		(GtkWidget	*widget,
-					 gint		*px,
-					 gint		*py);
-void gtkut_widget_draw_now		(GtkWidget	*widget);
-void gtkut_widget_init			(void);
+void gtkut_widget_set_app_icon(GtkWidget *widget);
+void gtkut_widget_set_composer_icon(GtkWidget *widget);
 
-void gtkut_widget_set_app_icon		(GtkWidget	*widget);
-void gtkut_widget_set_composer_icon	(GtkWidget	*widget);
+GtkWidget *gtkut_account_menu_new(GList *ac_list, GCallback callback, gpointer data);
 
-GtkWidget *gtkut_account_menu_new	(GList			*ac_list,
-				  	 GCallback	 	 callback,
-					 gpointer		 data);
-
-void gtkut_set_widget_bgcolor_rgb	(GtkWidget 	*widget,
-					 guint 		 rgbvalue);
+void gtkut_set_widget_bgcolor_rgb(GtkWidget *widget, guint rgbvalue);
 
 void gtkut_widget_set_small_font_size(GtkWidget *widget);
-GtkWidget *gtkut_get_focused_child	(GtkContainer 	*parent);
+GtkWidget *gtkut_get_focused_child(GtkContainer *parent);
 
 GtkWidget *gtkut_get_browse_file_btn(const gchar *label);
 GtkWidget *gtkut_get_browse_directory_btn(const gchar *label);
@@ -153,27 +114,17 @@ GtkWidget *gtkut_get_options_frame(GtkWidget *box, GtkWidget **frame, const gcha
 #if HAVE_LIBCOMPFACE
 GtkWidget *xface_get_from_header(const gchar *o_xface);
 #endif
-gboolean get_tag_range(GtkTextIter *iter,
-				       GtkTextTag *tag,
-				       GtkTextIter *start_iter,
-				       GtkTextIter *end_iter);
+gboolean get_tag_range(GtkTextIter *iter, GtkTextTag *tag, GtkTextIter *start_iter, GtkTextIter *end_iter);
 
 GtkWidget *face_get_from_header(const gchar *o_face);
 GtkWidget *gtkut_get_link_btn(GtkWidget *window, const gchar *url, const gchar *label);
 
 GtkWidget *gtkut_sc_combobox_create(GtkWidget *eventbox, gboolean focus_on_click);
-void gtkutils_scroll_one_line	(GtkWidget *widget, 
-				 GtkAdjustment *vadj, 
-				 gboolean up);
-gboolean gtkutils_scroll_page	(GtkWidget *widget, 
-				 GtkAdjustment *vadj, 
-				 gboolean up);
+void gtkutils_scroll_one_line(GtkWidget *widget, GtkAdjustment *vadj, gboolean up);
+gboolean gtkutils_scroll_page(GtkWidget *widget, GtkAdjustment *vadj, gboolean up);
 
-gboolean gtkut_tree_model_text_iter_prev(GtkTreeModel *model,
-				 GtkTreeIter *iter,
-				 const gchar* text);
-gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model,
-				 GtkTreeIter *iter);
+gboolean gtkut_tree_model_text_iter_prev(GtkTreeModel *model, GtkTreeIter *iter, const gchar *text);
+gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model, GtkTreeIter *iter);
 
 gint gtkut_list_view_get_selected_row(GtkWidget *list_view);
 gboolean gtkut_list_view_select_row(GtkWidget *list, gint row);
@@ -181,9 +132,7 @@ gboolean gtkut_list_view_select_row(GtkWidget *list, gint row);
 GtkUIManager *gtkut_create_ui_manager(void);
 GtkUIManager *gtkut_ui_manager(void);
 
-GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *pixbuf, gboolean inline_img,
-				     gboolean fit_img_height,
-				     int box_width, int box_height);
+GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *pixbuf, gboolean inline_img, gboolean fit_img_height, int box_width, int box_height);
 
 GtkWidget *gtkut_time_select_combo_new();
 void gtkut_time_select_select_by_time(GtkComboBox *combo, int hour, int minute);
@@ -192,12 +141,7 @@ gboolean gtkut_time_select_get_time(GtkComboBox *combo, int *hour, int *minute);
 void gtk_calendar_select_today(GtkCalendar *calendar);
 
 typedef void (*ClawsIOFunc)(gpointer data, gint source, GIOCondition condition);
-gint
-claws_input_add    (gint	      source,
-		    GIOCondition      condition,
-		    ClawsIOFunc       function,
-		    gpointer	      data,
-		    gboolean          is_sock);
+gint claws_input_add(gint source, GIOCondition condition, ClawsIOFunc function, gpointer data, gboolean is_sock);
 
 #define CLAWS_SET_TIP(widget,tip) { 						\
 	if (widget != NULL) {							\
@@ -242,9 +186,7 @@ gboolean auto_configure_service_sync(const gchar *service, const gchar *domain, 
  * _model, _selection and _iter parameters are optional, and if
  * not NULL, they will be set to point to corresponding GtkTreeModel,
  * GtkTreeSelection, and GtkTreeIter of the selected row. */
-gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view,
-		gint column, GtkTreeModel **_model, GtkTreeSelection **_selection,
-		GtkTreeIter *_iter);
+gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view, gint column, GtkTreeModel **_model, GtkTreeSelection **_selection, GtkTreeIter *_iter);
 
 #if GTK_CHECK_VERSION (3, 2, 0)
 #define GTK_TYPE_VBOX GTK_TYPE_BOX

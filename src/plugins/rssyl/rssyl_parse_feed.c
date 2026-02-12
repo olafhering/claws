@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -62,24 +62,24 @@ typedef struct _RSSylExpireItemsCtx RSSylExpireItemsCtx;
 
 static void expire_items_func(gpointer data, gpointer user_data)
 {
-	RSSylExpireItemsCtx *ctx = (RSSylExpireItemsCtx *)user_data;
+	RSSylExpireItemsCtx *ctx = (RSSylExpireItemsCtx *) user_data;
 	FeedItem *item = (FeedItem *)data;
 	gchar *id = NULL, *id2 = NULL;
 
-	if( (id = feed_item_get_id(item)) == NULL )
+	if ((id = feed_item_get_id(item)) == NULL)
 		id = feed_item_get_url(item);
 
-	if( id == NULL )
+	if (id == NULL)
 		return;
 
-	if( (id2 = feed_item_get_id(ctx->item)) == NULL )
+	if ((id2 = feed_item_get_id(ctx->item)) == NULL)
 		id2 = feed_item_get_url(ctx->item);
 
-	if( id2 == NULL )
+	if (id2 == NULL)
 		return;
 
 	/* Simply check ID, as we should have up-to-date items right now. */
-	if( !strcmp(id, id2) )
+	if (!strcmp(id, id2))
 		ctx->exists = TRUE;
 }
 
@@ -96,12 +96,12 @@ static void rssyl_expire_items(RFolderItem *ritem, Feed *feed)
 	g_return_if_fail(ritem->items != NULL);
 	g_return_if_fail(feed != NULL);
 
-	ctx = g_malloc( sizeof(RSSylExpireItemsCtx) );
+	ctx = g_malloc(sizeof(RSSylExpireItemsCtx));
 	ctx->expired_ids = NULL;
 
 	/* Check each locally stored item, if it is still in the upstream
 	 * feed - xnay it if not. */
-	for( i = ritem->items; i != NULL; i = i->next ) {
+	for (i = ritem->items; i != NULL; i = i->next) {
 		item = (FeedItem *)i->data;
 
 		/* Comments will be expired later, once we know which parent items
@@ -114,35 +114,31 @@ static void rssyl_expire_items(RFolderItem *ritem, Feed *feed)
 		ctx->item = item;
 		feed_foreach_item(feed, expire_items_func, ctx);
 
-		if( !ctx->exists ) {
+		if (!ctx->exists) {
 			/* No match, add item ids to the list and get rid of it. */
 			debug_print("RSSyl: expiring '%s'\n", feed_item_get_id(item));
-			ctx->expired_ids = g_slist_prepend(ctx->expired_ids,
-					g_strdup(feed_item_get_id(item)));
-			fctx = (RFeedCtx *)item->data;
+			ctx->expired_ids = g_slist_prepend(ctx->expired_ids, g_strdup(feed_item_get_id(item)));
+			fctx = (RFeedCtx *) item->data;
 			if (g_remove(fctx->path) != 0) {
-				debug_print("RSSyl: couldn't delete expiring item file '%s'\n",
-						fctx->path);
+				debug_print("RSSyl: couldn't delete expiring item file '%s'\n", fctx->path);
 			}
 		}
 	}
 
 	/* Now do one more pass over folder contents, and expire comments
 	 * whose parents are gone. */
-	for( i = ritem->items; i != NULL; i = i->next ) {
+	for (i = ritem->items; i != NULL; i = i->next) {
 		item = (FeedItem *)i->data;
 
 		/* Handle comments expiration. */
 		if (feed_item_get_parent_id(item) != NULL) {
 			/* If its parent's id is on list of expired ids, this comment
 			 * can go as well. */
-			if (g_slist_find_custom(ctx->expired_ids,
-					feed_item_get_parent_id(item), (GCompareFunc)g_strcmp0)) {
+			if (g_slist_find_custom(ctx->expired_ids, feed_item_get_parent_id(item), (GCompareFunc) g_strcmp0)) {
 				debug_print("RSSyl: expiring comment '%s'\n", feed_item_get_id(item));
-				fctx = (RFeedCtx *)item->data;
+				fctx = (RFeedCtx *) item->data;
 				if (g_remove(fctx->path) != 0) {
-					debug_print("RSSyl: couldn't delete expiring comment file '%s'\n",
-							fctx->path);
+					debug_print("RSSyl: couldn't delete expiring comment file '%s'\n", fctx->path);
 				}
 			}
 		}
@@ -174,9 +170,7 @@ gboolean rssyl_parse_feed(RFolderItem *ritem, Feed *feed)
 	/* If the upstream feed changed its title, change name of our folder
 	 * accordingly even if user has renamed it before. This makes sure that
 	 * user will be aware of the upstream title change. */
-	if( !ritem->ignore_title_rename &&
-			(ritem->official_title == NULL ||
-			strcmp(feed->title, ritem->official_title)) ) {
+	if (!ritem->ignore_title_rename && (ritem->official_title == NULL || strcmp(feed->title, ritem->official_title))) {
 		g_free(ritem->official_title);
 		ritem->official_title = g_strdup(feed->title);
 
@@ -189,7 +183,7 @@ gboolean rssyl_parse_feed(RFolderItem *ritem, Feed *feed)
 			debug_print("RSSyl: couldn't rename, trying '%s'\n", tmp2);
 		}
 		/* TODO: handle case when i reaches 20 */
-	
+
 		g_free(tmp);
 		g_free(tmp2);
 
@@ -202,7 +196,7 @@ gboolean rssyl_parse_feed(RFolderItem *ritem, Feed *feed)
 	/* Read contents of folder, so we can check for duplicates/updates */
 	rssyl_folder_read_existing(ritem);
 
-	if( claws_is_exiting() ) {
+	if (claws_is_exiting()) {
 		debug_print("RSSyl: Claws Mail is exiting, bailing out\n");
 		log_print(LOG_PROTOCOL, RSSYL_LOG_ABORTED_EXITING, ritem->url);
 		folder_item_update_thaw();
@@ -211,10 +205,10 @@ gboolean rssyl_parse_feed(RFolderItem *ritem, Feed *feed)
 
 	/* Parse each item in the feed, adding or updating existing items if
 	 * necessary */
-	if( feed_n_items(feed) > 0 )
+	if (feed_n_items(feed) > 0)
 		feed_foreach_item(feed, rssyl_foreach_parse_func, (gpointer)ritem);
 
-	if( !ritem->keep_old && !ritem->fetching_comments ) {
+	if (!ritem->keep_old && !ritem->fetching_comments) {
 		rssyl_folder_read_existing(ritem);
 		rssyl_expire_items(ritem, feed);
 	}
@@ -222,8 +216,12 @@ gboolean rssyl_parse_feed(RFolderItem *ritem, Feed *feed)
 	folder_item_scan(&ritem->item);
 	folder_item_update_thaw();
 
-	if( !ritem->fetching_comments )
+	if (!ritem->fetching_comments)
 		log_print(LOG_PROTOCOL, RSSYL_LOG_UPDATED, ritem->url);
 
 	return TRUE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -92,8 +92,7 @@ gint qp_decode_line(gchar *str)
 
 	while (*inp != '\0') {
 		if (*inp == '=') {
-			if (inp[1] && inp[2] &&
-			    get_hex_value((guchar *)outp, inp[1], inp[2])
+			if (inp[1] && inp[2] && get_hex_value((guchar *)outp, inp[1], inp[2])
 			    == TRUE) {
 				inp += 3;
 			} else if (inp[1] == '\0' || g_ascii_isspace(inp[1])) {
@@ -121,8 +120,7 @@ gint qp_decode_const(gchar *out, gint avail, const gchar *str)
 
 	while (*inp != '\0' && avail > 0) {
 		if (*inp == '=') {
-			if (inp[1] && inp[2] &&
-			    get_hex_value((guchar *)outp, inp[1], inp[2])
+			if (inp[1] && inp[2] && get_hex_value((guchar *)outp, inp[1], inp[2])
 			    == TRUE) {
 				inp += 3;
 			} else if (inp[1] == '\0' || g_ascii_isspace(inp[1])) {
@@ -181,8 +179,7 @@ gint qp_get_q_encoding_len(const guchar *str)
 	while (*inp != '\0') {
 		if (*inp == 0x20)
 			len++;
-		else if (*inp == '=' || *inp == '?' || *inp == '_' ||
-			 *inp < 32 || *inp > 127 || g_ascii_isspace(*inp))
+		else if (*inp == '=' || *inp == '?' || *inp == '_' || *inp < 32 || *inp > 127 || g_ascii_isspace(*inp))
 			len += 3;
 		else
 			len++;
@@ -201,8 +198,7 @@ void qp_q_encode(gchar *out, const guchar *in)
 	while (*inp != '\0') {
 		if (*inp == 0x20)
 			*outp++ = '_';
-		else if (*inp == '=' || *inp == '?' || *inp == '_' ||
-			 *inp < 32 || *inp > 127 || g_ascii_isspace(*inp)) {
+		else if (*inp == '=' || *inp == '?' || *inp == '_' || *inp < 32 || *inp > 127 || g_ascii_isspace(*inp)) {
 			*outp++ = '=';
 			get_hex_str(outp, *inp);
 			outp += 2;
@@ -214,3 +210,7 @@ void qp_q_encode(gchar *out, const guchar *in)
 
 	*outp = '\0';
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

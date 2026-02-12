@@ -22,8 +22,7 @@
 
 #define PREFS_RECV_AUTOCHECK_MIN_INTERVAL 10
 
+void prefs_receive_init(void);
+void prefs_receive_done(void);
 
-void prefs_receive_init	(void);
-void prefs_receive_done	(void);
-
-#endif /* PREFS_RECEIVE_H */ 
+#endif /* PREFS_RECEIVE_H */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -45,8 +45,7 @@
 
 #include "manage_window.h"
 
-typedef struct _SummariesPage
-{
+typedef struct _SummariesPage {
 	PrefsPage page;
 
 	GtkWidget *window;
@@ -75,8 +74,8 @@ typedef struct _SummariesPage
 	GtkWidget *checkbtn_ask_mark_all_read;
 	GtkWidget *checkbtn_run_processingrules_mark_all_read;
 	GtkWidget *checkbtn_ask_override_colorlabel;
-  	GtkWidget *optmenu_sort_key;
-  	GtkWidget *optmenu_sort_type;
+	GtkWidget *optmenu_sort_key;
+	GtkWidget *optmenu_sort_type;
 	GtkWidget *optmenu_summaryfromshow;
 	GtkWidget *optmenu_nextunreadmsgdialog;
 	GtkWidget *checkbtn_folder_default_thread;
@@ -94,26 +93,14 @@ enum {
 	N_DATEFMT_COLUMNS
 };
 
-static void date_format_ok_btn_clicked		(GtkButton	*button,
-						 GtkWidget     **widget);
-static void date_format_cancel_btn_clicked	(GtkButton	*button,
-						 GtkWidget     **widget);
-static gboolean date_format_key_pressed		(GtkWidget	*keywidget,
-						 GdkEventKey	*event,
-						 GtkWidget     **widget);
-static gboolean date_format_on_delete		(GtkWidget	*dialogwidget,
-						 GdkEventAny	*event,
-						 GtkWidget     **widget);
-static void date_format_entry_on_change		(GtkEditable	*editable,
-						 GtkLabel	*example);
-static void date_format_select_row	        (GtkTreeView *list_view,
-						 GtkTreePath *path,
-						 GtkTreeViewColumn *column,
-						 GtkWidget *date_format);
-static void mark_as_read_toggled		(GtkToggleButton *button,
-						 GtkWidget *spinbtn);
-static void always_show_msg_toggled		(GtkToggleButton *button,
-						 gpointer user_data);
+static void date_format_ok_btn_clicked(GtkButton *button, GtkWidget **widget);
+static void date_format_cancel_btn_clicked(GtkButton *button, GtkWidget **widget);
+static gboolean date_format_key_pressed(GtkWidget *keywidget, GdkEventKey *event, GtkWidget **widget);
+static gboolean date_format_on_delete(GtkWidget *dialogwidget, GdkEventAny *event, GtkWidget **widget);
+static void date_format_entry_on_change(GtkEditable *editable, GtkLabel *example);
+static void date_format_select_row(GtkTreeView *list_view, GtkTreePath *path, GtkTreeViewColumn *column, GtkWidget *date_format);
+static void mark_as_read_toggled(GtkToggleButton *button, GtkWidget *spinbtn);
+static void always_show_msg_toggled(GtkToggleButton *button, gpointer user_data);
 
 static void reopen_last_folder_toggled(GtkToggleButton *toggle_btn, GtkWidget *widget)
 {
@@ -137,11 +124,11 @@ static void startup_folder_toggled(GtkToggleButton *toggle_btn, GtkWidget *widge
 
 static void foldersel_cb(GtkWidget *widget, gpointer data)
 {
-	GtkWidget *entry = (GtkWidget *) data;
+	GtkWidget *entry = (GtkWidget *)data;
 	FolderItem *item;
 	gchar *item_id;
 	gint newpos = 0;
-	
+
 	item = foldersel_folder_sel(NULL, FOLDER_SEL_ALL, NULL, FALSE, NULL);
 	if (item && (item_id = folder_item_get_identifier(item)) != NULL) {
 		gtk_editable_delete_text(GTK_EDITABLE(entry), 0, -1);
@@ -171,45 +158,44 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 		gchar *fmt;
 		gchar *txt;
 	} time_format[] = {
-		{ "%a", NULL },
-		{ "%A", NULL },
-		{ "%b", NULL },
-		{ "%B", NULL },
-		{ "%c", NULL },
-		{ "%C", NULL },
-		{ "%d", NULL },
-		{ "%H", NULL },
-		{ "%I", NULL },
-		{ "%j", NULL },
-		{ "%m", NULL },
-		{ "%M", NULL },
-		{ "%p", NULL },
-		{ "%S", NULL },
-		{ "%w", NULL },
-		{ "%x", NULL },
-		{ "%y", NULL },
-		{ "%Y", NULL },
-		{ "%Z", NULL }
+		{"%a", NULL},
+		{"%A", NULL},
+		{"%b", NULL},
+		{"%B", NULL},
+		{"%c", NULL},
+		{"%C", NULL},
+		{"%d", NULL},
+		{"%H", NULL},
+		{"%I", NULL},
+		{"%j", NULL},
+		{"%m", NULL},
+		{"%M", NULL},
+		{"%p", NULL},
+		{"%S", NULL},
+		{"%w", NULL},
+		{"%x", NULL},
+		{"%y", NULL},
+		{"%Y", NULL},
+		{"%Z", NULL}
 	};
 
 	gint i;
-	const gint TIME_FORMAT_ELEMS =
-		sizeof time_format / sizeof time_format[0];
+	const gint TIME_FORMAT_ELEMS = sizeof time_format / sizeof time_format[0];
 
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *selection;
 
-	time_format[0].txt  = _("the abbreviated weekday name");
-	time_format[1].txt  = _("the full weekday name");
-	time_format[2].txt  = _("the abbreviated month name");
-	time_format[3].txt  = _("the full month name");
-	time_format[4].txt  = _("the preferred date and time for the current locale");
-	time_format[5].txt  = _("the century number (year/100)");
-	time_format[6].txt  = _("the day of the month as a decimal number");
-	time_format[7].txt  = _("the hour as a decimal number using a 24-hour clock");
-	time_format[8].txt  = _("the hour as a decimal number using a 12-hour clock");
-	time_format[9].txt  = _("the day of the year as a decimal number");
+	time_format[0].txt = _("the abbreviated weekday name");
+	time_format[1].txt = _("the full weekday name");
+	time_format[2].txt = _("the abbreviated month name");
+	time_format[3].txt = _("the full month name");
+	time_format[4].txt = _("the preferred date and time for the current locale");
+	time_format[5].txt = _("the century number (year/100)");
+	time_format[6].txt = _("the day of the month as a decimal number");
+	time_format[7].txt = _("the hour as a decimal number using a 24-hour clock");
+	time_format[8].txt = _("the hour as a decimal number using a 12-hour clock");
+	time_format[9].txt = _("the day of the year as a decimal number");
 	time_format[10].txt = _("the month as a decimal number");
 	time_format[11].txt = _("the minute as a decimal number");
 	time_format[12].txt = _("either AM or PM");
@@ -220,21 +206,16 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 	time_format[17].txt = _("the year as a decimal number");
 	time_format[18].txt = _("the time zone or name or abbreviation");
 
-	if (datefmt_win) return datefmt_win;
+	if (datefmt_win)
+		return datefmt_win;
 
-	store = gtk_list_store_new(N_DATEFMT_COLUMNS,
-				   G_TYPE_STRING,
-				   G_TYPE_STRING,
-				   -1);
+	store = gtk_list_store_new(N_DATEFMT_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, -1);
 
 	for (i = 0; i < TIME_FORMAT_ELEMS; i++) {
 		GtkTreeIter iter;
 
 		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter,
-				   DATEFMT_FMT, time_format[i].fmt,
-				   DATEFMT_TXT, time_format[i].txt,
-				   -1);
+		gtk_list_store_set(store, &iter, DATEFMT_FMT, time_format[i].fmt, DATEFMT_TXT, time_format[i].txt, -1);
 	}
 
 	datefmt_win = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "prefs_summaries");
@@ -249,39 +230,30 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 	gtk_container_add(GTK_CONTAINER(datefmt_win), vbox1);
 
 	scrolledwindow1 = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy
-		(GTK_SCROLLED_WINDOW(scrolledwindow1),
-		 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow1), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrolledwindow1);
 	gtk_box_pack_start(GTK_BOX(vbox1), scrolledwindow1, TRUE, TRUE, 0);
 
 	datefmt_list_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
 	g_object_unref(G_OBJECT(store));
-	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(datefmt_list_view),
-				     prefs_common.use_stripes_everywhere);
+	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(datefmt_list_view), prefs_common.use_stripes_everywhere);
 	gtk_widget_show(datefmt_list_view);
 	gtk_container_add(GTK_CONTAINER(scrolledwindow1), datefmt_list_view);
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-			(_("Specifier"), renderer, "text", DATEFMT_FMT,
-			 NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Specifier"), renderer, "text", DATEFMT_FMT, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(datefmt_list_view), column);
-	
+
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-			(_("Description"), renderer, "text", DATEFMT_TXT,
-			 NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Description"), renderer, "text", DATEFMT_TXT, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(datefmt_list_view), column);
-	
+
 	/* gtk_cmclist_set_column_width(GTK_CMCLIST(datefmt_clist), 0, 80); */
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(datefmt_list_view));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_BROWSE);
 
-	g_signal_connect(G_OBJECT(datefmt_list_view), "row_activated", 
-			 G_CALLBACK(date_format_select_row),
-			 datefmt_win);
-	
+	g_signal_connect(G_OBJECT(datefmt_list_view), "row_activated", G_CALLBACK(date_format_select_row), datefmt_win);
+
 	table = gtk_table_new(2, 2, FALSE);
 	gtk_widget_show(table);
 	gtk_box_pack_start(GTK_BOX(vbox1), table, FALSE, FALSE, 0);
@@ -290,38 +262,32 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 
 	label1 = gtk_label_new(_("Date format"));
 	gtk_widget_show(label1);
-	gtk_table_attach(GTK_TABLE(table), label1, 0, 1, 0, 1,
-			 GTK_FILL, 0, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), label1, 0, 1, 0, 1, GTK_FILL, 0, 0, 0);
 	gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment(GTK_MISC(label1), 0, 0.5);
 
 	datefmt_entry = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(datefmt_entry), 256);
 	gtk_widget_show(datefmt_entry);
-	gtk_table_attach(GTK_TABLE(table), datefmt_entry, 1, 2, 0, 1,
-			 (GTK_EXPAND | GTK_FILL), 0, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), datefmt_entry, 1, 2, 0, 1, (GTK_EXPAND | GTK_FILL), 0, 0, 0);
 
 	/* we need the "sample" entry box; add it as data so callbacks can
 	 * get the entry box */
-	g_object_set_data(G_OBJECT(datefmt_win), "datefmt_sample",
-			  datefmt_entry);
+	g_object_set_data(G_OBJECT(datefmt_win), "datefmt_sample", datefmt_entry);
 
 	label2 = gtk_label_new(_("Example"));
 	gtk_widget_show(label2);
-	gtk_table_attach(GTK_TABLE(table), label2, 0, 1, 1, 2,
-			 GTK_FILL, 0, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), label2, 0, 1, 1, 2, GTK_FILL, 0, 0, 0);
 	gtk_label_set_justify(GTK_LABEL(label2), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment(GTK_MISC(label2), 0, 0.5);
 
 	label3 = gtk_label_new("");
 	gtk_widget_show(label3);
-	gtk_table_attach(GTK_TABLE(table), label3, 1, 2, 1, 2,
-			 (GTK_EXPAND | GTK_FILL), 0, 0, 0);
+	gtk_table_attach(GTK_TABLE(table), label3, 1, 2, 1, 2, (GTK_EXPAND | GTK_FILL), 0, 0, 0);
 	gtk_label_set_justify(GTK_LABEL(label3), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment(GTK_MISC(label3), 0, 0.5);
 
-	gtkut_stock_button_set_create(&confirm_area, &cancel_btn, GTK_STOCK_CANCEL,
-				      &ok_btn, GTK_STOCK_OK, NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &cancel_btn, GTK_STOCK_CANCEL, &ok_btn, GTK_STOCK_OK, NULL, NULL);
 
 	gtk_box_pack_start(GTK_BOX(vbox1), confirm_area, FALSE, FALSE, 0);
 	gtk_widget_show(confirm_area);
@@ -329,24 +295,13 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 
 	/* set the current format */
 	gtk_entry_set_text(GTK_ENTRY(datefmt_entry), prefs_common.date_format);
-	date_format_entry_on_change(GTK_EDITABLE(datefmt_entry),
-				    GTK_LABEL(label3));
+	date_format_entry_on_change(GTK_EDITABLE(datefmt_entry), GTK_LABEL(label3));
 
-	g_signal_connect(G_OBJECT(ok_btn), "clicked",
-			 G_CALLBACK(date_format_ok_btn_clicked),
-			 &datefmt_win);
-	g_signal_connect(G_OBJECT(cancel_btn), "clicked",
-			 G_CALLBACK(date_format_cancel_btn_clicked),
-			 &datefmt_win);
-	g_signal_connect(G_OBJECT(datefmt_win), "key_press_event",
-			 G_CALLBACK(date_format_key_pressed),
-			 &datefmt_win);
-	g_signal_connect(G_OBJECT(datefmt_win), "delete_event",
-			 G_CALLBACK(date_format_on_delete),
-			 &datefmt_win);
-	g_signal_connect(G_OBJECT(datefmt_entry), "changed",
-			 G_CALLBACK(date_format_entry_on_change),
-			 label3);
+	g_signal_connect(G_OBJECT(ok_btn), "clicked", G_CALLBACK(date_format_ok_btn_clicked), &datefmt_win);
+	g_signal_connect(G_OBJECT(cancel_btn), "clicked", G_CALLBACK(date_format_cancel_btn_clicked), &datefmt_win);
+	g_signal_connect(G_OBJECT(datefmt_win), "key_press_event", G_CALLBACK(date_format_key_pressed), &datefmt_win);
+	g_signal_connect(G_OBJECT(datefmt_win), "delete_event", G_CALLBACK(date_format_on_delete), &datefmt_win);
+	g_signal_connect(G_OBJECT(datefmt_entry), "changed", G_CALLBACK(date_format_entry_on_change), label3);
 
 	gtk_widget_show(datefmt_win);
 	manage_window_set_transient(GTK_WINDOW(datefmt_win));
@@ -357,11 +312,10 @@ static GtkWidget *date_format_create(GtkButton *button, void *data)
 	return datefmt_win;
 }
 
-static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window, 
-			       	  gpointer data)
+static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
 	SummariesPage *prefs_summaries = (SummariesPage *) _page;
-	
+
 	GtkWidget *notebook;
 	GtkWidget *hbox0, *hbox1, *hbox2;
 	GtkWidget *vbox1, *vbox2, *vbox3, *vbox4;
@@ -396,8 +350,8 @@ static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window,
 	GtkWidget *label, *label_fill;
 	GtkListStore *menu;
 	GtkTreeIter iter;
- 	GtkWidget *optmenu_summaryfromshow;
- 	GtkWidget *optmenu_nextunreadmsgdialog;
+	GtkWidget *optmenu_summaryfromshow;
+	GtkWidget *optmenu_nextunreadmsgdialog;
 	GtkWidget *button_edit_actions;
 	GtkWidget *radio_mark_as_read_on_select;
 	GtkWidget *radio_mark_as_read_on_new_win;
@@ -413,56 +367,48 @@ static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window,
 	notebook = gtk_notebook_new();
 	gtk_widget_show(notebook);
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1,
-				 gtk_label_new(_("Folder list")));
-	
-	hbox0 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox0);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1, gtk_label_new(_("Folder list")));
+
+	hbox0 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox0);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox0, FALSE, TRUE, 0);
 
 	label = gtk_label_new(_("Displayed columns"));
 	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox0), label, FALSE, FALSE, 0);
 	button_dispitem = gtk_button_new_from_stock(GTK_STOCK_EDIT);
-	gtk_widget_show (button_dispitem);
-	gtk_box_pack_start (GTK_BOX (hbox0), button_dispitem, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT (button_dispitem), "clicked",
-			  G_CALLBACK (prefs_folder_column_open),
-			  NULL);
-
-	hbox0 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox0);
-	gtk_box_pack_start(GTK_BOX (vbox1), hbox0, FALSE, FALSE, 0);
-
-	label = gtk_label_new (_("Display message count next to folder name"));
-	gtk_widget_show (label);
-	gtk_box_pack_start(GTK_BOX(hbox0), label, FALSE, FALSE, 0);
-
-	optmenu_folder_unread = gtkut_sc_combobox_create(NULL, FALSE);
-	menu = GTK_LIST_STORE(gtk_combo_box_get_model(
-				GTK_COMBO_BOX(optmenu_folder_unread)));
-	gtk_widget_show (optmenu_folder_unread);
- 	
-	COMBOBOX_ADD (menu, _("No"), 0);
-	COMBOBOX_ADD (menu, _("Unread messages"), 1);
-	COMBOBOX_ADD (menu, _("Unread and Total messages"), 2);
-
-	gtk_box_pack_start(GTK_BOX(hbox0), optmenu_folder_unread, FALSE, FALSE, 0);
-
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_reopen_last_folder,
-		 _("Open last opened folder at start-up"));
+	gtk_widget_show(button_dispitem);
+	gtk_box_pack_start(GTK_BOX(hbox0), button_dispitem, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(button_dispitem), "clicked", G_CALLBACK(prefs_folder_column_open), NULL);
 
 	hbox0 = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox0);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox0, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON
-		(hbox0, checkbtn_startup_folder,
-		 _("Open selected folder at start-up"));
+	label = gtk_label_new(_("Display message count next to folder name"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(hbox0), label, FALSE, FALSE, 0);
+
+	optmenu_folder_unread = gtkut_sc_combobox_create(NULL, FALSE);
+	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(optmenu_folder_unread)));
+	gtk_widget_show(optmenu_folder_unread);
+
+	COMBOBOX_ADD(menu, _("No"), 0);
+	COMBOBOX_ADD(menu, _("Unread messages"), 1);
+	COMBOBOX_ADD(menu, _("Unread and Total messages"), 2);
+
+	gtk_box_pack_start(GTK_BOX(hbox0), optmenu_folder_unread, FALSE, FALSE, 0);
+
+	PACK_CHECK_BUTTON(vbox1, checkbtn_reopen_last_folder, _("Open last opened folder at start-up"));
+
+	hbox0 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox0);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox0, FALSE, FALSE, 0);
+
+	PACK_CHECK_BUTTON(hbox0, checkbtn_startup_folder, _("Open selected folder at start-up"));
 
 	startup_folder_entry = gtk_entry_new();
 	gtk_widget_show(startup_folder_entry);
@@ -472,223 +418,174 @@ static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window,
 	gtk_box_pack_start(GTK_BOX(hbox0), startup_folder_select, FALSE, FALSE, 0);
 
 	SET_TOGGLE_SENSITIVITY(checkbtn_startup_folder, startup_folder_entry)
-	SET_TOGGLE_SENSITIVITY(checkbtn_startup_folder, startup_folder_select)
+	    SET_TOGGLE_SENSITIVITY(checkbtn_startup_folder, startup_folder_select)
+	    g_signal_connect(G_OBJECT(checkbtn_reopen_last_folder), "toggled", G_CALLBACK(reopen_last_folder_toggled), checkbtn_startup_folder);
+	g_signal_connect(G_OBJECT(checkbtn_startup_folder), "toggled", G_CALLBACK(startup_folder_toggled), checkbtn_reopen_last_folder);
+	g_signal_connect(G_OBJECT(startup_folder_select), "clicked", G_CALLBACK(foldersel_cb), startup_folder_entry);
 
-	g_signal_connect(G_OBJECT(checkbtn_reopen_last_folder), "toggled",
-			 G_CALLBACK(reopen_last_folder_toggled), checkbtn_startup_folder);
-	g_signal_connect(G_OBJECT(checkbtn_startup_folder), "toggled",
-			 G_CALLBACK(startup_folder_toggled), checkbtn_reopen_last_folder);
-	g_signal_connect(G_OBJECT(startup_folder_select), "clicked",
-			 G_CALLBACK(foldersel_cb), startup_folder_entry);
+	PACK_CHECK_BUTTON(vbox1, checkbtn_run_processingrules_mark_all_read, _("Run processing rules before marking all messages in a folder as read or unread"));
 
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_run_processingrules_mark_all_read,
-		 _("Run processing rules before marking all messages in a folder as read or unread"));
+	hbox1 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-	hbox1 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start(GTK_BOX (vbox1), hbox1, FALSE, FALSE, 0);
+	label_ng_abbrev = gtk_label_new(_("Abbreviate newsgroup names longer than"));
+	gtk_widget_show(label_ng_abbrev);
+	gtk_box_pack_start(GTK_BOX(hbox1), label_ng_abbrev, FALSE, FALSE, 0);
 
-	label_ng_abbrev = gtk_label_new
-		(_("Abbreviate newsgroup names longer than"));
-	gtk_widget_show (label_ng_abbrev);
-	gtk_box_pack_start (GTK_BOX (hbox1), label_ng_abbrev, FALSE, FALSE, 0);
+	spinbtn_ng_abbrev_len_adj = GTK_ADJUSTMENT(gtk_adjustment_new(16, 0, 999, 1, 10, 0));
+	spinbtn_ng_abbrev_len = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_ng_abbrev_len_adj), 1, 0);
+	gtk_widget_show(spinbtn_ng_abbrev_len);
+	gtk_box_pack_start(GTK_BOX(hbox1), spinbtn_ng_abbrev_len, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_ng_abbrev_len), TRUE);
 
-	spinbtn_ng_abbrev_len_adj = GTK_ADJUSTMENT(gtk_adjustment_new (16, 0, 999, 1, 10, 0));
-	spinbtn_ng_abbrev_len = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_ng_abbrev_len_adj), 1, 0);
-	gtk_widget_show (spinbtn_ng_abbrev_len);
-	gtk_box_pack_start (GTK_BOX (hbox1), spinbtn_ng_abbrev_len,
-			    FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_ng_abbrev_len),
-				     TRUE);
+	label_ng_abbrev = gtk_label_new(_("letters"));
+	gtk_widget_show(label_ng_abbrev);
+	gtk_box_pack_start(GTK_BOX(hbox1), label_ng_abbrev, FALSE, FALSE, 0);
 
-	label_ng_abbrev = gtk_label_new (_("letters"));
-	gtk_widget_show (label_ng_abbrev);
-	gtk_box_pack_start (GTK_BOX (hbox1), label_ng_abbrev, FALSE, FALSE, 0);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1, gtk_label_new(_("Message list")));
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1,
-				 gtk_label_new(_("Message list")));
-
-	hbox0 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox0);
+	hbox0 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox0);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox0, FALSE, TRUE, 0);
-	
+
 	label = gtk_label_new(_("Displayed columns"));
 	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox0), label, FALSE, FALSE, 0);
 	button_dispitem = gtk_button_new_from_stock(GTK_STOCK_EDIT);
-	gtk_widget_show (button_dispitem);
-	gtk_box_pack_start (GTK_BOX (hbox0), button_dispitem, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT (button_dispitem), "clicked",
-			  G_CALLBACK (prefs_summary_column_open),
-			  NULL);
+	gtk_widget_show(button_dispitem);
+	gtk_box_pack_start(GTK_BOX(hbox0), button_dispitem, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(button_dispitem), "clicked", G_CALLBACK(prefs_summary_column_open), NULL);
 
 	PACK_SPACER(hbox0, hbox1, 4);
 	PACK_CHECK_BUTTON(hbox0, checkbtn_summary_col_lock, _("Lock column headers"));
 
-	hbox1 = gtk_hbox_new (FALSE, 10);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, FALSE, FALSE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 10);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-	label = gtk_label_new (_("Displayed in From column"));
-	gtk_widget_show (label);
+	label = gtk_label_new(_("Displayed in From column"));
+	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 0);
 
 	optmenu_summaryfromshow = gtkut_sc_combobox_create(NULL, FALSE);
-	menu = GTK_LIST_STORE(gtk_combo_box_get_model(
-				GTK_COMBO_BOX(optmenu_summaryfromshow)));
-	gtk_widget_show (optmenu_summaryfromshow);
+	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(optmenu_summaryfromshow)));
+	gtk_widget_show(optmenu_summaryfromshow);
 
-	COMBOBOX_ADD (menu, _("Name"), SHOW_NAME);
-	COMBOBOX_ADD (menu, _("Address"), SHOW_ADDR);
-	COMBOBOX_ADD (menu, _("Name and Address"), SHOW_BOTH);
+	COMBOBOX_ADD(menu, _("Name"), SHOW_NAME);
+	COMBOBOX_ADD(menu, _("Address"), SHOW_ADDR);
+	COMBOBOX_ADD(menu, _("Name and Address"), SHOW_BOTH);
 
 	gtk_box_pack_start(GTK_BOX(hbox1), optmenu_summaryfromshow, FALSE, FALSE, 0);
-	hbox2 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox2, FALSE, TRUE, 0);
+	hbox2 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox2, FALSE, TRUE, 0);
 
-	label_datefmt = gtk_label_new (_("Date format"));
-	gtk_widget_show (label_datefmt);
-	gtk_box_pack_start (GTK_BOX (hbox2), label_datefmt, FALSE, FALSE, 0);
+	label_datefmt = gtk_label_new(_("Date format"));
+	gtk_widget_show(label_datefmt);
+	gtk_box_pack_start(GTK_BOX(hbox2), label_datefmt, FALSE, FALSE, 0);
 
-	entry_datefmt = gtk_entry_new ();
-	gtk_widget_show (entry_datefmt);
-	gtk_box_pack_start (GTK_BOX (hbox2), entry_datefmt, FALSE, FALSE, 0);
+	entry_datefmt = gtk_entry_new();
+	gtk_widget_show(entry_datefmt);
+	gtk_box_pack_start(GTK_BOX(hbox2), entry_datefmt, FALSE, FALSE, 0);
 
 	button_datefmt = gtk_button_new_from_stock(GTK_STOCK_INFO);
 
-	gtk_widget_show (button_datefmt);
-	gtk_box_pack_start (GTK_BOX (hbox2), button_datefmt, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT (button_datefmt), "clicked",
-			  G_CALLBACK (date_format_create), NULL);
+	gtk_widget_show(button_datefmt);
+	gtk_box_pack_start(GTK_BOX(hbox2), button_datefmt, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(button_datefmt), "clicked", G_CALLBACK(date_format_create), NULL);
 
 	label_fill = gtk_label_new(" ");
 	gtk_box_pack_start(GTK_BOX(hbox2), label_fill, TRUE, FALSE, 0);
 
-	CLAWS_SET_TIP(button_datefmt,
-			     _("Date format help"));
+	CLAWS_SET_TIP(button_datefmt, _("Date format help"));
 
-	hbox1 = gtk_hbox_new (FALSE, 10);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, FALSE, TRUE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 10);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, TRUE, 0);
 
 	button_edit_actions = gtk_button_new_with_label(_("Set message selection when entering a folder"));
-	gtk_widget_show (button_edit_actions);
-	gtk_box_pack_start (GTK_BOX (hbox1), button_edit_actions,
-			  FALSE, TRUE, 0);
-	g_signal_connect (G_OBJECT (button_edit_actions), "clicked",
-			  G_CALLBACK (prefs_summary_open_open),
-			  NULL);
+	gtk_widget_show(button_edit_actions);
+	gtk_box_pack_start(GTK_BOX(hbox1), button_edit_actions, FALSE, TRUE, 0);
+	g_signal_connect(G_OBJECT(button_edit_actions), "clicked", G_CALLBACK(prefs_summary_open_open), NULL);
 
 	/* Open message on select policy */
 	vbox4 = gtkut_get_options_frame(vbox1, NULL, _("Open message when selected"));
 
-	PACK_CHECK_BUTTON(vbox4, checkbtn_always_show_msg,
-			_("Always"));
-	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_folder_open,
-			_("When opening a folder"));
-	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_search_results,
-			_("When displaying search results"));
-	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_prevnext,
-			_("When selecting next or previous message using shortcuts"));
-	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_deletemove,
-			_("When deleting or moving messages"));
-	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_directional,
-			_("When using directional keys"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_always_show_msg, _("Always"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_folder_open, _("When opening a folder"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_search_results, _("When displaying search results"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_prevnext, _("When selecting next or previous message using shortcuts"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_deletemove, _("When deleting or moving messages"));
+	PACK_CHECK_BUTTON(vbox4, checkbtn_show_on_directional, _("When using directional keys"));
 
 	vbox3 = gtkut_get_options_frame(vbox1, NULL, _("Mark message as read"));
 
-	radio_mark_as_read_on_select = gtk_radio_button_new_with_label(NULL,
-			_("when selected, after"));
+	radio_mark_as_read_on_select = gtk_radio_button_new_with_label(NULL, _("when selected, after"));
 
-	hbox1 = gtk_hbox_new (FALSE, 8);
-	gtk_box_pack_start (GTK_BOX (hbox1), radio_mark_as_read_on_select, FALSE, FALSE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 8);
+	gtk_box_pack_start(GTK_BOX(hbox1), radio_mark_as_read_on_select, FALSE, FALSE, 0);
 
-	spinbtn_mark_as_read_delay_adj = GTK_ADJUSTMENT(gtk_adjustment_new (0, 0, 60, 1, 10, 0));
-	spinbtn_mark_as_read_delay = gtk_spin_button_new
-			(GTK_ADJUSTMENT (spinbtn_mark_as_read_delay_adj), 1, 0);
-	gtk_box_pack_start (GTK_BOX (hbox1), spinbtn_mark_as_read_delay,
-			    FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_mark_as_read_delay),
-				     TRUE);
-	gtk_box_pack_start (GTK_BOX (hbox1), gtk_label_new
-			(_("seconds")), FALSE, FALSE, 0);
+	spinbtn_mark_as_read_delay_adj = GTK_ADJUSTMENT(gtk_adjustment_new(0, 0, 60, 1, 10, 0));
+	spinbtn_mark_as_read_delay = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_mark_as_read_delay_adj), 1, 0);
+	gtk_box_pack_start(GTK_BOX(hbox1), spinbtn_mark_as_read_delay, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_mark_as_read_delay), TRUE);
+	gtk_box_pack_start(GTK_BOX(hbox1), gtk_label_new(_("seconds")), FALSE, FALSE, 0);
 
-	gtk_box_pack_start (GTK_BOX (vbox3), hbox1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox3), hbox1, FALSE, FALSE, 0);
 
-	radio_mark_as_read_on_new_win = gtk_radio_button_new_with_label_from_widget(
-			GTK_RADIO_BUTTON(radio_mark_as_read_on_select),
-			_("only when opened in a new window, or replied to"));
-	gtk_box_pack_start (GTK_BOX (vbox3), radio_mark_as_read_on_new_win,
-			FALSE, FALSE, 0);
+	radio_mark_as_read_on_new_win = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio_mark_as_read_on_select), _("only when opened in a new window, or replied to"));
+	gtk_box_pack_start(GTK_BOX(vbox3), radio_mark_as_read_on_new_win, FALSE, FALSE, 0);
 	gtk_widget_show_all(vbox3);
 
 	/* Next Unread Message Dialog */
-	hbox1 = gtk_hbox_new (FALSE, 10);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, FALSE, FALSE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 10);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, FALSE, 0);
 
-	label = gtk_label_new (_("Show \"no unread (or new) message\" dialog"));
-	gtk_widget_show (label);
+	label = gtk_label_new(_("Show \"no unread (or new) message\" dialog"));
+	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox1), label, FALSE, FALSE, 0);
-	
-	optmenu_nextunreadmsgdialog = gtkut_sc_combobox_create(NULL, FALSE);
-	menu = GTK_LIST_STORE(gtk_combo_box_get_model(
-				GTK_COMBO_BOX(optmenu_nextunreadmsgdialog)));
-	gtk_widget_show (optmenu_nextunreadmsgdialog);
 
-	COMBOBOX_ADD (menu, _("Always"), NEXTUNREADMSGDIALOG_ALWAYS);
-	COMBOBOX_ADD (menu, _("Assume 'Yes'"), NEXTUNREADMSGDIALOG_ASSUME_YES);
-	COMBOBOX_ADD (menu, _("Assume 'No'"), NEXTUNREADMSGDIALOG_ASSUME_NO);
+	optmenu_nextunreadmsgdialog = gtkut_sc_combobox_create(NULL, FALSE);
+	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(optmenu_nextunreadmsgdialog)));
+	gtk_widget_show(optmenu_nextunreadmsgdialog);
+
+	COMBOBOX_ADD(menu, _("Always"), NEXTUNREADMSGDIALOG_ALWAYS);
+	COMBOBOX_ADD(menu, _("Assume 'Yes'"), NEXTUNREADMSGDIALOG_ASSUME_YES);
+	COMBOBOX_ADD(menu, _("Assume 'No'"), NEXTUNREADMSGDIALOG_ASSUME_NO);
 
 	gtk_box_pack_start(GTK_BOX(hbox1), optmenu_nextunreadmsgdialog, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_useaddrbook,
-		 _("Display sender using address book"));
+	PACK_CHECK_BUTTON(vbox1, checkbtn_useaddrbook, _("Display sender using address book"));
 
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_threadsubj,
-		 _("Thread using subject in addition to standard headers"));
+	PACK_CHECK_BUTTON(vbox1, checkbtn_threadsubj, _("Thread using subject in addition to standard headers"));
 
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_immedexec,
-		 _("Execute immediately when moving or deleting messages"));
-	CLAWS_SET_TIP(checkbtn_immedexec,
-			     _("When unchecked moving, copying and deleting of messages"
-		   	       " is deferred until you use 'Tools/Execute'"));
+	PACK_CHECK_BUTTON(vbox1, checkbtn_immedexec, _("Execute immediately when moving or deleting messages"));
+	CLAWS_SET_TIP(checkbtn_immedexec, _("When unchecked moving, copying and deleting of messages" " is deferred until you use 'Tools/Execute'"));
 
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_ask_mark_all_read,
-		 _("Confirm when marking all messages as read or unread"));
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_ask_override_colorlabel,
-		 _("Confirm when changing color labels"));
-	
-	PACK_CHECK_BUTTON
-		(vbox1, checkbtn_show_tooltips,
-		 _("Show tooltips"));
+	PACK_CHECK_BUTTON(vbox1, checkbtn_ask_mark_all_read, _("Confirm when marking all messages as read or unread"));
+	PACK_CHECK_BUTTON(vbox1, checkbtn_ask_override_colorlabel, _("Confirm when changing color labels"));
 
-	hbox2 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox2, FALSE, FALSE, 0);
+	PACK_CHECK_BUTTON(vbox1, checkbtn_show_tooltips, _("Show tooltips"));
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1,
-				 gtk_label_new(_("Defaults")));
+	hbox2 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox2, FALSE, FALSE, 0);
+
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vbox1, gtk_label_new(_("Defaults")));
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame_new_folders, _("New folders"));
 
 	hbox1 = gtk_hbox_new(FALSE, 10);
 	gtk_widget_show(hbox1);
-	gtk_box_pack_start(GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox1, FALSE, FALSE, 0);
 
 	label = gtk_label_new(_("Sort by"));
 	gtk_widget_show(label);
@@ -725,21 +622,11 @@ static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window,
 
 	gtk_box_pack_start(GTK_BOX(hbox1), optmenu_sort_type, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON
-		(vbox2, checkbtn_folder_default_thread,
-		 _("Thread view"));
-	PACK_CHECK_BUTTON
-		(vbox2, checkbtn_folder_default_thread_collapsed,
-		 _("Collapse all threads"));
-	PACK_CHECK_BUTTON
-		(vbox2, checkbtn_folder_default_hide_read_threads,
-		 _("Hide read threads"));
-	PACK_CHECK_BUTTON
-		(vbox2, checkbtn_folder_default_hide_read_msgs,
-		 _("Hide read messages"));
-	PACK_CHECK_BUTTON
-		(vbox2, checkbtn_folder_default_hide_del_msgs,
-		 _("Hide deleted messages"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_folder_default_thread, _("Thread view"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_folder_default_thread_collapsed, _("Collapse all threads"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_folder_default_hide_read_threads, _("Hide read threads"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_folder_default_hide_read_msgs, _("Hide read messages"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_folder_default_hide_del_msgs, _("Hide deleted messages"));
 
 	prefs_summaries->optmenu_folder_unread = optmenu_folder_unread;
 	prefs_summaries->spinbtn_ng_abbrev_len = spinbtn_ng_abbrev_len;
@@ -777,86 +664,52 @@ static void prefs_summaries_create_widget(PrefsPage *_page, GtkWindow *window,
 	prefs_summaries->checkbtn_summary_col_lock = checkbtn_summary_col_lock;
 
 	prefs_summaries->page.widget = vbox1;
-	g_signal_connect(G_OBJECT(checkbtn_always_show_msg), "toggled",
-			G_CALLBACK(always_show_msg_toggled), prefs_summaries);
+	g_signal_connect(G_OBJECT(checkbtn_always_show_msg), "toggled", G_CALLBACK(always_show_msg_toggled), prefs_summaries);
 
-	g_signal_connect(G_OBJECT(radio_mark_as_read_on_select), "toggled",
-			 G_CALLBACK(mark_as_read_toggled),
-			 spinbtn_mark_as_read_delay);
+	g_signal_connect(G_OBJECT(radio_mark_as_read_on_select), "toggled", G_CALLBACK(mark_as_read_toggled), spinbtn_mark_as_read_delay);
 
-	prefs_summaries->window			= GTK_WIDGET(window);
-	
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_folder_unread),
-			prefs_common.display_folder_unread);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_useaddrbook),
-			prefs_common.use_addr_book);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_tooltips),
-			prefs_common.show_tooltips);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_threadsubj),
-			prefs_common.thread_by_subject);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_ng_abbrev_len),
-			prefs_common.ng_abbrev_len);
-	gtk_entry_set_text(GTK_ENTRY(entry_datefmt), 
-			prefs_common.date_format?prefs_common.date_format:"");	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_reopen_last_folder),
-			prefs_common.goto_last_folder_on_startup);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_startup_folder),
-			prefs_common.goto_folder_on_startup);
-	gtk_entry_set_text(GTK_ENTRY(startup_folder_entry),
-			   prefs_common.startup_folder?prefs_common.startup_folder:"");
+	prefs_summaries->window = GTK_WIDGET(window);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_always_show_msg),
-			prefs_common.always_show_msg);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_folder_open),
-			prefs_common.open_selected_on_folder_open);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_search_results),
-			prefs_common.open_selected_on_search_results);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_prevnext),
-			prefs_common.open_selected_on_prevnext);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_deletemove),
-			prefs_common.open_selected_on_deletemove);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_directional),
-			prefs_common.open_selected_on_directional);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_folder_unread), prefs_common.display_folder_unread);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_useaddrbook), prefs_common.use_addr_book);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_tooltips), prefs_common.show_tooltips);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_threadsubj), prefs_common.thread_by_subject);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_ng_abbrev_len), prefs_common.ng_abbrev_len);
+	gtk_entry_set_text(GTK_ENTRY(entry_datefmt), prefs_common.date_format ? prefs_common.date_format : "");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_reopen_last_folder), prefs_common.goto_last_folder_on_startup);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_startup_folder), prefs_common.goto_folder_on_startup);
+	gtk_entry_set_text(GTK_ENTRY(startup_folder_entry), prefs_common.startup_folder ? prefs_common.startup_folder : "");
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_mark_as_read_on_new_win),
-			prefs_common.mark_as_read_on_new_window);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_mark_as_read_delay),
-			prefs_common.mark_as_read_delay);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_immedexec),
-			prefs_common.immediate_exec);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_ask_mark_all_read),
-			prefs_common.ask_mark_all_read);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_run_processingrules_mark_all_read),
-			prefs_common.run_processingrules_before_mark_all);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_ask_override_colorlabel),
-			prefs_common.ask_override_colorlabel);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_always_show_msg), prefs_common.always_show_msg);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_folder_open), prefs_common.open_selected_on_folder_open);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_search_results), prefs_common.open_selected_on_search_results);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_prevnext), prefs_common.open_selected_on_prevnext);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_deletemove), prefs_common.open_selected_on_deletemove);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_show_on_directional), prefs_common.open_selected_on_directional);
 
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_sort_key),
-			prefs_common.default_sort_key);
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_sort_type),
-			prefs_common.default_sort_type);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_mark_as_read_on_new_win), prefs_common.mark_as_read_on_new_window);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_mark_as_read_delay), prefs_common.mark_as_read_delay);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_immedexec), prefs_common.immediate_exec);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_ask_mark_all_read), prefs_common.ask_mark_all_read);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_run_processingrules_mark_all_read), prefs_common.run_processingrules_before_mark_all);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_ask_override_colorlabel), prefs_common.ask_override_colorlabel);
 
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_summaryfromshow),
-			prefs_common.summary_from_show);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_sort_key), prefs_common.default_sort_key);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_sort_type), prefs_common.default_sort_type);
 
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_nextunreadmsgdialog),
-			prefs_common.next_unread_msg_dialog);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_summaryfromshow), prefs_common.summary_from_show);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_thread),
-			prefs_common.folder_default_thread);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_thread_collapsed),
-			prefs_common.folder_default_thread_collapsed);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_read_threads),
-			prefs_common.folder_default_hide_read_threads);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_read_msgs),
-			prefs_common.folder_default_hide_read_msgs);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_del_msgs),
-			prefs_common.folder_default_hide_del_msgs);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_summary_col_lock),
-			prefs_common.summary_col_lock);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_nextunreadmsgdialog), prefs_common.next_unread_msg_dialog);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_thread), prefs_common.folder_default_thread);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_thread_collapsed), prefs_common.folder_default_thread_collapsed);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_read_threads), prefs_common.folder_default_hide_read_threads);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_read_msgs), prefs_common.folder_default_hide_read_msgs);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_folder_default_hide_del_msgs), prefs_common.folder_default_hide_del_msgs);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_summary_col_lock), prefs_common.summary_col_lock);
 
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 0);
-		
+
 	prefs_summaries->page.widget = notebook;
 }
 
@@ -864,77 +717,45 @@ static void prefs_summaries_save(PrefsPage *_page)
 {
 	SummariesPage *page = (SummariesPage *) _page;
 
-	prefs_common.display_folder_unread = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_folder_unread));
+	prefs_common.display_folder_unread = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_folder_unread));
 
-	prefs_common.use_addr_book = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_useaddrbook));
-	prefs_common.show_tooltips = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_show_tooltips));
-	prefs_common.thread_by_subject = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_threadsubj));
-	prefs_common.ng_abbrev_len = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(page->spinbtn_ng_abbrev_len));
-	
-	g_free(prefs_common.date_format); 
-	prefs_common.date_format = gtk_editable_get_chars(
-			GTK_EDITABLE(page->entry_datefmt), 0, -1);	
+	prefs_common.use_addr_book = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_useaddrbook));
+	prefs_common.show_tooltips = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_tooltips));
+	prefs_common.thread_by_subject = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_threadsubj));
+	prefs_common.ng_abbrev_len = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_ng_abbrev_len));
 
-	prefs_common.goto_last_folder_on_startup = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_reopen_last_folder));
-	prefs_common.goto_folder_on_startup = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_startup_folder));
-	prefs_common.startup_folder = gtk_editable_get_chars(
-			GTK_EDITABLE(page->startup_folder_entry), 0, -1);
+	g_free(prefs_common.date_format);
+	prefs_common.date_format = gtk_editable_get_chars(GTK_EDITABLE(page->entry_datefmt), 0, -1);
 
-	prefs_common.always_show_msg = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_always_show_msg));
-	prefs_common.open_selected_on_folder_open = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_show_on_folder_open));
-	prefs_common.open_selected_on_search_results = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_show_on_search_results));
-	prefs_common.open_selected_on_prevnext = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_show_on_prevnext));
-	prefs_common.open_selected_on_deletemove = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_show_on_deletemove));
-	prefs_common.open_selected_on_directional = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_show_on_directional));
+	prefs_common.goto_last_folder_on_startup = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reopen_last_folder));
+	prefs_common.goto_folder_on_startup = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_startup_folder));
+	prefs_common.startup_folder = gtk_editable_get_chars(GTK_EDITABLE(page->startup_folder_entry), 0, -1);
 
-	prefs_common.mark_as_read_on_new_window = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_mark_as_read_on_newwin));
-	prefs_common.immediate_exec = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_immedexec));
-	prefs_common.ask_mark_all_read = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_ask_mark_all_read));
-	prefs_common.run_processingrules_before_mark_all = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_run_processingrules_mark_all_read));
-	prefs_common.ask_override_colorlabel = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_ask_override_colorlabel));
-	prefs_common.mark_as_read_delay = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(page->spinbtn_mark_as_read_delay));
-	prefs_common.summary_col_lock = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_summary_col_lock));
+	prefs_common.always_show_msg = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_always_show_msg));
+	prefs_common.open_selected_on_folder_open = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_on_folder_open));
+	prefs_common.open_selected_on_search_results = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_on_search_results));
+	prefs_common.open_selected_on_prevnext = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_on_prevnext));
+	prefs_common.open_selected_on_deletemove = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_on_deletemove));
+	prefs_common.open_selected_on_directional = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_show_on_directional));
 
-	prefs_common.default_sort_key = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_sort_key));
-	prefs_common.default_sort_type = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_sort_type));
-	prefs_common.summary_from_show = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_summaryfromshow));
-	prefs_common.next_unread_msg_dialog = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_nextunreadmsgdialog));
-	prefs_common.folder_default_thread =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_thread));
-	prefs_common.folder_default_thread_collapsed =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_thread_collapsed));
-	prefs_common.folder_default_hide_read_threads =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_read_threads));
-	prefs_common.folder_default_hide_read_msgs =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_read_msgs));
-	prefs_common.folder_default_hide_del_msgs =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_del_msgs));
-	prefs_common.folder_default_hide_del_msgs =  gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_del_msgs));
+	prefs_common.mark_as_read_on_new_window = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_mark_as_read_on_newwin));
+	prefs_common.immediate_exec = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_immedexec));
+	prefs_common.ask_mark_all_read = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_ask_mark_all_read));
+	prefs_common.run_processingrules_before_mark_all = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_run_processingrules_mark_all_read));
+	prefs_common.ask_override_colorlabel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_ask_override_colorlabel));
+	prefs_common.mark_as_read_delay = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_mark_as_read_delay));
+	prefs_common.summary_col_lock = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_summary_col_lock));
+
+	prefs_common.default_sort_key = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_sort_key));
+	prefs_common.default_sort_type = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_sort_type));
+	prefs_common.summary_from_show = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_summaryfromshow));
+	prefs_common.next_unread_msg_dialog = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_nextunreadmsgdialog));
+	prefs_common.folder_default_thread = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_thread));
+	prefs_common.folder_default_thread_collapsed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_thread_collapsed));
+	prefs_common.folder_default_hide_read_threads = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_read_threads));
+	prefs_common.folder_default_hide_read_msgs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_read_msgs));
+	prefs_common.folder_default_hide_del_msgs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_del_msgs));
+	prefs_common.folder_default_hide_del_msgs = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_folder_default_hide_del_msgs));
 
 	main_window_reflect_prefs_all();
 }
@@ -960,13 +781,13 @@ void prefs_summaries_init(void)
 	page->page.destroy_widget = prefs_summaries_destroy_widget;
 	page->page.save_page = prefs_summaries_save;
 	page->page.weight = 140.0;
-	prefs_gtk_register_page((PrefsPage *) page);
+	prefs_gtk_register_page((PrefsPage *)page);
 	prefs_summaries = page;
 }
 
 void prefs_summaries_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) prefs_summaries);
+	prefs_gtk_unregister_page((PrefsPage *)prefs_summaries);
 	g_free(prefs_summaries);
 }
 
@@ -979,8 +800,7 @@ static void date_format_ok_btn_clicked(GtkButton *button, GtkWidget **widget)
 	cm_return_if_fail(*widget != NULL);
 	cm_return_if_fail(prefs_summaries->entry_datefmt != NULL);
 
-	datefmt_sample = GTK_WIDGET(g_object_get_data
-				    (G_OBJECT(*widget), "datefmt_sample"));
+	datefmt_sample = GTK_WIDGET(g_object_get_data(G_OBJECT(*widget), "datefmt_sample"));
 	cm_return_if_fail(datefmt_sample != NULL);
 
 	text = gtk_editable_get_chars(GTK_EDITABLE(datefmt_sample), 0, -1);
@@ -992,8 +812,7 @@ static void date_format_ok_btn_clicked(GtkButton *button, GtkWidget **widget)
 	*widget = NULL;
 }
 
-static void date_format_cancel_btn_clicked(GtkButton *button,
-					   GtkWidget **widget)
+static void date_format_cancel_btn_clicked(GtkButton *button, GtkWidget **widget)
 {
 	cm_return_if_fail(widget != NULL);
 	cm_return_if_fail(*widget != NULL);
@@ -1002,16 +821,14 @@ static void date_format_cancel_btn_clicked(GtkButton *button,
 	*widget = NULL;
 }
 
-static gboolean date_format_key_pressed(GtkWidget *keywidget, GdkEventKey *event,
-					GtkWidget **widget)
+static gboolean date_format_key_pressed(GtkWidget *keywidget, GdkEventKey *event, GtkWidget **widget)
 {
 	if (event && event->keyval == GDK_KEY_Escape)
 		date_format_cancel_btn_clicked(NULL, widget);
 	return FALSE;
 }
 
-static gboolean date_format_on_delete(GtkWidget *dialogwidget,
-				      GdkEventAny *event, GtkWidget **widget)
+static gboolean date_format_on_delete(GtkWidget *dialogwidget, GdkEventAny *event, GtkWidget **widget)
 {
 	cm_return_val_if_fail(widget != NULL, FALSE);
 	cm_return_val_if_fail(*widget != NULL, FALSE);
@@ -1020,8 +837,7 @@ static gboolean date_format_on_delete(GtkWidget *dialogwidget,
 	return FALSE;
 }
 
-static void date_format_entry_on_change(GtkEditable *editable,
-					GtkLabel *example)
+static void date_format_entry_on_change(GtkEditable *editable, GtkLabel *example)
 {
 	time_t cur_time;
 	struct tm *cal_time;
@@ -1034,17 +850,14 @@ static void date_format_entry_on_change(GtkEditable *editable,
 	buffer[0] = 0;
 	text = gtk_editable_get_chars(editable, 0, -1);
 	if (text)
-		fast_strftime(buffer, sizeof buffer, text, cal_time); 
+		fast_strftime(buffer, sizeof buffer, text, cal_time);
 
 	gtk_label_set_text(example, buffer);
 
 	g_free(text);
 }
 
-static void date_format_select_row(GtkTreeView *list_view,
-				   GtkTreePath *path,
-				   GtkTreeViewColumn *column,
-				   GtkWidget *date_format)
+static void date_format_select_row(GtkTreeView *list_view, GtkTreePath *path, GtkTreeViewColumn *column, GtkWidget *date_format)
 {
 	gint cur_pos;
 	gchar *format;
@@ -1053,12 +866,11 @@ static void date_format_select_row(GtkTreeView *list_view,
 	GtkWidget *datefmt_sample;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
-	
+
 	cm_return_if_fail(date_format != NULL);
 
 	/* only on double click */
-	datefmt_sample = GTK_WIDGET(g_object_get_data(G_OBJECT(date_format), 
-						      "datefmt_sample"));
+	datefmt_sample = GTK_WIDGET(g_object_get_data(G_OBJECT(date_format), "datefmt_sample"));
 
 	cm_return_if_fail(datefmt_sample != NULL);
 
@@ -1068,8 +880,8 @@ static void date_format_select_row(GtkTreeView *list_view,
 	if (!gtk_tree_model_get_iter(model, &iter, path))
 		return;
 
-	gtk_tree_model_get(model, &iter, DATEFMT_FMT, &format, -1);		
-	
+	gtk_tree_model_get(model, &iter, DATEFMT_FMT, &format, -1);
+
 	cur_pos = gtk_editable_get_position(GTK_EDITABLE(datefmt_sample));
 	old_format = gtk_entry_get_text(GTK_ENTRY(datefmt_sample));
 
@@ -1088,10 +900,9 @@ static void date_format_select_row(GtkTreeView *list_view,
 	g_free(new_format);
 }
 
-static void always_show_msg_toggled(GtkToggleButton *button,
-		gpointer user_data)
+static void always_show_msg_toggled(GtkToggleButton *button, gpointer user_data)
 {
-	const SummariesPage *prefs_summaries = (SummariesPage *)user_data;
+	const SummariesPage *prefs_summaries = (SummariesPage *) user_data;
 	gboolean state;
 
 	cm_return_if_fail(prefs_summaries != NULL);
@@ -1107,7 +918,9 @@ static void always_show_msg_toggled(GtkToggleButton *button,
 
 static void mark_as_read_toggled(GtkToggleButton *button, GtkWidget *spinbtn)
 {
-       gtk_widget_set_sensitive(spinbtn,
-               gtk_toggle_button_get_active(button));
+	gtk_widget_set_sensitive(spinbtn, gtk_toggle_button_get_active(button));
 }
- 
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

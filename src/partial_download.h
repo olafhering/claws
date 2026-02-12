@@ -30,24 +30,22 @@
 #include "procmsg.h"
 
 typedef enum {
-	POP3_PARTIAL_DLOAD_UNKN	= 0,
-	POP3_PARTIAL_DLOAD_DLOAD= 1,
+	POP3_PARTIAL_DLOAD_UNKN = 0,
+	POP3_PARTIAL_DLOAD_DLOAD = 1,
 	POP3_PARTIAL_DLOAD_DELE = 2
 } PartialDownloadAction;
 
 typedef enum {
-	POP3_TOTALLY_RECEIVED	= 0,
+	POP3_TOTALLY_RECEIVED = 0,
 	POP3_PARTIALLY_RECEIVED = 1,
 	POP3_MUST_COMPLETE_RECV = 2
 } PartialDownloadStatus;
 
-gint   partial_msg_in_uidl_list	(MsgInfo	*msginfo);
-int    partial_mark_for_download(MsgInfo	*msginfo);
-int    partial_mark_for_delete	(MsgInfo	*msginfo);
-int    partial_unmark		(MsgInfo	*msginfo);
-gchar *partial_get_filename	(const gchar 	*server,
-				 const gchar	*login, 
-				 const gchar 	*muidl);
-void   partial_delete_old	(const gchar 	*file);
+gint partial_msg_in_uidl_list(MsgInfo *msginfo);
+int partial_mark_for_download(MsgInfo *msginfo);
+int partial_mark_for_delete(MsgInfo *msginfo);
+int partial_unmark(MsgInfo *msginfo);
+gchar *partial_get_filename(const gchar *server, const gchar *login, const gchar *muidl);
+void partial_delete_old(const gchar *file);
 
 #endif /* __PARTIAL_DOWNLOAD_H__ */

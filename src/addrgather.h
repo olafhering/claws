@@ -30,18 +30,12 @@
 #ifndef USE_ALT_ADDRBOOK
 #include "addrbook.h"
 
-AddressBookFile *addrgather_dlg_execute( FolderItem *folderItem,
-					 AddressIndex *addrIndex,
-					 gboolean sourceInd,
-					 GList *msgList );
+AddressBookFile *addrgather_dlg_execute(FolderItem *folderItem, AddressIndex *addrIndex, gboolean sourceInd, GList *msgList);
 #else
-void addrgather_dlg_execute( FolderItem *folderItem,
-					 		 gboolean sourceInd,
-					 		 GList *msgList );
+void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *msgList);
 #endif
 #endif /* __ADDR_GATHER_H__ */
 
 /*
 * End of Source.
 */
-

@@ -51,11 +51,12 @@ static gint _currentQueryID_ = 0;
  * Clear the query.
  * \param req Request query object.
  */
-static void qryreq_clear( QueryRequest *req ) {
+static void qryreq_clear(QueryRequest *req)
+{
 	GList *node;
 
-	cm_return_if_fail( req != NULL );
-	g_free( req->searchTerm );
+	cm_return_if_fail(req != NULL);
+	g_free(req->searchTerm);
 	req->queryID = 0;
 	req->searchType = ADDRSEARCH_NONE;
 	req->searchTerm = NULL;
@@ -64,11 +65,11 @@ static void qryreq_clear( QueryRequest *req ) {
 
 	/* Empty the list */
 	node = req->queryList;
-	while( node ) {
+	while (node) {
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	g_list_free( req->queryList );
+	g_list_free(req->queryList);
 	req->queryList = NULL;
 }
 
@@ -76,10 +77,11 @@ static void qryreq_clear( QueryRequest *req ) {
  * Free query.
  * \param req Request query object.
  */
-static void qryreq_free( QueryRequest *req ) {
-	cm_return_if_fail( req != NULL );
-	qryreq_clear( req );
-	g_free( req );
+static void qryreq_free(QueryRequest *req)
+{
+	cm_return_if_fail(req != NULL);
+	qryreq_clear(req);
+	g_free(req);
 }
 
 /**
@@ -87,8 +89,9 @@ static void qryreq_free( QueryRequest *req ) {
  * \param req   Request query object.
  * \param value Type.
  */
-void qryreq_set_search_type( QueryRequest *req, const AddrSearchType value ) {
-	cm_return_if_fail( req != NULL );
+void qryreq_set_search_type(QueryRequest *req, const AddrSearchType value)
+{
+	cm_return_if_fail(req != NULL);
 	req->searchType = value;
 }
 
@@ -97,10 +100,11 @@ void qryreq_set_search_type( QueryRequest *req, const AddrSearchType value ) {
  * \param req  Request query object.
  * \param aqo  Address query object that performs the search.
  */
-void qryreq_add_query( QueryRequest *req, AddrQueryObject *aqo ) {
-	cm_return_if_fail( req != NULL );
-	cm_return_if_fail( aqo != NULL );
-	req->queryList = g_list_append( req->queryList, aqo );
+void qryreq_add_query(QueryRequest *req, AddrQueryObject *aqo)
+{
+	cm_return_if_fail(req != NULL);
+	cm_return_if_fail(aqo != NULL);
+	req->queryList = g_list_append(req->queryList, aqo);
 }
 
 /**
@@ -113,23 +117,22 @@ void qryreq_add_query( QueryRequest *req, AddrQueryObject *aqo ) {
  * 			address entry has been read.
  * \return Initialize query request object. 			
  */
-QueryRequest *qrymgr_add_request(
-	const gchar *searchTerm, void *callBackEnd, void *callBackEntry )
+QueryRequest *qrymgr_add_request(const gchar *searchTerm, void *callBackEnd, void *callBackEntry)
 {
 	QueryRequest *req;
 
-	req = g_new0( QueryRequest, 1 );
-	req->searchTerm = g_strdup( searchTerm );
+	req = g_new0(QueryRequest, 1);
+	req->searchTerm = g_strdup(searchTerm);
 	req->callBackEnd = callBackEnd;
 	req->callBackEntry = callBackEntry;
-	req->timeStart = time( NULL );
+	req->timeStart = time(NULL);
 	req->queryList = NULL;
 
 	/* Insert in head of list */
-	pthread_mutex_lock( & _requestListMutex_ );
+	pthread_mutex_lock(&_requestListMutex_);
 	req->queryID = ++_currentQueryID_;
-	_requestList_ = g_list_prepend( _requestList_, req );
-	pthread_mutex_unlock( & _requestListMutex_ );
+	_requestList_ = g_list_prepend(_requestList_, req);
+	pthread_mutex_unlock(&_requestListMutex_);
 
 	return req;
 }
@@ -139,23 +142,24 @@ QueryRequest *qrymgr_add_request(
  * \param  queryID ID of query to find.
  * \return Query object, or <i>NULL</i> if not found.
  */
-QueryRequest *qrymgr_find_request( const gint queryID ) {
+QueryRequest *qrymgr_find_request(const gint queryID)
+{
 	QueryRequest *req;
 	QueryRequest *q;
 	GList *node;
 
-	pthread_mutex_lock( & _requestListMutex_ );
+	pthread_mutex_lock(&_requestListMutex_);
 	req = NULL;
 	node = _requestList_;
-	while( node ) {
+	while (node) {
 		q = node->data;
-		if( q->queryID == queryID ) {
+		if (q->queryID == queryID) {
 			req = q;
 			break;
 		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	pthread_mutex_unlock( & _requestListMutex_ );
+	pthread_mutex_unlock(&_requestListMutex_);
 
 	return req;
 }
@@ -164,65 +168,69 @@ QueryRequest *qrymgr_find_request( const gint queryID ) {
  * Delete specified query.
  * \param  queryID ID of query to retire.
  */
-void qrymgr_delete_request( const gint queryID ) {
+void qrymgr_delete_request(const gint queryID)
+{
 	QueryRequest *req;
 	GList *node, *nf;
 
-	pthread_mutex_lock( & _requestListMutex_ );
+	pthread_mutex_lock(&_requestListMutex_);
 
 	/* Find node */
 	nf = NULL;
 	node = _requestList_;
-	while( node ) {
+	while (node) {
 		req = node->data;
-		if( req->queryID == queryID ) {
+		if (req->queryID == queryID) {
 			nf = node;
-			qryreq_free( req );
+			qryreq_free(req);
 			break;
 		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 
 	/* Free link element and associated query */
-	if( nf ) {
-		_requestList_ = g_list_remove_link( _requestList_, nf );
-		g_list_free_1( nf );
+	if (nf) {
+		_requestList_ = g_list_remove_link(_requestList_, nf);
+		g_list_free_1(nf);
 	}
 
-	pthread_mutex_unlock( & _requestListMutex_ );
+	pthread_mutex_unlock(&_requestListMutex_);
 }
 
 /**
  * Initialize query manager.
  */
-void qrymgr_initialize( void ) {
+void qrymgr_initialize(void)
+{
 	_requestList_ = NULL;
 }
 
 /**
  * Free all queries.
  */
-static void qrymgr_free_all_request( void ) {
+static void qrymgr_free_all_request(void)
+{
 	QueryRequest *req;
 	GList *node;
 
-	pthread_mutex_lock( & _requestListMutex_ );
+	pthread_mutex_lock(&_requestListMutex_);
 	node = _requestList_;
-	while( node ) {
+	while (node) {
 		req = node->data;
-		qryreq_free( req );
+		qryreq_free(req);
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	g_list_free( _requestList_ );
+	g_list_free(_requestList_);
 	_requestList_ = NULL;
-	pthread_mutex_unlock( & _requestListMutex_ );
+	pthread_mutex_unlock(&_requestListMutex_);
 }
 
 /**
  * Teardown query manager.
  */
-void qrymgr_teardown( void ) {
+void qrymgr_teardown(void)
+{
 	qrymgr_free_all_request();
 }
 
@@ -230,4 +238,6 @@ void qrymgr_teardown( void ) {
 * End of Source.
 */
 
-
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

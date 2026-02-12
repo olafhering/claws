@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -40,8 +40,7 @@
 
 #include "manage_window.h"
 
-typedef struct _MessagePage
-{
+typedef struct _MessagePage {
 	PrefsPage page;
 
 	GtkWidget *window;
@@ -74,11 +73,10 @@ static void disphdr_pane_toggled(GtkToggleButton *toggle_btn, GtkWidget *widget)
 	gtk_widget_set_sensitive(widget, !is_active);
 }
 
-static void prefs_message_create_widget(PrefsPage *_page, GtkWindow *window, 
-			       	  gpointer data)
+static void prefs_message_create_widget(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
 	MessagePage *prefs_message = (MessagePage *) _page;
-	
+
 	GtkWidget *vbox1;
 	GtkWidget *vbox2;
 	GtkWidget *hbox1;
@@ -107,189 +105,151 @@ static void prefs_message_create_widget(PrefsPage *_page, GtkWindow *window,
 	GtkWidget *checkbtn_hide_quoted;
 
 	GtkWidget *checkbtn_attach_desc;
-	
+
 	GtkWidget *frame_quote;
 	GtkWidget *hbox2;
 	GtkWidget *vbox_quote;
 	GtkWidget *entry_quote_chars;
 	GtkWidget *label_quote_chars;
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame, _("Headers"));
 
-	PACK_CHECK_BUTTON(vbox2, checkbtn_disphdrpane,
-			  _("Display header pane above message view"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_disphdrpane, _("Display header pane above message view"));
 
 #if HAVE_LIBCOMPFACE
-	PACK_CHECK_BUTTON(vbox2, checkbtn_dispxface,
-			  _("Display (X-)Face in message view"));
-	PACK_CHECK_BUTTON(vbox2, checkbtn_savexface,
-			  _("Save (X-)Face in address book if possible"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_dispxface, _("Display (X-)Face in message view"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_savexface, _("Save (X-)Face in address book if possible"));
 #else
-	PACK_CHECK_BUTTON(vbox2, checkbtn_dispxface,
-			  _("Display Face in message view"));
-	PACK_CHECK_BUTTON(vbox2, checkbtn_savexface,
-			  _("Save Face in address book if possible"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_dispxface, _("Display Face in message view"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_savexface, _("Save Face in address book if possible"));
 #endif
 
-	gtk_widget_set_sensitive(checkbtn_dispxface, 
-		!prefs_common.display_header_pane);
+	gtk_widget_set_sensitive(checkbtn_dispxface, !prefs_common.display_header_pane);
 
-	g_signal_connect(G_OBJECT(checkbtn_disphdrpane), "toggled",
-			 G_CALLBACK(disphdr_pane_toggled), checkbtn_dispxface);
+	g_signal_connect(G_OBJECT(checkbtn_disphdrpane), "toggled", G_CALLBACK(disphdr_pane_toggled), checkbtn_dispxface);
 
-	hbox1 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, TRUE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox1, FALSE, TRUE, 0);
 
-	PACK_CHECK_BUTTON(hbox1, checkbtn_disphdr,
-			  _("Display headers in message view"));
+	PACK_CHECK_BUTTON(hbox1, checkbtn_disphdr, _("Display headers in message view"));
 
 	button_edit_disphdr = gtk_button_new_from_stock(GTK_STOCK_EDIT);
-	gtk_widget_show (button_edit_disphdr);
-	gtk_box_pack_start (GTK_BOX (hbox1), button_edit_disphdr,
-			  FALSE, TRUE, 0);
-	g_signal_connect (G_OBJECT (button_edit_disphdr), "clicked",
-			  G_CALLBACK (prefs_display_header_open),
-			  NULL);
+	gtk_widget_show(button_edit_disphdr);
+	gtk_box_pack_start(GTK_BOX(hbox1), button_edit_disphdr, FALSE, TRUE, 0);
+	g_signal_connect(G_OBJECT(button_edit_disphdr), "clicked", G_CALLBACK(prefs_display_header_open), NULL);
 
 	SET_TOGGLE_SENSITIVITY(checkbtn_disphdr, button_edit_disphdr);
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame, _("HTML messages"));
 
-	PACK_CHECK_BUTTON(vbox2, checkbtn_html,
-			  _("Render HTML messages as text"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_html, _("Render HTML messages as text"));
 
-	PACK_CHECK_BUTTON(vbox2, checkbtn_html_plugin,
-			  _("Render HTML-only messages with plugin if possible"));
-	
-	PACK_CHECK_BUTTON(vbox2, checkbtn_promote_html_part,
-			  _("Select the HTML part of multipart/alternative messages"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_html_plugin, _("Render HTML-only messages with plugin if possible"));
 
-	hbox1 = gtk_hbox_new (FALSE, 32);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, FALSE, TRUE, 0);
+	PACK_CHECK_BUTTON(vbox2, checkbtn_promote_html_part, _("Select the HTML part of multipart/alternative messages"));
 
-	hbox_linespc = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (hbox1), hbox_linespc, FALSE, TRUE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 32);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox1), hbox1, FALSE, TRUE, 0);
 
-	label_linespc = gtk_label_new (_("Line space"));
-	gtk_widget_show (label_linespc);
-	gtk_box_pack_start (GTK_BOX (hbox_linespc), label_linespc,
-			    FALSE, FALSE, 0);
+	hbox_linespc = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(hbox1), hbox_linespc, FALSE, TRUE, 0);
 
-	spinbtn_linespc_adj = GTK_ADJUSTMENT(gtk_adjustment_new (2, 0, 16, 1, 1, 0));
-	spinbtn_linespc = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_linespc_adj), 1, 0);
-	gtk_widget_show (spinbtn_linespc);
-	gtk_box_pack_start (GTK_BOX (hbox_linespc), spinbtn_linespc,
-			    FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_linespc), TRUE);
+	label_linespc = gtk_label_new(_("Line space"));
+	gtk_widget_show(label_linespc);
+	gtk_box_pack_start(GTK_BOX(hbox_linespc), label_linespc, FALSE, FALSE, 0);
 
-	label_linespc = gtk_label_new (_("pixels"));
-	gtk_widget_show (label_linespc);
-	gtk_box_pack_start (GTK_BOX (hbox_linespc), label_linespc,
-			    FALSE, FALSE, 0);
-	gtk_widget_show_all (hbox1);
+	spinbtn_linespc_adj = GTK_ADJUSTMENT(gtk_adjustment_new(2, 0, 16, 1, 1, 0));
+	spinbtn_linespc = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_linespc_adj), 1, 0);
+	gtk_widget_show(spinbtn_linespc);
+	gtk_box_pack_start(GTK_BOX(hbox_linespc), spinbtn_linespc, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_linespc), TRUE);
+
+	label_linespc = gtk_label_new(_("pixels"));
+	gtk_widget_show(label_linespc);
+	gtk_box_pack_start(GTK_BOX(hbox_linespc), label_linespc, FALSE, FALSE, 0);
+	gtk_widget_show_all(hbox1);
 
 	vbox_scr = gtkut_get_options_frame(vbox1, &frame, _("Scroll"));
 
 	PACK_CHECK_BUTTON(vbox_scr, checkbtn_halfpage, _("Half page"));
 
-	hbox1 = gtk_hbox_new (FALSE, 32);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox_scr), hbox1, FALSE, TRUE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 32);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox_scr), hbox1, FALSE, TRUE, 0);
 
 	PACK_CHECK_BUTTON(hbox1, checkbtn_smoothscroll, _("Smooth scroll"));
 
-	hbox_scr = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox_scr);
-	gtk_box_pack_start (GTK_BOX (hbox1), hbox_scr, FALSE, FALSE, 0);
+	hbox_scr = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox_scr);
+	gtk_box_pack_start(GTK_BOX(hbox1), hbox_scr, FALSE, FALSE, 0);
 
-	label_scr = gtk_label_new (_("Step"));
-	gtk_widget_show (label_scr);
-	gtk_box_pack_start (GTK_BOX (hbox_scr), label_scr, FALSE, FALSE, 0);
+	label_scr = gtk_label_new(_("Step"));
+	gtk_widget_show(label_scr);
+	gtk_box_pack_start(GTK_BOX(hbox_scr), label_scr, FALSE, FALSE, 0);
 
-	spinbtn_scrollstep_adj = GTK_ADJUSTMENT(gtk_adjustment_new (1, 1, 100, 1, 10, 0));
-	spinbtn_scrollstep = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_scrollstep_adj), 1, 0);
-	gtk_widget_show (spinbtn_scrollstep);
-	gtk_box_pack_start (GTK_BOX (hbox_scr), spinbtn_scrollstep,
-			    FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_scrollstep),
-				     TRUE);
+	spinbtn_scrollstep_adj = GTK_ADJUSTMENT(gtk_adjustment_new(1, 1, 100, 1, 10, 0));
+	spinbtn_scrollstep = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_scrollstep_adj), 1, 0);
+	gtk_widget_show(spinbtn_scrollstep);
+	gtk_box_pack_start(GTK_BOX(hbox_scr), spinbtn_scrollstep, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_scrollstep), TRUE);
 
-	label_scr = gtk_label_new (_("pixels"));
-	gtk_widget_show (label_scr);
-	gtk_box_pack_start (GTK_BOX (hbox_scr), label_scr, FALSE, FALSE, 0);
+	label_scr = gtk_label_new(_("pixels"));
+	gtk_widget_show(label_scr);
+	gtk_box_pack_start(GTK_BOX(hbox_scr), label_scr, FALSE, FALSE, 0);
 
-	SET_TOGGLE_SENSITIVITY (checkbtn_smoothscroll, hbox_scr)
-
-	PACK_CHECK_BUTTON(vbox1, checkbtn_attach_desc,
-			  _("Show attachment descriptions (rather than names)"));
+	SET_TOGGLE_SENSITIVITY(checkbtn_smoothscroll, hbox_scr)
+	    PACK_CHECK_BUTTON(vbox1, checkbtn_attach_desc, _("Show attachment descriptions (rather than names)"));
 
 	/* quote chars */
-	PACK_FRAME (vbox1, frame_quote, _("Quotation"));
+	PACK_FRAME(vbox1, frame_quote, _("Quotation"));
 
-	vbox_quote = gtk_vbox_new (FALSE, VSPACING_NARROW);
-	gtk_widget_show (vbox_quote);
-	gtk_container_add (GTK_CONTAINER (frame_quote), vbox_quote);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox_quote), 8);
+	vbox_quote = gtk_vbox_new(FALSE, VSPACING_NARROW);
+	gtk_widget_show(vbox_quote);
+	gtk_container_add(GTK_CONTAINER(frame_quote), vbox_quote);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox_quote), 8);
 
-	hbox1 = gtk_hbox_new (FALSE, 32);
-	gtk_widget_show (hbox1);
+	hbox1 = gtk_hbox_new(FALSE, 32);
+	gtk_widget_show(hbox1);
 	PACK_CHECK_BUTTON(vbox_quote, checkbtn_hide_quoted, _("Collapse quoted text on double click"));
-	gtk_box_pack_start (GTK_BOX (vbox_quote), hbox1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox_quote), hbox1, FALSE, FALSE, 0);
 
-	hbox2 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (hbox1), hbox2, FALSE, FALSE, 0);
+	hbox2 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox2);
+	gtk_box_pack_start(GTK_BOX(hbox1), hbox2, FALSE, FALSE, 0);
 
-	label_quote_chars = gtk_label_new (_("Treat these characters as quotation marks"));
-	gtk_widget_show (label_quote_chars);
-	gtk_box_pack_start (GTK_BOX (hbox2), label_quote_chars, FALSE, FALSE, 0);
+	label_quote_chars = gtk_label_new(_("Treat these characters as quotation marks"));
+	gtk_widget_show(label_quote_chars);
+	gtk_box_pack_start(GTK_BOX(hbox2), label_quote_chars, FALSE, FALSE, 0);
 
-	entry_quote_chars = gtk_entry_new ();
-	gtk_widget_show (entry_quote_chars);
-	gtk_box_pack_start (GTK_BOX (hbox2), entry_quote_chars,
-			    FALSE, FALSE, 0);
-	gtk_widget_set_size_request (entry_quote_chars, 64, -1);
+	entry_quote_chars = gtk_entry_new();
+	gtk_widget_show(entry_quote_chars);
+	gtk_box_pack_start(GTK_BOX(hbox2), entry_quote_chars, FALSE, FALSE, 0);
+	gtk_widget_set_size_request(entry_quote_chars, 64, -1);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_disphdrpane),
-		prefs_common.display_header_pane);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_disphdrpane), prefs_common.display_header_pane);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_dispxface),
-		prefs_common.display_xface);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_savexface),
-		prefs_common.save_xface);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_dispxface), prefs_common.display_xface);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_savexface), prefs_common.save_xface);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_disphdr),
-		prefs_common.display_header);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_html),
-		prefs_common.render_html);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_html_plugin),
-		prefs_common.invoke_plugin_on_html);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_promote_html_part),
-		prefs_common.promote_html_part);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_smoothscroll),
-		prefs_common.enable_smooth_scroll);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_hide_quoted),
-		prefs_common.hide_quoted);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_halfpage),
-		prefs_common.scroll_halfpage);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_attach_desc),
-		prefs_common.attach_desc);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_linespc),
-		prefs_common.line_space);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_scrollstep),
-		prefs_common.scroll_step);
-	gtk_entry_set_text(GTK_ENTRY(entry_quote_chars), 
-			prefs_common.quote_chars?prefs_common.quote_chars:"");
-		
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_disphdr), prefs_common.display_header);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_html), prefs_common.render_html);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_html_plugin), prefs_common.invoke_plugin_on_html);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_promote_html_part), prefs_common.promote_html_part);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_smoothscroll), prefs_common.enable_smooth_scroll);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_hide_quoted), prefs_common.hide_quoted);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_halfpage), prefs_common.scroll_halfpage);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_attach_desc), prefs_common.attach_desc);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_linespc), prefs_common.line_space);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_scrollstep), prefs_common.scroll_step);
+	gtk_entry_set_text(GTK_ENTRY(entry_quote_chars), prefs_common.quote_chars ? prefs_common.quote_chars : "");
+
 	prefs_message->window = GTK_WIDGET(window);
 	prefs_message->checkbtn_disphdrpane = checkbtn_disphdrpane;
 	prefs_message->checkbtn_dispxface = checkbtn_dispxface;
@@ -305,7 +265,7 @@ static void prefs_message_create_widget(PrefsPage *_page, GtkWindow *window,
 	prefs_message->checkbtn_halfpage = checkbtn_halfpage;
 	prefs_message->checkbtn_attach_desc = checkbtn_attach_desc;
 	prefs_message->entry_quote_chars = entry_quote_chars;
-	
+
 	prefs_message->page.widget = vbox1;
 }
 
@@ -313,36 +273,22 @@ static void prefs_message_save(PrefsPage *_page)
 {
 	MessagePage *page = (MessagePage *) _page;
 
-	prefs_common.display_header_pane = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_disphdrpane));
-	prefs_common.display_xface = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_dispxface));
-	prefs_common.save_xface = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_savexface));
-	prefs_common.display_header = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_disphdr));
-	prefs_common.render_html = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_html));
-	prefs_common.invoke_plugin_on_html = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_html_plugin));
-	prefs_common.promote_html_part = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_promote_html_part));
-	prefs_common.enable_smooth_scroll = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_smoothscroll));
-	prefs_common.scroll_halfpage = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_halfpage));
-	prefs_common.hide_quoted = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_hide_quoted));
-	prefs_common.attach_desc = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->checkbtn_attach_desc));
-	prefs_common.line_space = gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(page->spinbtn_linespc));
-	prefs_common.scroll_step = gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(page->spinbtn_scrollstep));
+	prefs_common.display_header_pane = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_disphdrpane));
+	prefs_common.display_xface = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_dispxface));
+	prefs_common.save_xface = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_savexface));
+	prefs_common.display_header = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_disphdr));
+	prefs_common.render_html = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_html));
+	prefs_common.invoke_plugin_on_html = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_html_plugin));
+	prefs_common.promote_html_part = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_promote_html_part));
+	prefs_common.enable_smooth_scroll = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_smoothscroll));
+	prefs_common.scroll_halfpage = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_halfpage));
+	prefs_common.hide_quoted = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_hide_quoted));
+	prefs_common.attach_desc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_attach_desc));
+	prefs_common.line_space = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_linespc));
+	prefs_common.scroll_step = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_scrollstep));
 
-	g_free(prefs_common.quote_chars); 
-	prefs_common.quote_chars = gtk_editable_get_chars(
-			GTK_EDITABLE(page->entry_quote_chars), 0, -1);
+	g_free(prefs_common.quote_chars);
+	prefs_common.quote_chars = gtk_editable_get_chars(GTK_EDITABLE(page->entry_quote_chars), 0, -1);
 	remove_space(prefs_common.quote_chars);
 
 	main_window_reflect_prefs_all_real(FALSE);
@@ -369,12 +315,16 @@ void prefs_message_init(void)
 	page->page.destroy_widget = prefs_message_destroy_widget;
 	page->page.save_page = prefs_message_save;
 	page->page.weight = 170.0;
-	prefs_gtk_register_page((PrefsPage *) page);
+	prefs_gtk_register_page((PrefsPage *)page);
 	prefs_message = page;
 }
 
 void prefs_message_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) prefs_message);
+	prefs_gtk_unregister_page((PrefsPage *)prefs_message);
 	g_free(prefs_message);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

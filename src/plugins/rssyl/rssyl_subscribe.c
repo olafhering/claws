@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -56,8 +56,7 @@ static void rssyl_subscribe_foreach_func(gpointer data, gpointer user_data)
 	rssyl_add_item(ritem, feed_item);
 }
 
-FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
-		RSSylVerboseFlags verbose)
+FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url, RSSylVerboseFlags verbose)
 {
 	gchar *myurl = NULL, *tmpname = NULL, *tmpname2 = NULL;
 	RFetchCtx *ctx;
@@ -82,8 +81,7 @@ FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
 
 	rssyl_fetch_feed(ctx, verbose);
 
-	debug_print("RSSyl: fetch success == %s\n",
-			ctx->success ? "TRUE" : "FALSE");
+	debug_print("RSSyl: fetch success == %s\n", ctx->success ? "TRUE" : "FALSE");
 
 	if (!ctx->success) {
 		/* User notification was already handled inside rssyl_fetch_feed(),
@@ -140,8 +138,7 @@ FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
 #endif
 
 	while (folder_find_child_item_by_name(parent, tmpname2) != 0 && i < 20) {
-		debug_print("RSSyl: Folder '%s' already exists, trying another name\n",
-				tmpname2);
+		debug_print("RSSyl: Folder '%s' already exists, trying another name\n", tmpname2);
 		g_free(tmpname2);
 		tmpname2 = g_strdup_printf("%s__%d", tmpname, ++i);
 	}
@@ -155,11 +152,10 @@ FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
 
 	if (!new_item) {
 		if (verbose & RSSYL_SHOW_ERRORS)
-			alertpanel_error(_("Couldn't create folder for new feed '%s'."),
-					feed_get_url(ctx->feed));
+			alertpanel_error(_("Couldn't create folder for new feed '%s'."), feed_get_url(ctx->feed));
 		feed_free(ctx->feed);
 		g_free(ctx->error);
-		g_free(ctx); 
+		g_free(ctx);
 		return NULL;
 	}
 
@@ -186,3 +182,7 @@ FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
 
 	return new_item;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

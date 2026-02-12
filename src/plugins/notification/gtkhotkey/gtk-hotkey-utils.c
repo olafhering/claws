@@ -15,36 +15,38 @@
  *   You should have received a copy of the GNU Lesser General Public License
  *   along with GtkHotkey.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "config.h"
 
 #include <gio/gio.h>
 
-GFileType
-gtk_hotkey_g_file_get_type (GFile *file)
+GFileType gtk_hotkey_g_file_get_type(GFile *file)
 {
-	GFileInfo   *info;
-	GFileType   type;
-	GError		*error;
-	
-	g_return_val_if_fail (G_IS_FILE(file), G_FILE_TYPE_UNKNOWN);
-	
+	GFileInfo *info;
+	GFileType type;
+	GError *error;
+
+	g_return_val_if_fail(G_IS_FILE(file), G_FILE_TYPE_UNKNOWN);
+
 	if (!g_file_query_exists(file, NULL))
 		return G_FILE_TYPE_UNKNOWN;
-	
-	g_return_val_if_fail (G_IS_FILE(file), G_FILE_TYPE_UNKNOWN);
+
+	g_return_val_if_fail(G_IS_FILE(file), G_FILE_TYPE_UNKNOWN);
 	error = NULL;
-	info = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_TYPE,
-							  0, NULL, &error);
-	
+	info = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_TYPE, 0, NULL, &error);
+
 	if (error) {
-		g_critical ("Failed to create GFileInfo: %s", error->message);
-		g_error_free (error);
+		g_critical("Failed to create GFileInfo: %s", error->message);
+		g_error_free(error);
 		return G_FILE_TYPE_UNKNOWN;
 	}
-	
-	type = g_file_info_get_file_type (info);
-	g_object_unref (info);
-	
+
+	type = g_file_info_get_file_type(info);
+	g_object_unref(info);
+
 	return type;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

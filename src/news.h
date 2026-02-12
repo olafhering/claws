@@ -23,29 +23,26 @@
 #include <glib.h>
 #include <stdio.h>
 
-typedef struct _NewsGroupInfo	NewsGroupInfo;
+typedef struct _NewsGroupInfo NewsGroupInfo;
 
 #include "folder.h"
 
-struct _NewsGroupInfo
-{
+struct _NewsGroupInfo {
 	gchar *name;
 	guint first;
 	guint last;
 	gchar type;
 };
 
-FolderClass *news_get_class		(void);
+FolderClass *news_get_class(void);
 
-GSList *news_get_group_list		(Folder		*folder);
-void news_group_list_free		(GSList		*group_list);
-void news_remove_group_list_cache	(Folder		*folder);
+GSList *news_get_group_list(Folder *folder);
+void news_group_list_free(GSList *group_list);
+void news_remove_group_list_cache(Folder *folder);
 
-gint news_post				(Folder		*folder,
-					 const gchar	*file);
-gint news_cancel_article		(Folder 	*folder,
-					 MsgInfo 	*msginfo);
-int news_folder_locked			(Folder 	*folder);
+gint news_post(Folder *folder, const gchar *file);
+gint news_cancel_article(Folder *folder, MsgInfo *msginfo);
+int news_folder_locked(Folder *folder);
 
 guint nntp_folder_get_refcnt(Folder *folder);
 void nntp_folder_ref(Folder *folder);

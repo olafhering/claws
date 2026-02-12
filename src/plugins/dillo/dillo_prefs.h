@@ -28,14 +28,13 @@
 
 #include <glib.h>
 
-typedef struct _DilloBrowserPrefs	DilloBrowserPrefs;
+typedef struct _DilloBrowserPrefs DilloBrowserPrefs;
 
-struct _DilloBrowserPrefs
-{
-	gboolean local;   /**< local browsing */
+struct _DilloBrowserPrefs {
+	gboolean local;	  /**< local browsing */
 	gboolean whitelist_ab;
 	gchar *whitelist_ab_folder;
-	gboolean full;    /**< use full window */
+	gboolean full;	  /**< use full window */
 };
 
 extern DilloBrowserPrefs dillo_prefs;

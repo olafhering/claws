@@ -67,64 +67,63 @@ typedef enum _NavigationMode {
 } NavigationMode;
 
 typedef struct _FancyViewer FancyViewer;
-struct _FancyViewer
-{
-	MimeViewer        mimeviewer;
-	GtkWidget         *scrollwin;
-	WebKitWebView     *view;
-	GtkWidget         *vbox;
-	GtkWidget         *l_link;
+struct _FancyViewer {
+	MimeViewer mimeviewer;
+	GtkWidget *scrollwin;
+	WebKitWebView *view;
+	GtkWidget *vbox;
+	GtkWidget *l_link;
 	/* Zoom Widgets  */
-	GtkWidget         *zoom_100;
-	GtkWidget         *ev_zoom_100;
-	GtkWidget         *zoom_in;
-	GtkWidget         *ev_zoom_in;
-	GtkWidget         *zoom_out;
-	GtkWidget         *ev_zoom_out;
-	GtkWidget         *stop_loading;
-	GtkWidget         *ev_stop_loading;
+	GtkWidget *zoom_100;
+	GtkWidget *ev_zoom_100;
+	GtkWidget *zoom_in;
+	GtkWidget *ev_zoom_in;
+	GtkWidget *zoom_out;
+	GtkWidget *ev_zoom_out;
+	GtkWidget *stop_loading;
+	GtkWidget *ev_stop_loading;
 	/* Preferences Widgets  */
-	GtkWidget         *fancy_prefs;
-	GtkWidget         *ev_fancy_prefs;
-	GtkWidget         *fancy_prefs_menu;
+	GtkWidget *fancy_prefs;
+	GtkWidget *ev_fancy_prefs;
+	GtkWidget *fancy_prefs_menu;
 	/* Menu Items */
-	GtkWidget         *enable_images;
-	GtkWidget         *enable_scripts;
-	GtkWidget         *enable_plugins;
-	GtkWidget	  *enable_java;
-	GtkWidget         *enable_remote_content;
-	GtkWidget         *open_external;
-	GtkWidget         *stylesheet;
+	GtkWidget *enable_images;
+	GtkWidget *enable_scripts;
+	GtkWidget *enable_plugins;
+	GtkWidget *enable_java;
+	GtkWidget *enable_remote_content;
+	GtkWidget *open_external;
+	GtkWidget *stylesheet;
 
-	GtkWidget         *progress;
+	GtkWidget *progress;
 	WebKitWebSettings *settings;
-	gboolean          printing;
-	gboolean          override_prefs_images;
-	gboolean          override_prefs_remote_content;
-	gboolean          override_prefs_scripts;
-	gboolean          override_prefs_plugins;
-	gboolean          override_prefs_external;
-	gboolean	  override_prefs_java;
-	gchar		 *override_stylesheet;
+	gboolean printing;
+	gboolean override_prefs_images;
+	gboolean override_prefs_remote_content;
+	gboolean override_prefs_scripts;
+	gboolean override_prefs_plugins;
+	gboolean override_prefs_external;
+	gboolean override_prefs_java;
+	gchar *override_stylesheet;
 
-	const gchar       *curlfile;
-	FILE              *stream;
+	const gchar *curlfile;
+	FILE *stream;
 
-	const gchar       *cur_link;
-	gchar             *filename;
-	MimeInfo          *to_load;
-	gulong            doc_handle;
-	gint              loading;
+	const gchar *cur_link;
+	gchar *filename;
+	MimeInfo *to_load;
+	gulong doc_handle;
+	gint loading;
 
 	/* Coordinates of the last mouse click. */
-	gint              click_x;
-	gint              click_y;
+	gint click_x;
+	gint click_y;
 
 	/* DOM Objects */
-	WebKitDOMDocument	  *doc;
-	WebKitDOMDOMWindow    *window;
+	WebKitDOMDocument *doc;
+	WebKitDOMDOMWindow *window;
 	WebKitDOMDOMSelection *selection;
-	WebKitDOMRange		  *range;
+	WebKitDOMRange *range;
 };
 #define OPEN_INTERNAL FALSE
 #define OPEN_EXTERNAL TRUE
@@ -132,4 +131,3 @@ struct _FancyViewer
 #define GOOGLE_SEARCH "http://www.google.com/search?hl=en&q="
 
 #endif
-

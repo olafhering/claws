@@ -23,10 +23,9 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-typedef struct _ProgressDialog	ProgressDialog;
+typedef struct _ProgressDialog ProgressDialog;
 
-struct _ProgressDialog
-{
+struct _ProgressDialog {
 	GtkWidget *window;
 	GtkWidget *label;
 	GtkWidget *showlog_btn;
@@ -36,29 +35,19 @@ struct _ProgressDialog
 	GtkListStore *store;
 };
 
-ProgressDialog *progress_dialog_create	(void);
-void progress_dialog_set_label		(ProgressDialog	*progress,
-					 gchar		*str);
-void progress_dialog_get_fraction	(ProgressDialog	*progress);
-void progress_dialog_set_fraction	(ProgressDialog	*progress,
-					 gfloat		 percentage);
-void progress_dialog_destroy		(ProgressDialog	*progress);
-
+ProgressDialog *progress_dialog_create(void);
+void progress_dialog_set_label(ProgressDialog *progress, gchar *str);
+void progress_dialog_get_fraction(ProgressDialog *progress);
+void progress_dialog_set_fraction(ProgressDialog *progress, gfloat percentage);
+void progress_dialog_destroy(ProgressDialog *progress);
 
 /*
  * Use these functions to access the dialog list
  */
 
-gint progress_dialog_list_set_status	(ProgressDialog *progress,
-					 gint		 row,
-					 const gchar    *status);
-gint progress_dialog_list_set		(ProgressDialog *progress,
-					 gint		 row,
-					 GdkPixbuf	*image,
-					 const gchar	*account_name,
-					 const gchar    *status);
+gint progress_dialog_list_set_status(ProgressDialog *progress, gint row, const gchar *status);
+gint progress_dialog_list_set(ProgressDialog *progress, gint row, GdkPixbuf *image, const gchar *account_name, const gchar *status);
 
-void progress_dialog_scroll_to_row	(ProgressDialog	*progress,
-					 gint		 row);
+void progress_dialog_scroll_to_row(ProgressDialog *progress, gint row);
 
 #endif /* __PROGRESS_H__ */

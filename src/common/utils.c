@@ -29,7 +29,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -50,14 +50,14 @@
 #include <errno.h>
 #include <sys/param.h>
 #ifdef G_OS_WIN32
-#  include <ws2tcpip.h>
+#include <ws2tcpip.h>
 #else
-#  include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 
 #if (HAVE_WCTYPE_H && HAVE_WCHAR_H)
-#  include <wchar.h>
-#  include <wctype.h>
+#include <wchar.h>
+#include <wctype.h>
 #endif
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -65,7 +65,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
+#include <sys/wait.h>
 #endif
 #include <time.h>
 #include <regex.h>
@@ -77,8 +77,8 @@
 #include <fcntl.h>
 
 #ifdef G_OS_WIN32
-#  include <direct.h>
-#  include <io.h>
+#include <direct.h>
+#include <io.h>
 #endif
 
 #include "utils.h"
@@ -94,12 +94,12 @@ static gboolean debug_mode = FALSE;
 
 void list_free_strings_full(GList *list)
 {
-	g_list_free_full(list, (GDestroyNotify)g_free);
+	g_list_free_full(list, (GDestroyNotify) g_free);
 }
 
 void slist_free_strings_full(GSList *list)
 {
-	g_slist_free_full(list, (GDestroyNotify)g_free);
+	g_slist_free_full(list, (GDestroyNotify) g_free);
 }
 
 static void hash_free_strings_func(gpointer key, gpointer value, gpointer data)
@@ -135,10 +135,12 @@ gint to_number(const gchar *nstr)
 {
 	register const gchar *p;
 
-	if (*nstr == '\0') return -1;
+	if (*nstr == '\0')
+		return -1;
 
 	for (p = nstr; *p != '\0'; p++)
-		if (!g_ascii_isdigit(*p)) return -1;
+		if (!g_ascii_isdigit(*p))
+			return -1;
 
 	return atoi(nstr);
 }
@@ -166,7 +168,6 @@ gchar *itos(gint n)
 	d = (d*100) >> divisor;		\
 }
 
-
 /*!
  * \brief Convert a given size in bytes in a human-readable string
  *
@@ -176,29 +177,28 @@ gchar *itos(gint n)
 gchar *to_human_readable(goffset size)
 {
 	static gchar str[14];
-	static gchar *b_format = NULL, *kb_format = NULL,
-		     *mb_format = NULL, *gb_format = NULL;
+	static gchar *b_format = NULL, *kb_format = NULL, *mb_format = NULL, *gb_format = NULL;
 	register int t = 0, r = 0;
 	if (b_format == NULL) {
-		b_format  = _("%dB");
+		b_format = _("%dB");
 		kb_format = _("%d.%02dKiB");
 		mb_format = _("%d.%02dMiB");
 		gb_format = _("%.2fGiB");
 	}
 
-	if (size < (goffset)1024) {
+	if (size < (goffset) 1024) {
 		g_snprintf(str, sizeof(str), b_format, (gint)size);
 		return str;
-	} else if (size >> 10 < (goffset)1024) {
+	} else if (size >> 10 < (goffset) 1024) {
 		divide(size, 10, t, r);
 		g_snprintf(str, sizeof(str), kb_format, t, r);
 		return str;
-	} else if (size >> 20 < (goffset)1024) {
+	} else if (size >> 20 < (goffset) 1024) {
 		divide(size, 20, t, r);
 		g_snprintf(str, sizeof(str), mb_format, t, r);
 		return str;
 	} else {
-		g_snprintf(str, sizeof(str), gb_format, (gfloat)(size >> 30));
+		g_snprintf(str, sizeof(str), gb_format, (gfloat) (size >> 30));
 		return str;
 	}
 }
@@ -212,14 +212,16 @@ gint path_cmp(const gchar *s1, const gchar *s2)
 	gchar *s1buf, *s2buf;
 #endif
 
-	if (s1 == NULL || s2 == NULL) return -1;
-	if (*s1 == '\0' || *s2 == '\0') return -1;
+	if (s1 == NULL || s2 == NULL)
+		return -1;
+	if (*s1 == '\0' || *s2 == '\0')
+		return -1;
 
 #ifdef G_OS_WIN32
-	s1buf = g_strdup (s1);
-	s2buf = g_strdup (s2);
-	subst_char (s1buf, '/', G_DIR_SEPARATOR);
-	subst_char (s2buf, '/', G_DIR_SEPARATOR);
+	s1buf = g_strdup(s1);
+	s2buf = g_strdup(s2);
+	subst_char(s1buf, '/', G_DIR_SEPARATOR);
+	subst_char(s2buf, '/', G_DIR_SEPARATOR);
 	s1 = s1buf;
 	s2 = s2buf;
 #endif /* !G_OS_WIN32 */
@@ -227,13 +229,15 @@ gint path_cmp(const gchar *s1, const gchar *s2)
 	len1 = strlen(s1);
 	len2 = strlen(s2);
 
-	if (s1[len1 - 1] == G_DIR_SEPARATOR) len1--;
-	if (s2[len2 - 1] == G_DIR_SEPARATOR) len2--;
+	if (s1[len1 - 1] == G_DIR_SEPARATOR)
+		len1--;
+	if (s2[len2 - 1] == G_DIR_SEPARATOR)
+		len2--;
 
 	rc = strncmp(s1, s2, MAX(len1, len2));
 #ifdef G_OS_WIN32
-	g_free (s1buf);
-	g_free (s2buf);
+	g_free(s1buf);
+	g_free(s2buf);
 #endif /* !G_OS_WIN32 */
 	return rc;
 }
@@ -243,11 +247,10 @@ gchar *strretchomp(gchar *str)
 {
 	register gchar *s;
 
-	if (!*str) return str;
+	if (!*str)
+		return str;
 
-	for (s = str + strlen(str) - 1;
-	     s >= str && (*s == '\n' || *s == '\r');
-	     s--)
+	for (s = str + strlen(str) - 1; s >= str && (*s == '\n' || *s == '\r'); s--)
 		*s = '\0';
 
 	return str;
@@ -258,8 +261,10 @@ gchar *strtailchomp(gchar *str, gchar tail_char)
 {
 	register gchar *s;
 
-	if (!*str) return str;
-	if (tail_char == '\0') return str;
+	if (!*str)
+		return str;
+	if (tail_char == '\0')
+		return str;
 
 	for (s = str + strlen(str) - 1; s >= str && *s == tail_char; s--)
 		*s = '\0';
@@ -272,7 +277,8 @@ gchar *strcrchomp(gchar *str)
 {
 	register gchar *s;
 
-	if (!*str) return str;
+	if (!*str)
+		return str;
 
 	s = str + strlen(str) - 1;
 	if (*s == '\n' && s > str && *(s - 1) == '\r') {
@@ -288,7 +294,8 @@ gchar *strcrlftrunc(gchar *str)
 {
 	gchar *p = NULL;
 
-	if ((str == NULL) || (!*str)) return str;
+	if ((str == NULL) || (!*str))
+		return str;
 
 	if ((p = strstr(str, "\r")) != NULL)
 		*p = '\0';
@@ -312,7 +319,7 @@ gchar *strncasestr(const gchar *haystack, gint haystack_len, const gchar *needle
 {
 	register size_t needle_len;
 
-	needle_len   = strlen(needle);
+	needle_len = strlen(needle);
 
 	if (haystack_len < needle_len || needle_len == 0)
 		return NULL;
@@ -329,8 +336,7 @@ gchar *strncasestr(const gchar *haystack, gint haystack_len, const gchar *needle
 	return NULL;
 }
 
-gpointer my_memmem(gconstpointer haystack, size_t haystacklen,
-		   gconstpointer needle, size_t needlelen)
+gpointer my_memmem(gconstpointer haystack, size_t haystacklen, gconstpointer needle, size_t needlelen)
 {
 	const gchar *haystack_ = (const gchar *)haystack;
 	const gchar *needle_ = (const gchar *)needle;
@@ -346,7 +352,7 @@ gpointer my_memmem(gconstpointer haystack, size_t haystacklen,
 			break;
 		if (memcmp(haystack_cur + 1, needle_ + 1, needlelen - 1) == 0)
 			return (gpointer)haystack_cur;
-		else{
+		else {
 			haystack_cur++;
 			haystack_left = haystacklen - (haystack_cur - haystack_);
 		}
@@ -368,15 +374,13 @@ gchar *strncpy2(gchar *dest, const gchar *src, size_t n)
 	return dest;
 }
 
-
 /* Examine if next block is non-ASCII string */
 gboolean is_next_nonascii(const gchar *s)
 {
 	const gchar *p;
 
 	/* skip head space */
-	for (p = s; *p != '\0' && g_ascii_isspace(*p); p++)
-		;
+	for (p = s; *p != '\0' && g_ascii_isspace(*p); p++) ;
 	for (; *p != '\0' && !g_ascii_isspace(*p); p++) {
 		if (*(guchar *)p > 127 || *(guchar *)p < 32)
 			return TRUE;
@@ -389,8 +393,7 @@ gint get_next_word_len(const gchar *s)
 {
 	gint len = 0;
 
-	for (; *s != '\0' && !g_ascii_isspace(*s); s++, len++)
-		;
+	for (; *s != '\0' && !g_ascii_isspace(*s); s++, len++) ;
 
 	return len;
 }
@@ -424,8 +427,10 @@ gint subject_compare(const gchar *s1, const gchar *s2)
 {
 	gchar *str1, *str2;
 
-	if (!s1 || !s2) return -1;
-	if (!*s1 || !*s2) return -1;
+	if (!s1 || !s2)
+		return -1;
+	if (!*s1 || !*s2)
+		return -1;
 
 	Xstrdup_a(str1, s1, return -1);
 	Xstrdup_a(str2, s2, return -1);
@@ -433,7 +438,8 @@ gint subject_compare(const gchar *s1, const gchar *s2)
 	trim_subject_for_compare(str1);
 	trim_subject_for_compare(str2);
 
-	if (!*str1 || !*str2) return -1;
+	if (!*str1 || !*str2)
+		return -1;
 
 	return strcmp(str1, str2);
 }
@@ -442,7 +448,8 @@ gint subject_compare_for_sort(const gchar *s1, const gchar *s2)
 {
 	gchar *str1, *str2;
 
-	if (!s1 || !s2) return -1;
+	if (!s1 || !s2)
+		return -1;
 
 	Xstrdup_a(str1, s1, return -1);
 	Xstrdup_a(str2, s2, return -1);
@@ -493,7 +500,8 @@ void trim_subject(gchar *str)
 				break;
 		}
 	}
-	while (g_ascii_isspace(*srcp)) srcp++;
+	while (g_ascii_isspace(*srcp))
+		srcp++;
 	memmove(str, srcp, strlen(srcp) + 1);
 }
 
@@ -516,7 +524,8 @@ void eliminate_parenthesis(gchar *str, gchar op, gchar cl)
 			if (in_brace == 0)
 				break;
 		}
-		while (g_ascii_isspace(*srcp)) srcp++;
+		while (g_ascii_isspace(*srcp))
+			srcp++;
 		memmove(destp, srcp, strlen(srcp) + 1);
 	}
 }
@@ -533,7 +542,7 @@ void extract_parenthesis(gchar *str, gchar op, gchar cl)
 			*destp++ = ' ';
 		memmove(destp, srcp + 1, strlen(srcp));
 		in_brace = 1;
-		while(*destp) {
+		while (*destp) {
 			if (*destp == op)
 				in_brace++;
 			else if (*destp == cl)
@@ -548,8 +557,7 @@ void extract_parenthesis(gchar *str, gchar op, gchar cl)
 	*destp = '\0';
 }
 
-static void extract_parenthesis_with_skip_quote(gchar *str, gchar quote_chr,
-					 gchar op, gchar cl)
+static void extract_parenthesis_with_skip_quote(gchar *str, gchar quote_chr, gchar op, gchar cl)
 {
 	register gchar *srcp, *destp;
 	gint in_brace;
@@ -562,7 +570,7 @@ static void extract_parenthesis_with_skip_quote(gchar *str, gchar quote_chr,
 			*destp++ = ' ';
 		memmove(destp, srcp + 1, strlen(srcp));
 		in_brace = 1;
-		while(*destp) {
+		while (*destp) {
 			if (*destp == op && !in_quote)
 				in_brace++;
 			else if (*destp == cl && !in_quote)
@@ -589,7 +597,7 @@ void extract_quote(gchar *str, gchar quote_chr)
 			memmove(p - 1, p, strlen(p) + 1);
 			p--;
 		}
-		if(p) {
+		if (p) {
 			*p = '\0';
 			memmove(str, str + 1, p - str);
 		}
@@ -619,7 +627,7 @@ gchar *escape_internal_quotes(gchar *str, gchar quote_chr)
 			++k;
 		++p, ++l;
 	}
-	if (!k) /* nothing to escape */
+	if (!k)	/* nothing to escape */
 		return str;
 
 	/* unescaped quote_chr found */
@@ -653,7 +661,8 @@ void eliminate_address_comment(gchar *str)
 			if (*srcp == '@') {
 				destp = srcp + 1;
 			} else {
-				while (g_ascii_isspace(*srcp)) srcp++;
+				while (g_ascii_isspace(*srcp))
+					srcp++;
 				memmove(destp, srcp, strlen(srcp) + 1);
 			}
 		} else {
@@ -676,7 +685,8 @@ void eliminate_address_comment(gchar *str)
 			if (in_brace == 0)
 				break;
 		}
-		while (g_ascii_isspace(*srcp)) srcp++;
+		while (g_ascii_isspace(*srcp))
+			srcp++;
 		memmove(destp, srcp, strlen(srcp) + 1);
 	}
 }
@@ -717,7 +727,8 @@ static GSList *address_list_append_real(GSList *addr_list, const gchar *str, gbo
 	gchar *work;
 	gchar *workp;
 
-	if (!str) return addr_list;
+	if (!str)
+		return addr_list;
 
 	Xstrdup_a(work, str, return addr_list);
 
@@ -735,8 +746,7 @@ static GSList *address_list_append_real(GSList *addr_list, const gchar *str, gbo
 			next = NULL;
 
 		if (removecomments && strchr_with_skip_quote(workp, '"', '<'))
-			extract_parenthesis_with_skip_quote
-				(workp, '"', '<', '>');
+			extract_parenthesis_with_skip_quote(workp, '"', '<', '>');
 
 		g_strstrip(workp);
 		if (*workp)
@@ -762,7 +772,8 @@ GSList *references_list_prepend(GSList *msgid_list, const gchar *str)
 {
 	const gchar *strp;
 
-	if (!str) return msgid_list;
+	if (!str)
+		return msgid_list;
 	strp = str;
 
 	while (strp && *strp) {
@@ -771,7 +782,8 @@ GSList *references_list_prepend(GSList *msgid_list, const gchar *str)
 
 		if ((start = strchr(strp, '<')) != NULL) {
 			end = strchr(start + 1, '>');
-			if (!end) break;
+			if (!end)
+				break;
 		} else
 			break;
 
@@ -804,7 +816,8 @@ GSList *newsgroup_list_append(GSList *group_list, const gchar *str)
 	gchar *work;
 	gchar *workp;
 
-	if (!str) return group_list;
+	if (!str)
+		return group_list;
 
 	Xstrdup_a(work, str, return group_list);
 
@@ -821,8 +834,7 @@ GSList *newsgroup_list_append(GSList *group_list, const gchar *str)
 
 		g_strstrip(workp);
 		if (*workp)
-			group_list = g_slist_append(group_list,
-						    g_strdup(workp));
+			group_list = g_slist_append(group_list, g_strdup(workp));
 
 		workp = next;
 	}
@@ -837,7 +849,7 @@ GList *add_history(GList *list, const gchar *str)
 
 	cm_return_val_if_fail(str != NULL, list);
 
-	old = g_list_find_custom(list, (gpointer)str, (GCompareFunc)g_strcmp0);
+	old = g_list_find_custom(list, (gpointer)str, (GCompareFunc) g_strcmp0);
 	if (old) {
 		oldstr = old->data;
 		list = g_list_remove(list, old->data);
@@ -905,15 +917,14 @@ void unfold_line(gchar *str)
 
 		len = g_unichar_to_utf8(c, NULL);
 
-		if ((!g_unichar_isdefined(c) || !g_unichar_isprint(c) ||
-				g_unichar_isspace(c)) && c != 173) {
+		if ((!g_unichar_isdefined(c) || !g_unichar_isprint(c) || g_unichar_isspace(c)) && c != 173) {
 			/* replace anything bad or whitespacey with a single space */
 			*ch = ' ';
 			ch++;
 			if (len > 1) {
 				/* move rest of the string forwards, since we just replaced
 				 * a multi-byte sequence with one byte */
-				memmove(ch, ch + len-1, strlen(ch + len-1) + 1);
+				memmove(ch, ch + len - 1, strlen(ch + len - 1) + 1);
 			}
 		} else {
 			/* A valid unicode character, copy it. */
@@ -960,7 +971,7 @@ void subst_for_shellsafe_filename(gchar *str)
 	if (!str)
 		return;
 	subst_for_filename(str);
-	subst_chars(str, " \"'|&;()<>'!{}[]",'_');
+	subst_chars(str, " \"'|&;()<>'!{}[]", '_');
 }
 
 gboolean is_ascii_str(const gchar *str)
@@ -968,9 +979,7 @@ gboolean is_ascii_str(const gchar *str)
 	const guchar *p = (const guchar *)str;
 
 	while (*p != '\0') {
-		if (*p != '\t' && *p != ' ' &&
-		    *p != '\r' && *p != '\n' &&
-		    (*p < 32 || *p >= 127))
+		if (*p != '\t' && *p != ' ' && *p != '\r' && *p != '\n' && (*p < 32 || *p >= 127))
 			return FALSE;
 		p++;
 	}
@@ -978,19 +987,18 @@ gboolean is_ascii_str(const gchar *str)
 	return TRUE;
 }
 
-static const gchar * line_has_quote_char_last(const gchar * str, const gchar *quote_chars)
+static const gchar *line_has_quote_char_last(const gchar *str, const gchar *quote_chars)
 {
-	gchar * position = NULL;
-	gchar * tmp_pos = NULL;
+	gchar *position = NULL;
+	gchar *tmp_pos = NULL;
 	int i;
 
 	if (str == NULL || quote_chars == NULL)
 		return NULL;
 
 	for (i = 0; i < strlen(quote_chars); i++) {
-		tmp_pos = strrchr (str, quote_chars[i]);
-		if(position == NULL
-				|| (tmp_pos != NULL && position <= tmp_pos) )
+		tmp_pos = strrchr(str, quote_chars[i]);
+		if (position == NULL || (tmp_pos != NULL && position <= tmp_pos))
 			position = tmp_pos;
 	}
 	return position;
@@ -1024,8 +1032,7 @@ gint get_quote_level(const gchar *str, const gchar *quote_chars)
 			quote_level++;
 		else if (*p != '-' && !g_ascii_isspace(*p) && p <= last_pos) {
 			/* any characters are allowed except '-','<' and space */
-			while (*p != '-' && *p != '<'
-			       && !strchr(quote_chars, *p)
+			while (*p != '-' && *p != '<' && !strchr(quote_chars, *p)
 			       && !g_ascii_isspace(*p)
 			       && p < last_pos)
 				p++;
@@ -1067,19 +1074,18 @@ gint check_line_length(const gchar *str, gint max_chars, gint *line)
 	return 0;
 }
 
-const gchar * line_has_quote_char(const gchar * str, const gchar *quote_chars)
+const gchar *line_has_quote_char(const gchar *str, const gchar *quote_chars)
 {
-	gchar * position = NULL;
-	gchar * tmp_pos = NULL;
+	gchar *position = NULL;
+	gchar *tmp_pos = NULL;
 	int i;
 
 	if (str == NULL || quote_chars == NULL)
 		return NULL;
 
 	for (i = 0; i < strlen(quote_chars); i++) {
-		tmp_pos = strchr (str, quote_chars[i]);
-		if(position == NULL
-				|| (tmp_pos != NULL && position >= tmp_pos) )
+		tmp_pos = strchr(str, quote_chars[i]);
+		if (position == NULL || (tmp_pos != NULL && position >= tmp_pos))
 			position = tmp_pos;
 	}
 	return position;
@@ -1091,14 +1097,13 @@ static gchar *strstr_with_skip_quote(const gchar *haystack, const gchar *needle)
 	gboolean in_squote = FALSE, in_dquote = FALSE;
 
 	haystack_len = strlen(haystack);
-	needle_len   = strlen(needle);
+	needle_len = strlen(needle);
 
 	if (haystack_len < needle_len || needle_len == 0)
 		return NULL;
 
 	while (haystack_len >= needle_len) {
-		if (!in_squote && !in_dquote &&
-		    !strncmp(haystack, needle, needle_len))
+		if (!in_squote && !in_dquote && !strncmp(haystack, needle, needle_len))
 			return (gchar *)haystack;
 
 		/* 'foo"bar"' -> foo"bar"
@@ -1125,8 +1130,7 @@ static gchar *strstr_with_skip_quote(const gchar *haystack, const gchar *needle)
 	return NULL;
 }
 
-gchar **strsplit_with_quote(const gchar *str, const gchar *delim,
-			    gint max_tokens)
+gchar **strsplit_with_quote(const gchar *str, const gchar *delim, gint max_tokens)
 {
 	GSList *string_list = NULL, *slist;
 	gchar **str_array, *s, *new_str;
@@ -1172,7 +1176,7 @@ gchar **strsplit_with_quote(const gchar *str, const gchar *delim,
 		n++;
 	}
 
-	str_array = g_new(gchar*, n);
+	str_array = g_new(gchar *, n);
 
 	i = n - 1;
 
@@ -1202,7 +1206,8 @@ gchar *get_abbrev_newsgroup_name(const gchar *group, gint len)
 			*ap++ = *p++;
 		if ((ap - abbrev_group) + (last - p) > len && strchr(p, '.')) {
 			*ap++ = *p++;
-			while (*p != '.') p++;
+			while (*p != '.')
+				p++;
 		} else {
 			strcpy(ap, p);
 			return abbrev_group;
@@ -1220,7 +1225,8 @@ gchar *trim_string(const gchar *str, gint len)
 	gchar *new_str;
 	gint new_len = 0;
 
-	if (!str) return NULL;
+	if (!str)
+		return NULL;
 	if (strlen(str) <= len)
 		return g_strdup(str);
 	if (g_utf8_validate(str, -1, NULL) == FALSE)
@@ -1251,36 +1257,32 @@ GList *uri_list_extract_filenames(const gchar *uri_list)
 
 	while (p) {
 		if (*p != '#') {
-			while (g_ascii_isspace(*p)) p++;
+			while (g_ascii_isspace(*p))
+				p++;
 			if (!strncmp(p, "file:", 5)) {
 				q = p;
 				q += 5;
-				while (*q && *q != '\n' && *q != '\r') q++;
+				while (*q && *q != '\n' && *q != '\r')
+					q++;
 
 				if (q > p) {
 					gchar *file, *locale_file = NULL;
 					q--;
 					while (q > p && g_ascii_isspace(*q))
 						q--;
-					Xalloca(escaped_utf8uri, q - p + 2,
-						return result);
-					Xalloca(file, q - p + 2,
-						return result);
+					Xalloca(escaped_utf8uri, q - p + 2, return result);
+					Xalloca(file, q - p + 2, return result);
 					*file = '\0';
 					strncpy(escaped_utf8uri, p, q - p + 1);
 					escaped_utf8uri[q - p + 1] = '\0';
 					decode_uri_with_plus(file, escaped_utf8uri, FALSE);
-		    /*
-		     * g_filename_from_uri() rejects escaped/locale encoded uri
-		     * string which come from Nautilus.
-		     */
+					/*
+					 * g_filename_from_uri() rejects escaped/locale encoded uri
+					 * string which come from Nautilus.
+					 */
 #ifndef G_OS_WIN32
 					if (g_utf8_validate(file, -1, NULL))
-						locale_file
-							= conv_codeset_strdup(
-								file + 5,
-								CS_UTF_8,
-								conv_get_locale_charset_str());
+						locale_file = conv_codeset_strdup(file + 5, CS_UTF_8, conv_get_locale_charset_str());
 					if (!locale_file)
 						locale_file = g_strdup(file + 5);
 #else
@@ -1291,7 +1293,8 @@ GList *uri_list_extract_filenames(const gchar *uri_list)
 			}
 		}
 		p = strchr(p, '\n');
-		if (p) p++;
+		if (p)
+			p++;
 	}
 
 	return result;
@@ -1307,24 +1310,20 @@ static gint axtoi(const gchar *hexstr)
 	hi = hexstr[0];
 	if ('0' <= hi && hi <= '9') {
 		hi -= '0';
-	} else
-		if ('a' <= hi && hi <= 'f') {
-			hi -= ('a' - 10);
-		} else
-			if ('A' <= hi && hi <= 'F') {
-				hi -= ('A' - 10);
-			}
+	} else if ('a' <= hi && hi <= 'f') {
+		hi -= ('a' - 10);
+	} else if ('A' <= hi && hi <= 'F') {
+		hi -= ('A' - 10);
+	}
 
 	lo = hexstr[1];
 	if ('0' <= lo && lo <= '9') {
 		lo -= '0';
-	} else
-		if ('a' <= lo && lo <= 'f') {
-			lo -= ('a'-10);
-		} else
-			if ('A' <= lo && lo <= 'F') {
-				lo -= ('A' - 10);
-			}
+	} else if ('a' <= lo && lo <= 'f') {
+		lo -= ('a' - 10);
+	} else if ('A' <= lo && lo <= 'F') {
+		lo -= ('A' - 10);
+	}
 	result = lo + (16 * hi);
 	return result;
 }
@@ -1333,15 +1332,7 @@ gboolean is_uri_string(const gchar *str)
 {
 	while (str && *str && g_ascii_isspace(*str))
 		str++;
-	return (g_ascii_strncasecmp(str, "http://", 7) == 0 ||
-		g_ascii_strncasecmp(str, "https://", 8) == 0 ||
-		g_ascii_strncasecmp(str, "ftp://", 6) == 0 ||
-		g_ascii_strncasecmp(str, "ftps://", 7) == 0 ||
-		g_ascii_strncasecmp(str, "sftp://", 7) == 0 ||
-		g_ascii_strncasecmp(str, "ftp.", 4) == 0 ||
-		g_ascii_strncasecmp(str, "webcal://", 9) == 0 ||
-		g_ascii_strncasecmp(str, "webcals://", 10) == 0 ||
-		g_ascii_strncasecmp(str, "www.", 4) == 0);
+	return (g_ascii_strncasecmp(str, "http://", 7) == 0 || g_ascii_strncasecmp(str, "https://", 8) == 0 || g_ascii_strncasecmp(str, "ftp://", 6) == 0 || g_ascii_strncasecmp(str, "ftps://", 7) == 0 || g_ascii_strncasecmp(str, "sftp://", 7) == 0 || g_ascii_strncasecmp(str, "ftp.", 4) == 0 || g_ascii_strncasecmp(str, "webcal://", 9) == 0 || g_ascii_strncasecmp(str, "webcals://", 10) == 0 || g_ascii_strncasecmp(str, "www.", 4) == 0);
 }
 
 gchar *get_uri_path(const gchar *uri)
@@ -1392,8 +1383,7 @@ void decode_uri_with_plus(gchar *decoded_uri, const gchar *encoded_uri, gboolean
 	while (*enc) {
 		if (*enc == '%') {
 			enc++;
-			if (isxdigit((guchar)enc[0]) &&
-			    isxdigit((guchar)enc[1])) {
+			if (isxdigit((guchar)enc[0]) && isxdigit((guchar)enc[1])) {
 				*dec = axtoi(enc);
 				dec++;
 				enc += 2;
@@ -1418,22 +1408,22 @@ void decode_uri(gchar *decoded_uri, const gchar *encoded_uri)
 
 static gchar *decode_uri_gdup(const gchar *encoded_uri)
 {
-    gchar *buffer = g_malloc(strlen(encoded_uri)+1);
-    decode_uri_with_plus(buffer, encoded_uri, FALSE);
-    return buffer;
+	gchar *buffer = g_malloc(strlen(encoded_uri) + 1);
+	decode_uri_with_plus(buffer, encoded_uri, FALSE);
+	return buffer;
 }
 
-gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, gchar **bcc,
-		     gchar **subject, gchar **body, gchar ***attach, gchar **inreplyto)
+gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, gchar **bcc, gchar **subject, gchar **body, gchar ***attach, gchar **inreplyto)
 {
 	gchar *tmp_mailto;
 	gchar *p;
 	const gchar *forbidden_uris[] = { ".gnupg/",
-					  "/etc/passwd",
-					  "/etc/shadow",
-					  ".ssh/",
-					  "../",
-					  NULL };
+		"/etc/passwd",
+		"/etc/shadow",
+		".ssh/",
+		"../",
+		NULL
+	};
 	gint num_attach = 0;
 
 	cm_return_val_if_fail(mailto != NULL, -1);
@@ -1458,7 +1448,8 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 		field = p;
 
 		p = strchr(p, '=');
-		if (!p) break;
+		if (!p)
+			break;
 		*p = '\0';
 		p++;
 
@@ -1470,7 +1461,8 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 			p++;
 		}
 
-		if (*value == '\0') continue;
+		if (*value == '\0')
+			continue;
 
 		if (from && !g_ascii_strcasecmp(field, "from")) {
 			if (!*from) {
@@ -1502,8 +1494,7 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 				g_free(*bcc);
 				*bcc = new_bcc;
 			}
-		} else if (subject && !*subject &&
-			   !g_ascii_strcasecmp(field, "subject")) {
+		} else if (subject && !*subject && !g_ascii_strcasecmp(field, "subject")) {
 			*subject = decode_uri_gdup(value);
 		} else if (body && !*body && !g_ascii_strcasecmp(field, "body")) {
 			*body = decode_uri_gdup(value);
@@ -1513,8 +1504,7 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 
 			for (; forbidden_uris[i]; i++) {
 				if (strstr(tmp, forbidden_uris[i])) {
-					g_print("Refusing to insert '%s', potential private data leak\n",
-							tmp);
+					g_print("Refusing to insert '%s', potential private data leak\n", tmp);
 					g_free(tmp);
 					tmp = NULL;
 					break;
@@ -1539,8 +1529,7 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 
 			for (; forbidden_uris[i]; i++) {
 				if (strstr(tmp, forbidden_uris[i])) {
-					g_print("Refusing to attach '%s', potential private data leak\n",
-							tmp);
+					g_print("Refusing to attach '%s', potential private data leak\n", tmp);
 					g_free(tmp);
 					tmp = NULL;
 					break;
@@ -1549,22 +1538,19 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 			if (tmp) {
 				/* attach is correct */
 				num_attach++;
-				my_att = g_realloc(my_att, (sizeof(char *))*(num_attach+1));
-				my_att[num_attach-1] = tmp;
+				my_att = g_realloc(my_att, (sizeof(char *)) * (num_attach + 1));
+				my_att[num_attach - 1] = tmp;
 				my_att[num_attach] = NULL;
 				*attach = my_att;
-			}
-            else
+			} else
 				g_free(my_att);
-		} else if (inreplyto && !*inreplyto &&
-			   !g_ascii_strcasecmp(field, "in-reply-to")) {
+		} else if (inreplyto && !*inreplyto && !g_ascii_strcasecmp(field, "in-reply-to")) {
 			*inreplyto = decode_uri_gdup(value);
 		}
 	}
 
 	return 0;
 }
-
 
 #ifdef G_OS_WIN32
 #include <windows.h>
@@ -1580,92 +1566,76 @@ gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, 
 #define DIM(v)		     (sizeof(v)/sizeof((v)[0]))
 
 #define RTLD_LAZY 0
-const char *
-w32_strerror (int w32_errno)
+const char *w32_strerror(int w32_errno)
 {
-  static char strerr[256];
-  int ec = (int)GetLastError ();
+	static char strerr[256];
+	int ec = (int)GetLastError();
 
-  if (w32_errno == 0)
-    w32_errno = ec;
-  FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, NULL, w32_errno,
-		 MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-		 strerr, DIM (strerr)-1, NULL);
-  return strerr;
+	if (w32_errno == 0)
+		w32_errno = ec;
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, w32_errno, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), strerr, DIM(strerr) - 1, NULL);
+	return strerr;
 }
 
-static __inline__ void *
-dlopen (const char * name, int flag)
+static __inline__ void *dlopen(const char *name, int flag)
 {
-  void * hd = LoadLibrary (name);
-  return hd;
+	void *hd = LoadLibrary(name);
+	return hd;
 }
 
-static __inline__ void *
-dlsym (void * hd, const char * sym)
+static __inline__ void *dlsym(void *hd, const char *sym)
 {
-  if (hd && sym)
-    {
-      void * fnc = GetProcAddress (hd, sym);
-      if (!fnc)
-	return NULL;
-      return fnc;
-    }
-  return NULL;
-}
-
-
-static __inline__ const char *
-dlerror (void)
-{
-  return w32_strerror (0);
-}
-
-
-static __inline__ int
-dlclose (void * hd)
-{
-  if (hd)
-    {
-      FreeLibrary (hd);
-      return 0;
-    }
-  return -1;
-}
-
-static HRESULT
-w32_shgetfolderpath (HWND a, int b, HANDLE c, DWORD d, LPSTR e)
-{
-  static int initialized;
-  static HRESULT (WINAPI * func)(HWND,int,HANDLE,DWORD,LPSTR);
-
-  if (!initialized)
-    {
-      static char *dllnames[] = { "shell32.dll", "shfolder.dll", NULL };
-      void *handle;
-      int i;
-
-      initialized = 1;
-
-      for (i=0, handle = NULL; !handle && dllnames[i]; i++)
-	{
-	  handle = dlopen (dllnames[i], RTLD_LAZY);
-	  if (handle)
-	    {
-	      func = dlsym (handle, "SHGetFolderPathW");
-	      if (!func)
-		{
-		  dlclose (handle);
-		  handle = NULL;
-		}
-	    }
+	if (hd && sym) {
+		void *fnc = GetProcAddress(hd, sym);
+		if (!fnc)
+			return NULL;
+		return fnc;
 	}
-    }
+	return NULL;
+}
 
-  if (func)
-    return func (a,b,c,d,e);
-  else
-    return -1;
+static __inline__ const char *dlerror(void)
+{
+	return w32_strerror(0);
+}
+
+static __inline__ int dlclose(void *hd)
+{
+	if (hd) {
+		FreeLibrary(hd);
+		return 0;
+	}
+	return -1;
+}
+
+static HRESULT w32_shgetfolderpath(HWND a, int b, HANDLE c, DWORD d, LPSTR e)
+{
+	static int initialized;
+	static HRESULT(WINAPI * func) (HWND, int, HANDLE, DWORD, LPSTR);
+
+	if (!initialized) {
+		static char *dllnames[] = { "shell32.dll", "shfolder.dll", NULL };
+		void *handle;
+		int i;
+
+		initialized = 1;
+
+		for (i = 0, handle = NULL; !handle && dllnames[i]; i++) {
+			handle = dlopen(dllnames[i], RTLD_LAZY);
+			if (handle) {
+				func = dlsym(handle, "SHGetFolderPathW");
+				if (!func) {
+					dlclose(handle);
+					handle = NULL;
+				}
+			}
+		}
+	}
+
+	if (func)
+		return func(a, b, c, d, e);
+	else
+		return -1;
 }
 
 /* Returns a static string with the directroy from which the module
@@ -1675,19 +1645,19 @@ static char *w32_get_module_dir(void)
 	static char *moddir;
 
 	if (!moddir) {
-		char name[MAX_PATH+10];
+		char name[MAX_PATH + 10];
 		char *p;
 
-		if ( !GetModuleFileNameA (0, name, sizeof (name)-10) )
+		if (!GetModuleFileNameA(0, name, sizeof(name) - 10))
 			*name = 0;
 		else {
-			p = strrchr (name, '\\');
+			p = strrchr(name, '\\');
 			if (p)
 				*p = 0;
 			else
 				*name = 0;
 		}
-		moddir = g_strdup (name);
+		moddir = g_strdup(name);
 	}
 	return moddir;
 }
@@ -1700,8 +1670,7 @@ const gchar *get_locale_dir(void)
 
 #ifdef G_OS_WIN32
 	if (!loc_dir)
-		loc_dir = g_strconcat(w32_get_module_dir(), G_DIR_SEPARATOR_S,
-				      "\\share\\locale", NULL);
+		loc_dir = g_strconcat(w32_get_module_dir(), G_DIR_SEPARATOR_S, "\\share\\locale", NULL);
 #endif
 	if (!loc_dir)
 		loc_dir = LOCALEDIR;
@@ -1709,18 +1678,15 @@ const gchar *get_locale_dir(void)
 	return loc_dir;
 }
 
-
 const gchar *get_home_dir(void)
 {
 #ifdef G_OS_WIN32
 	static char home_dir_utf16[MAX_PATH] = "";
 	static gchar *home_dir_utf8 = NULL;
 	if (home_dir_utf16[0] == '\0') {
-		if (w32_shgetfolderpath
-			    (NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE,
-			     NULL, 0, home_dir_utf16) < 0)
-				strcpy (home_dir_utf16, "C:\\Claws Mail");
-		home_dir_utf8 = g_utf16_to_utf8 ((const gunichar2 *)home_dir_utf16, -1, NULL, NULL, NULL);
+		if (w32_shgetfolderpath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, home_dir_utf16) < 0)
+			strcpy(home_dir_utf16, "C:\\Claws Mail");
+		home_dir_utf8 = g_utf16_to_utf8((const gunichar2 *)home_dir_utf16, -1, NULL, NULL, NULL);
 	}
 	return home_dir_utf8;
 #else
@@ -1744,8 +1710,7 @@ const gchar *get_rc_dir(void)
 {
 
 	if (!claws_rc_dir) {
-		claws_rc_dir = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S,
-				     RC_DIR, NULL);
+		claws_rc_dir = g_strconcat(get_home_dir(), G_DIR_SEPARATOR_S, RC_DIR, NULL);
 		debug_print("using default rc_dir %s\n", claws_rc_dir);
 	}
 	return claws_rc_dir;
@@ -1761,8 +1726,7 @@ void set_rc_dir(const gchar *dir)
 		int len;
 
 		if (err) {
-			g_print("Error looking for %s: %d(%s)\n",
-				dir, -err, g_strerror(-err));
+			g_print("Error looking for %s: %d(%s)\n", dir, -err, g_strerror(-err));
 			exit(0);
 		}
 		rc_dir_alt = TRUE;
@@ -1776,15 +1740,15 @@ void set_rc_dir(const gchar *dir)
 		debug_print("set rc_dir to %s\n", claws_rc_dir);
 		if (!is_dir_exist(claws_rc_dir)) {
 			if (make_dir_hier(claws_rc_dir) != 0) {
-				g_print("Error: can't create %s\n",
-				claws_rc_dir);
+				g_print("Error: can't create %s\n", claws_rc_dir);
 				exit(0);
 			}
 		}
 	}
 }
 
-gboolean rc_dir_is_alt(void) {
+gboolean rc_dir_is_alt(void)
+{
 	return rc_dir_alt;
 }
 
@@ -1797,8 +1761,7 @@ const gchar *get_news_cache_dir(void)
 {
 	static gchar *news_cache_dir = NULL;
 	if (!news_cache_dir)
-		news_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					     NEWS_CACHE_DIR, NULL);
+		news_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, NEWS_CACHE_DIR, NULL);
 
 	return news_cache_dir;
 }
@@ -1808,8 +1771,7 @@ const gchar *get_imap_cache_dir(void)
 	static gchar *imap_cache_dir = NULL;
 
 	if (!imap_cache_dir)
-		imap_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					     IMAP_CACHE_DIR, NULL);
+		imap_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, IMAP_CACHE_DIR, NULL);
 
 	return imap_cache_dir;
 }
@@ -1819,8 +1781,7 @@ const gchar *get_mime_tmp_dir(void)
 	static gchar *mime_tmp_dir = NULL;
 
 	if (!mime_tmp_dir)
-		mime_tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					   MIME_TMP_DIR, NULL);
+		mime_tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, MIME_TMP_DIR, NULL);
 
 	return mime_tmp_dir;
 }
@@ -1830,8 +1791,7 @@ const gchar *get_template_dir(void)
 	static gchar *template_dir = NULL;
 
 	if (!template_dir)
-		template_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					   TEMPLATE_DIR, NULL);
+		template_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, TEMPLATE_DIR, NULL);
 
 	return template_dir;
 }
@@ -1841,10 +1801,7 @@ const gchar *w32_get_cert_file(void)
 {
 	const gchar *cert_file = NULL;
 	if (!cert_file)
-		cert_file = g_strconcat(w32_get_module_dir(),
-				 "\\share\\claws-mail\\",
-				"ca-certificates.crt",
-				NULL);
+		cert_file = g_strconcat(w32_get_module_dir(), "\\share\\claws-mail\\", "ca-certificates.crt", NULL);
 	return cert_file;
 }
 #endif
@@ -1853,9 +1810,9 @@ const gchar *w32_get_cert_file(void)
 const gchar *get_desktop_file(void)
 {
 #ifdef DESKTOPFILEPATH
-  return DESKTOPFILEPATH;
+	return DESKTOPFILEPATH;
 #else
-  return NULL;
+	return NULL;
 #endif
 }
 
@@ -1866,9 +1823,7 @@ const gchar *get_plugin_dir(void)
 	static gchar *plugin_dir = NULL;
 
 	if (!plugin_dir)
-		plugin_dir = g_strconcat(w32_get_module_dir(),
-					 "\\lib\\claws-mail\\plugins\\",
-					 NULL);
+		plugin_dir = g_strconcat(w32_get_module_dir(), "\\lib\\claws-mail\\plugins\\", NULL);
 	return plugin_dir;
 #else
 	if (is_dir_exist(PLUGINDIR))
@@ -1876,14 +1831,11 @@ const gchar *get_plugin_dir(void)
 	else {
 		static gchar *plugin_dir = NULL;
 		if (!plugin_dir)
-			plugin_dir = g_strconcat(get_rc_dir(),
-				G_DIR_SEPARATOR_S, "plugins",
-				G_DIR_SEPARATOR_S, NULL);
+			plugin_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "plugins", G_DIR_SEPARATOR_S, NULL);
 		return plugin_dir;
 	}
 #endif
 }
-
 
 #ifdef G_OS_WIN32
 /* Return the default directory for Themes. */
@@ -1892,9 +1844,7 @@ const gchar *w32_get_themes_dir(void)
 	static gchar *themes_dir = NULL;
 
 	if (!themes_dir)
-		themes_dir = g_strconcat(w32_get_module_dir(),
-					 "\\share\\claws-mail\\themes",
-					 NULL);
+		themes_dir = g_strconcat(w32_get_module_dir(), "\\share\\claws-mail\\themes", NULL);
 	return themes_dir;
 }
 #endif
@@ -1904,8 +1854,7 @@ const gchar *get_tmp_dir(void)
 	static gchar *tmp_dir = NULL;
 
 	if (!tmp_dir)
-		tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				      TMP_DIR, NULL);
+		tmp_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, TMP_DIR, NULL);
 
 	return tmp_dir;
 }
@@ -1915,8 +1864,7 @@ gchar *get_tmp_file(void)
 	gchar *tmp_file;
 	static guint32 id = 0;
 
-	tmp_file = g_strdup_printf("%s%ctmpfile.%08x",
-				   get_tmp_dir(), G_DIR_SEPARATOR, id++);
+	tmp_file = g_strdup_printf("%s%ctmpfile.%08x", get_tmp_dir(), G_DIR_SEPARATOR, id++);
 
 	return tmp_file;
 }
@@ -1990,8 +1938,7 @@ off_t get_file_size(const gchar *file)
 	goffset size;
 
 	f = g_file_new_for_path(file);
-	fi = g_file_query_info(f, "standard::size",
-			G_FILE_QUERY_INFO_NONE, NULL, &error);
+	fi = g_file_query_info(f, "standard::size", G_FILE_QUERY_INFO_NONE, NULL, &error);
 	if (error != NULL) {
 		debug_print("get_file_size error: %s\n", error->message);
 		g_error_free(error);
@@ -2035,7 +1982,8 @@ gboolean file_exist(const gchar *file, gboolean allow_fifo)
 		return FALSE;
 
 	if (g_stat(file, &s) < 0) {
-		if (ENOENT != errno) FILE_OP_ERROR(file, "stat");
+		if (ENOENT != errno)
+			FILE_OP_ERROR(file, "stat");
 		return FALSE;
 	}
 
@@ -2045,7 +1993,6 @@ gboolean file_exist(const gchar *file, gboolean allow_fifo)
 	return FALSE;
 }
 
-
 /* Test on whether FILE is a relative file name. This is
  * straightforward for Unix but more complex for Windows. */
 gboolean is_relative_filename(const gchar *file)
@@ -2053,21 +2000,20 @@ gboolean is_relative_filename(const gchar *file)
 	if (!file)
 		return TRUE;
 #ifdef G_OS_WIN32
-	if ( *file == '\\' && file[1] == '\\' && strchr (file+2, '\\') )
+	if (*file == '\\' && file[1] == '\\' && strchr(file + 2, '\\'))
 		return FALSE; /* Prefixed with a hostname - this can't
 			       * be a relative name. */
 
-	if ( ((*file >= 'a' && *file <= 'z')
-	      || (*file >= 'A' && *file <= 'Z'))
-	     && file[1] == ':')
-		file += 2;  /* Skip drive letter. */
+	if (((*file >= 'a' && *file <= 'z')
+	     || (*file >= 'A' && *file <= 'Z'))
+	    && file[1] == ':')
+		file += 2; /* Skip drive letter. */
 
 	return !(*file == '\\' || *file == '/');
 #else
 	return !(*file == G_DIR_SEPARATOR);
 #endif
 }
-
 
 gboolean is_dir_exist(const gchar *dir)
 {
@@ -2102,7 +2048,8 @@ gint change_dir(const gchar *dir)
 
 	if (g_chdir(dir) < 0) {
 		FILE_OP_ERROR(dir, "chdir");
-		if (debug_mode) g_free(prevdir);
+		if (debug_mode)
+			g_free(prevdir);
 		return -1;
 	} else if (debug_mode) {
 		gchar *cwd;
@@ -2257,7 +2204,7 @@ gint remove_numbered_files_not_in_list(const gchar *dir, GSList *numberlist)
 	GError *error = NULL;
 
 	if (numberlist == NULL)
-	    return 0;
+		return 0;
 
 	prev_dir = g_get_current_dir();
 
@@ -2268,8 +2215,7 @@ gint remove_numbered_files_not_in_list(const gchar *dir, GSList *numberlist)
 	}
 
 	if ((dp = g_dir_open(".", 0, &error)) == NULL) {
-		g_message("Couldn't open current directory: %s (%d).\n",
-				error->message, error->code);
+		g_message("Couldn't open current directory: %s (%d).\n", error->message, error->code);
 		g_error_free(error);
 		g_free(prev_dir);
 		return -1;
@@ -2328,7 +2274,8 @@ gint remove_dir_recursive(const gchar *dir)
 
 	if (g_stat(dir, &s) < 0) {
 		FILE_OP_ERROR(dir, "stat");
-		if (ENOENT == errno) return 0;
+		if (ENOENT == errno)
+			return 0;
 		return -(errno);
 	}
 
@@ -2520,9 +2467,7 @@ gchar *get_outgoing_rfc2822_str(FILE *fp)
 
 gchar *generate_mime_boundary(const gchar *prefix)
 {
-	static gchar tbl[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			     "abcdefghijklmnopqrstuvwxyz"
-			     "1234567890+_./=";
+	static gchar tbl[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "1234567890+_./=";
 	gchar buf_uniq[24];
 	gint i;
 
@@ -2530,8 +2475,7 @@ gchar *generate_mime_boundary(const gchar *prefix)
 		buf_uniq[i] = tbl[g_random_int_range(0, sizeof(tbl) - 1)];
 	buf_uniq[i] = '\0';
 
-	return g_strdup_printf("%s_/%s", prefix ? prefix : "MP",
-			       buf_uniq);
+	return g_strdup_printf("%s_/%s", prefix ? prefix : "MP", buf_uniq);
 }
 
 char *fgets_crlf(char *buf, int size, FILE *stream)
@@ -2542,8 +2486,7 @@ char *fgets_crlf(char *buf, int size, FILE *stream)
 	char *cs;
 
 	cs = buf;
-	while (--size > 0 && (c = getc(stream)) != EOF)
-	{
+	while (--size > 0 && (c = getc(stream)) != EOF) {
 		*cs++ = c;
 		is_cr = (c == '\r');
 		if (c == '\n') {
@@ -2569,8 +2512,7 @@ static gint execute_async(gchar *const argv[], const gchar *working_directory)
 {
 	cm_return_val_if_fail(argv != NULL && argv[0] != NULL, -1);
 
-	if (g_spawn_async(working_directory, (gchar **)argv, NULL, G_SPAWN_SEARCH_PATH,
-			  NULL, NULL, NULL, FALSE) == FALSE) {
+	if (g_spawn_async(working_directory, (gchar **)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, FALSE) == FALSE) {
 		g_warning("couldn't execute command: %s", argv[0]);
 		return -1;
 	}
@@ -2585,8 +2527,7 @@ static gint execute_sync(gchar *const argv[], const gchar *working_directory)
 	cm_return_val_if_fail(argv != NULL && argv[0] != NULL, -1);
 
 #ifdef G_OS_UNIX
-	if (g_spawn_sync(working_directory, (gchar **)argv, NULL, G_SPAWN_SEARCH_PATH,
-			 NULL, NULL, NULL, NULL, &status, NULL) == FALSE) {
+	if (g_spawn_sync(working_directory, (gchar **)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, NULL) == FALSE) {
 		g_warning("couldn't execute command: %s", argv[0]);
 		return -1;
 	}
@@ -2596,11 +2537,7 @@ static gint execute_sync(gchar *const argv[], const gchar *working_directory)
 	else
 		return -1;
 #else
-	if (g_spawn_sync(working_directory, (gchar **)argv, NULL,
-				G_SPAWN_SEARCH_PATH|
-				G_SPAWN_CHILD_INHERITS_STDIN|
-				G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
-			 NULL, NULL, NULL, NULL, &status, NULL) == FALSE) {
+	if (g_spawn_sync(working_directory, (gchar **)argv, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_CHILD_INHERITS_STDIN | G_SPAWN_LEAVE_DESCRIPTORS_OPEN, NULL, NULL, NULL, NULL, &status, NULL) == FALSE) {
 		g_warning("couldn't execute command: %s", argv[0]);
 		return -1;
 	}
@@ -2609,8 +2546,7 @@ static gint execute_sync(gchar *const argv[], const gchar *working_directory)
 #endif
 }
 
-gint execute_command_line(const gchar *cmdline, gboolean async,
-		const gchar *working_directory)
+gint execute_command_line(const gchar *cmdline, gboolean async, const gchar *working_directory)
 {
 	gchar **argv;
 	gint ret;
@@ -2640,8 +2576,7 @@ gchar *get_command_output(const gchar *cmdline)
 
 	debug_print("get_command_output(): executing: %s\n", cmdline);
 
-	if (g_spawn_command_line_sync(cmdline, &child_stdout, NULL, &status,
-				      NULL) == FALSE) {
+	if (g_spawn_command_line_sync(cmdline, &child_stdout, NULL, &status, NULL) == FALSE) {
 		g_warning("couldn't execute command: %s", cmdline);
 		return NULL;
 	}
@@ -2649,12 +2584,12 @@ gchar *get_command_output(const gchar *cmdline)
 	return child_stdout;
 }
 
-FILE *get_command_output_stream(const char* cmdline)
+FILE *get_command_output_stream(const char *cmdline)
 {
-    GPid pid;
+	GPid pid;
 	GError *err = NULL;
 	gchar **argv = NULL;
-    int fd;
+	int fd;
 
 	cm_return_val_if_fail(cmdline != NULL, NULL);
 
@@ -2663,19 +2598,17 @@ FILE *get_command_output_stream(const char* cmdline)
 	/* turn the command-line string into an array */
 	if (!g_shell_parse_argv(cmdline, NULL, &argv, &err)) {
 		g_warning("could not parse command line from '%s': %s", cmdline, err->message);
-        g_error_free(err);
+		g_error_free(err);
 		return NULL;
 	}
 
-    if (!g_spawn_async_with_pipes(NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
-                                  NULL, NULL, &pid, NULL, &fd, NULL, &err)
-        && err)
-    {
-        g_warning("could not spawn '%s': %s", cmdline, err->message);
-        g_error_free(err);
+	if (!g_spawn_async_with_pipes(NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, NULL, &fd, NULL, &err)
+	    && err) {
+		g_warning("could not spawn '%s': %s", cmdline, err->message);
+		g_error_free(err);
 		g_strfreev(argv);
-        return NULL;
-    }
+		return NULL;
+	}
 
 	g_strfreev(argv);
 	return fdopen(fd, "r");
@@ -2685,11 +2618,11 @@ FILE *get_command_output_stream(const char* cmdline)
 static gint is_unchanged_uri_char(char c)
 {
 	switch (c) {
-		case '(':
-		case ')':
-			return 0;
-		default:
-			return 1;
+	case '(':
+	case ')':
+		return 0;
+	default:
+		return 1;
 	}
 }
 
@@ -2699,14 +2632,13 @@ static void encode_uri(gchar *encoded_uri, gint bufsize, const gchar *uri)
 	int k;
 
 	k = 0;
-	for(i = 0; i < strlen(uri) ; i++) {
+	for (i = 0; i < strlen(uri); i++) {
 		if (is_unchanged_uri_char(uri[i])) {
 			if (k + 2 >= bufsize)
 				break;
 			encoded_uri[k++] = uri[i];
-		}
-		else {
-			char * hexa = "0123456789ABCDEF";
+		} else {
+			char *hexa = "0123456789ABCDEF";
 
 			if (k + 4 >= bufsize)
 				break;
@@ -2731,15 +2663,11 @@ gint open_uri(const gchar *uri, const gchar *cmdline)
 	/* an option to choose whether to use encode_uri or not ? */
 	encode_uri(encoded_uri, BUFFSIZE, uri);
 
-	if (cmdline &&
-	    (p = strchr(cmdline, '%')) && *(p + 1) == 's' &&
-	    !strchr(p + 2, '%'))
+	if (cmdline && (p = strchr(cmdline, '%')) && *(p + 1) == 's' && !strchr(p + 2, '%'))
 		g_snprintf(buf, sizeof(buf), cmdline, encoded_uri);
 	else {
 		if (cmdline)
-			g_warning("Open URI command-line is invalid "
-				  "(there must be only one '%%s'): %s",
-				  cmdline);
+			g_warning("Open URI command-line is invalid " "(there must be only one '%%s'): %s", cmdline);
 		g_snprintf(buf, sizeof(buf), DEFAULT_BROWSER_CMD, encoded_uri);
 	}
 
@@ -2757,15 +2685,11 @@ gint open_txt_editor(const gchar *filepath, const gchar *cmdline)
 
 	cm_return_val_if_fail(filepath != NULL, -1);
 
-	if (cmdline &&
-	    (p = strchr(cmdline, '%')) && *(p + 1) == 's' &&
-	    !strchr(p + 2, '%'))
+	if (cmdline && (p = strchr(cmdline, '%')) && *(p + 1) == 's' && !strchr(p + 2, '%'))
 		g_snprintf(buf, sizeof(buf), cmdline, filepath);
 	else {
 		if (cmdline)
-			g_warning("Open Text Editor command-line is invalid "
-				  "(there must be only one '%%s'): %s",
-				  cmdline);
+			g_warning("Open Text Editor command-line is invalid " "(there must be only one '%%s'): %s", cmdline);
 		g_snprintf(buf, sizeof(buf), DEFAULT_EDITOR_CMD, filepath);
 	}
 
@@ -2788,13 +2712,11 @@ time_t remote_tzoffset_sec(const gchar *zone)
 	zone3[3] = '\0';
 	remoteoffset = 0;
 
-	if (sscanf(zone, "%c%d", &c, &offset) == 2 &&
-	    (c == '+' || c == '-')) {
+	if (sscanf(zone, "%c%d", &c, &offset) == 2 && (c == '+' || c == '-')) {
 		remoteoffset = ((offset / 100) * 60 + (offset % 100)) * 60;
 		if (c == '-')
 			remoteoffset = -remoteoffset;
-	} else if (!strncmp(zone, "UT" , 2) ||
-		   !strncmp(zone, "GMT", 3)) {
+	} else if (!strncmp(zone, "UT", 2) || !strncmp(zone, "GMT", 3)) {
 		remoteoffset = 0;
 	} else if (strlen(zone3) == 3) {
 		for (p = ustzstr; *p != '\0'; p += 3) {
@@ -2808,32 +2730,84 @@ time_t remote_tzoffset_sec(const gchar *zone)
 			return -1;
 	} else if (strlen(zone3) == 1) {
 		switch (zone[0]) {
-		case 'Z': remoteoffset =   0; break;
-		case 'A': remoteoffset =  -1; break;
-		case 'B': remoteoffset =  -2; break;
-		case 'C': remoteoffset =  -3; break;
-		case 'D': remoteoffset =  -4; break;
-		case 'E': remoteoffset =  -5; break;
-		case 'F': remoteoffset =  -6; break;
-		case 'G': remoteoffset =  -7; break;
-		case 'H': remoteoffset =  -8; break;
-		case 'I': remoteoffset =  -9; break;
-		case 'K': remoteoffset = -10; break; /* J is not used */
-		case 'L': remoteoffset = -11; break;
-		case 'M': remoteoffset = -12; break;
-		case 'N': remoteoffset =   1; break;
-		case 'O': remoteoffset =   2; break;
-		case 'P': remoteoffset =   3; break;
-		case 'Q': remoteoffset =   4; break;
-		case 'R': remoteoffset =   5; break;
-		case 'S': remoteoffset =   6; break;
-		case 'T': remoteoffset =   7; break;
-		case 'U': remoteoffset =   8; break;
-		case 'V': remoteoffset =   9; break;
-		case 'W': remoteoffset =  10; break;
-		case 'X': remoteoffset =  11; break;
-		case 'Y': remoteoffset =  12; break;
-		default:  remoteoffset =   0; break;
+		case 'Z':
+			remoteoffset = 0;
+			break;
+		case 'A':
+			remoteoffset = -1;
+			break;
+		case 'B':
+			remoteoffset = -2;
+			break;
+		case 'C':
+			remoteoffset = -3;
+			break;
+		case 'D':
+			remoteoffset = -4;
+			break;
+		case 'E':
+			remoteoffset = -5;
+			break;
+		case 'F':
+			remoteoffset = -6;
+			break;
+		case 'G':
+			remoteoffset = -7;
+			break;
+		case 'H':
+			remoteoffset = -8;
+			break;
+		case 'I':
+			remoteoffset = -9;
+			break;
+		case 'K':
+			remoteoffset = -10;
+			break; /* J is not used */
+		case 'L':
+			remoteoffset = -11;
+			break;
+		case 'M':
+			remoteoffset = -12;
+			break;
+		case 'N':
+			remoteoffset = 1;
+			break;
+		case 'O':
+			remoteoffset = 2;
+			break;
+		case 'P':
+			remoteoffset = 3;
+			break;
+		case 'Q':
+			remoteoffset = 4;
+			break;
+		case 'R':
+			remoteoffset = 5;
+			break;
+		case 'S':
+			remoteoffset = 6;
+			break;
+		case 'T':
+			remoteoffset = 7;
+			break;
+		case 'U':
+			remoteoffset = 8;
+			break;
+		case 'V':
+			remoteoffset = 9;
+			break;
+		case 'W':
+			remoteoffset = 10;
+			break;
+		case 'X':
+			remoteoffset = 11;
+			break;
+		case 'Y':
+			remoteoffset = 12;
+			break;
+		default:
+			remoteoffset = 0;
+			break;
 		}
 		remoteoffset = remoteoffset * 3600;
 	} else
@@ -2865,8 +2839,8 @@ time_t tzoffset_sec(time_t *now)
 	else if (lt->tm_yday > gmt.tm_yday)
 		off += 24 * 60;
 
-	if (off >= 24 * 60)		/* should be impossible */
-		off = 23 * 60 + 59;	/* if not, insert silly value */
+	if (off >= 24 * 60) /* should be impossible */
+		off = 23 * 60 + 59; /* if not, insert silly value */
 	if (off <= -24 * 60)
 		off = -(23 * 60 + 59);
 
@@ -2904,8 +2878,8 @@ gchar *tzoffset(time_t *now)
 		off = -off;
 	}
 
-	if (off >= 24 * 60)		/* should be impossible */
-		off = 23 * 60 + 59;	/* if not, insert silly value */
+	if (off >= 24 * 60) /* should be impossible */
+		off = 23 * 60 + 59; /* if not, insert silly value */
 
 	sprintf(offset_string, "%c%02d%02d", sign, off / 60, off % 60);
 
@@ -2927,12 +2901,10 @@ static void _get_rfc822_date(gchar *buf, gint len, gboolean hidetz)
 	else
 		lt = localtime_r(&t, &buf1);
 
-	if (sscanf(asctime_r(lt, buf2), "%3s %3s %d %d:%d:%d %d\n",
-	       day, mon, &dd, &hh, &mm, &ss, &yyyy) != 7)
+	if (sscanf(asctime_r(lt, buf2), "%3s %3s %d %d:%d:%d %d\n", day, mon, &dd, &hh, &mm, &ss, &yyyy) != 7)
 		g_warning("failed reading date/time");
 
-	g_snprintf(buf, len, "%s, %d %s %d %02d:%02d:%02d %s",
-		   day, dd, mon, yyyy, hh, mm, ss, (hidetz? "-0000": tzoffset(&t)));
+	g_snprintf(buf, len, "%s, %d %s %d %02d:%02d:%02d %s", day, dd, mon, yyyy, hh, mm, ss, (hidetz ? "-0000" : tzoffset(&t)));
 }
 
 void get_rfc822_date(gchar *buf, gint len)
@@ -2962,7 +2934,8 @@ void debug_print_real(const char *file, int line, const gchar *format, ...)
 	gchar buf[BUFFSIZE];
 	gint prefix_len;
 
-	if (!debug_mode) return;
+	if (!debug_mode)
+		return;
 
 	prefix_len = g_snprintf(buf, sizeof(buf), "%s:%d:", debug_srcname(file), line);
 
@@ -2978,7 +2951,8 @@ void debug_print_real(const gchar *format, ...)
 	va_list args;
 	gchar buf[BUFFSIZE];
 
-	if (!debug_mode) return;
+	if (!debug_mode)
+		return;
 
 	va_start(args, format);
 	g_vsnprintf(buf, sizeof(buf), format, args);
@@ -2988,15 +2962,13 @@ void debug_print_real(const gchar *format, ...)
 }
 #endif
 
-
-const char * debug_srcname(const char *file)
+const char *debug_srcname(const char *file)
 {
-	const char *s = strrchr (file, '/');
-	return s? s+1:file;
+	const char *s = strrchr(file, '/');
+	return s ? s + 1 : file;
 }
 
-
-void * subject_table_lookup(GHashTable *subject_table, gchar * subject)
+void *subject_table_lookup(GHashTable *subject_table, gchar *subject)
 {
 	if (subject == NULL)
 		subject = "";
@@ -3006,8 +2978,7 @@ void * subject_table_lookup(GHashTable *subject_table, gchar * subject)
 	return g_hash_table_lookup(subject_table, subject);
 }
 
-void subject_table_insert(GHashTable *subject_table, gchar * subject,
-			  void * data)
+void subject_table_insert(GHashTable *subject_table, gchar *subject, void *data)
 {
 	if (subject == NULL || *subject == 0)
 		return;
@@ -3015,7 +2986,7 @@ void subject_table_insert(GHashTable *subject_table, gchar * subject,
 	g_hash_table_insert(subject_table, subject, data);
 }
 
-void subject_table_remove(GHashTable *subject_table, gchar * subject)
+void subject_table_remove(GHashTable *subject_table, gchar *subject)
 {
 	if (subject == NULL)
 		return;
@@ -3049,32 +3020,34 @@ void utils_free_regex(void)
 int subject_get_prefix_length(const gchar *subject)
 {
 	/*!< Array with allowable reply prefixes regexps. */
-	static const gchar * const prefixes[] = {
-		"Re\\:",			/* "Re:" */
-		"Re\\[[1-9][0-9]*\\]\\:",	/* "Re[XXX]:" (non-conforming news mail clients) */
-		"Antw\\:",			/* "Antw:" (Dutch / German Outlook) */
-		"Aw\\:",			/* "Aw:"   (German) */
-		"Antwort\\:",			/* "Antwort:" (German Lotus Notes) */
-		"Res\\:",			/* "Res:" (Spanish/Brazilian Outlook) */
-		"Fw\\:",			/* "Fw:" Forward */
-		"Fwd\\:",			/* "Fwd:" Forward */
-		"Enc\\:",			/* "Enc:" Forward (Brazilian Outlook) */
-		"Odp\\:",			/* "Odp:" Re (Polish Outlook) */
-		"Rif\\:",			/* "Rif:" (Italian Outlook) */
-		"Sv\\:",			/* "Sv" (Norwegian) */
-		"Vs\\:",			/* "Vs" (Norwegian) */
-		"Ad\\:",			/* "Ad" (Norwegian) */
-		"\347\255\224\345\244\215\\:",	/* "Re" (Chinese, UTF-8) */
-		"R\303\251f\\. \\:",		/* "R�f. :" (French Lotus Notes) */
-		"Re \\:",			/* "Re :" (French Yahoo Mail) */
+	static const gchar *const prefixes[] = {
+		"Re\\:", /* "Re:" */
+		"Re\\[[1-9][0-9]*\\]\\:", /* "Re[XXX]:" (non-conforming news mail clients) */
+		"Antw\\:", /* "Antw:" (Dutch / German Outlook) */
+		"Aw\\:", /* "Aw:"   (German) */
+		"Antwort\\:", /* "Antwort:" (German Lotus Notes) */
+		"Res\\:", /* "Res:" (Spanish/Brazilian Outlook) */
+		"Fw\\:", /* "Fw:" Forward */
+		"Fwd\\:", /* "Fwd:" Forward */
+		"Enc\\:", /* "Enc:" Forward (Brazilian Outlook) */
+		"Odp\\:", /* "Odp:" Re (Polish Outlook) */
+		"Rif\\:", /* "Rif:" (Italian Outlook) */
+		"Sv\\:", /* "Sv" (Norwegian) */
+		"Vs\\:", /* "Vs" (Norwegian) */
+		"Ad\\:", /* "Ad" (Norwegian) */
+		"\347\255\224\345\244\215\\:", /* "Re" (Chinese, UTF-8) */
+		"R\303\251f\\. \\:", /* "R�f. :" (French Lotus Notes) */
+		"Re \\:", /* "Re :" (French Yahoo Mail) */
 		/* add more */
 	};
 	const int PREFIXES = sizeof prefixes / sizeof prefixes[0];
 	int n;
 	regmatch_t pos;
 
-	if (!subject) return 0;
-	if (!*subject) return 0;
+	if (!subject)
+		return 0;
+	if (!*subject)
+		return 0;
 
 	if (!u_init_) {
 		GString *s = g_string_new("");
@@ -3082,15 +3055,11 @@ int subject_get_prefix_length(const gchar *subject)
 		for (n = 0; n < PREFIXES; n++)
 			/* Terminate each prefix regexpression by a
 			 * "\ ?" (zero or ONE space), and OR them */
-			g_string_append_printf(s, "(%s\\ ?)%s",
-					  prefixes[n],
-					  n < PREFIXES - 1 ?
-					  "|" : "");
+			g_string_append_printf(s, "(%s\\ ?)%s", prefixes[n], n < PREFIXES - 1 ? "|" : "");
 
 		g_string_prepend(s, "(");
-		g_string_append(s, ")+");	/* match at least once */
-		g_string_prepend(s, "^\\ *");	/* from beginning of line */
-
+		g_string_append(s, ")+"); /* match at least once */
+		g_string_prepend(s, "^\\ *"); /* from beginning of line */
 
 		/* We now have something like "^\ *((PREFIX1\ ?)|(PREFIX2\ ?))+"
 		 * TODO: Should this be       "^\ *(((PREFIX1)|(PREFIX2))\ ?)+" ??? */
@@ -3143,47 +3112,42 @@ gint g_int_compare(gconstpointer a, gconstpointer b)
    code is extracted and adapted from etPan! project -- DINH V. Ho�.
 */
 
-gint quote_cmd_argument(gchar * result, guint size,
-			const gchar * path)
+gint quote_cmd_argument(gchar *result, guint size, const gchar *path)
 {
-	const gchar * p;
-	gchar * result_p;
+	const gchar *p;
+	gchar *result_p;
 	guint remaining;
 
 	result_p = result;
 	remaining = size;
 
-	for(p = path ; * p != '\0' ; p ++) {
+	for (p = path; *p != '\0'; p++) {
 
-		if (isalnum((guchar)*p) || (* p == '/')) {
+		if (isalnum((guchar)*p) || (*p == '/')) {
 			if (remaining > 0) {
-				* result_p = * p;
-				result_p ++;
-				remaining --;
-			}
-			else {
+				*result_p = *p;
+				result_p++;
+				remaining--;
+			} else {
 				result[size - 1] = '\0';
 				return -1;
 			}
-		}
-		else {
+		} else {
 			if (remaining >= 2) {
-				* result_p = '\\';
-				result_p ++;
-				* result_p = * p;
-				result_p ++;
+				*result_p = '\\';
+				result_p++;
+				*result_p = *p;
+				result_p++;
 				remaining -= 2;
-			}
-			else {
+			} else {
 				result[size - 1] = '\0';
 				return -1;
 			}
 		}
 	}
 	if (remaining > 0) {
-		* result_p = '\0';
-	}
-	else {
+		*result_p = '\0';
+	} else {
 		result[size - 1] = '\0';
 		return -1;
 	}
@@ -3191,11 +3155,10 @@ gint quote_cmd_argument(gchar * result, guint size,
 	return 0;
 }
 
-typedef struct
-{
-	GNode 		*parent;
-	GNodeMapFunc	 func;
-	gpointer	 data;
+typedef struct {
+	GNode *parent;
+	GNodeMapFunc func;
+	gpointer data;
 } GNodeMapData;
 
 static void g_node_map_recursive(GNode *node, gpointer data)
@@ -3281,7 +3244,7 @@ void get_hex_str(gchar *out, guchar ch)
 	INT_TO_HEX(hex, ch >> 4);
 	*out++ = hex;
 	INT_TO_HEX(hex, ch & 0x0f);
-	*out   = hex;
+	*out = hex;
 }
 
 #undef REF_DEBUG
@@ -3306,11 +3269,7 @@ GType g_auto_pointer_register(void)
 {
 	static GType auto_pointer_type;
 	if (!auto_pointer_type)
-		auto_pointer_type =
-			g_boxed_type_register_static
-				("G_TYPE_AUTO_POINTER",
-				 (GBoxedCopyFunc) g_auto_pointer_copy,
-				 (GBoxedFreeFunc) g_auto_pointer_free);
+		auto_pointer_type = g_boxed_type_register_static("G_TYPE_AUTO_POINTER", (GBoxedCopyFunc) g_auto_pointer_copy, (GBoxedFreeFunc) g_auto_pointer_free);
 	return auto_pointer_type;
 }
 
@@ -3319,9 +3278,9 @@ GType g_auto_pointer_register(void)
  *		auto pointer
  */
 typedef struct AutoPointerRef {
-	void	      (*free) (gpointer);
-	gpointer	pointer;
-	glong		cnt;
+	void (*free)(gpointer);
+	gpointer pointer;
+	glong cnt;
 } AutoPointerRef;
 
 /*!
@@ -3330,7 +3289,7 @@ typedef struct AutoPointerRef {
  */
 typedef struct AutoPointer {
 	AutoPointerRef *ref;
-	gpointer	ptr; /*!< access to protected pointer */
+	gpointer ptr; /*!< access to protected pointer */
 } AutoPointer;
 
 /*!
@@ -3375,7 +3334,7 @@ typedef struct AutoPointer {
 GAuto *g_auto_pointer_new(gpointer p)
 {
 	AutoPointerRef *ref;
-	AutoPointer    *ptr;
+	AutoPointer *ptr;
 
 	if (p == NULL)
 		return NULL;
@@ -3391,7 +3350,7 @@ GAuto *g_auto_pointer_new(gpointer p)
 	ptr->ptr = p;
 
 #ifdef REF_DEBUG
-	G_PRINT_REF ("XXXX ALLOC(%lx)\n", p);
+	G_PRINT_REF("XXXX ALLOC(%lx)\n", p);
 #endif
 	return ptr;
 }
@@ -3431,9 +3390,9 @@ gpointer g_auto_pointer_get_ptr(GAuto *auto_ptr)
  */
 GAuto *g_auto_pointer_copy(GAuto *auto_ptr)
 {
-	AutoPointer	*ptr;
-	AutoPointerRef	*ref;
-	AutoPointer	*newp;
+	AutoPointer *ptr;
+	AutoPointerRef *ref;
+	AutoPointer *newp;
 
 	if (auto_ptr == NULL)
 		return NULL;
@@ -3447,7 +3406,7 @@ GAuto *g_auto_pointer_copy(GAuto *auto_ptr)
 	++(ref->cnt);
 
 #ifdef REF_DEBUG
-	G_PRINT_REF ("XXXX COPY(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
+	G_PRINT_REF("XXXX COPY(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
 #endif
 	return newp;
 }
@@ -3457,8 +3416,8 @@ GAuto *g_auto_pointer_copy(GAuto *auto_ptr)
  */
 void g_auto_pointer_free(GAuto *auto_ptr)
 {
-	AutoPointer	*ptr;
-	AutoPointerRef	*ref;
+	AutoPointer *ptr;
+	AutoPointerRef *ref;
 
 	if (auto_ptr == NULL)
 		return;
@@ -3468,22 +3427,21 @@ void g_auto_pointer_free(GAuto *auto_ptr)
 
 	if (--(ref->cnt) == 0) {
 #ifdef REF_DEBUG
-		G_PRINT_REF ("XXXX FREE(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
+		G_PRINT_REF("XXXX FREE(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
 #endif
 		ref->free(ref->pointer);
 		g_free(ref);
 	}
 #ifdef REF_DEBUG
 	else
-		G_PRINT_REF ("XXXX DEREF(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
+		G_PRINT_REF("XXXX DEREF(%lx) -- REF (%d)\n", ref->pointer, ref->cnt);
 #endif
 	g_free(ptr);
 }
 
 /* get_uri_part() - retrieves a URI starting from scanpos.
 		    Returns TRUE if successful */
-gboolean get_uri_part(const gchar *start, const gchar *scanpos,
-			     const gchar **bp, const gchar **ep, gboolean hdr)
+gboolean get_uri_part(const gchar *start, const gchar *scanpos, const gchar **bp, const gchar **ep, gboolean hdr)
 {
 	const gchar *ep_;
 	gint parenthese_cnt = 0;
@@ -3498,9 +3456,7 @@ gboolean get_uri_part(const gchar *start, const gchar *scanpos,
 	/* find end point of URI */
 	for (ep_ = scanpos; *ep_ != '\0'; ep_ = g_utf8_next_char(ep_)) {
 		gunichar u = g_utf8_get_char_validated(ep_, -1);
-		if (!g_unichar_isgraph(u) ||
-		    u == (gunichar)-1 ||
-		    strchr("[]{}<>\"", *ep_)) {
+		if (!g_unichar_isgraph(u) || u == (gunichar)-1 || strchr("[]{}<>\"", *ep_)) {
 			break;
 		} else if (strchr("(", *ep_)) {
 			parenthese_cnt++;
@@ -3520,10 +3476,7 @@ gboolean get_uri_part(const gchar *start, const gchar *scanpos,
 
 #define IS_REAL_PUNCT(ch)	(g_ascii_ispunct(ch) && !strchr("$/?=-_~)", ch))
 
-	for (; ep_ - 1 > scanpos + 1 &&
-	       IS_REAL_PUNCT(*(ep_ - 1));
-	     ep_--)
-		;
+	for (; ep_ - 1 > scanpos + 1 && IS_REAL_PUNCT(*(ep_ - 1)); ep_--) ;
 
 #undef IS_REAL_PUNCT
 
@@ -3558,7 +3511,7 @@ static GHashTable *create_domain_tab(void)
 
 	cm_return_val_if_fail(htab, NULL);
 	for (n = 0; n < sizeof toplvl_domains / sizeof toplvl_domains[0]; n++)
-		g_hash_table_insert(htab, (gpointer) toplvl_domains[n], (gpointer) toplvl_domains[n]);
+		g_hash_table_insert(htab, (gpointer)toplvl_domains[n], (gpointer)toplvl_domains[n]);
 	return htab;
 }
 
@@ -3571,16 +3524,14 @@ static gboolean is_toplvl_domain(GHashTable *tab, const gchar *first, const gcha
 	if (last - first > BUFFSIZE || first > last)
 		return FALSE;
 
-	for (p = buf; p < m &&  first < last; *p++ = *first++)
-		;
+	for (p = buf; p < m && first < last; *p++ = *first++) ;
 	*p = 0;
 
 	return g_hash_table_lookup(tab, buf) != NULL;
 }
 
 /* get_email_part() - retrieves an email address. Returns TRUE if successful */
-gboolean get_email_part(const gchar *start, const gchar *scanpos,
-			       const gchar **bp, const gchar **ep, gboolean hdr)
+gboolean get_email_part(const gchar *start, const gchar *scanpos, const gchar **bp, const gchar **ep, gboolean hdr)
 {
 	/* more complex than the uri part because we need to scan back and forward starting from
 	 * the scan position. */
@@ -3606,7 +3557,7 @@ gboolean get_email_part(const gchar *start, const gchar *scanpos,
 	if (hdr) {
 		const gchar *start_quote = NULL;
 		const gchar *end_quote = NULL;
-search_again:
+ search_again:
 		/* go to the real start */
 		if (start[0] == ',')
 			start++;
@@ -3637,14 +3588,14 @@ search_again:
 
 		/* find end (either , or ; or end of line) */
 		if (strstr(start, ",") && strstr(start, ";"))
-			*ep = strstr(start,",") < strstr(start, ";")
-				? strstr(start, ",") : strstr(start, ";");
+			*ep = strstr(start, ",") < strstr(start, ";")
+			    ? strstr(start, ",") : strstr(start, ";");
 		else if (strstr(start, ","))
 			*ep = strstr(start, ",");
 		else if (strstr(start, ";"))
 			*ep = strstr(start, ";");
 		else
-			*ep = start+strlen(start);
+			*ep = start + strlen(start);
 
 		/* go back to real start */
 		if (start_quote && end_quote) {
@@ -3655,7 +3606,7 @@ search_again:
 		 * further if possible */
 		if (strstr(start, "@") && strstr(start, "@") < *ep)
 			return TRUE;
-		else if (*ep < start+strlen(start)) {
+		else if (*ep < start + strlen(start)) {
 			start = *ep;
 			goto search_again;
 		} else if (start_quote && strstr(start, "\"") && strstr(start, "\"") < *ep) {
@@ -3670,23 +3621,19 @@ search_again:
 	cm_return_val_if_fail(dom_tab, FALSE);
 
 	/* scan start of address */
-	for (bp_ = scanpos - 1;
-	     bp_ >= start && IS_RFC822_CHAR(*(const guchar *)bp_); bp_--)
-		;
+	for (bp_ = scanpos - 1; bp_ >= start && IS_RFC822_CHAR(*(const guchar *)bp_); bp_--) ;
 
 	/* TODO: should start with an alnum? */
 	bp_++;
-	for (; bp_ < scanpos && !IS_ASCII_ALNUM(*(const guchar *)bp_); bp_++)
-		;
+	for (; bp_ < scanpos && !IS_ASCII_ALNUM(*(const guchar *)bp_); bp_++) ;
 
 	if (bp_ != scanpos) {
 		/* scan end of address */
-		for (ep_ = scanpos + 1;
-		     *ep_ && IS_RFC822_CHAR(*(const guchar *)ep_); ep_++)
+		for (ep_ = scanpos + 1; *ep_ && IS_RFC822_CHAR(*(const guchar *)ep_); ep_++)
 			if (*ep_ == '.') {
 				prelast_dot = last_dot;
 				last_dot = ep_;
-		 		if (*(last_dot + 1) == '.') {
+				if (*(last_dot + 1) == '.') {
 					if (prelast_dot == NULL)
 						return FALSE;
 					last_dot = prelast_dot;
@@ -3695,9 +3642,7 @@ search_again:
 			}
 
 		/* TODO: really should terminate with an alnum? */
-		for (; ep_ > scanpos && !IS_ASCII_ALNUM(*(const guchar *)ep_);
-		     --ep_)
-			;
+		for (; ep_ > scanpos && !IS_ASCII_ALNUM(*(const guchar *)ep_); --ep_) ;
 		ep_++;
 
 		if (last_dot == NULL)
@@ -3719,21 +3664,20 @@ search_again:
 		*bp = bp_;
 	}
 
-	if (!result) return FALSE;
+	if (!result)
+		return FALSE;
 
-	if (*ep_ && bp_ != start && *(bp_ - 1) == '"' && *(ep_) == '"'
-	&& *(ep_ + 1) == ' ' && *(ep_ + 2) == '<'
-	&& IS_RFC822_CHAR(*(ep_ + 3))) {
+	if (*ep_ && bp_ != start && *(bp_ - 1) == '"' && *(ep_) == '"' && *(ep_ + 1) == ' ' && *(ep_ + 2) == '<' && IS_RFC822_CHAR(*(ep_ + 3))) {
 		/* this informative part with an @ in it is
 		 * followed by the email address */
 		ep_ += 3;
 
 		/* go to matching '>' (or next non-rfc822 char, like \n) */
-		for (; *ep_ != '>' && *ep_ != '\0' && IS_RFC822_CHAR(*ep_); ep_++)
-			;
+		for (; *ep_ != '>' && *ep_ != '\0' && IS_RFC822_CHAR(*ep_); ep_++) ;
 
 		/* include the bracket */
-		if (*ep_ == '>') ep_++;
+		if (*ep_ == '>')
+			ep_++;
 
 		/* include the leading quote */
 		bp_--;
@@ -3779,9 +3723,8 @@ search_again:
 		 * a token is acceptable. if not acceptable, the clause
 		 * should terminate the loop with a 'break' */
 		if (!PEEK_STACK()) {
-			if (*bp_ == '-'
-			&& (((bp_ - 1) >= start) && isalnum(*(bp_ - 1)))
-			&& (((bp_ + 1) < ep_)    && isalnum(*(bp_ + 1)))) {
+			if (*bp_ == '-' && (((bp_ - 1) >= start) && isalnum(*(bp_ - 1)))
+			    && (((bp_ + 1) < ep_) && isalnum(*(bp_ + 1)))) {
 				/* hyphens are allowed, but only in
 				   between alnums */
 			} else if (strchr(" \"'", *bp_)) {
@@ -3796,14 +3739,12 @@ search_again:
 	bp_++;
 
 	/* scan forward (should start with an alnum) */
-	for (; *bp_ != '<' && isspace(*bp_) && *bp_ != '"'; bp_++)
-		;
+	for (; *bp_ != '<' && isspace(*bp_) && *bp_ != '"'; bp_++) ;
 #undef PEEK_STACK
 #undef PUSH_STACK
 #undef POP_STACK
 #undef IN_STACK
 #undef FULL_STACK
-
 
 	*bp = bp_;
 	*ep = ep_;
@@ -3862,13 +3803,13 @@ static gchar *mailcap_get_command_in_file(const gchar *path, const gchar *type, 
 	gchar *result = NULL;
 	if (!fp)
 		return NULL;
-	while (claws_fgets(buf, sizeof (buf), fp) != NULL) {
+	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		gchar **parts = g_strsplit(buf, ";", 3);
 		gchar *trimmed = parts[0];
 		while (trimmed[0] == ' ' || trimmed[0] == '\t')
 			trimmed++;
-		while (trimmed[strlen(trimmed)-1] == ' ' || trimmed[strlen(trimmed)-1] == '\t')
-			trimmed[strlen(trimmed)-1] = '\0';
+		while (trimmed[strlen(trimmed) - 1] == ' ' || trimmed[strlen(trimmed) - 1] == '\t')
+			trimmed[strlen(trimmed) - 1] = '\0';
 
 		if (!strcmp(trimmed, type)) {
 			gboolean needsterminal = FALSE;
@@ -3876,18 +3817,18 @@ static gchar *mailcap_get_command_in_file(const gchar *path, const gchar *type, 
 				needsterminal = TRUE;
 			}
 			if (parts[2] && strstr(parts[2], "test=")) {
-				gchar *orig_testcmd = g_strdup(strstr(parts[2], "test=")+5);
+				gchar *orig_testcmd = g_strdup(strstr(parts[2], "test=") + 5);
 				gchar *testcmd = orig_testcmd;
-				if (strstr(testcmd,";"))
-					*(strstr(testcmd,";")) = '\0';
+				if (strstr(testcmd, ";"))
+					*(strstr(testcmd, ";")) = '\0';
 				while (testcmd[0] == ' ' || testcmd[0] == '\t')
 					testcmd++;
-				while (testcmd[strlen(testcmd)-1] == '\n')
-					testcmd[strlen(testcmd)-1] = '\0';
-				while (testcmd[strlen(testcmd)-1] == '\r')
-					testcmd[strlen(testcmd)-1] = '\0';
-				while (testcmd[strlen(testcmd)-1] == ' ' || testcmd[strlen(testcmd)-1] == '\t')
-					testcmd[strlen(testcmd)-1] = '\0';
+				while (testcmd[strlen(testcmd) - 1] == '\n')
+					testcmd[strlen(testcmd) - 1] = '\0';
+				while (testcmd[strlen(testcmd) - 1] == '\r')
+					testcmd[strlen(testcmd) - 1] = '\0';
+				while (testcmd[strlen(testcmd) - 1] == ' ' || testcmd[strlen(testcmd) - 1] == '\t')
+					testcmd[strlen(testcmd) - 1] = '\0';
 
 				if (strstr(testcmd, "%s")) {
 					gchar *tmp = g_strdup_printf(testcmd, file_to_open);
@@ -3913,12 +3854,12 @@ static gchar *mailcap_get_command_in_file(const gchar *path, const gchar *type, 
 			trimmed = parts[1];
 			while (trimmed[0] == ' ' || trimmed[0] == '\t')
 				trimmed++;
-			while (trimmed[strlen(trimmed)-1] == '\n')
-				trimmed[strlen(trimmed)-1] = '\0';
-			while (trimmed[strlen(trimmed)-1] == '\r')
-				trimmed[strlen(trimmed)-1] = '\0';
-			while (trimmed[strlen(trimmed)-1] == ' ' || trimmed[strlen(trimmed)-1] == '\t')
-				trimmed[strlen(trimmed)-1] = '\0';
+			while (trimmed[strlen(trimmed) - 1] == '\n')
+				trimmed[strlen(trimmed) - 1] = '\0';
+			while (trimmed[strlen(trimmed) - 1] == '\r')
+				trimmed[strlen(trimmed) - 1] = '\0';
+			while (trimmed[strlen(trimmed) - 1] == ' ' || trimmed[strlen(trimmed) - 1] == '\t')
+				trimmed[strlen(trimmed) - 1] = '\0';
 			result = g_strdup(trimmed);
 			g_strfreev(parts);
 			claws_fclose(fp);
@@ -3934,6 +3875,7 @@ static gchar *mailcap_get_command_in_file(const gchar *path, const gchar *type, 
 	claws_fclose(fp);
 	return NULL;
 }
+
 gchar *mailcap_get_command_for_type(const gchar *type, const gchar *file_to_open)
 {
 	gchar *result = NULL;
@@ -3984,20 +3926,19 @@ void mailcap_update_default(const gchar *type, const gchar *command)
 		claws_fclose(fp);
 		return;
 	}
-	while (fp && claws_fgets(buf, sizeof (buf), fp) != NULL) {
+	while (fp && claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		gchar **parts = g_strsplit(buf, ";", 3);
 		gchar *trimmed = parts[0];
 		while (trimmed[0] == ' ')
 			trimmed++;
-		while (trimmed[strlen(trimmed)-1] == ' ')
-			trimmed[strlen(trimmed)-1] = '\0';
+		while (trimmed[strlen(trimmed) - 1] == ' ')
+			trimmed[strlen(trimmed) - 1] = '\0';
 
 		if (!strcmp(trimmed, type)) {
 			g_strfreev(parts);
 			continue;
-		}
-		else {
-			if(claws_fputs(buf, outfp) == EOF) {
+		} else {
+			if (claws_fputs(buf, outfp) == EOF) {
 				err = TRUE;
 				g_strfreev(parts);
 				break;
@@ -4022,7 +3963,7 @@ void mailcap_update_default(const gchar *type, const gchar *command)
 }
 
 /* crude test to see if a file is an email. */
-gboolean file_is_email (const gchar *filename)
+gboolean file_is_email(const gchar *filename)
 {
 	FILE *fp = NULL;
 	gchar buffer[2048];
@@ -4031,8 +3972,7 @@ gboolean file_is_email (const gchar *filename)
 		return FALSE;
 	if ((fp = claws_fopen(filename, "rb")) == NULL)
 		return FALSE;
-	while (score < 3
-	       && claws_fgets(buffer, sizeof (buffer), fp) != NULL) {
+	while (score < 3 && claws_fgets(buffer, sizeof(buffer), fp) != NULL) {
 		if (!strncmp(buffer, "From:", strlen("From:")))
 			score++;
 		else if (!strncmp(buffer, "Date:", strlen("Date:")))
@@ -4054,7 +3994,7 @@ gboolean sc_g_list_bigger(GList *list, gint max)
 {
 	GList *cur = list;
 	int i = 0;
-	while (cur && i <= max+1) {
+	while (cur && i <= max + 1) {
 		i++;
 		cur = cur->next;
 	}
@@ -4065,26 +4005,35 @@ gboolean sc_g_slist_bigger(GSList *list, gint max)
 {
 	GSList *cur = list;
 	int i = 0;
-	while (cur && i <= max+1) {
+	while (cur && i <= max + 1) {
 		i++;
 		cur = cur->next;
 	}
 	return (i > max);
 }
 
-const gchar *daynames[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-const gchar *monthnames[] = {NULL, NULL, NULL, NULL, NULL, NULL,
-			     NULL, NULL, NULL, NULL, NULL, NULL};
-const gchar *s_daynames[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-const gchar *s_monthnames[] = {NULL, NULL, NULL, NULL, NULL, NULL,
-			     NULL, NULL, NULL, NULL, NULL, NULL};
+const gchar *daynames[] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-gint daynames_len[] =     {0,0,0,0,0,0,0};
-gint monthnames_len[] =   {0,0,0,0,0,0,
-				 0,0,0,0,0,0};
-gint s_daynames_len[] =   {0,0,0,0,0,0,0};
-gint s_monthnames_len[] = {0,0,0,0,0,0,
-				 0,0,0,0,0,0};
+const gchar *monthnames[] = { NULL, NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL, NULL
+};
+const gchar *s_daynames[] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+const gchar *s_monthnames[] = { NULL, NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+gint daynames_len[] = { 0, 0, 0, 0, 0, 0, 0 };
+
+gint monthnames_len[] = { 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0
+};
+gint s_daynames_len[] = { 0, 0, 0, 0, 0, 0, 0 };
+
+gint s_monthnames_len[] = { 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0
+};
+
 const gchar *s_am_up = NULL;
 const gchar *s_pm_up = NULL;
 const gchar *s_am_low = NULL;
@@ -4190,94 +4139,109 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 		tzset();
 		last_tzset = time(NULL);
 	}
-	while(*format) {
+	while (*format) {
 		if (*format == '%') {
 			gint len = 0, tmp = 0;
 			format++;
-			switch(*format) {
+			switch (*format) {
 			case '%':
-				len = 1; CHECK_SIZE();
+				len = 1;
+				CHECK_SIZE();
 				*curpos = '%';
 				break;
 			case 'a':
-				len = s_daynames_len[lt->tm_wday]; CHECK_SIZE();
+				len = s_daynames_len[lt->tm_wday];
+				CHECK_SIZE();
 				strncpy2(curpos, s_daynames[lt->tm_wday], buflen - total_done);
 				break;
 			case 'A':
-				len = daynames_len[lt->tm_wday]; CHECK_SIZE();
+				len = daynames_len[lt->tm_wday];
+				CHECK_SIZE();
 				strncpy2(curpos, daynames[lt->tm_wday], buflen - total_done);
 				break;
 			case 'b':
 			case 'h':
-				len = s_monthnames_len[lt->tm_mon]; CHECK_SIZE();
+				len = s_monthnames_len[lt->tm_mon];
+				CHECK_SIZE();
 				strncpy2(curpos, s_monthnames[lt->tm_mon], buflen - total_done);
 				break;
 			case 'B':
-				len = monthnames_len[lt->tm_mon]; CHECK_SIZE();
+				len = monthnames_len[lt->tm_mon];
+				CHECK_SIZE();
 				strncpy2(curpos, monthnames[lt->tm_mon], buflen - total_done);
 				break;
 			case 'c':
 				strftime(subbuf, 64, "%c", lt);
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'C':
-				total_done += 2; CHECK_SIZE();
-				tmp = (lt->tm_year + 1900)/100;
-				*curpos++ = '0'+(tmp / 10);
-				*curpos++ = '0'+(tmp % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				tmp = (lt->tm_year + 1900) / 100;
+				*curpos++ = '0' + (tmp / 10);
+				*curpos++ = '0' + (tmp % 10);
 				break;
 			case 'd':
-				total_done += 2; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_mday / 10);
-				*curpos++ = '0'+(lt->tm_mday % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_mday / 10);
+				*curpos++ = '0' + (lt->tm_mday % 10);
 				break;
 			case 'D':
-				total_done += 8; CHECK_SIZE();
-				*curpos++ = '0'+((lt->tm_mon+1) / 10);
-				*curpos++ = '0'+((lt->tm_mon+1) % 10);
+				total_done += 8;
+				CHECK_SIZE();
+				*curpos++ = '0' + ((lt->tm_mon + 1) / 10);
+				*curpos++ = '0' + ((lt->tm_mon + 1) % 10);
 				*curpos++ = '/';
-				*curpos++ = '0'+(lt->tm_mday / 10);
-				*curpos++ = '0'+(lt->tm_mday % 10);
+				*curpos++ = '0' + (lt->tm_mday / 10);
+				*curpos++ = '0' + (lt->tm_mday % 10);
 				*curpos++ = '/';
-				tmp = lt->tm_year%100;
-				*curpos++ = '0'+(tmp / 10);
-				*curpos++ = '0'+(tmp % 10);
+				tmp = lt->tm_year % 100;
+				*curpos++ = '0' + (tmp / 10);
+				*curpos++ = '0' + (tmp % 10);
 				break;
 			case 'e':
-				len = 2; CHECK_SIZE();
+				len = 2;
+				CHECK_SIZE();
 				snprintf(curpos, buflen - total_done, "%2d", lt->tm_mday);
 				break;
 			case 'F':
-				len = 10; CHECK_SIZE();
-				snprintf(curpos, buflen - total_done, "%4d-%02d-%02d",
-					lt->tm_year + 1900, lt->tm_mon +1, lt->tm_mday);
+				len = 10;
+				CHECK_SIZE();
+				snprintf(curpos, buflen - total_done, "%4d-%02d-%02d", lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday);
 				break;
 			case 'H':
-				total_done += 2; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_hour / 10);
-				*curpos++ = '0'+(lt->tm_hour % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_hour / 10);
+				*curpos++ = '0' + (lt->tm_hour % 10);
 				break;
 			case 'I':
-				total_done += 2; CHECK_SIZE();
+				total_done += 2;
+				CHECK_SIZE();
 				tmp = lt->tm_hour;
 				if (tmp > 12)
 					tmp -= 12;
 				else if (tmp == 0)
 					tmp = 12;
-				*curpos++ = '0'+(tmp / 10);
-				*curpos++ = '0'+(tmp % 10);
+				*curpos++ = '0' + (tmp / 10);
+				*curpos++ = '0' + (tmp % 10);
 				break;
 			case 'j':
-				len = 3; CHECK_SIZE();
-				snprintf(curpos, buflen - total_done, "%03d", lt->tm_yday+1);
+				len = 3;
+				CHECK_SIZE();
+				snprintf(curpos, buflen - total_done, "%03d", lt->tm_yday + 1);
 				break;
 			case 'k':
-				len = 2; CHECK_SIZE();
+				len = 2;
+				CHECK_SIZE();
 				snprintf(curpos, buflen - total_done, "%2d", lt->tm_hour);
 				break;
 			case 'l':
-				len = 2; CHECK_SIZE();
+				len = 2;
+				CHECK_SIZE();
 				tmp = lt->tm_hour;
 				if (tmp > 12)
 					tmp -= 12;
@@ -4286,36 +4250,43 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 				snprintf(curpos, buflen - total_done, "%2d", tmp);
 				break;
 			case 'm':
-				total_done += 2; CHECK_SIZE();
+				total_done += 2;
+				CHECK_SIZE();
 				tmp = lt->tm_mon + 1;
-				*curpos++ = '0'+(tmp / 10);
-				*curpos++ = '0'+(tmp % 10);
+				*curpos++ = '0' + (tmp / 10);
+				*curpos++ = '0' + (tmp % 10);
 				break;
 			case 'M':
-				total_done += 2; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_min / 10);
-				*curpos++ = '0'+(lt->tm_min % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_min / 10);
+				*curpos++ = '0' + (lt->tm_min % 10);
 				break;
 			case 'n':
-				len = 1; CHECK_SIZE();
+				len = 1;
+				CHECK_SIZE();
 				*curpos = '\n';
 				break;
 			case 'p':
 				if (lt->tm_hour >= 12) {
-					len = s_pm_up_len; CHECK_SIZE();
-					snprintf(curpos, buflen-total_done, "%s", s_pm_up);
+					len = s_pm_up_len;
+					CHECK_SIZE();
+					snprintf(curpos, buflen - total_done, "%s", s_pm_up);
 				} else {
-					len = s_am_up_len; CHECK_SIZE();
-					snprintf(curpos, buflen-total_done, "%s", s_am_up);
+					len = s_am_up_len;
+					CHECK_SIZE();
+					snprintf(curpos, buflen - total_done, "%s", s_am_up);
 				}
 				break;
 			case 'P':
 				if (lt->tm_hour >= 12) {
-					len = s_pm_low_len; CHECK_SIZE();
-					snprintf(curpos, buflen-total_done, "%s", s_pm_low);
+					len = s_pm_low_len;
+					CHECK_SIZE();
+					snprintf(curpos, buflen - total_done, "%s", s_pm_low);
 				} else {
-					len = s_am_low_len; CHECK_SIZE();
-					snprintf(curpos, buflen-total_done, "%s", s_am_low);
+					len = s_am_low_len;
+					CHECK_SIZE();
+					snprintf(curpos, buflen - total_done, "%s", s_am_low);
 				}
 				break;
 			case 'r':
@@ -4324,68 +4295,80 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 #else
 				strftime(subbuf, 64, "%r", lt);
 #endif
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'R':
-				total_done += 5; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_hour / 10);
-				*curpos++ = '0'+(lt->tm_hour % 10);
+				total_done += 5;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_hour / 10);
+				*curpos++ = '0' + (lt->tm_hour % 10);
 				*curpos++ = ':';
-				*curpos++ = '0'+(lt->tm_min / 10);
-				*curpos++ = '0'+(lt->tm_min % 10);
+				*curpos++ = '0' + (lt->tm_min / 10);
+				*curpos++ = '0' + (lt->tm_min % 10);
 				break;
 			case 's':
 				snprintf(subbuf, 64, "%" CM_TIME_FORMAT, mktime(lt));
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'S':
-				total_done += 2; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_sec / 10);
-				*curpos++ = '0'+(lt->tm_sec % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_sec / 10);
+				*curpos++ = '0' + (lt->tm_sec % 10);
 				break;
 			case 't':
-				len = 1; CHECK_SIZE();
+				len = 1;
+				CHECK_SIZE();
 				*curpos = '\t';
 				break;
 			case 'T':
-				total_done += 8; CHECK_SIZE();
-				*curpos++ = '0'+(lt->tm_hour / 10);
-				*curpos++ = '0'+(lt->tm_hour % 10);
+				total_done += 8;
+				CHECK_SIZE();
+				*curpos++ = '0' + (lt->tm_hour / 10);
+				*curpos++ = '0' + (lt->tm_hour % 10);
 				*curpos++ = ':';
-				*curpos++ = '0'+(lt->tm_min / 10);
-				*curpos++ = '0'+(lt->tm_min % 10);
+				*curpos++ = '0' + (lt->tm_min / 10);
+				*curpos++ = '0' + (lt->tm_min % 10);
 				*curpos++ = ':';
-				*curpos++ = '0'+(lt->tm_sec / 10);
-				*curpos++ = '0'+(lt->tm_sec % 10);
+				*curpos++ = '0' + (lt->tm_sec / 10);
+				*curpos++ = '0' + (lt->tm_sec % 10);
 				break;
 			case 'u':
-				len = 1; CHECK_SIZE();
-				snprintf(curpos, buflen - total_done, "%d", lt->tm_wday == 0 ? 7: lt->tm_wday);
+				len = 1;
+				CHECK_SIZE();
+				snprintf(curpos, buflen - total_done, "%d", lt->tm_wday == 0 ? 7 : lt->tm_wday);
 				break;
 			case 'w':
-				len = 1; CHECK_SIZE();
+				len = 1;
+				CHECK_SIZE();
 				snprintf(curpos, buflen - total_done, "%d", lt->tm_wday);
 				break;
 			case 'x':
 				strftime(subbuf, 64, "%x", lt);
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'X':
 				strftime(subbuf, 64, "%X", lt);
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'y':
-				total_done += 2; CHECK_SIZE();
-				tmp = lt->tm_year%100;
-				*curpos++ = '0'+(tmp / 10);
-				*curpos++ = '0'+(tmp % 10);
+				total_done += 2;
+				CHECK_SIZE();
+				tmp = lt->tm_year % 100;
+				*curpos++ = '0' + (tmp / 10);
+				*curpos++ = '0' + (tmp % 10);
 				break;
 			case 'Y':
-				len = 4; CHECK_SIZE();
+				len = 4;
+				CHECK_SIZE();
 				snprintf(curpos, buflen - total_done, "%4d", lt->tm_year + 1900);
 				break;
 			case 'G':
@@ -4399,15 +4382,17 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 				/* let these complicated ones be done with the libc */
 				snprintf(subfmt, 64, "%%%c", *format);
 				strftime(subbuf, 64, subfmt, lt);
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				break;
 			case 'E':
 			case 'O':
 				/* let these complicated modifiers be done with the libc */
-				snprintf(subfmt, 64, "%%%c%c", *format, *(format+1));
+				snprintf(subfmt, 64, "%%%c%c", *format, *(format + 1));
 				strftime(subbuf, 64, subfmt, lt);
-				len = strlen(subbuf); CHECK_SIZE();
+				len = strlen(subbuf);
+				CHECK_SIZE();
 				strncpy2(curpos, subbuf, buflen - total_done);
 				format++;
 				break;
@@ -4419,7 +4404,8 @@ size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt
 			curpos += len;
 			format++;
 		} else {
-			int len = 1; CHECK_SIZE();
+			int len = 1;
+			CHECK_SIZE();
 			*curpos++ = *format++;
 		}
 	}
@@ -4442,8 +4428,7 @@ static gchar *canonical_list_to_file(GSList *list)
 #else
 	if (pathlist->data) {
 		const gchar *root = (gchar *)pathlist->data;
-		if (root[0] != '\0' && g_ascii_isalpha(root[0]) &&
-		    root[1] == ':') {
+		if (root[0] != '\0' && g_ascii_isalpha(root[0]) && root[1] == ':') {
 			/* drive - don't prepend dir separator */
 		} else {
 			result = g_string_append(result, G_DIR_SEPARATOR_S);
@@ -4475,13 +4460,13 @@ static GSList *cm_split_path(const gchar *filename, int depth)
 #ifndef G_OS_WIN32
 		errno = ELOOP;
 #else
-		errno = EINVAL; /* can't happen, no symlink handling */
+		errno = EINVAL;	/* can't happen, no symlink handling */
 #endif
 		return NULL;
 	}
 
 	if (!g_path_is_absolute(filename)) {
-		errno =EINVAL;
+		errno = EINVAL;
 		return NULL;
 	}
 
@@ -4494,23 +4479,19 @@ static GSList *cm_split_path(const gchar *filename, int depth)
 			continue;
 		else if (!strcmp(path_parts[i], "..")) {
 			if (i == 0) {
-				errno =ENOTDIR;
+				errno = ENOTDIR;
 				g_strfreev(path_parts);
 				return NULL;
-			}
-			else /* Remove the last inserted element */
-				canonical_parts =
-					g_slist_delete_link(canonical_parts,
-							    canonical_parts);
+			} else /* Remove the last inserted element */
+				canonical_parts = g_slist_delete_link(canonical_parts, canonical_parts);
 		} else {
 			gchar *tmp_path;
 
-			canonical_parts = g_slist_prepend(canonical_parts,
-						g_strdup(path_parts[i]));
+			canonical_parts = g_slist_prepend(canonical_parts, g_strdup(path_parts[i]));
 
 			tmp_path = canonical_list_to_file(canonical_parts);
 
-			if(g_stat(tmp_path, &st) < 0) {
+			if (g_stat(tmp_path, &st) < 0) {
 				if (errno == ENOENT) {
 					errno = 0;
 #ifndef G_OS_WIN32
@@ -4532,12 +4513,9 @@ static GSList *cm_split_path(const gchar *filename, int depth)
 
 				if (!g_path_is_absolute(target)) {
 					/* remove the last inserted element */
-					canonical_parts =
-						g_slist_delete_link(canonical_parts,
-							    canonical_parts);
+					canonical_parts = g_slist_delete_link(canonical_parts, canonical_parts);
 					/* add the target */
-					canonical_parts = g_slist_prepend(canonical_parts,
-						g_strdup(target));
+					canonical_parts = g_slist_prepend(canonical_parts, g_strdup(target));
 					g_free(target);
 
 					/* and get the new target */
@@ -4570,7 +4548,8 @@ static GSList *cm_split_path(const gchar *filename, int depth)
  * Canonicalize a filename, resolving symlinks along the way.
  * Returns a negative errno in case of error.
  */
-int cm_canonicalize_filename(const gchar *filename, gchar **canonical_name) {
+int cm_canonicalize_filename(const gchar *filename, gchar **canonical_name)
+{
 	GSList *canonical_parts;
 	gboolean is_absolute;
 
@@ -4610,7 +4589,7 @@ guchar *g_base64_decode_zero(const gchar *text, gsize *out_len)
 	g_free(tmp);
 
 	if (strlen(out) != *out_len) {
-		g_warning("strlen(out) %"G_GSIZE_FORMAT" != *out_len %"G_GSIZE_FORMAT, strlen(out), *out_len);
+		g_warning("strlen(out) %" G_GSIZE_FORMAT " != *out_len %" G_GSIZE_FORMAT, strlen(out), *out_len);
 	}
 
 	return out;
@@ -4619,15 +4598,13 @@ guchar *g_base64_decode_zero(const gchar *text, gsize *out_len)
 /* Attempts to read count bytes from a PRNG into memory area starting at buf.
  * It is up to the caller to make sure there is at least count bytes
  * available at buf. */
-gboolean
-get_random_bytes(void *buf, size_t count)
+gboolean get_random_bytes(void *buf, size_t count)
 {
 	/* Open our prng source. */
 #if defined G_OS_WIN32
 	HCRYPTPROV rnd;
 
-	if (!CryptAcquireContext(&rnd, NULL, NULL, PROV_RSA_FULL, 0) &&
-			!CryptAcquireContext(&rnd, NULL, NULL, PROV_RSA_FULL, CRYPT_NEWKEYSET)) {
+	if (!CryptAcquireContext(&rnd, NULL, NULL, PROV_RSA_FULL, 0) && !CryptAcquireContext(&rnd, NULL, NULL, PROV_RSA_FULL, CRYPT_NEWKEYSET)) {
 		debug_print("Could not acquire a CSP handle.\n");
 		return FALSE;
 	}
@@ -4646,7 +4623,7 @@ get_random_bytes(void *buf, size_t count)
 	/* Read data from the source into buf. */
 #if defined G_OS_WIN32
 	if (!CryptGenRandom(rnd, count, buf)) {
-		debug_print("Could not read %"G_GSIZE_FORMAT" random bytes.\n", count);
+		debug_print("Could not read %" G_GSIZE_FORMAT " random bytes.\n", count);
 		CryptReleaseContext(rnd, 0);
 		return FALSE;
 	}
@@ -4724,11 +4701,7 @@ gboolean get_serverportfp_from_filename(const gchar *str, gchar **server, gchar 
 			*fp = NULL;
 	}
 
-	debug_print("filename='%s' => server='%s' port='%s' fp='%s'\n",
-			str,
-			(server ? *server : "(n/a)"),
-			(port ? *port : "(n/a)"),
-			(fp ? *fp : "(n/a)"));
+	debug_print("filename='%s' => server='%s' port='%s' fp='%s'\n", str, (server ? *server : "(n/a)"), (port ? *port : "(n/a)"), (fp ? *fp : "(n/a)"));
 
 	if (!(server && *server) || !(port && *port))
 		return FALSE;
@@ -4739,7 +4712,10 @@ gboolean get_serverportfp_from_filename(const gchar *str, gchar **server, gchar 
 #ifdef G_OS_WIN32
 gchar *win32_debug_log_path(void)
 {
-	return g_strconcat(g_get_tmp_dir(), G_DIR_SEPARATOR_S,
-			"claws-win32.log", NULL);
+	return g_strconcat(g_get_tmp_dir(), G_DIR_SEPARATOR_S, "claws-win32.log", NULL);
 }
 #endif
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

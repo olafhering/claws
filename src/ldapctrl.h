@@ -59,60 +59,57 @@
  */
 typedef struct _LdapControl LdapControl;
 struct _LdapControl {
-	gchar     *hostName;
-	gint      port;
-	gchar     *baseDN;
-	gchar     *bindDN;
-	gint      maxEntries;
-	gint      timeOut;
-	gint      maxQueryAge;
-	gint      matchingOption;
-	gint      version;
-	gboolean  enableTLS;
-	gboolean  enableSSL;
-	gchar     *attribEMail;
-	gchar     *attribCName;
-	gchar     *attribFName;
-	gchar     *attribLName;
-	gchar	  *attribDName;
-	GList     *listCriteria;
+	gchar *hostName;
+	gint port;
+	gchar *baseDN;
+	gchar *bindDN;
+	gint maxEntries;
+	gint timeOut;
+	gint maxQueryAge;
+	gint matchingOption;
+	gint version;
+	gboolean enableTLS;
+	gboolean enableSSL;
+	gchar *attribEMail;
+	gchar *attribCName;
+	gchar *attribFName;
+	gchar *attribLName;
+	gchar *attribDName;
+	GList *listCriteria;
 	pthread_mutex_t *mutexCtl;
 };
 
 /* Function prototypes */
-LdapControl *ldapctl_create	( void );
-void ldapctl_set_host		( LdapControl* ctl, const gchar *value );
-void ldapctl_set_port		( LdapControl* ctl, const gint value );
-void ldapctl_set_base_dn	( LdapControl* ctl, const gchar *value );
-void ldapctl_set_bind_dn	( LdapControl* ctl, const gchar *value );
-void ldapctl_set_bind_password	
-	( LdapControl* ctl, const gchar *value, gboolean encrypt, gboolean change );
-gchar* ldapctl_get_bind_password ( LdapControl* ctl );
-void ldapctl_set_max_entries	( LdapControl* ctl, const gint value );
-void ldapctl_set_timeout	( LdapControl* ctl, const gint value );
-void ldapctl_set_max_query_age	( LdapControl* ctl, const gint value );
-void ldapctl_set_matching_option( LdapControl* ctl, const gint value );
-void ldapctl_set_tls		( LdapControl* ctl, const gboolean value );
-void ldapctl_set_ssl		( LdapControl* ctl, const gboolean value );
-GList *ldapctl_get_criteria_list( const LdapControl* ctl );
-void ldapctl_criteria_list_clear( LdapControl *ctl );
-void ldapctl_criteria_list_add	( LdapControl *ctl, gchar *attr );
-void ldapctl_free		( LdapControl *ctl );
+LdapControl *ldapctl_create(void);
+void ldapctl_set_host(LdapControl *ctl, const gchar *value);
+void ldapctl_set_port(LdapControl *ctl, const gint value);
+void ldapctl_set_base_dn(LdapControl *ctl, const gchar *value);
+void ldapctl_set_bind_dn(LdapControl *ctl, const gchar *value);
+void ldapctl_set_bind_password(LdapControl *ctl, const gchar *value, gboolean encrypt, gboolean change);
+gchar *ldapctl_get_bind_password(LdapControl *ctl);
+void ldapctl_set_max_entries(LdapControl *ctl, const gint value);
+void ldapctl_set_timeout(LdapControl *ctl, const gint value);
+void ldapctl_set_max_query_age(LdapControl *ctl, const gint value);
+void ldapctl_set_matching_option(LdapControl *ctl, const gint value);
+void ldapctl_set_tls(LdapControl *ctl, const gboolean value);
+void ldapctl_set_ssl(LdapControl *ctl, const gboolean value);
+GList *ldapctl_get_criteria_list(const LdapControl *ctl);
+void ldapctl_criteria_list_clear(LdapControl *ctl);
+void ldapctl_criteria_list_add(LdapControl *ctl, gchar *attr);
+void ldapctl_free(LdapControl *ctl);
 #ifdef DEBUG_LDAP
-void ldapctl_print		( const LdapControl *ctl, FILE *stream );
+void ldapctl_print(const LdapControl *ctl, FILE *stream);
 #endif
-void ldapctl_copy		( const LdapControl *ctlFrom,
-				  LdapControl *ctlTo );
-gchar *ldapctl_format_criteria	( LdapControl *ctl, const gchar *searchVal );
-char **ldapctl_attribute_array	( LdapControl *ctl );
-char **ldapctl_full_attribute_array( LdapControl *ctl );
-void ldapctl_free_attribute_array( char **ptrArray );
-void ldapctl_parse_ldap_search	( LdapControl *ctl, gchar *criteria );
+void ldapctl_copy(const LdapControl *ctlFrom, LdapControl *ctlTo);
+gchar *ldapctl_format_criteria(LdapControl *ctl, const gchar *searchVal);
+char **ldapctl_attribute_array(LdapControl *ctl);
+char **ldapctl_full_attribute_array(LdapControl *ctl);
+void ldapctl_free_attribute_array(char **ptrArray);
+void ldapctl_parse_ldap_search(LdapControl *ctl, gchar *criteria);
 gchar *ldapctl_get_default_criteria(void);
 GList *ldapctl_get_default_criteria_list();
 gboolean ldapctl_compare_list(GList *l1, GList *l2);
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __LDAPCTRL_H__ */
-

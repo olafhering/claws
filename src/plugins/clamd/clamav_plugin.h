@@ -25,27 +25,26 @@
 
 typedef struct _ClamAvConfig ClamAvConfig;
 
-typedef void (*MessageCallback) (gchar *);
+typedef void (*MessageCallback)(gchar *);
 
-struct _ClamAvConfig
-{
-	gboolean	 clamav_enable;
+struct _ClamAvConfig {
+	gboolean clamav_enable;
 /*	gboolean 	 clamav_enable_arc;*/
-	guint 		 clamav_max_size;
-	gboolean 	 clamav_recv_infected;
-	gchar		*clamav_save_folder;
-	gboolean	 clamd_config_type;
-	gchar		*clamd_host;
-	int			 clamd_port;
-	gchar		*clamd_config_folder;
-	gboolean	 alert_ack;
+	guint clamav_max_size;
+	gboolean clamav_recv_infected;
+	gchar *clamav_save_folder;
+	gboolean clamd_config_type;
+	gchar *clamd_host;
+	int clamd_port;
+	gchar *clamd_config_folder;
+	gboolean alert_ack;
 };
 
-ClamAvConfig *clamav_get_config		  (void);
-void	      clamav_save_config	  (void);
-void 	      clamav_set_message_callback (MessageCallback callback);
-Clamd_Stat    clamd_prepare(void);
-gint	      clamav_gtk_init(void);
-void 	      clamav_gtk_done(void);
+ClamAvConfig *clamav_get_config(void);
+void clamav_save_config(void);
+void clamav_set_message_callback(MessageCallback callback);
+Clamd_Stat clamd_prepare(void);
+gint clamav_gtk_init(void);
+void clamav_gtk_done(void);
 
 #endif

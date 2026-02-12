@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -40,8 +40,7 @@
 #include "log.h"
 #include "prefs_account.h"
 
-gboolean etpan_certificate_check(mailstream *stream, const char *host, gint port,
-				 gboolean accept_if_valid)
+gboolean etpan_certificate_check(mailstream *stream, const char *host, gint port, gboolean accept_if_valid)
 {
 #if (!defined LIBETPAN_API_CURRENT || LIBETPAN_API_CURRENT < 18)
 	unsigned char *cert_der = NULL;
@@ -96,7 +95,7 @@ gboolean etpan_certificate_check(mailstream *stream, const char *host, gint port
 	chain_len = carray_count(certs_der);
 
 	certs = malloc(sizeof(gnutls_x509_crt_t) * chain_len);
-	if  (certs == NULL) {
+	if (certs == NULL) {
 		g_warning("could not allocate certs");
 		return FALSE;
 	}
@@ -122,8 +121,7 @@ gboolean etpan_certificate_check(mailstream *stream, const char *host, gint port
 	carray_free(certs_der);
 
 	if (result == TRUE)
-		result = ssl_certificate_check_chain(certs, chain_len, host, port,
-						     accept_if_valid);
+		result = ssl_certificate_check_chain(certs, chain_len, host, port, accept_if_valid);
 
 	for (i = 0; i < chain_len; i++)
 		gnutls_x509_crt_deinit(certs[i]);
@@ -133,7 +131,7 @@ gboolean etpan_certificate_check(mailstream *stream, const char *host, gint port
 #endif
 }
 
-void etpan_connect_ssl_context_cb(struct mailstream_ssl_context * ssl_context, void * data)
+void etpan_connect_ssl_context_cb(struct mailstream_ssl_context *ssl_context, void *data)
 {
 	PrefsAccount *account = (PrefsAccount *)data;
 	const gchar *cert_path = NULL;
@@ -146,8 +144,7 @@ void etpan_connect_ssl_context_cb(struct mailstream_ssl_context * ssl_context, v
 	if (account->in_ssl_client_cert_pass && *account->in_ssl_client_cert_pass)
 		password = account->in_ssl_client_cert_pass;
 
-	if (mailstream_ssl_set_client_certificate_data(ssl_context, NULL, 0) < 0 ||
-	    mailstream_ssl_set_client_private_key_data(ssl_context, NULL, 0) < 0)
+	if (mailstream_ssl_set_client_certificate_data(ssl_context, NULL, 0) < 0 || mailstream_ssl_set_client_private_key_data(ssl_context, NULL, 0) < 0)
 		debug_print("Impossible to set the client certificate.\n");
 	x509 = ssl_certificate_get_x509_from_pem_file(cert_path);
 	pkey = ssl_certificate_get_pkey_from_pem_file(cert_path);
@@ -162,8 +159,7 @@ void etpan_connect_ssl_context_cb(struct mailstream_ssl_context * ssl_context, v
 		x509_len = (size_t)gnutls_i2d_X509(x509, &x509_der);
 		pkey_len = (size_t)gnutls_i2d_PrivateKey(pkey, &pkey_der);
 		if (x509_len > 0 && pkey_len > 0) {
-			if (mailstream_ssl_set_client_certificate_data(ssl_context, x509_der, x509_len) < 0 ||
-			    mailstream_ssl_set_client_private_key_data(ssl_context, pkey_der, pkey_len) < 0) 
+			if (mailstream_ssl_set_client_certificate_data(ssl_context, x509_der, x509_len) < 0 || mailstream_ssl_set_client_private_key_data(ssl_context, pkey_der, pkey_len) < 0)
 				log_error(LOG_PROTOCOL, _("Impossible to set the client certificate.\n"));
 			g_free(x509_der);
 			g_free(pkey_der);
@@ -171,20 +167,17 @@ void etpan_connect_ssl_context_cb(struct mailstream_ssl_context * ssl_context, v
 		gnutls_x509_crt_deinit(x509);
 		gnutls_x509_privkey_deinit(pkey);
 	}
-
 #if (defined LIBETPAN_API_CURRENT && LIBETPAN_API_CURRENT >= 23)
 	/* If we have a host name, rather than a numerical IP address, tell
 	 * gnutls to send it in the Server Name Identification extension field,
 	 * to give the server a chance to select the correct certificate in the
 	 * virtual hosting case where multiple domain names are hosted on the
 	 * same IP address. */
-	if (account->use_tls_sni &&
-			!is_numeric_host_address(account->recv_server)) {
+	if (account->use_tls_sni && !is_numeric_host_address(account->recv_server)) {
 		int r;
 
 		r = mailstream_ssl_set_server_name(ssl_context, account->recv_server);
-		debug_print("Set libetpan SSL mail stream server name indication to %s, status = %d\n",
-			    account->recv_server, r);
+		debug_print("Set libetpan SSL mail stream server name indication to %s, status = %d\n", account->recv_server, r);
 	}
 #endif /* LIBETPAN_API_CURRENT >= 23 */
 
@@ -192,3 +185,7 @@ void etpan_connect_ssl_context_cb(struct mailstream_ssl_context * ssl_context, v
 
 #endif /* USE_GNUTLS */
 #endif /* HAVE_LIBETPAN */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

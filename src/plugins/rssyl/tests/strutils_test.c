@@ -16,36 +16,29 @@ struct test {
 	gchar *result;
 };
 
-static void
-test_strreplace(void)
+static void test_strreplace(void)
 {
 	gint i;
 	static struct test strings[] = {
-		{ "simplestring", "foo", "bar", "simplestring" },
-		{ "foobarzot", "foo", "", "barzot" },
-		{ NULL, NULL }
+		{"simplestring", "foo", "bar", "simplestring"},
+		{"foobarzot", "foo", "", "barzot"},
+		{NULL, NULL}
 	};
 
 	for (i = 0; strings[i].string != NULL; i++) {
-		gchar *result = rssyl_strreplace(
-				strings[i].string,
-				strings[i].pattern,
-				strings[i].replacement);
+		gchar *result = rssyl_strreplace(strings[i].string,
+						 strings[i].pattern,
+						 strings[i].replacement);
 
 		if (g_test_verbose()) {
-			g_printerr("string '%s', pattern '%s', replacement '%s' => result '%s'\n",
-					strings[i].string,
-					strings[i].pattern,
-					strings[i].replacement,
-					result);
+			g_printerr("string '%s', pattern '%s', replacement '%s' => result '%s'\n", strings[i].string, strings[i].pattern, strings[i].replacement, result);
 		}
 		g_assert_cmpstr(result, ==, strings[i].result);
 		g_free(result);
 	}
 }
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
@@ -53,3 +46,7 @@ main (int argc, char *argv[])
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -39,32 +39,27 @@
 #include "manage_window.h"
 
 enum {
-	PLUGINWINDOW_NAME,		/*<! plugin name */
-	PLUGINWINDOW_DATA,		/*<! Plugin pointer */
-	PLUGINWINDOW_STYLE,		/*<! italic if error */
+	PLUGINWINDOW_NAME, /*<! plugin name */
+	PLUGINWINDOW_DATA, /*<! Plugin pointer */
+	PLUGINWINDOW_STYLE, /*<! italic if error */
 	N_PLUGINWINDOW_COLUMNS
 };
 
-typedef struct _PluginWindow
-{
+typedef struct _PluginWindow {
 	GtkWidget *window;
 	GtkWidget *plugin_list_view;
 	GtkWidget *plugin_desc;
 	GtkWidget *unload_btn;
 
 	Plugin *selected_plugin;
-	
+
 	gboolean loading;
 } PluginWindow;
 
-static GtkListStore* pluginwindow_create_data_store	(void);
-static GtkWidget *pluginwindow_list_view_create		(PluginWindow *pluginwindow);
-static void pluginwindow_create_list_view_columns	(GtkWidget *list_view);
-static gboolean pluginwindow_selected			(GtkTreeSelection *selector,
-							 GtkTreeModel *model, 
-							 GtkTreePath *path,
-							 gboolean currently_selected,
-							 gpointer data);
+static GtkListStore *pluginwindow_create_data_store(void);
+static GtkWidget *pluginwindow_list_view_create(PluginWindow *pluginwindow);
+static void pluginwindow_create_list_view_columns(GtkWidget *list_view);
+static gboolean pluginwindow_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data);
 
 static void close_cb(GtkButton *button, PluginWindow *pluginwindow)
 {
@@ -76,12 +71,11 @@ static void close_cb(GtkButton *button, PluginWindow *pluginwindow)
 	inc_unlock();
 }
 
-static gint pluginwindow_delete_cb(GtkWidget *widget, GdkEventAny *event,
-				  PluginWindow *pluginwindow)
+static gint pluginwindow_delete_cb(GtkWidget *widget, GdkEventAny *event, PluginWindow *pluginwindow)
 {
 	if (pluginwindow->loading)
 		return FALSE;
-	close_cb(NULL,pluginwindow);
+	close_cb(NULL, pluginwindow);
 	return TRUE;
 }
 
@@ -98,12 +92,10 @@ static void set_plugin_list(PluginWindow *pluginwindow)
 	plugins = plugin_get_list();
 	unloaded = plugin_get_unloaded_list();
 
-	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW
-				(pluginwindow->plugin_list_view)));
- 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(store),
-                                             0, GTK_SORT_ASCENDING);
+	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(pluginwindow->plugin_list_view)));
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(store), 0, GTK_SORT_ASCENDING);
 	gtk_list_store_clear(store);
-	
+
 	textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(pluginwindow->plugin_desc));
 	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(pluginwindow->plugin_desc), FALSE);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(pluginwindow->plugin_desc), FALSE);
@@ -112,34 +104,26 @@ static void set_plugin_list(PluginWindow *pluginwindow)
 	gtk_text_buffer_delete(textbuf, &start_iter, &end_iter);
 	gtk_widget_set_sensitive(pluginwindow->unload_btn, FALSE);
 
-	for(cur = plugins; cur != NULL; cur = g_slist_next(cur)) {
-		Plugin *plugin = (Plugin *) cur->data;
-
-		gtk_list_store_append(store, &iter);
-		text = plugin_get_name(plugin); 
-		gtk_list_store_set(store, &iter,
-				   PLUGINWINDOW_NAME, text,
-				   PLUGINWINDOW_DATA, plugin,
-				   PLUGINWINDOW_STYLE, PANGO_STYLE_NORMAL,
-				   -1);
-	}
-
-	for(cur = unloaded; cur != NULL; cur = g_slist_next(cur)) {
-		Plugin *plugin = (Plugin *) cur->data;
+	for (cur = plugins; cur != NULL; cur = g_slist_next(cur)) {
+		Plugin *plugin = (Plugin *)cur->data;
 
 		gtk_list_store_append(store, &iter);
 		text = plugin_get_name(plugin);
-		gtk_list_store_set(store, &iter,
-				   PLUGINWINDOW_NAME, text,
-				   PLUGINWINDOW_DATA, plugin,
-				   PLUGINWINDOW_STYLE, PANGO_STYLE_ITALIC,
-				   -1);
+		gtk_list_store_set(store, &iter, PLUGINWINDOW_NAME, text, PLUGINWINDOW_DATA, plugin, PLUGINWINDOW_STYLE, PANGO_STYLE_NORMAL, -1);
+	}
+
+	for (cur = unloaded; cur != NULL; cur = g_slist_next(cur)) {
+		Plugin *plugin = (Plugin *)cur->data;
+
+		gtk_list_store_append(store, &iter);
+		text = plugin_get_name(plugin);
+		gtk_list_store_set(store, &iter, PLUGINWINDOW_NAME, text, PLUGINWINDOW_DATA, plugin, PLUGINWINDOW_STYLE, PANGO_STYLE_ITALIC, -1);
 	}
 
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(pluginwindow->plugin_list_view));
 	if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
 		gtk_tree_selection_select_iter(selection, &iter);
-		
+
 	g_slist_free(plugins);
 }
 
@@ -158,15 +142,11 @@ static void select_row_cb(Plugin *plugin, PluginWindow *pluginwindow)
 		gtk_text_buffer_get_start_iter(textbuf, &start_iter);
 		gtk_text_buffer_get_end_iter(textbuf, &end_iter);
 		gtk_text_buffer_delete(textbuf, &start_iter, &end_iter);
-		
+
 		if (err == NULL)
-			text = g_strconcat(desc, _("\n\nVersion: "),
-				   plugin_get_version(plugin), "\n", NULL);
+			text = g_strconcat(desc, _("\n\nVersion: "), plugin_get_version(plugin), "\n", NULL);
 		else
-			text = g_strconcat(_("Error: "),
-				   err, "\n", _("Plugin is not functional."), 
-				   "\n\n", desc, _("\n\nVersion: "),
-				   plugin_get_version(plugin), "\n", NULL);
+			text = g_strconcat(_("Error: "), err, "\n", _("Plugin is not functional."), "\n\n", desc, _("\n\nVersion: "), plugin_get_version(plugin), "\n", NULL);
 		gtk_text_buffer_insert(textbuf, &start_iter, text, strlen(text));
 		g_free(text);
 		gtk_widget_set_sensitive(pluginwindow->unload_btn, TRUE);
@@ -177,7 +157,7 @@ static void select_row_cb(Plugin *plugin, PluginWindow *pluginwindow)
 
 static void unselect_row_cb(Plugin *plugin, PluginWindow *pluginwindow)
 {
-	gtk_widget_set_sensitive(pluginwindow->unload_btn, FALSE);	
+	gtk_widget_set_sensitive(pluginwindow->unload_btn, FALSE);
 }
 
 static void unload_cb(GtkButton *button, PluginWindow *pluginwindow)
@@ -196,24 +176,21 @@ static void load_cb(GtkButton *button, PluginWindow *pluginwindow)
 {
 	GList *file_list;
 
-	file_list = filesel_select_multiple_files_open_with_filter(
-			_("Select the Plugins to load"), get_plugin_dir(), 
-			"*." G_MODULE_SUFFIX);
+	file_list = filesel_select_multiple_files_open_with_filter(_("Select the Plugins to load"), get_plugin_dir(), "*." G_MODULE_SUFFIX);
 
 	if (file_list) {
 		GList *tmp;
 		pluginwindow->loading = TRUE;
-		for ( tmp = file_list; tmp; tmp = tmp->next) {
+		for (tmp = file_list; tmp; tmp = tmp->next) {
 			gchar *file, *error = NULL;
 
-			file = (gchar *) tmp->data;
-			if (!file) continue;
+			file = (gchar *)tmp->data;
+			if (!file)
+				continue;
 			plugin_load(file, &error);
 			if (error != NULL) {
 				gchar *basename = g_path_get_basename(file);
-				alertpanel_error(
-				_("The following error occurred while loading %s:\n\n%s\n"),
-				basename, error);
+				alertpanel_error(_("The following error occurred while loading %s:\n\n%s\n"), basename, error);
 				g_free(basename);
 				g_free(error);
 			}
@@ -224,33 +201,32 @@ static void load_cb(GtkButton *button, PluginWindow *pluginwindow)
 		}
 		pluginwindow->loading = FALSE;
 		g_list_free(file_list);
-	}		
+	}
 }
 
-static gboolean pluginwindow_key_pressed(GtkWidget *widget, GdkEventKey *event,
-				     PluginWindow *pluginwindow)
+static gboolean pluginwindow_key_pressed(GtkWidget *widget, GdkEventKey *event, PluginWindow *pluginwindow)
 {
 	if (event) {
 		switch (event->keyval) {
-			case GDK_KEY_Escape : 
-			case GDK_KEY_Return : 
-			case GDK_KEY_KP_Enter :
-				close_cb(NULL, pluginwindow);
-				break;
-			case GDK_KEY_Insert : 
-			case GDK_KEY_KP_Insert :
-			case GDK_KEY_KP_Add : 
-			case GDK_KEY_plus :
-				load_cb(NULL, pluginwindow);
-				break;
-			case GDK_KEY_Delete : 
-			case GDK_KEY_KP_Delete :
-			case GDK_KEY_KP_Subtract : 
-			case GDK_KEY_minus :
-				unload_cb(NULL, pluginwindow);
-				break;
-			default :
-				break;
+		case GDK_KEY_Escape:
+		case GDK_KEY_Return:
+		case GDK_KEY_KP_Enter:
+			close_cb(NULL, pluginwindow);
+			break;
+		case GDK_KEY_Insert:
+		case GDK_KEY_KP_Insert:
+		case GDK_KEY_KP_Add:
+		case GDK_KEY_plus:
+			load_cb(NULL, pluginwindow);
+			break;
+		case GDK_KEY_Delete:
+		case GDK_KEY_KP_Delete:
+		case GDK_KEY_KP_Subtract:
+		case GDK_KEY_minus:
+			unload_cb(NULL, pluginwindow);
+			break;
+		default:
+			break;
 		}
 	}
 	return FALSE;
@@ -259,15 +235,13 @@ static gboolean pluginwindow_key_pressed(GtkWidget *widget, GdkEventKey *event,
 /*!
  *\brief	Save Gtk object size to prefs dataset
  */
-static void pluginwindow_size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation)
+static void pluginwindow_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 {
 	cm_return_if_fail(allocation != NULL);
 
 	prefs_common.pluginswin_width = allocation->width;
 	prefs_common.pluginswin_height = allocation->height;
 }
-
 
 void pluginwindow_create()
 {
@@ -322,24 +296,18 @@ void pluginwindow_create()
 	scrolledwindow2 = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show(scrolledwindow2);
 	gtk_box_pack_start(GTK_BOX(vbox3), scrolledwindow2, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow2),
-					GTK_SHADOW_ETCHED_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW
-				       (scrolledwindow2), GTK_POLICY_NEVER,
-				       GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow2), GTK_SHADOW_ETCHED_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow2), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
 	plugin_list_view = pluginwindow_list_view_create(pluginwindow);
 	gtk_widget_show(plugin_list_view);
 	gtk_container_add(GTK_CONTAINER(scrolledwindow2), plugin_list_view);
 	gtk_widget_grab_focus(GTK_WIDGET(plugin_list_view));
 
-	gtkut_stock_button_set_create(&hbuttonbox1,
-				&load_btn, _("_Load..."),
-				&unload_btn, _("_Unload"),
-				NULL, NULL);
+	gtkut_stock_button_set_create(&hbuttonbox1, &load_btn, _("_Load..."), &unload_btn, _("_Unload"), NULL, NULL);
 	gtk_widget_show(hbuttonbox1);
 	gtk_box_pack_start(GTK_BOX(vbox3), hbuttonbox1, FALSE, FALSE, 0);
-	
+
 	vbox2 = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(vbox2);
 	gtk_box_pack_start(GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
@@ -358,11 +326,8 @@ void pluginwindow_create()
 	scrolledwindow3 = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show(scrolledwindow3);
 	gtk_box_pack_start(GTK_BOX(vbox2), scrolledwindow3, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow3),
-					GTK_SHADOW_ETCHED_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW
-				       (scrolledwindow3), GTK_POLICY_NEVER,
-				       GTK_POLICY_ALWAYS);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow3), GTK_SHADOW_ETCHED_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
 	plugin_desc = gtk_text_view_new();
 	gtk_widget_show(plugin_desc);
@@ -370,11 +335,10 @@ void pluginwindow_create()
 
 	hbox_info = gtk_hbox_new(FALSE, 5);
 	gtk_widget_show(hbox_info);
-	
+
 	desc_lbl = gtk_label_new("");
 	span = g_strdup_printf("<a href=\"%s\"><span underline=\"none\">", PLUGINS_URI);
-	markup = g_strdup_printf(_("For more information about plugins see the "
-					   "%sClaws Mail website%s."), span, "</span></a>");
+	markup = g_strdup_printf(_("For more information about plugins see the " "%sClaws Mail website%s."), span, "</span></a>");
 	gtk_label_set_markup(GTK_LABEL(desc_lbl), markup);
 	g_free(markup);
 	g_free(span);
@@ -385,9 +349,7 @@ void pluginwindow_create()
 	gtk_box_pack_start(GTK_BOX(hbox_info), gtk_label_new(""), TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox_info, FALSE, FALSE, 0);
 
-	gtkut_stock_button_set_create_with_help(&hbuttonbox2, &help_btn,
-			&close_btn, GTK_STOCK_CLOSE,
-			NULL, NULL, NULL, NULL);
+	gtkut_stock_button_set_create_with_help(&hbuttonbox2, &help_btn, &close_btn, GTK_STOCK_CLOSE, NULL, NULL, NULL, NULL);
 
 	gtk_box_set_spacing(GTK_BOX(hbuttonbox2), 6);
 	gtk_widget_show(hbuttonbox2);
@@ -396,28 +358,18 @@ void pluginwindow_create()
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(plugin_desc), GTK_WRAP_WORD);
 	gtk_widget_set_sensitive(GTK_WIDGET(unload_btn), FALSE);
 
-	g_signal_connect(G_OBJECT(help_btn), "clicked",
-			 G_CALLBACK(manual_open_with_anchor_cb),
-			 MANUAL_ANCHOR_PLUGINS);
-	g_signal_connect(G_OBJECT(load_btn), "clicked",
-			 G_CALLBACK(load_cb), pluginwindow);
-	g_signal_connect(G_OBJECT(unload_btn), "clicked",
-			 G_CALLBACK(unload_cb), pluginwindow);
-	g_signal_connect(G_OBJECT(close_btn), "clicked",
-			 G_CALLBACK(close_cb), pluginwindow);
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(pluginwindow_size_allocate_cb), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			   G_CALLBACK(pluginwindow_key_pressed), pluginwindow);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(pluginwindow_delete_cb), pluginwindow);
+	g_signal_connect(G_OBJECT(help_btn), "clicked", G_CALLBACK(manual_open_with_anchor_cb), MANUAL_ANCHOR_PLUGINS);
+	g_signal_connect(G_OBJECT(load_btn), "clicked", G_CALLBACK(load_cb), pluginwindow);
+	g_signal_connect(G_OBJECT(unload_btn), "clicked", G_CALLBACK(unload_cb), pluginwindow);
+	g_signal_connect(G_OBJECT(close_btn), "clicked", G_CALLBACK(close_cb), pluginwindow);
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(pluginwindow_size_allocate_cb), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(pluginwindow_key_pressed), pluginwindow);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(pluginwindow_delete_cb), pluginwindow);
 	MANAGE_WINDOW_SIGNALS_CONNECT(window);
 
-	CLAWS_SET_TIP(load_btn,
-			_("Click here to load one or more plugins"));
+	CLAWS_SET_TIP(load_btn, _("Click here to load one or more plugins"));
 
-	CLAWS_SET_TIP(unload_btn,
-			_("Unload the selected plugin"));
+	CLAWS_SET_TIP(unload_btn, _("Unload the selected plugin"));
 
 	pluginwindow->window = window;
 	pluginwindow->plugin_list_view = plugin_list_view;
@@ -434,21 +386,15 @@ void pluginwindow_create()
 		geometry.min_height = 300;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_window_set_default_size(GTK_WINDOW(window), prefs_common.pluginswin_width,
-				    prefs_common.pluginswin_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_window_set_default_size(GTK_WINDOW(window), prefs_common.pluginswin_width, prefs_common.pluginswin_height);
 
 	gtk_widget_show(window);
 }
 
-static GtkListStore* pluginwindow_create_data_store(void)
+static GtkListStore *pluginwindow_create_data_store(void)
 {
-	return gtk_list_store_new(N_PLUGINWINDOW_COLUMNS,
-				  G_TYPE_STRING,	
-				  G_TYPE_POINTER,
-				  PANGO_TYPE_STYLE,
-				  -1);
+	return gtk_list_store_new(N_PLUGINWINDOW_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, PANGO_TYPE_STYLE, -1);
 }
 
 static GtkWidget *pluginwindow_list_view_create(PluginWindow *pluginwindow)
@@ -459,15 +405,14 @@ static GtkWidget *pluginwindow_list_view_create(PluginWindow *pluginwindow)
 
 	model = GTK_TREE_MODEL(pluginwindow_create_data_store());
 	list_view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
-	g_object_unref(model);	
+	g_object_unref(model);
 
 	gtk_tree_view_set_rules_hint(list_view, prefs_common.use_stripes_everywhere);
-	gtk_tree_view_set_search_column (list_view, 0);
+	gtk_tree_view_set_search_column(list_view, 0);
 
 	selector = gtk_tree_view_get_selection(list_view);
 	gtk_tree_selection_set_mode(selector, GTK_SELECTION_BROWSE);
-	gtk_tree_selection_set_select_function(selector, pluginwindow_selected,
-					       pluginwindow, NULL);
+	gtk_tree_selection_set_select_function(selector, pluginwindow_selected, pluginwindow, NULL);
 
 	/* create the columns */
 	pluginwindow_create_list_view_columns(GTK_WIDGET(list_view));
@@ -481,32 +426,21 @@ static void pluginwindow_create_list_view_columns(GtkWidget *list_view)
 	GtkCellRenderer *renderer;
 
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-		(_("Loaded plugins"),
-		 renderer,
-		 "text", PLUGINWINDOW_NAME,
-		 "style", PLUGINWINDOW_STYLE,
-		 NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);		
+	column = gtk_tree_view_column_new_with_attributes(_("Loaded plugins"), renderer, "text", PLUGINWINDOW_NAME, "style", PLUGINWINDOW_STYLE, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
 }
 
-static gboolean pluginwindow_selected(GtkTreeSelection *selector,
-				      GtkTreeModel *model, 
-				      GtkTreePath *path,
-				      gboolean currently_selected,
-				      gpointer data)
+static gboolean pluginwindow_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data)
 {
 	GtkTreeIter iter;
 	Plugin *plugin;
-	
+
 	if (!gtk_tree_model_get_iter(model, &iter, path))
 		return TRUE;
 
-	gtk_tree_model_get(model, &iter, 
-			   PLUGINWINDOW_DATA, &plugin,
-			   -1);
+	gtk_tree_model_get(model, &iter, PLUGINWINDOW_DATA, &plugin, -1);
 
-	if (currently_selected) 
+	if (currently_selected)
 		unselect_row_cb(plugin, data);
 	else
 		select_row_cb(plugin, data);
@@ -514,3 +448,6 @@ static gboolean pluginwindow_selected(GtkTreeSelection *selector,
 	return TRUE;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

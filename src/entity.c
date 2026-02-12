@@ -29,8 +29,7 @@ static GHashTable *symbol_table = NULL;
 
 typedef struct _EntitySymbol EntitySymbol;
 
-struct _EntitySymbol
-{
+struct _EntitySymbol {
 	gchar *const key;
 	gchar *const value;
 };
@@ -317,7 +316,7 @@ static EntitySymbol symbolic_entities[] = {
 	{NULL, NULL}
 };
 
-static gchar* entity_extract_to_buffer(gchar *p, gchar b[])
+static gchar *entity_extract_to_buffer(gchar *p, gchar b[])
 {
 	gint i = 0;
 
@@ -351,11 +350,11 @@ static gchar *entity_decode_numeric(gchar *str)
 			return NULL;
 	}
 
-	if (entity_extract_to_buffer (p, b) == NULL)
+	if (entity_extract_to_buffer(p, b) == NULL)
 		return NULL;
 
 	if (strlen(b) > 0)
-		c = g_ascii_strtoll (b, NULL, (hex ? 16 : 10));
+		c = g_ascii_strtoll(b, NULL, (hex ? 16 : 10));
 
 	if (c < 32)
 		/* An unprintable character; return the Unicode replacement symbol */
@@ -367,8 +366,8 @@ static gchar *entity_decode_numeric(gchar *str)
 		return NULL;
 	}
 
-	res = g_malloc0 (DECODED_MAX_LEN + 1);
-	ret = g_unichar_to_utf8 (c, res);
+	res = g_malloc0(DECODED_MAX_LEN + 1);
+	ret = g_unichar_to_utf8(c, res);
 	if (ret == 0) {
 		debug_print("Failed to convert unicode character %u to UTF-8\n", c);
 		g_free(res);
@@ -383,23 +382,22 @@ static gchar *entity_decode_symbol(gchar *str)
 	gchar b[ENTITY_MAX_LEN];
 	gchar *decoded;
 
-	if (entity_extract_to_buffer (str, b) == NULL)
+	if (entity_extract_to_buffer(str, b) == NULL)
 		return NULL;
 
 	if (symbol_table == NULL) {
 		gint i;
 
-		symbol_table = g_hash_table_new (g_str_hash, g_str_equal);
+		symbol_table = g_hash_table_new(g_str_hash, g_str_equal);
 		for (i = 0; symbolic_entities[i].key != NULL; ++i) {
-			g_hash_table_insert (symbol_table,
-				symbolic_entities[i].key, symbolic_entities[i].value);
+			g_hash_table_insert(symbol_table, symbolic_entities[i].key, symbolic_entities[i].value);
 		}
 		debug_print("initialized entities table with %d symbols\n", i);
 	}
 
-	decoded = g_hash_table_lookup (symbol_table, b);
+	decoded = g_hash_table_lookup(symbol_table, b);
 	if (decoded != NULL)
-		return g_strdup (decoded);
+		return g_strdup(decoded);
 
 	return NULL;
 }
@@ -417,3 +415,7 @@ gchar *entity_decode(gchar *str)
 	else
 		return entity_decode_symbol(p);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

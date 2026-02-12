@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -54,8 +54,8 @@
 #include <curl/curlver.h>
 
 struct CurlReadWrite {
-        char *data;
-        size_t size;
+	char *data;
+	size_t size;
 };
 
 static gboolean check_debian_listid(MsgInfo *msginfo);
@@ -69,31 +69,30 @@ static gboolean check_debian_listid(MsgInfo *msginfo);
 #define DEBL_URL  "https://lists.debian.org/cgi-bin/nominate-for-review.pl?Quiet=on&msgid=%claws_mail_msgid%"
 
 ReportInterface spam_interfaces[] = {
-	{ "Signal-Spam.fr", INTF_HTTP_AUTH, SSFR_URL, SSFR_BODY, NULL},
-	{ "Spamcop.net", INTF_MAIL, NULL, NULL, NULL},
-	{ "Debian Lists", INTF_HTTP_GET, DEBL_URL, NULL, check_debian_listid},
-	{ NULL, INTF_NULL, NULL, NULL, NULL}
+	{"Signal-Spam.fr", INTF_HTTP_AUTH, SSFR_URL, SSFR_BODY, NULL},
+	{"Spamcop.net", INTF_MAIL, NULL, NULL, NULL},
+	{"Debian Lists", INTF_HTTP_GET, DEBL_URL, NULL, check_debian_listid},
+	{NULL, INTF_NULL, NULL, NULL, NULL}
 };
 
 /* From RSSyl. This should be factorized to the core... */
-static gchar *spamreport_strreplace(gchar *source, gchar *pattern,
-		gchar *replacement)
+static gchar *spamreport_strreplace(gchar *source, gchar *pattern, gchar *replacement)
 {
 	gchar *new, *w_new, *c;
 	guint count = 0, final_length;
 	size_t len_pattern, len_replacement;
 
-	if( source == NULL || pattern == NULL ) {
+	if (source == NULL || pattern == NULL) {
 		debug_print("source or pattern is NULL!!!\n");
 		return NULL;
 	}
 
-	if( !g_utf8_validate(source, -1, NULL) ) {
+	if (!g_utf8_validate(source, -1, NULL)) {
 		debug_print("source is not an UTF-8 encoded text\n");
 		return NULL;
 	}
 
-	if( !g_utf8_validate(pattern, -1, NULL) ) {
+	if (!g_utf8_validate(pattern, -1, NULL)) {
 		debug_print("pattern is not an UTF-8 encoded text\n");
 		return NULL;
 	}
@@ -102,14 +101,14 @@ static gchar *spamreport_strreplace(gchar *source, gchar *pattern,
 	len_replacement = replacement ? strlen(replacement) : 0;
 
 	c = source;
-	while( ( c = g_strstr_len(c, strlen(c), pattern) ) ) {
+	while ((c = g_strstr_len(c, strlen(c), pattern))) {
 		count++;
 		c += len_pattern;
 	}
 
 	final_length = strlen(source)
-		- ( count * len_pattern )
-		+ ( count * len_replacement );
+	    - (count * len_pattern)
+	    + (count * len_replacement);
 
 	new = malloc(final_length + 1);
 	w_new = new;
@@ -117,8 +116,8 @@ static gchar *spamreport_strreplace(gchar *source, gchar *pattern,
 
 	c = source;
 
-	while( *c != '\0' ) {
-		if( !memcmp(c, pattern, len_pattern) ) {
+	while (*c != '\0') {
+		if (!memcmp(c, pattern, len_pattern)) {
 			gboolean break_after_rep = FALSE;
 			size_t i;
 			if (*(c + len_pattern) == '\0')
@@ -167,29 +166,31 @@ static void spamreport_http_response_log(gchar *url, long response)
 	}
 }
 
-static void *myrealloc(void *pointer, size_t size) {
-        /*
-         * There might be a realloc() out there that doesn't like reallocing
-         * NULL pointers, so we take care of it here.
-         */
-        if (pointer) {
-                return realloc(pointer, size);
-        } else {
-                return malloc(size);
-        }
+static void *myrealloc(void *pointer, size_t size)
+{
+	/*
+	 * There might be a realloc() out there that doesn't like reallocing
+	 * NULL pointers, so we take care of it here.
+	 */
+	if (pointer) {
+		return realloc(pointer, size);
+	} else {
+		return malloc(size);
+	}
 }
 
-static size_t curl_writefunction_cb(void *pointer, size_t size, size_t nmemb, void *data) {
-        size_t realsize = size * nmemb;
-        struct CurlReadWrite *mem = (struct CurlReadWrite *)data;
+static size_t curl_writefunction_cb(void *pointer, size_t size, size_t nmemb, void *data)
+{
+	size_t realsize = size * nmemb;
+	struct CurlReadWrite *mem = (struct CurlReadWrite *)data;
 
-        mem->data = myrealloc(mem->data, mem->size + realsize + 1);
-        if (mem->data) {
-                memcpy(&(mem->data[mem->size]), pointer, realsize);
-                mem->size += realsize;
-                mem->data[mem->size] = 0;
-        }
-        return realsize;
+	mem->data = myrealloc(mem->data, mem->size + realsize + 1);
+	if (mem->data) {
+		memcpy(&(mem->data[mem->size]), pointer, realsize);
+		mem->size += realsize;
+		mem->data[mem->size] = 0;
+	}
+	return realsize;
 }
 
 static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar *contents)
@@ -203,12 +204,12 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 
 	chunk.data = NULL;
 	chunk.size = 0;
-	
+
 	if (spamreport_prefs.enabled[id] == FALSE) {
 		debug_print("not reporting via %s (disabled)\n", intf->name);
 		return;
 	}
-	if (intf->should_report != NULL && (intf->should_report)(msginfo) == FALSE) {
+	if (intf->should_report != NULL && (intf->should_report) (msginfo) == FALSE) {
 		debug_print("not reporting via %s (unsuitable)\n", intf->name);
 		return;
 	}
@@ -221,8 +222,8 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 	geturl = spamreport_strreplace(intf->url, "%claws_mail_msgid%", msginfo->msgid);
 	g_free(b64);
 	g_free(tmp);
-	
-	switch(intf->type) {
+
+	switch (intf->type) {
 	case INTF_HTTP_AUTH:
 		if (spamreport_prefs.user[id] && *(spamreport_prefs.user[id])) {
 			gchar *pass = spamreport_passwd_get(spam_interfaces[id].name);
@@ -237,8 +238,7 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, reqbody);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, auth);
 			curl_easy_setopt(curl, CURLOPT_TIMEOUT, prefs_common_get_prefs()->io_timeout_secs);
-			curl_easy_setopt(curl, CURLOPT_USERAGENT,
-                		SPAM_REPORT_USERAGENT "(" PLUGINS_URI ")");
+			curl_easy_setopt(curl, CURLOPT_USERAGENT, SPAM_REPORT_USERAGENT "(" PLUGINS_URI ")");
 #ifdef G_OS_WIN32
 			curl_easy_setopt(curl, CURLOPT_CAINFO, claws_ssl_get_cert_file());
 #endif
@@ -262,8 +262,7 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 	case INTF_HTTP_GET:
 		curl = curl_easy_init();
 		curl_easy_setopt(curl, CURLOPT_URL, geturl);
-		curl_easy_setopt(curl, CURLOPT_USERAGENT,
-                		SPAM_REPORT_USERAGENT "(" PLUGINS_URI ")");
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, SPAM_REPORT_USERAGENT "(" PLUGINS_URI ")");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_writefunction_cb);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 #ifdef G_OS_WIN32
@@ -279,8 +278,7 @@ static void report_spam(gint id, ReportInterface *intf, MsgInfo *msginfo, gchar 
 		if (chunk.size < 13 || strstr(chunk.data, "OK: nominated") == NULL) {
 			if (chunk.size > 0) {
 				log_error(LOG_PROTOCOL, "%s: response was %s\n", geturl, chunk.data);
-			}
-			else {
+			} else {
 				log_error(LOG_PROTOCOL, "%s: response was empty\n", geturl);
 			}
 		}
@@ -298,7 +296,7 @@ static void report_spam_cb_ui(GtkAction *action, gpointer data)
 	SummaryView *summaryview = mainwin->summaryview;
 	GSList *msglist = summary_get_selected_msg_list(summaryview);
 	GSList *cur;
-	gint curnum=0, total=0;
+	gint curnum = 0, total = 0;
 	if (summary_is_locked(summaryview) || !msglist) {
 		if (msglist)
 			g_slist_free(msglist);
@@ -325,15 +323,15 @@ static void report_spam_cb_ui(GtkAction *action, gpointer data)
 		curnum++;
 
 		contents = file_read_to_str(file);
-		
+
 		for (i = 0; i < INTF_LAST; i++)
 			report_spam(i, &(spam_interfaces[i]), msginfo, contents);
-		
+
 		g_free(contents);
 		g_free(file);
 	}
 
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 	STATUSBAR_POP(mainwin);
 	inc_unlock();
 	folder_item_update_thaw();
@@ -342,10 +340,11 @@ static void report_spam_cb_ui(GtkAction *action, gpointer data)
 	g_slist_free(msglist);
 }
 
-static GtkActionEntry spamreport_main_menu[] = {{
-	"Message/ReportSpam",
-	NULL, N_("Report spam online..."), NULL, NULL, G_CALLBACK(report_spam_cb_ui)
-}};
+static GtkActionEntry spamreport_main_menu[] = { {
+						  "Message/ReportSpam",
+						  NULL, N_("Report spam online..."), NULL, NULL, G_CALLBACK(report_spam_cb_ui)
+						  }
+};
 
 static guint context_menu_id = 0;
 static guint main_menu_id = 0;
@@ -354,23 +353,17 @@ gint plugin_init(gchar **error)
 {
 	MainWindow *mainwin = mainwindow_get_mainwindow();
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3,13,2,39),
-				VERSION_NUMERIC, _("SpamReport"), error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 13, 2, 39), VERSION_NUMERIC, _("SpamReport"), error))
 		return -1;
 
 	spamreport_prefs_init();
 
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 
-	gtk_action_group_add_actions(mainwin->action_group, spamreport_main_menu,
-			1, (gpointer)mainwin);
-	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menu/Message", "ReportSpam", 
-			  "Message/ReportSpam", GTK_UI_MANAGER_MENUITEM,
-			  main_menu_id)
-	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menus/SummaryViewPopup", "ReportSpam", 
-			  "Message/ReportSpam", GTK_UI_MANAGER_MENUITEM,
-			  context_menu_id)
-	return 0;
+	gtk_action_group_add_actions(mainwin->action_group, spamreport_main_menu, 1, (gpointer)mainwin);
+	MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menu/Message", "ReportSpam", "Message/ReportSpam", GTK_UI_MANAGER_MENUITEM, main_menu_id)
+	    MENUITEM_ADDUI_ID_MANAGER(mainwin->ui_manager, "/Menus/SummaryViewPopup", "ReportSpam", "Message/ReportSpam", GTK_UI_MANAGER_MENUITEM, context_menu_id)
+	    return 0;
 }
 
 gboolean plugin_done(void)
@@ -380,10 +373,10 @@ gboolean plugin_done(void)
 	if (mainwin == NULL)
 		return TRUE;
 
-	MENUITEM_REMUI_MANAGER(mainwin->ui_manager,mainwin->action_group, "Message/ReportSpam", main_menu_id);
+	MENUITEM_REMUI_MANAGER(mainwin->ui_manager, mainwin->action_group, "Message/ReportSpam", main_menu_id);
 	main_menu_id = 0;
 
-	MENUITEM_REMUI_MANAGER(mainwin->ui_manager,mainwin->action_group, "Message/ReportSpam", context_menu_id);
+	MENUITEM_REMUI_MANAGER(mainwin->ui_manager, mainwin->action_group, "Message/ReportSpam", context_menu_id);
 	context_menu_id = 0;
 
 	spamreport_prefs_done();
@@ -398,11 +391,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin reports spam to various places.\n"
-		 "Currently the following sites or methods are supported:\n\n"
-		 " * spam-signal.fr\n"
-                 " * spamcop.net\n"
-		 " * lists.debian.org nomination system");
+	return _("This plugin reports spam to various places.\n" "Currently the following sites or methods are supported:\n\n" " * spam-signal.fr\n" " * spamcop.net\n" " * lists.debian.org nomination system");
 }
 
 const gchar *plugin_type(void)
@@ -422,8 +411,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_UTILITY, N_("Spam reporting")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_UTILITY, N_("Spam reporting")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

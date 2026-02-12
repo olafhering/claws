@@ -26,24 +26,23 @@
 
 typedef struct _BsfilterConfig BsfilterConfig;
 
-typedef void (*MessageCallback) (gchar *, gint total, gint done, gboolean thread_safe);
+typedef void (*MessageCallback)(gchar *, gint total, gint done, gboolean thread_safe);
 
-struct _BsfilterConfig
-{
-	gboolean		 process_emails;
-	gboolean 		 receive_spam;
-	gchar 			*save_folder;
-	guint 			 max_size;
-	gchar			*bspath;
-	gboolean		 whitelist_ab;
-	gchar			*whitelist_ab_folder;
-	gboolean		 learn_from_whitelist;
-	gboolean		 mark_as_read;
+struct _BsfilterConfig {
+	gboolean process_emails;
+	gboolean receive_spam;
+	gchar *save_folder;
+	guint max_size;
+	gchar *bspath;
+	gboolean whitelist_ab;
+	gchar *whitelist_ab_folder;
+	gboolean learn_from_whitelist;
+	gboolean mark_as_read;
 };
 
-BsfilterConfig *bsfilter_get_config	      (void);
-void		    bsfilter_save_config	      (void);
-void 	            bsfilter_set_message_callback (MessageCallback callback);
+BsfilterConfig *bsfilter_get_config(void);
+void bsfilter_save_config(void);
+void bsfilter_set_message_callback(MessageCallback callback);
 gint bsfilter_gtk_init(void);
 void bsfilter_gtk_done(void);
 int bsfilter_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam);

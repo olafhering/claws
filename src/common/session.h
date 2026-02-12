@@ -34,7 +34,7 @@
 
 #define SESSION_BUFFSIZE	4096
 
-typedef struct _Session	Session;
+typedef struct _Session Session;
 
 #define SESSION(obj)	((Session *)obj)
 
@@ -56,26 +56,13 @@ typedef enum {
 	SESSION_DISCONNECTED
 } SessionState;
 
-typedef gint (*RecvMsgNotify)			(Session	*session,
-						 const gchar	*msg,
-						 gpointer	 user_data);
-typedef gint (*RecvDataProgressiveNotify)	(Session	*session,
-						 guint		 cur_len,
-						 guint		 total_len,
-						 gpointer	 user_data);
-typedef gint (*RecvDataNotify)			(Session	*session,
-						 guint		 len,
-						 gpointer	 user_data);
-typedef gint (*SendDataProgressiveNotify)	(Session	*session,
-						 guint		 cur_len,
-						 guint		 total_len,
-						 gpointer	 user_data);
-typedef gint (*SendDataNotify)			(Session	*session,
-						 guint		 len,
-						 gpointer	 user_data);
+typedef gint (*RecvMsgNotify) (Session *session, const gchar *msg, gpointer user_data);
+typedef gint (*RecvDataProgressiveNotify) (Session *session, guint cur_len, guint total_len, gpointer user_data);
+typedef gint (*RecvDataNotify) (Session *session, guint len, gpointer user_data);
+typedef gint (*SendDataProgressiveNotify) (Session *session, guint cur_len, guint total_len, gpointer user_data);
+typedef gint (*SendDataNotify) (Session *session, guint len, gpointer user_data);
 
-struct _Session
-{
+struct _Session {
 	SessionType type;
 
 	SockInfo *sock;
@@ -117,25 +104,20 @@ struct _Session
 	gpointer data;
 
 	/* virtual methods to parse server responses */
-	gint (*recv_msg)		(Session	*session,
-					 const gchar	*msg);
+	gint (*recv_msg) (Session *session, const gchar *msg);
 
-	void (*connect_finished)	(Session	*session,
-					 gboolean	success);
-	gint (*send_data_finished)	(Session	*session,
-					 guint		 len);
-	gint (*recv_data_finished)	(Session	*session,
-					 guchar		*data,
-					 guint		 len);
+	void (*connect_finished) (Session *session, gboolean success);
+	gint (*send_data_finished) (Session *session, guint len);
+	gint (*recv_data_finished) (Session *session, guchar *data, guint len);
 
-	void (*destroy)			(Session	*session);
+	void (*destroy) (Session *session);
 
 	/* notification functions */
-	RecvMsgNotify			recv_msg_notify;
-	RecvDataProgressiveNotify	recv_data_progressive_notify;
-	RecvDataNotify			recv_data_notify;
-	SendDataProgressiveNotify	send_data_progressive_notify;
-	SendDataNotify			send_data_notify;
+	RecvMsgNotify recv_msg_notify;
+	RecvDataProgressiveNotify recv_data_progressive_notify;
+	RecvDataNotify recv_data_notify;
+	SendDataProgressiveNotify send_data_progressive_notify;
+	SendDataNotify send_data_notify;
 
 	gpointer recv_msg_notify_data;
 	gpointer recv_data_progressive_notify_data;
@@ -163,53 +145,31 @@ struct _Session
 #endif
 };
 
-void session_init		(Session	*session, 
-				 const void 	*prefs_account,
-				 gboolean	 is_smtp);
-gint session_connect		(Session	*session,
-				 const gchar	*server,
-				 gushort	 port);
-gint session_disconnect		(Session	*session);
-void session_destroy		(Session	*session);
-gboolean session_is_running	(Session	*session);
-gboolean session_is_connected	(Session	*session);
+void session_init(Session *session, const void *prefs_account, gboolean is_smtp);
+gint session_connect(Session *session, const gchar *server, gushort port);
+gint session_disconnect(Session *session);
+void session_destroy(Session *session);
+gboolean session_is_running(Session *session);
+gboolean session_is_connected(Session *session);
 
-void session_set_access_time	(Session	*session);
+void session_set_access_time(Session *session);
 
-void session_set_timeout	(Session	*session,
-				 guint		 interval);
+void session_set_timeout(Session *session, guint interval);
 
-void session_set_recv_message_notify	(Session	*session,
-					 RecvMsgNotify	 notify_func,
-					 gpointer	 data);
-void session_set_recv_data_progressive_notify
-					(Session	*session,
-					 RecvDataProgressiveNotify notify_func,
-					 gpointer	 data);
-void session_set_recv_data_notify	(Session	*session,
-					 RecvDataNotify	 notify_func,
-					 gpointer	 data);
-void session_set_send_data_progressive_notify
-					(Session	*session,
-					 SendDataProgressiveNotify notify_func,
-					 gpointer	 data);
-void session_set_send_data_notify	(Session	*session,
-					 SendDataNotify	 notify_func,
-					 gpointer	 data);
+void session_set_recv_message_notify(Session *session, RecvMsgNotify notify_func, gpointer data);
+void session_set_recv_data_progressive_notify(Session *session, RecvDataProgressiveNotify notify_func, gpointer data);
+void session_set_recv_data_notify(Session *session, RecvDataNotify notify_func, gpointer data);
+void session_set_send_data_progressive_notify(Session *session, SendDataProgressiveNotify notify_func, gpointer data);
+void session_set_send_data_notify(Session *session, SendDataNotify notify_func, gpointer data);
 
 #ifdef USE_GNUTLS
-gint session_start_tls	(Session	*session);
+gint session_start_tls(Session *session);
 #endif
 
-gint session_send_msg	(Session	*session,
-			 const gchar	*msg);
-gint session_recv_msg	(Session	*session);
-gint session_send_data	(Session	*session,
-			 const guchar	*data,
-			 guint		 size);
-gint session_recv_data	(Session	*session,
-			 guint		 size,
-			 const gchar	*terminator);
+gint session_send_msg(Session *session, const gchar *msg);
+gint session_recv_msg(Session *session);
+gint session_send_data(Session *session, const guchar *data, guint size);
+gint session_recv_data(Session *session, guint size, const gchar *terminator);
 void session_register_ping(Session *session, gboolean (*ping_cb)(gpointer data));
 
 #endif /* __SESSION_H__ */

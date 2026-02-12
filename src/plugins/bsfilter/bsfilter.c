@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -128,8 +128,8 @@ static BsFilterData *to_filter_data = NULL;
 #ifdef USE_PTHREAD
 static gboolean filter_th_done = FALSE;
 static pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t wait_mutex = PTHREAD_MUTEX_INITIALIZER; 
-static pthread_cond_t wait_cond = PTHREAD_COND_INITIALIZER; 
+static pthread_mutex_t wait_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t wait_cond = PTHREAD_COND_INITIALIZER;
 #endif
 
 static void bsfilter_do_filter(BsFilterData *data)
@@ -142,8 +142,7 @@ static void bsfilter_do_filter(BsFilterData *data)
 	if (config.whitelist_ab) {
 		gchar *ab_folderpath;
 
-		if (*config.whitelist_ab_folder == '\0' ||
-			strcasecmp(config.whitelist_ab_folder, "Any") == 0) {
+		if (*config.whitelist_ab_folder == '\0' || strcasecmp(config.whitelist_ab_folder, "Any") == 0) {
 			/* match the whole addressbook */
 			ab_folderpath = NULL;
 		} else {
@@ -156,8 +155,7 @@ static void bsfilter_do_filter(BsFilterData *data)
 
 	debug_print("Filtering message %d\n", msginfo->msgnum);
 
-	if (config.whitelist_ab && msginfo->from && 
-	    found_in_addressbook(msginfo->from))
+	if (config.whitelist_ab && msginfo->from && found_in_addressbook(msginfo->from))
 		whitelisted = TRUE;
 
 	/* can set flags (SCANNED, ATTACHMENT) but that's ok 
@@ -167,26 +165,25 @@ static void bsfilter_do_filter(BsFilterData *data)
 
 	if (file) {
 #ifndef G_OS_WIN32
-		gchar *classify = g_strconcat((config.bspath && *config.bspath) ? config.bspath:"bsfilter",
-			" --homedir '",get_rc_dir(),"' '", file, "'", NULL);
+		gchar *classify = g_strconcat((config.bspath && *config.bspath) ? config.bspath : "bsfilter",
+					      " --homedir '", get_rc_dir(), "' '", file, "'", NULL);
 #else
-		gchar *classify = g_strconcat((config.bspath && *config.bspath) ? config.bspath:"bsfilterw.exe",
-			" --homedir '",get_rc_dir(),"' '", file, "'", NULL);
+		gchar *classify = g_strconcat((config.bspath && *config.bspath) ? config.bspath : "bsfilterw.exe",
+					      " --homedir '", get_rc_dir(), "' '", file, "'", NULL);
 #endif
-		status = execute_command_line(classify, FALSE,
-				claws_get_startup_dir());
+		status = execute_command_line(classify, FALSE, claws_get_startup_dir());
 		g_free(classify);
 	}
 
 	if (config.whitelist_ab)
 		end_address_completion();
 
-	to_filter_data->status = status; 
-	to_filter_data->whitelisted = whitelisted; 
+	to_filter_data->status = status;
+	to_filter_data->whitelisted = whitelisted;
 }
 
 #ifdef USE_PTHREAD
-static void *bsfilter_filtering_thread(void *data) 
+static void *bsfilter_filtering_thread(void *data)
 {
 	while (!filter_th_done) {
 		pthread_mutex_lock(&list_mutex);
@@ -216,9 +213,7 @@ static void bsfilter_start_thread(void)
 	filter_th_done = FALSE;
 	if (filter_th_started != 0)
 		return;
-	if (pthread_create(&filter_th, NULL, 
-			bsfilter_filtering_thread, 
-			NULL) != 0) {
+	if (pthread_create(&filter_th, NULL, bsfilter_filtering_thread, NULL) != 0) {
 		filter_th_started = 0;
 		return;
 	}
@@ -254,21 +249,21 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	static gboolean warned_error = FALSE;
 	int status = 0, whitelisted = 0;
 #ifndef G_OS_WIN32
-	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath:"bsfilter";
+	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath : "bsfilter";
 #else
-	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath:"bsfilterw.exe";
+	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath : "bsfilterw.exe";
 #endif
 	gboolean filtered = FALSE;
-	
+
 	if (!config.process_emails) {
 		return filtered;
 	}
-	
+
 	if (msginfo == NULL) {
 		g_warning("wrong call to bsfilter mail_filtering_hook");
 		return filtered;
 	}
-		
+
 	/* we have to make sure the mails are cached - or it'll break on IMAP */
 	if (message_callback != NULL)
 		message_callback(_("Bsfilter: fetching body..."), 0, 0, FALSE);
@@ -303,7 +298,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 
 #ifdef USE_PTHREAD
 	pthread_mutex_unlock(&list_mutex);
-	
+
 	if (filter_th_started != 0) {
 		debug_print("waking thread to let it filter things\n");
 		pthread_mutex_lock(&wait_mutex);
@@ -324,7 +319,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	if (filter_th_started == 0)
 		bsfilter_do_filter(to_filter_data);
 #else
-	bsfilter_do_filter(to_filter_data);	
+	bsfilter_do_filter(to_filter_data);
 #endif
 
 	status = to_filter_data->status;
@@ -355,27 +350,20 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		}
 		if (MSG_IS_SPAM(msginfo->flags) && config.receive_spam) {
 			if (config.receive_spam && config.mark_as_read)
-				procmsg_msginfo_unset_flags(msginfo, (MSG_NEW|MSG_UNREAD), 0);
+				procmsg_msginfo_unset_flags(msginfo, (MSG_NEW | MSG_UNREAD), 0);
 			if (!config.receive_spam)
 				folder_item_remove_msg(msginfo->folder, msginfo->msgnum);
 			filtered = TRUE;
 		}
 	}
-		
-	if (status < 0 || status > 2) { /* I/O or other errors */
+
+	if (status < 0 || status > 2) {	/* I/O or other errors */
 		gchar *msg = NULL;
-		
+
 		if (status == 3)
-			msg =  g_strdup_printf(_("The Bsfilter plugin couldn't filter "
-					   "a message. The probable cause of the "
-					   "error is that it didn't learn from any mail.\n"
-					   "Use \"/Mark/Mark as spam\" and \"/Mark/Mark as "
-					   "ham\" to train Bsfilter with a few hundred "
-					   "spam and ham messages."));
+			msg = g_strdup_printf(_("The Bsfilter plugin couldn't filter " "a message. The probable cause of the " "error is that it didn't learn from any mail.\n" "Use \"/Mark/Mark as spam\" and \"/Mark/Mark as " "ham\" to train Bsfilter with a few hundred " "spam and ham messages."));
 		else
-			msg =  g_strdup_printf(_("The Bsfilter plugin couldn't filter "
-					   "a message. The command `%s` couldn't be run."), 
-					   bs_exec);
+			msg = g_strdup_printf(_("The Bsfilter plugin couldn't filter " "a message. The command `%s` couldn't be run."), bs_exec);
 		if (!prefs_common_get_prefs()->no_recv_err_panel) {
 			if (!warned_error) {
 				alertpanel_error("%s", msg);
@@ -391,34 +379,27 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		if (config.receive_spam && MSG_IS_SPAM(msginfo->flags)) {
 			FolderItem *save_folder = NULL;
 
-			if ((!config.save_folder) ||
-			    (config.save_folder[0] == '\0') ||
-			    ((save_folder = folder_find_item_from_identifier(config.save_folder)) == NULL)) {
-			 	if (mail_filtering_data->account && mail_filtering_data->account->set_trash_folder) {
-					save_folder = folder_find_item_from_identifier(
-						mail_filtering_data->account->trash_folder);
+			if ((!config.save_folder) || (config.save_folder[0] == '\0') || ((save_folder = folder_find_item_from_identifier(config.save_folder)) == NULL)) {
+				if (mail_filtering_data->account && mail_filtering_data->account->set_trash_folder) {
+					save_folder = folder_find_item_from_identifier(mail_filtering_data->account->trash_folder);
 					if (save_folder)
 						debug_print("found trash folder from account's advanced settings\n");
 				}
-				if (save_folder == NULL && mail_filtering_data->account &&
-				    mail_filtering_data->account->folder) {
-				    	save_folder = mail_filtering_data->account->folder->trash;
+				if (save_folder == NULL && mail_filtering_data->account && mail_filtering_data->account->folder) {
+					save_folder = mail_filtering_data->account->folder->trash;
 					if (save_folder)
 						debug_print("found trash folder from account's trash\n");
 				}
-				if (save_folder == NULL && mail_filtering_data->account &&
-				    !mail_filtering_data->account->folder)  {
+				if (save_folder == NULL && mail_filtering_data->account && !mail_filtering_data->account->folder) {
 					if (mail_filtering_data->account->inbox) {
-						FolderItem *item = folder_find_item_from_identifier(
-							mail_filtering_data->account->inbox);
+						FolderItem *item = folder_find_item_from_identifier(mail_filtering_data->account->inbox);
 						if (item && item->folder->trash) {
 							save_folder = item->folder->trash;
 							debug_print("found trash folder from account's inbox\n");
 						}
-					} 
+					}
 					if (!save_folder && mail_filtering_data->account->local_inbox) {
-						FolderItem *item = folder_find_item_from_identifier(
-							mail_filtering_data->account->local_inbox);
+						FolderItem *item = folder_find_item_from_identifier(mail_filtering_data->account->local_inbox);
 						if (item && item->folder->trash) {
 							save_folder = item->folder->trash;
 							debug_print("found trash folder from account's local_inbox\n");
@@ -435,10 +416,10 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 				msginfo->to_filter_folder = save_folder;
 			}
 		}
-	} 
+	}
 	if (message_callback != NULL)
 		message_callback(NULL, 0, 0, FALSE);
-	
+
 	return filtered;
 }
 
@@ -452,9 +433,9 @@ int bsfilter_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 	gchar *cmd = NULL;
 	gchar *file = NULL;
 #ifndef G_OS_WIN32
-	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath:"bsfilter";
+	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath : "bsfilter";
 #else
-	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath:"bsfilterw.exe";
+	gchar *bs_exec = (config.bspath && *config.bspath) ? config.bspath : "bsfilterw.exe";
 #endif
 	gint status = 0;
 	gboolean free_list = FALSE;
@@ -479,15 +460,13 @@ int bsfilter_learn(MsgInfo *msginfo, GSList *msglist, gboolean spam)
 			if (spam)
 				/* learn as spam */
 				cmd = g_strdup_printf("%s --homedir '%s' -su '%s'", bs_exec, get_rc_dir(), file);
-			else 
+			else
 				/* learn as ham */
 				cmd = g_strdup_printf("%s --homedir '%s' -cu '%s'", bs_exec, get_rc_dir(), file);
-				
+
 			debug_print("%s\n", cmd);
-			if ((status = execute_command_line(cmd, FALSE,
-							claws_get_startup_dir())) != 0)
-				log_error(LOG_PROTOCOL, _("Learning failed; `%s` returned with status %d."),
-						cmd, status);
+			if ((status = execute_command_line(cmd, FALSE, claws_get_startup_dir())) != 0)
+				log_error(LOG_PROTOCOL, _("Learning failed; `%s` returned with status %d."), cmd, status);
 			g_free(cmd);
 			g_free(file);
 			if (message_callback != NULL)
@@ -518,11 +497,11 @@ void bsfilter_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
 void bsfilter_set_message_callback(MessageCallback callback)
@@ -535,8 +514,7 @@ gint plugin_init(gchar **error)
 	gchar *rcpath;
 	hook_id = HOOK_NONE;
 
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	prefs_set_default(param);
@@ -545,7 +523,7 @@ gint plugin_init(gchar **error)
 	g_free(rcpath);
 
 	bsfilter_gtk_init();
-		
+
 	debug_print("Bsfilter plugin loaded\n");
 
 #ifdef USE_PTHREAD
@@ -560,13 +538,13 @@ gint plugin_init(gchar **error)
 	procmsg_spam_set_folder(config.save_folder, bsfilter_get_spam_folder);
 
 	return 0;
-	
+
 }
 
 FolderItem *bsfilter_get_spam_folder(MsgInfo *msginfo)
 {
 	FolderItem *item = NULL;
-	
+
 	if (config.save_folder != NULL) {
 		item = folder_find_item_from_identifier(config.save_folder);
 	}
@@ -574,21 +552,16 @@ FolderItem *bsfilter_get_spam_folder(MsgInfo *msginfo)
 	if (item || msginfo == NULL || msginfo->folder == NULL)
 		return item;
 
-	if (msginfo->folder->folder &&
-	    msginfo->folder->folder->account && 
-	    msginfo->folder->folder->account->set_trash_folder) {
-		item = folder_find_item_from_identifier(
-			msginfo->folder->folder->account->trash_folder);
+	if (msginfo->folder->folder && msginfo->folder->folder->account && msginfo->folder->folder->account->set_trash_folder) {
+		item = folder_find_item_from_identifier(msginfo->folder->folder->account->trash_folder);
 	}
 
-	if (item == NULL && 
-	    msginfo->folder->folder &&
-	    msginfo->folder->folder->trash)
+	if (item == NULL && msginfo->folder->folder && msginfo->folder->folder->trash)
 		item = msginfo->folder->folder->trash;
-		
+
 	if (item == NULL)
 		item = folder_get_default_trash();
-		
+
 	debug_print("bs spam dir: %s\n", folder_item_get_path(item));
 	return item;
 }
@@ -616,19 +589,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin can check all messages that are received from an "
-	         "IMAP, LOCAL or POP account for spam using Bsfilter. "
-		 "You will need Bsfilter installed locally.\n"
-	         "\n"
-		 "Before Bsfilter can recognize spam messages, you have to "
-		 "train it by marking a few hundred spam and ham messages "
-		 "with the use of \"/Mark/Mark as spam\" and \"/Mark/Mark as "
-		 "ham\".\n"
-	         "\n"
-	         "When a message is identified as spam it can be deleted or "
-	         "saved in a specially designated folder.\n"
-	         "\n"
-		 "Options can be found in /Configuration/Preferences/Plugins/Bsfilter");
+	return _("This plugin can check all messages that are received from an " "IMAP, LOCAL or POP account for spam using Bsfilter. " "You will need Bsfilter installed locally.\n" "\n" "Before Bsfilter can recognize spam messages, you have to " "train it by marking a few hundred spam and ham messages " "with the use of \"/Mark/Mark as spam\" and \"/Mark/Mark as " "ham\".\n" "\n" "When a message is identified as spam it can be deleted or " "saved in a specially designated folder.\n" "\n" "Options can be found in /Configuration/Preferences/Plugins/Bsfilter");
 }
 
 const gchar *plugin_type(void)
@@ -648,10 +609,10 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_FILTERING, N_("Spam detection")},
-		  {PLUGIN_FILTERING, N_("Spam learning")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_FILTERING, N_("Spam detection")},
+	{PLUGIN_FILTERING, N_("Spam learning")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
 
@@ -672,3 +633,7 @@ void bsfilter_unregister_hook(void)
 	}
 	hook_id = HOOK_NONE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

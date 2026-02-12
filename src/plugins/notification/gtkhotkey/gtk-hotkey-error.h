@@ -26,14 +26,13 @@
 #include <glib.h>
 
 G_BEGIN_DECLS
-
 /**
  * GTK_HOTKEY_LISTENER_ERROR:
  *  
  * Error domain for #GtkHotkeyListener.
  */
 #define GTK_HOTKEY_LISTENER_ERROR gtk_hotkey_listener_error_quark()
-GQuark gtk_hotkey_listener_error_quark (void);
+    GQuark gtk_hotkey_listener_error_quark(void);
 
 /**
  * GTK_HOTKEY_REGISTRY_ERROR:
@@ -41,7 +40,7 @@ GQuark gtk_hotkey_listener_error_quark (void);
  * Error domain for #GtkHotkeyRegistry.
  */
 #define GTK_HOTKEY_REGISTRY_ERROR gtk_hotkey_registry_error_quark()
-GQuark gtk_hotkey_registry_error_quark (void);
+GQuark gtk_hotkey_registry_error_quark(void);
 
 /**
  * GtkHotkeyListenerError:
@@ -52,8 +51,7 @@ GQuark gtk_hotkey_registry_error_quark (void);
  * 
  * Error codes for #GError<!-- -->s related to #GtkHotkeyListener<!-- -->s
  */
-typedef enum
-{
+typedef enum {
 	GTK_HOTKEY_LISTENER_ERROR_BIND,
 	GTK_HOTKEY_LISTENER_ERROR_UNBIND,
 } GtkHotkeyListenerError;
@@ -84,8 +82,7 @@ typedef enum
  * 
  * Error codes for #GError<!-- -->s related to #GtkHotkeyRegistry<!-- -->s
  */
-typedef enum
-{
+typedef enum {
 	GTK_HOTKEY_REGISTRY_ERROR_UNKNOWN_APP,
 	GTK_HOTKEY_REGISTRY_ERROR_UNKNOWN_KEY,
 	GTK_HOTKEY_REGISTRY_ERROR_MALFORMED_MEDIUM,
@@ -96,5 +93,4 @@ typedef enum
 } GtkHotkeyRegistryError;
 
 G_END_DECLS
-
 #endif /* __GTK_HOTKEY_ERROR_H__ */

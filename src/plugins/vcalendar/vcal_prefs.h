@@ -25,31 +25,30 @@
 
 typedef struct _VcalendarPrefs VcalendarPrefs;
 
-struct _VcalendarPrefs
-{
-	gboolean	 alert_enable;
-	gint		 alert_delay;
-	gboolean	 export_enable;
-	gboolean	 export_freebusy_enable;
-	gboolean	 export_subs;
-	gchar 		*export_path;	
-	gchar 		*export_freebusy_path;	
-	gchar 		*export_command;	
-	gchar		*export_user;
-	gchar		*export_pass;
-	gchar 		*export_freebusy_command;
-	gchar		*freebusy_get_url;	
-	gchar		*export_freebusy_user;
-	gchar		*export_freebusy_pass;
-	gboolean	 orage_registered;
-	gboolean	 ssl_verify_peer;
-	gboolean	 calendar_server;
+struct _VcalendarPrefs {
+	gboolean alert_enable;
+	gint alert_delay;
+	gboolean export_enable;
+	gboolean export_freebusy_enable;
+	gboolean export_subs;
+	gchar *export_path;
+	gchar *export_freebusy_path;
+	gchar *export_command;
+	gchar *export_user;
+	gchar *export_pass;
+	gchar *export_freebusy_command;
+	gchar *freebusy_get_url;
+	gchar *export_freebusy_user;
+	gchar *export_freebusy_pass;
+	gboolean orage_registered;
+	gboolean ssl_verify_peer;
+	gboolean calendar_server;
 };
 
 extern VcalendarPrefs vcalprefs;
 
-void vcal_prefs_init	(void);
-void vcal_prefs_done	(void);
-void vcal_prefs_save	(void);
+void vcal_prefs_init(void);
+void vcal_prefs_done(void);
+void vcal_prefs_save(void);
 
 #endif

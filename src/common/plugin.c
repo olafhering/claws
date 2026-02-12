@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -49,47 +49,46 @@
 #define PLUGINS_BLOCK_PREFIX "Plugins_"
 #endif
 
-struct _Plugin
-{
-	gchar	*filename;
-	GModule	*module;
-	const gchar *(*name) (void);
-	const gchar *(*desc) (void);
-	const gchar *(*version) (void);
-	const gchar *(*type) (void);
-	const gchar *(*licence) (void);
+struct _Plugin {
+	gchar *filename;
+	GModule *module;
+	const gchar *(*name)(void);
+	const gchar *(*desc)(void);
+	const gchar *(*version)(void);
+	const gchar *(*type)(void);
+	const gchar *(*licence)(void);
 	struct PluginFeature *(*provides) (void);
-	
+
 	GSList *rdeps;
 	gchar *error;
 	gboolean unloaded_hidden;
 	gboolean in_prefix_dir;
 };
 
-const gchar *plugin_feature_names[] =
-	{ N_("Nothing"),
-	  N_("a viewer"),
-	  N_("a MIME parser"),
-	  N_("folders"),
-	  N_("filtering"),
-	  N_("a privacy interface"),
-	  N_("a notifier"),
-	  N_("a utility"),
-	  N_("things"),
-	  NULL };
+const gchar *plugin_feature_names[] = { N_("Nothing"),
+	N_("a viewer"),
+	N_("a MIME parser"),
+	N_("folders"),
+	N_("filtering"),
+	N_("a privacy interface"),
+	N_("a notifier"),
+	N_("a utility"),
+	N_("things"),
+	NULL
+};
 
 /* The plugin must be at least under one of these licences and have
    the corresponding token returned by the plugin_licence function.
  */
 const gchar *plugin_licence_tokens[] = {
-  "LGPL2.1+", "LGPLv2.1+", "LGPL2.1", "LGPLv2.1",
-  "LGPL3+", "LGPLv3+", "LGPL3", "LGPLv3",
-  "GPL3+", "GPLv3+", "GPL3", "GPLv3",
-  "GPL2+", "GPLv2+",
-  "Apache2.0", "Apache 2.0", "Apache v2.0",
-  "2-clause BSD", "Simplified BSD", "FreeBSD",
-  "3-clause BSD", "New BSD", "Modified BSD",
-  NULL
+	"LGPL2.1+", "LGPLv2.1+", "LGPL2.1", "LGPLv2.1",
+	"LGPL3+", "LGPLv3+", "LGPL3", "LGPLv3",
+	"GPL3+", "GPLv3+", "GPL3", "GPLv3",
+	"GPL2+", "GPLv2+",
+	"Apache2.0", "Apache 2.0", "Apache v2.0",
+	"2-clause BSD", "Simplified BSD", "FreeBSD",
+	"3-clause BSD", "New BSD", "Modified BSD",
+	NULL
 };
 
 /* Dual (or more) licences are allowed, must be separated by one of these.
@@ -125,11 +124,12 @@ static gint list_find_by_plugin_filename(const Plugin *plugin, const gchar *file
 	return strcmp(filename, plugin->filename);
 }
 
-static gboolean plugin_filename_is_standard_dir(const gchar *filename) {
+static gboolean plugin_filename_is_standard_dir(const gchar *filename)
+{
 	return strncmp(filename, get_plugin_dir(), strlen(get_plugin_dir())) == 0;
 }
 
-static gchar * plugin_canonical_name(const Plugin *plugin)
+static gchar *plugin_canonical_name(const Plugin *plugin)
 {
 	if (plugin->in_prefix_dir == TRUE) {
 		if (plugin_filename_is_standard_dir(plugin->filename) == TRUE) {
@@ -146,12 +146,11 @@ void plugin_save_list(void)
 	PrefFile *pfile;
 	GSList *type_cur, *plugin_cur;
 	Plugin *plugin;
-	
+
 	for (type_cur = plugin_types; type_cur != NULL; type_cur = g_slist_next(type_cur)) {
 		rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);
 		block = g_strconcat(PLUGINS_BLOCK_PREFIX, type_cur->data, NULL);
-		if ((pfile = prefs_write_open(rcpath)) == NULL ||
-		    (prefs_set_block_label(pfile, block) < 0)) {
+		if ((pfile = prefs_write_open(rcpath)) == NULL || (prefs_set_block_label(pfile, block) < 0)) {
 			g_warning("failed to write plugin list");
 			g_free(rcpath);
 			g_free(block);
@@ -160,13 +159,13 @@ void plugin_save_list(void)
 		g_free(block);
 
 		for (plugin_cur = plugins; plugin_cur != NULL; plugin_cur = g_slist_next(plugin_cur)) {
-			plugin = (Plugin *) plugin_cur->data;
-			
+			plugin = (Plugin *)plugin_cur->data;
+
 			if (plugin->unloaded_hidden)
 				continue;
 
 			if (!strcmp(plugin->type(), type_cur->data)) {
-				gchar * name = plugin_canonical_name(plugin);
+				gchar *name = plugin_canonical_name(plugin);
 				int err = fprintf(pfile->fp, "%s\n", name);
 				g_free(name);
 				if (err < 0)
@@ -174,13 +173,13 @@ void plugin_save_list(void)
 			}
 		}
 		for (plugin_cur = unloaded_plugins; plugin_cur != NULL; plugin_cur = g_slist_next(plugin_cur)) {
-			plugin = (Plugin *) plugin_cur->data;
+			plugin = (Plugin *)plugin_cur->data;
 
 			if (plugin->unloaded_hidden)
 				continue;
-			
+
 			if (!strcmp(plugin->type(), type_cur->data)) {
-				gchar * name = plugin_canonical_name(plugin);
+				gchar *name = plugin_canonical_name(plugin);
 				int err = fprintf(pfile->fp, "%s\n", name);
 				g_free(name);
 				if (err < 0)
@@ -193,33 +192,32 @@ void plugin_save_list(void)
 		if (prefs_file_close(pfile) < 0)
 			g_warning("failed to write plugin list");
 
-		g_free(rcpath);	
-		
+		g_free(rcpath);
+
 		continue;
 
-revert:
+ revert:
 		g_warning("failed to write plugin list");
 		if (prefs_file_close_revert(pfile) < 0)
 			g_warning("failed to revert plugin list");
 
-		g_free(rcpath);	
+		g_free(rcpath);
 	}
 }
 
 static gboolean plugin_is_loaded(const gchar *filename)
 {
-	return (g_slist_find_custom(plugins, filename, 
-		  (GCompareFunc)list_find_by_plugin_filename) != NULL);
+	return (g_slist_find_custom(plugins, filename, (GCompareFunc) list_find_by_plugin_filename) != NULL);
 }
 
 static Plugin *plugin_get_by_filename(const gchar *filename)
 {
 	GSList *cur = plugins;
-	for(; cur; cur = cur->next) {
+	for (; cur; cur = cur->next) {
 		Plugin *p = (Plugin *)cur->data;
 		if (!strcmp(p->filename, filename)) {
 			return p;
-		} 
+		}
 	}
 	return NULL;
 }
@@ -242,23 +240,22 @@ static gint plugin_load_deps(const gchar *filename, gchar **error)
 	gchar *p;
 
 	tmp = g_strdup(filename);
-	if( (p = strrchr(tmp, '.')) )
-	  *p = '\0';
+	if ((p = strrchr(tmp, '.')))
+		*p = '\0';
 	deps_file = g_strconcat(tmp, ".deps", NULL);
 	g_free(tmp);
-	
+
 	fp = claws_fopen(deps_file, "rb");
 	g_free(deps_file);
-	
+
 	if (!fp)
 		return 0;
-	
+
 	while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 		Plugin *dep_plugin = NULL;
 		gchar *path = NULL;
-		buf[strlen(buf)-1]='\0'; /* chop off \n */
-		path = g_strconcat(get_plugin_dir(), buf,
-				".", G_MODULE_SUFFIX, NULL);
+		buf[strlen(buf) - 1] = '\0'; /* chop off \n */
+		path = g_strconcat(get_plugin_dir(), buf, ".", G_MODULE_SUFFIX, NULL);
 		if ((dep_plugin = plugin_get_by_filename(path)) == NULL) {
 			debug_print("trying to load %s\n", path);
 			dep_plugin = plugin_load(path, error);
@@ -270,14 +267,9 @@ static gint plugin_load_deps(const gchar *filename, gchar **error)
 			dep_plugin->in_prefix_dir = TRUE;
 		}
 		g_free(path);
-		if (!g_slist_find_custom(dep_plugin->rdeps, 
-				(gpointer) filename, list_find_by_string)) {
-			debug_print("adding %s to %s rdeps\n",
-				filename,
-				dep_plugin->filename);
-			dep_plugin->rdeps = 
-				g_slist_append(dep_plugin->rdeps, 
-					g_strdup(filename));
+		if (!g_slist_find_custom(dep_plugin->rdeps, (gpointer)filename, list_find_by_string)) {
+			debug_print("adding %s to %s rdeps\n", filename, dep_plugin->filename);
+			dep_plugin->rdeps = g_slist_append(dep_plugin->rdeps, g_strdup(filename));
 		}
 	}
 	claws_fclose(fp);
@@ -290,7 +282,7 @@ static void plugin_unload_rdeps(Plugin *plugin)
 	debug_print("removing %s rdeps\n", plugin->filename);
 	while (cur) {
 		gchar *file = (gchar *)cur->data;
-		Plugin *rdep_plugin = file?plugin_get_by_filename(file):NULL;
+		Plugin *rdep_plugin = file ? plugin_get_by_filename(file) : NULL;
 		debug_print(" rdep %s: %p\n", file, rdep_plugin);
 		if (rdep_plugin) {
 			plugin_unload(rdep_plugin);
@@ -302,11 +294,11 @@ static void plugin_unload_rdeps(Plugin *plugin)
 	plugin->rdeps = NULL;
 }
 
-static void plugin_remove_from_unloaded_list (const gchar *filename)
+static void plugin_remove_from_unloaded_list(const gchar *filename)
 {
-	GSList *item = g_slist_find_custom(unloaded_plugins, 
-				(gpointer) filename, (GCompareFunc)list_find_by_plugin_filename);
-	Plugin *unloaded_plugin = item ? ((Plugin *)item->data):NULL;
+	GSList *item = g_slist_find_custom(unloaded_plugins,
+					   (gpointer)filename, (GCompareFunc) list_find_by_plugin_filename);
+	Plugin *unloaded_plugin = item ? ((Plugin *)item->data) : NULL;
 	if (unloaded_plugin != NULL) {
 		debug_print("removing %s from unloaded list\n", unloaded_plugin->filename);
 		unloaded_plugins = g_slist_remove(unloaded_plugins, unloaded_plugin);
@@ -317,27 +309,22 @@ static void plugin_remove_from_unloaded_list (const gchar *filename)
 	}
 }
 
-static gchar *plugin_check_features(struct PluginFeature *features) {
+static gchar *plugin_check_features(struct PluginFeature *features)
+{
 	int i = 0, j = 0;
 	GSList *cur = plugins;
 
 	if (features == NULL)
 		return NULL;
-	for(; cur; cur = cur->next) {
+	for (; cur; cur = cur->next) {
 		Plugin *p = (Plugin *)cur->data;
 		struct PluginFeature *cur_features = p->provides();
 		if (p->unloaded_hidden)
 			continue;
 		for (j = 0; cur_features[j].type != PLUGIN_NOTHING; j++) {
 			for (i = 0; features[i].type != PLUGIN_NOTHING; i++) {
-				if (cur_features[j].type == features[i].type &&
-				    !strcmp(cur_features[j].subtype, features[i].subtype)) {
-					return g_strdup_printf(_(
-						"This plugin provides %s (%s), which is "
-						"already provided by the %s plugin."),
-						_(plugin_feature_names[features[i].type]), 
-						_(features[i].subtype),
-						p->name());
+				if (cur_features[j].type == features[i].type && !strcmp(cur_features[j].subtype, features[i].subtype)) {
+					return g_strdup_printf(_("This plugin provides %s (%s), which is " "already provided by the %s plugin."), _(plugin_feature_names[features[i].type]), _(features[i].subtype), p->name());
 				}
 			}
 		}
@@ -346,10 +333,11 @@ static gchar *plugin_check_features(struct PluginFeature *features) {
 	return NULL;
 }
 
-static gboolean plugin_licence_check(const gchar *licence) {
+static gboolean plugin_licence_check(const gchar *licence)
+{
 	gint i = 0;
 	gint len = 0;
-	
+
 	if (licence != NULL) {
 		len = strlen(licence);
 	}
@@ -362,9 +350,9 @@ static gboolean plugin_licence_check(const gchar *licence) {
 		if (found != NULL) {
 			gint tlen = strlen(plugin_licence_tokens[i]);
 			if (len != tlen) { /* not a single license */
-				if (((found == licence) &&  (!IS_LICENCE_SEP(licence[tlen])))
-						|| (!IS_LICENCE_SEP(*(found - 1))) 
-						|| (!IS_LICENCE_SEP(*(found + tlen)))) {
+				if (((found == licence) && (!IS_LICENCE_SEP(licence[tlen])))
+				    || (!IS_LICENCE_SEP(*(found - 1)))
+				    || (!IS_LICENCE_SEP(*(found + tlen)))) {
 					debug_print("plugin licence check failed: invalid separator\n");
 					return FALSE;
 				}
@@ -387,15 +375,14 @@ static Plugin *plugin_load_in_default_dir(const gchar *filename, gchar **error)
 
 	filename_default_dir = g_strconcat(get_plugin_dir(), plugin_name, NULL);
 
-	debug_print("trying to load %s in default plugin directory %s\n",
-		    plugin_name, get_plugin_dir());
+	debug_print("trying to load %s in default plugin directory %s\n", plugin_name, get_plugin_dir());
 
 	g_free(plugin_name);
 
 	plugin = plugin_load(filename_default_dir, &default_error);
-	
+
 	g_free(filename_default_dir);
-	
+
 	if (plugin) {
 		g_free(*error);
 		*error = NULL;
@@ -418,14 +405,14 @@ static Plugin *plugin_load_in_default_dir(const gchar *filename, gchar **error)
 Plugin *plugin_load(const gchar *filename, gchar **error)
 {
 	Plugin *plugin;
-	gint (*plugin_init) (gchar **error);
+	gint (*plugin_init)(gchar **error);
 	gpointer plugin_name, plugin_desc, plugin_version;
 	const gchar *(*plugin_type)(void);
 	const gchar *(*plugin_licence)(void);
-	struct PluginFeature *(*plugin_provides)(void);
+	struct PluginFeature *(*plugin_provides) (void);
 
 	gint ok;
-	START_TIMING((filename?filename:"NULL plugin"));
+	START_TIMING((filename ? filename : "NULL plugin"));
 	cm_return_val_if_fail(filename != NULL, NULL);
 	cm_return_val_if_fail(error != NULL, NULL);
 
@@ -437,12 +424,12 @@ Plugin *plugin_load(const gchar *filename, gchar **error)
 			goto init_plugin;
 		} else {
 			*error = g_strdup(_("Plugin already loaded"));
-			return NULL;		
+			return NULL;
 		}
-	}			       
-	
+	}
+
 	plugin_remove_from_unloaded_list(filename);
-	
+
 	if (plugin_load_deps(filename, error) < 0)
 		return NULL;
 	plugin = g_new0(Plugin, 1);
@@ -462,16 +449,10 @@ Plugin *plugin_load(const gchar *filename, gchar **error)
 			return NULL;
 	} else {
 		plugin->in_prefix_dir = FALSE;
-        }
+	}
 
-init_plugin:
-	if (!g_module_symbol(plugin->module, "plugin_name", &plugin_name) ||
-	    !g_module_symbol(plugin->module, "plugin_desc", &plugin_desc) ||
-	    !g_module_symbol(plugin->module, "plugin_version", &plugin_version) ||
-	    !g_module_symbol(plugin->module, "plugin_type", (gpointer)&plugin_type) ||
-	    !g_module_symbol(plugin->module, "plugin_licence", (gpointer)&plugin_licence) ||
-	    !g_module_symbol(plugin->module, "plugin_provides", (gpointer)&plugin_provides) ||
-	    !g_module_symbol(plugin->module, "plugin_init", (gpointer)&plugin_init)) {
+ init_plugin:
+	if (!g_module_symbol(plugin->module, "plugin_name", &plugin_name) || !g_module_symbol(plugin->module, "plugin_desc", &plugin_desc) || !g_module_symbol(plugin->module, "plugin_version", &plugin_version) || !g_module_symbol(plugin->module, "plugin_type", (gpointer)&plugin_type) || !g_module_symbol(plugin->module, "plugin_licence", (gpointer)&plugin_licence) || !g_module_symbol(plugin->module, "plugin_provides", (gpointer)&plugin_provides) || !g_module_symbol(plugin->module, "plugin_init", (gpointer)&plugin_init)) {
 		*error = g_strdup(g_module_error());
 		if (plugin->unloaded_hidden)
 			return NULL;
@@ -532,7 +513,7 @@ init_plugin:
 
 void plugin_unload(Plugin *plugin)
 {
-	gboolean (*plugin_done) (void);
+	gboolean (*plugin_done)(void);
 	gboolean can_unload = TRUE;
 
 	plugin_unload_rdeps(plugin);
@@ -544,7 +525,7 @@ void plugin_unload(Plugin *plugin)
 		plugin_remove_from_unloaded_list(plugin->filename);
 		return;
 	}
-	if (g_module_symbol(plugin->module, "plugin_done", (gpointer) &plugin_done)) {
+	if (g_module_symbol(plugin->module, "plugin_done", (gpointer)&plugin_done)) {
 		can_unload = plugin_done();
 	}
 
@@ -581,7 +562,7 @@ static void replace_old_plugin_name(gchar *plugin_name)
 		int offset = strlen(plugin_name) - strlen(old_name_end);
 
 		debug_print("Replacing old plugin name %s\n", plugin_name);
-		
+
 		strncpy(plugin_name + offset, new_name_end, strlen(old_name_end) - 1);
 		debug_print(" to %s\n", plugin_name);
 		g_free(new_name_end);
@@ -599,10 +580,9 @@ void plugin_load_all(const gchar *type)
 
 	plugin_types = g_slist_append(plugin_types, g_strdup(type));
 
-	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);	
+	rcpath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);
 	block = g_strconcat(PLUGINS_BLOCK_PREFIX, type, NULL);
-	if ((pfile = prefs_read_open(rcpath)) == NULL ||
-	    ((failed = prefs_set_block_label(pfile, block)) < 0)) {
+	if ((pfile = prefs_read_open(rcpath)) == NULL || ((failed = prefs_set_block_label(pfile, block)) < 0)) {
 		g_free(rcpath);
 		g_free(block);
 		if (!failed)
@@ -621,7 +601,7 @@ void plugin_load_all(const gchar *type)
 		if ((buf[0] != '\0') && (plugin_load(buf, &error) == NULL)) {
 			g_warning("plugin loading error: %s", error);
 			g_free(error);
-		}							
+		}
 	}
 	prefs_file_close(pfile);
 
@@ -635,44 +615,43 @@ void plugin_unload_all(const gchar *type)
 	list = g_slist_copy(plugins);
 	list = g_slist_reverse(list);
 
-	for(cur = list; cur != NULL; cur = g_slist_next(cur)) {
-		Plugin *plugin = (Plugin *) cur->data;
-		
+	for (cur = list; cur != NULL; cur = g_slist_next(cur)) {
+		Plugin *plugin = (Plugin *)cur->data;
+
 		if (!strcmp(type, plugin->type()))
 			plugin_unload(plugin);
 	}
 	g_slist_free(list);
 
-	cur = g_slist_find_custom(plugin_types, (gpointer) type, list_find_by_string);
+	cur = g_slist_find_custom(plugin_types, (gpointer)type, list_find_by_string);
 	if (cur) {
 		g_free(cur->data);
 		plugin_types = g_slist_remove(plugin_types, cur);
 	}
 }
 
-
 /* Load those plugins we always want to use.  No error output; just
  * try. */
-void plugin_load_standard_plugins (void)
+void plugin_load_standard_plugins(void)
 {
 	static const char *names[] = {
-#ifdef G_OS_WIN32 
+#ifdef G_OS_WIN32
 		"pgpmime",
 		"pgpinline",
 #else
 		/* post-2.5 maybe 
-		"bogofilter", */
+		   "bogofilter", */
 #endif
 		NULL
 	};
 	int i;
 	gchar *error, *filename;
-	
-	for (i=0; names[i]; i++) {
+
+	for (i = 0; names[i]; i++) {
 		/* Simple hack to check whether the plugin has already
 		 * been loaded but checking only for the basename. */
 		GSList *cur = plugins;
-		for(; cur; cur = cur->next) {
+		for (; cur; cur = cur->next) {
 			Plugin *p = (Plugin *)cur->data;
 			if (strstr(p->filename, names[i]))
 				break;
@@ -681,16 +660,14 @@ void plugin_load_standard_plugins (void)
 			/* FIXME: get_plugin_dir () returns with a trailing
 			 * (back)slash; this should be fixed so that we can use
 			 * g_module_build_path here. */
-#ifdef G_OS_WIN32 
-			filename = g_strconcat (get_plugin_dir(),
-						names[i], NULL);
+#ifdef G_OS_WIN32
+			filename = g_strconcat(get_plugin_dir(), names[i], NULL);
 #else
-			filename = g_strconcat (get_plugin_dir(),
-						names[i], ".", G_MODULE_SUFFIX, NULL);
+			filename = g_strconcat(get_plugin_dir(), names[i], ".", G_MODULE_SUFFIX, NULL);
 #endif
 			error = NULL;
 			plugin_load(filename, &error);
-			g_free (error);
+			g_free(error);
 			g_free(filename);
 		}
 	}
@@ -709,16 +686,16 @@ GSList *plugin_get_list(void)
 	return new;
 }
 
-Plugin *plugin_get_loaded_by_name(const gchar *name) 
+Plugin *plugin_get_loaded_by_name(const gchar *name)
 {
 	Plugin *plugin = NULL;
-	GSList *new, *cur; 
+	GSList *new, *cur;
 	new = plugin_get_list();
 	for (cur = new; cur; cur = g_slist_next(cur)) {
 		plugin = (Plugin *)cur->data;
-		if (!g_ascii_strcasecmp(plugin->name(), name)) 
+		if (!g_ascii_strcasecmp(plugin->name(), name))
 			break;
-		else 
+		else
 			plugin = NULL;
 	}
 	g_slist_free(new);
@@ -762,21 +739,15 @@ const gchar *plugin_get_error(Plugin *plugin)
  * }
  * Returns: FALSE if an error occurs, TRUE if all is OK.
  */
-gint check_plugin_version(guint32 minimum_claws_version,
-			 guint32 compiled_claws_version,
-			 const gchar *plugin_name,
-			 gchar **error)
+gint check_plugin_version(guint32 minimum_claws_version, guint32 compiled_claws_version, const gchar *plugin_name, gchar **error)
 {
 	guint32 claws_version = claws_get_version();
 
 	if (compiled_claws_version != 0 && claws_version > compiled_claws_version) {
 		if (error != NULL) {
 			*error = (plugin_name && *plugin_name)
-				? g_strdup_printf(_("Your version of Claws Mail is newer than the "
-							"version the '%s' plugin was built with."),
-						plugin_name)
-				: g_strdup(_("Your version of Claws Mail is newer than the "
-							"version the plugin was built with."));
+			    ? g_strdup_printf(_("Your version of Claws Mail is newer than the " "version the '%s' plugin was built with."), plugin_name)
+			    : g_strdup(_("Your version of Claws Mail is newer than the " "version the plugin was built with."));
 		}
 		return FALSE;
 	}
@@ -784,11 +755,14 @@ gint check_plugin_version(guint32 minimum_claws_version,
 	if (minimum_claws_version != 0 && claws_version < minimum_claws_version) {
 		if (error != NULL) {
 			*error = (plugin_name && *plugin_name)
-				? g_strdup_printf(_("Your version of Claws Mail is too old for "
-							"the '%s' plugin."), plugin_name)
-				: g_strdup(_("Your version of Claws Mail is too old for the plugin."));
+			    ? g_strdup_printf(_("Your version of Claws Mail is too old for " "the '%s' plugin."), plugin_name)
+			    : g_strdup(_("Your version of Claws Mail is too old for the plugin."));
 		}
 		return FALSE;
 	}
 	return TRUE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

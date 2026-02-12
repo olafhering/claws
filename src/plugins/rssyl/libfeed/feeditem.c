@@ -36,7 +36,7 @@ FeedItem *feed_item_new(Feed *feed)
 {
 	FeedItem *item = NULL;
 
-	item = g_malloc( sizeof(FeedItem) );
+	item = g_malloc(sizeof(FeedItem));
 	item->url = NULL;
 	item->title = NULL;
 	item->title_format = 0;
@@ -57,8 +57,8 @@ FeedItem *feed_item_new(Feed *feed)
 
 	item->date_published = -1;
 	item->date_modified = -1;
-	
-	if( feed != NULL )
+
+	if (feed != NULL)
 		item->feed = feed;
 
 	item->data = NULL;
@@ -68,7 +68,7 @@ FeedItem *feed_item_new(Feed *feed)
 
 void feed_item_free(FeedItem *item)
 {
-	if( item == NULL )
+	if (item == NULL)
 		return;
 
 	g_free(item->url);
@@ -373,3 +373,7 @@ void feed_item_set_id_permalink(FeedItem *item, gboolean permalink)
 
 	item->id_is_permalink = permalink;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

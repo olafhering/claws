@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -31,39 +31,38 @@
 
 static gint get_content_for_any_face(gchar *buf, gint len, gchar *anyname, gint maxlen)
 {
-	FILE  *xfp;
+	FILE *xfp;
 	gchar *xfile;
-	gint  lastc;
+	gint lastc;
 
-	xfile = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, AUTOFACES_DIR,
-	                    G_DIR_SEPARATOR_S, anyname, NULL);
+	xfile = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, AUTOFACES_DIR, G_DIR_SEPARATOR_S, anyname, NULL);
 	buf[0] = '\0';
 	if ((xfp = claws_fopen(xfile, "rb")) == NULL) {
-	        g_free(xfile);
+		g_free(xfile);
 		debug_print("header content file '%s' not found\n", anyname);
-	        return -1;
+		return -1;
 	}
-	if (claws_fgets(buf, (len < maxlen)? len: maxlen, xfp) == NULL) {
-	        claws_fclose(xfp);
-	        g_free(xfile);
+	if (claws_fgets(buf, (len < maxlen) ? len : maxlen, xfp) == NULL) {
+		claws_fclose(xfp);
+		g_free(xfile);
 		g_warning("header content file '%s' read failure", anyname);
-	        return -2;
+		return -2;
 	}
-	lastc = strlen(buf) - 1;        /* remove trailing \n */
-	buf[lastc] = (buf[lastc] == '\n')? '\0': buf[lastc];
+	lastc = strlen(buf) - 1; /* remove trailing \n */
+	buf[lastc] = (buf[lastc] == '\n') ? '\0' : buf[lastc];
 	claws_fclose(xfp);
 	g_free(xfile);
 
 	return 0;
 }
 
-static gchar * get_any_face_filename_for_account(gchar *facetype, gchar *accountname)
+static gchar *get_any_face_filename_for_account(gchar *facetype, gchar *accountname)
 {
 	gchar *name = NULL;
 	gchar *what = NULL;
-	if (facetype == NULL || accountname == NULL) 
+	if (facetype == NULL || accountname == NULL)
 		return NULL;
-	if (*facetype == '\0' || *accountname == '\0') 
+	if (*facetype == '\0' || *accountname == '\0')
 		return NULL;
 	what = name = g_strdup_printf("%s.%s", facetype, accountname);
 	while (*what) {
@@ -88,11 +87,13 @@ static gchar * get_any_face_filename_for_account(gchar *facetype, gchar *account
 	return name;
 }
 
-gint get_default_xface(gchar *buf, gint len) {
+gint get_default_xface(gchar *buf, gint len)
+{
 	return get_content_for_any_face(buf, len, "xface", MAX_XFACE_LEN);
 }
 
-gint get_account_xface(gchar *buf, gint len, gchar *name) {
+gint get_account_xface(gchar *buf, gint len, gchar *name)
+{
 	gchar *filename = get_any_face_filename_for_account("xface", name);
 	if (filename) {
 		gint result = get_content_for_any_face(buf, len, filename, MAX_XFACE_LEN);
@@ -103,11 +104,13 @@ gint get_account_xface(gchar *buf, gint len, gchar *name) {
 	return -1;
 }
 
-gint get_default_face(gchar *buf, gint len) {
+gint get_default_face(gchar *buf, gint len)
+{
 	return get_content_for_any_face(buf, len, "face", MAX_FACE_LEN);
 }
 
-gint get_account_face(gchar *buf, gint len, gchar *name) {
+gint get_account_face(gchar *buf, gint len, gchar *name)
+{
 	gchar *filename = get_any_face_filename_for_account("face", name);
 	if (filename) {
 		gint result = get_content_for_any_face(buf, len, filename, MAX_FACE_LEN);
@@ -118,3 +121,6 @@ gint get_account_face(gchar *buf, gint len, gchar *name) {
 	return -1;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

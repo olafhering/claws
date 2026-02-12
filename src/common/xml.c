@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -36,25 +36,25 @@
 /* if this is defined all attr.names and tag.names are stored
  * in a hash table */
 #if defined(SPARSE_MEMORY)
-#include "stringtable.h" 
+#include "stringtable.h"
 
 static StringTable *xml_string_table;
-static XMLTag  *xml_copy_tag		(XMLTag		*tag);
-static XMLAttr *xml_copy_attr		(XMLAttr	*attr);
-static void xml_free_node		(XMLNode	*node);
-static void xml_free_tag		(XMLTag 	*tag);
-static void xml_pop_tag		(XMLFile	*file);
-static void xml_push_tag		(XMLFile	*file,
-				 XMLTag		*tag);
-static gint xml_read_line		(XMLFile	*file);
-static void xml_truncate_buf		(XMLFile	*file);
-static gint xml_unescape_str		(gchar		*str);
+static XMLTag *xml_copy_tag(XMLTag *tag);
+static XMLAttr *xml_copy_attr(XMLAttr *attr);
+static void xml_free_node(XMLNode *node);
+static void xml_free_tag(XMLTag *tag);
+static void xml_pop_tag(XMLFile *file);
+static void xml_push_tag(XMLFile *file, XMLTag *tag);
+static gint xml_read_line(XMLFile *file);
+static void xml_truncate_buf(XMLFile *file);
+static gint xml_unescape_str(gchar *str);
 
 static void xml_string_table_create(void)
 {
 	if (xml_string_table == NULL)
 		xml_string_table = string_table_new();
 }
+
 #define XML_STRING_ADD(str) \
 	string_table_insert_string(xml_string_table, (str))
 #define XML_STRING_FREE(str) \
@@ -74,9 +74,7 @@ static void xml_string_table_create(void)
 
 #endif /* SPARSE_MEMORY */
 
-static gint xml_get_parenthesis	(XMLFile	*file,
-				 gchar		*buf,
-				 gint		 len);
+static gint xml_get_parenthesis(XMLFile *file, gchar *buf, gint len);
 
 XMLFile *xml_open_file(const gchar *path)
 {
@@ -113,7 +111,8 @@ void xml_close_file(XMLFile *file)
 {
 	cm_return_if_fail(file != NULL);
 
-	if (file->fp) claws_fclose(file->fp);
+	if (file->fp)
+		claws_fclose(file->fp);
 
 	g_string_free(file->buf, TRUE);
 
@@ -134,14 +133,16 @@ static GNode *xml_build_tree(XMLFile *file, GNode *parent, guint level)
 	XMLTag *tag;
 
 	while (xml_parse_next_tag(file) == 0) {
-		if (file->level < level) break;
+		if (file->level < level)
+			break;
 		if (file->level == level) {
 			g_warning("xml_build_tree(): parse error in %s", file->path);
 			break;
 		}
 
 		tag = xml_get_current_tag(file);
-		if (!tag) break;
+		if (!tag)
+			break;
 		xmlnode = xml_node_new(xml_copy_tag(tag), NULL);
 		xmlnode->element = xml_get_element(file);
 		if (!parent)
@@ -150,7 +151,8 @@ static GNode *xml_build_tree(XMLFile *file, GNode *parent, guint level)
 			node = g_node_append_data(parent, xmlnode);
 
 		xml_build_tree(file, node, file->level);
-		if (file->level == 0) break;
+		if (file->level == 0)
+			break;
 	}
 
 	return node;
@@ -184,19 +186,16 @@ gint xml_get_dtd(XMLFile *file)
 	gchar buf[XMLBUFSIZE];
 	gchar *bufp = buf;
 
-	if (xml_get_parenthesis(file, buf, sizeof(buf)) < 0) return -1;
+	if (xml_get_parenthesis(file, buf, sizeof(buf)) < 0)
+		return -1;
 
-	if ((*bufp++ == '?') &&
-	    (bufp = strcasestr(bufp, "xml")) &&
-	    (bufp = strcasestr(bufp + 3, "version")) &&
-	    (bufp = strchr(bufp + 7, '?'))) {
+	if ((*bufp++ == '?') && (bufp = strcasestr(bufp, "xml")) && (bufp = strcasestr(bufp + 3, "version")) && (bufp = strchr(bufp + 7, '?'))) {
 		file->dtd = g_strdup(buf);
 		if ((bufp = strcasestr(buf, "encoding=\""))) {
 			bufp += 9;
 			extract_quote(bufp, '"');
 			file->encoding = g_strdup(bufp);
-			file->need_codeconv =
-				g_strcmp0(bufp, CS_INTERNAL);
+			file->need_codeconv = g_strcmp0(bufp, CS_INTERNAL);
 		} else {
 			file->encoding = g_strdup(CS_INTERNAL);
 			file->need_codeconv = FALSE;
@@ -217,7 +216,7 @@ gint xml_parse_next_tag(XMLFile *file)
 	XMLTag *tag;
 	gint len;
 
-next:
+ next:
 	if (file->is_empty_element == TRUE) {
 		file->is_empty_element = FALSE;
 		xml_pop_tag(file);
@@ -241,7 +240,7 @@ next:
 		return 0;
 	}
 
-	if (len >= 7 && !strncmp(buf, "!-- ", 4) && !strncmp(buf+len-3, " --", 3)) {
+	if (len >= 7 && !strncmp(buf, "!-- ", 4) && !strncmp(buf + len - 3, " --", 3)) {
 		/* skip comment */
 		goto next;
 	}
@@ -254,13 +253,14 @@ next:
 		buf[len - 1] = '\0';
 		g_strchomp(buf);
 	}
-	
+
 	if (strlen(buf) == 0) {
 		g_warning("xml_parse_next_tag(): tag name is empty in %s", file->path);
 		return -1;
 	}
 
-	while (*bufp != '\0' && !g_ascii_isspace(*bufp)) bufp++;
+	while (*bufp != '\0' && !g_ascii_isspace(*bufp))
+		bufp++;
 	if (*bufp == '\0') {
 		if (file->need_codeconv) {
 			tag_str = conv_codeset_strdup(buf, file->encoding, CS_INTERNAL);
@@ -295,7 +295,8 @@ next:
 		gchar *p;
 		gchar quote;
 
-		while (g_ascii_isspace(*bufp)) bufp++;
+		while (g_ascii_isspace(*bufp))
+			bufp++;
 		attr_name = bufp;
 		if ((p = strchr(attr_name, '=')) == NULL) {
 			g_warning("xml_parse_next_tag(): syntax error in %s, tag (a) %s", file->path, attr_name);
@@ -303,7 +304,8 @@ next:
 		}
 		bufp = p;
 		*bufp++ = '\0';
-		while (g_ascii_isspace(*bufp)) bufp++;
+		while (g_ascii_isspace(*bufp))
+			bufp++;
 
 		if (*bufp != '"' && *bufp != '\'') {
 			g_warning("xml_parse_next_tag(): syntax error in %s, tag (b) %s", file->path, bufp);
@@ -322,10 +324,8 @@ next:
 		g_strchomp(attr_name);
 		xml_unescape_str(attr_value);
 		if (file->need_codeconv) {
-			utf8_attr_name = conv_codeset_strdup
-				(attr_name, file->encoding, CS_INTERNAL);
-			utf8_attr_value = conv_codeset_strdup
-				(attr_value, file->encoding, CS_INTERNAL);
+			utf8_attr_name = conv_codeset_strdup(attr_name, file->encoding, CS_INTERNAL);
+			utf8_attr_value = conv_codeset_strdup(attr_value, file->encoding, CS_INTERNAL);
 			if (!utf8_attr_name)
 				utf8_attr_name = g_strdup(attr_name);
 			if (!utf8_attr_value)
@@ -357,7 +357,8 @@ static void xml_pop_tag(XMLFile *file)
 {
 	XMLTag *tag;
 
-	if (!file->tag_stack) return;
+	if (!file->tag_stack)
+		return;
 
 	tag = (XMLTag *)file->tag_stack->data;
 
@@ -379,7 +380,8 @@ GList *xml_get_current_tag_attr(XMLFile *file)
 	XMLTag *tag;
 
 	tag = xml_get_current_tag(file);
-	if (!tag) return NULL;
+	if (!tag)
+		return NULL;
 
 	return tag->attr;
 }
@@ -391,7 +393,8 @@ gchar *xml_get_element(XMLFile *file)
 	gchar *end;
 
 	while ((end = strchr(file->bufp, '<')) == NULL)
-		if (xml_read_line(file) < 0) return NULL;
+		if (xml_read_line(file) < 0)
+			return NULL;
 
 	if (end == file->bufp)
 		return NULL;
@@ -468,31 +471,31 @@ XMLNode *xml_node_new(XMLTag *tag, const gchar *text)
 	node->tag = tag;
 	node->element = g_strdup(text);
 
-        return node;
+	return node;
 }
 
 XMLTag *xml_tag_new(const gchar *tag)
 {
 	XMLTag *new_tag;
- 
+
 	new_tag = g_new(XMLTag, 1);
 	if (tag)
 		new_tag->tag = XML_STRING_ADD(tag);
 	else
 		new_tag->tag = NULL;
 	new_tag->attr = NULL;
- 
+
 	return new_tag;
 }
 
 XMLAttr *xml_attr_new(const gchar *name, const gchar *value)
 {
 	XMLAttr *new_attr;
- 
+
 	new_attr = g_new(XMLAttr, 1);
 	new_attr->name = XML_STRING_ADD(name);
 	new_attr->value = g_strdup(value);
- 
+
 	return new_attr;
 }
 
@@ -506,7 +509,7 @@ XMLAttr *xml_attr_new_int(const gchar *name, const gint value)
 	new_attr = g_new(XMLAttr, 1);
 	new_attr->name = XML_STRING_ADD(name);
 	new_attr->value = valuestr;
- 
+
 	return new_attr;
 }
 
@@ -587,7 +590,8 @@ gint xml_file_put_escape_str(FILE *fp, const gchar *str)
 	int result = 0;
 	cm_return_val_if_fail(fp != NULL, -1);
 
-	if (!str) return 0;
+	if (!str)
+		return 0;
 
 	for (p = str; *p != '\0'; p++) {
 		switch (*p) {
@@ -624,7 +628,8 @@ gint xml_file_put_xml_decl(FILE *fp)
 
 static void xml_free_node(XMLNode *node)
 {
-	if (!node) return;
+	if (!node)
+		return;
 
 	xml_free_tag(node->tag);
 	g_free(node->element);
@@ -643,15 +648,15 @@ void xml_free_tree(GNode *node)
 {
 	cm_return_if_fail(node != NULL);
 
-	g_node_traverse(node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, xml_free_func,
-			NULL);
+	g_node_traverse(node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, xml_free_func, NULL);
 
 	g_node_destroy(node);
 }
 
 static void xml_free_tag(XMLTag *tag)
 {
-	if (!tag) return;
+	if (!tag)
+		return;
 
 	XML_STRING_FREE(tag->tag);
 	while (tag->attr != NULL) {
@@ -672,13 +677,15 @@ static gint xml_get_parenthesis(XMLFile *file, gchar *buf, gint len)
 	buf[0] = '\0';
 
 	while ((start = strchr(file->bufp, '<')) == NULL)
-		if (xml_read_line(file) < 0) return -1;
+		if (xml_read_line(file) < 0)
+			return -1;
 
 	start++;
 	file->bufp = start;
 
 	while ((end = strchr(file->bufp, '>')) == NULL)
-		if (xml_read_line(file) < 0) return -1;
+		if (xml_read_line(file) < 0)
+			return -1;
 
 	strncpy2(buf, file->bufp, MIN(end - file->bufp + 1, len));
 	g_strstrip(buf);
@@ -708,17 +715,17 @@ static int xml_write_tree_recursive(GNode *node, FILE *fp)
 	for (i = 0; i < depth; i++)
 		TRY(claws_fputs("    ", fp) != EOF);
 
-	tag = ((XMLNode *) node->data)->tag;
+	tag = ((XMLNode *)node->data)->tag;
 
 	TRY(fprintf(fp, "<%s", tag->tag) > 0);
 
 	for (cur = tag->attr; cur != NULL; cur = g_list_next(cur)) {
-		XMLAttr *attr = (XMLAttr *) cur->data;
+		XMLAttr *attr = (XMLAttr *)cur->data;
 
 		TRY(fprintf(fp, " %s=\"", attr->name) > 0);
 		TRY(xml_file_put_escape_str(fp, attr->value) == 0);
 		TRY(claws_fputs("\"", fp) != EOF);
-		
+
 	}
 
 	if (node->children) {
@@ -739,7 +746,7 @@ static int xml_write_tree_recursive(GNode *node, FILE *fp)
 		TRY(fprintf(fp, "</%s>\n", tag->tag) > 0);
 	} else
 		TRY(claws_fputs(" />\n", fp) != EOF);
-	
+
 	return 0;
 }
 
@@ -752,9 +759,9 @@ int xml_write_tree(GNode *node, FILE *fp)
 
 static gpointer copy_node_func(gpointer nodedata, gpointer data)
 {
-	XMLNode *xmlnode = (XMLNode *) nodedata;
+	XMLNode *xmlnode = (XMLNode *)nodedata;
 	XMLNode *newxmlnode;
-	
+
 	newxmlnode = g_new0(XMLNode, 1);
 	newxmlnode->tag = xml_copy_tag(xmlnode->tag);
 	newxmlnode->element = g_strdup(xmlnode->element);
@@ -766,3 +773,7 @@ GNode *xml_copy_tree(GNode *node)
 {
 	return g_node_map(node, copy_node_func, NULL);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

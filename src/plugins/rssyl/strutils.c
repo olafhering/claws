@@ -20,7 +20,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -35,17 +35,16 @@
 /* Local includes */
 /* (shouldn't be any) */
 
-gchar *rssyl_strreplace(gchar *source, gchar *pattern,
-		gchar *replacement)
+gchar *rssyl_strreplace(gchar *source, gchar *pattern, gchar *replacement)
 {
 	gchar *new, *w_new = NULL, *c;
 	guint count = 0, final_length;
 	size_t len_pattern, len_replacement;
 
 	/*
-	debug_print("RSSyl: ======= strreplace: '%s': '%s'->'%s'\n", source, pattern,
-			replacement);
-	*/
+	   debug_print("RSSyl: ======= strreplace: '%s': '%s'->'%s'\n", source, pattern,
+	   replacement);
+	 */
 
 	g_return_val_if_fail(source != NULL, g_strdup(source));
 	g_return_val_if_fail(pattern != NULL, g_strdup(source));
@@ -57,18 +56,18 @@ gchar *rssyl_strreplace(gchar *source, gchar *pattern,
 	len_replacement = strlen(replacement);
 
 	c = source;
-	while( ( c = g_strstr_len(c, strlen(c), pattern) ) ) {
+	while ((c = g_strstr_len(c, strlen(c), pattern))) {
 		count++;
 		c += len_pattern;
 	}
 
 	/*
-	debug_print("RSSyl: ==== count = %d\n", count);
-	*/
+	   debug_print("RSSyl: ==== count = %d\n", count);
+	 */
 
 	final_length = strlen(source)
-		- ( count * len_pattern )
-		+ ( count * len_replacement );
+	    - (count * len_pattern)
+	    + (count * len_replacement);
 
 	new = g_malloc(final_length + 1);
 	memset(new, '\0', final_length + 1);
@@ -80,8 +79,8 @@ gchar *rssyl_strreplace(gchar *source, gchar *pattern,
 
 	/* Go until either end of string is reached, or until the
 	 * remaining text is shorter than the pattern. */
-	while( *c != '\0' && strlen(c) >= len_pattern) {
-		if( !memcmp(c, pattern, len_pattern) ) {
+	while (*c != '\0' && strlen(c) >= len_pattern) {
+		if (!memcmp(c, pattern, len_pattern)) {
 			int i;
 			for (i = 0; i < len_replacement; i++) {
 				*w_new = replacement[i];
@@ -106,27 +105,26 @@ gchar *rssyl_strreplace(gchar *source, gchar *pattern,
 }
 
 typedef struct _RSSyl_HTMLSymbol RSSyl_HTMLSymbol;
-struct _RSSyl_HTMLSymbol
-{
+struct _RSSyl_HTMLSymbol {
 	gchar *const key;
 	gchar *const val;
 };
 
 static RSSyl_HTMLSymbol tag_list[] = {
-	{ "<cite>", "\"" },
-	{ "</cite>", "\"" },
-	{ "<i>", "" },
-	{ "</i>", "" },
-	{ "<em>", "" },
-	{ "</em>", "" },
-	{ "<b>", "" },
-	{ "</b>", "" },
-	{ "<nobr>", "" },
-	{ "</nobr>", "" },
-	{ "<wbr>", "" },
-	{ "<sub>", "" },
-	{ "</sub>", "" },
-	{ NULL, NULL }
+	{"<cite>", "\""},
+	{"</cite>", "\""},
+	{"<i>", ""},
+	{"</i>", ""},
+	{"<em>", ""},
+	{"</em>", ""},
+	{"<b>", ""},
+	{"</b>", ""},
+	{"<nobr>", ""},
+	{"</nobr>", ""},
+	{"<wbr>", ""},
+	{"<sub>", ""},
+	{"</sub>", ""},
+	{NULL, NULL}
 };
 
 static gchar *rssyl_replace_chrefs(gchar *string)
@@ -145,7 +143,7 @@ static gchar *rssyl_replace_chrefs(gchar *string)
 				ii += strlen(entity);
 				g_free(entity);
 				entity = NULL;
-				while (string[++i] != ';');
+				while (string[++i] != ';') ;
 				--i; /* loop will inc it again */
 			} else {
 				new[ii++] = string[i];
@@ -160,24 +158,23 @@ static gchar *rssyl_replace_chrefs(gchar *string)
 	return ret;
 }
 
-gchar *rssyl_replace_html_stuff(gchar *text,
-		gboolean symbols, gboolean tags)
+gchar *rssyl_replace_html_stuff(gchar *text, gboolean symbols, gboolean tags)
 {
 	gchar *tmp = NULL, *wtext = NULL;
 	gint i;
 
 	g_return_val_if_fail(text != NULL, NULL);
 
-	if( symbols ) {
+	if (symbols) {
 		wtext = rssyl_replace_chrefs(text);
 	} else {
 		wtext = g_strdup(text);
 	}
 
 	/* TODO: rewrite this part to work similarly to rssyl_replace_chrefs() */
-	if( tags ) {
-		for( i = 0; tag_list[i].key != NULL; i++ ) {
-			if( g_strstr_len(text, strlen(text), tag_list[i].key) ) {
+	if (tags) {
+		for (i = 0; tag_list[i].key != NULL; i++) {
+			if (g_strstr_len(text, strlen(text), tag_list[i].key)) {
 				tmp = rssyl_strreplace(wtext, tag_list[i].key, tag_list[i].val);
 				g_free(wtext);
 				wtext = tmp;
@@ -192,14 +189,14 @@ static gchar *rssyl_sanitize_string(gchar *str, gboolean strip_nl)
 {
 	gchar *new = NULL, *c = str, *n = NULL;
 
-	if( str == NULL )
+	if (str == NULL)
 		return NULL;
 
 	n = new = g_malloc(strlen(str) + 1);
 	memset(new, '\0', strlen(str) + 1);
 
-	while( *c != '\0' ) {
-		if( !isspace(*c) || *c == ' ' || (!strip_nl && *c == '\n') ) {
+	while (*c != '\0') {
+		if (!isspace(*c) || *c == ' ' || (!strip_nl && *c == '\n')) {
 			*n = *c;
 			n++;
 		}
@@ -212,8 +209,7 @@ static gchar *rssyl_sanitize_string(gchar *str, gboolean strip_nl)
 /* rssyl_format_string()
  * - return value needs to be freed
  */
-gchar *rssyl_format_string(gchar *str, gboolean replace_html,
-		gboolean strip_nl)
+gchar *rssyl_format_string(gchar *str, gboolean replace_html, gboolean strip_nl)
 {
 	gchar *res = NULL, *tmp = NULL;
 
@@ -245,7 +241,7 @@ gchar **strsplit_no_copy(gchar *str, char delimiter)
 	gchar **array = g_new(gchar *, 1);
 	int i = 0;
 	gchar *cur = str, *next;
-	
+
 	array[i] = cur;
 	i++;
 	while ((next = strchr(cur, delimiter)) != NULL) {
@@ -285,11 +281,15 @@ gchar *my_normalize_url(const gchar *url)
 	gchar *myurl = NULL;
 
 	if (!strncmp(url, "feed://", 7))
-		myurl = g_strdup(url+7);
+		myurl = g_strdup(url + 7);
 	else if (!strncmp(url, "feed:", 5))
-		myurl = g_strdup(url+5);
+		myurl = g_strdup(url + 5);
 	else
 		myurl = g_strdup(url);
 
 	return g_strstrip(myurl);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

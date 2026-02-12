@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -45,8 +45,7 @@
 
 #define SA_MAX_SIZE_KB (SPAMC_MAX_MESSAGE_LEN / 1024)
 
-struct SpamAssassinPage
-{
+struct SpamAssassinPage {
 	PrefsPage page;
 
 	GtkWidget *enable_sa_checkbtn;
@@ -68,40 +67,39 @@ struct SpamAssassinPage
 	GtkWidget *whitelist_ab;
 	GtkWidget *whitelist_ab_folder_combo;
 
-	SpamAssassinTransport	trans;
+	SpamAssassinTransport trans;
 };
 
-struct Transport
-{
-	gchar			*name;
-	SpamAssassinTransport	 transport;
-	guint			 page;
-	guint			 pageflags;
+struct Transport {
+	gchar *name;
+	SpamAssassinTransport transport;
+	guint page;
+	guint pageflags;
 };
 
 enum {
 	PAGE_DISABLED = 0,
-	PAGE_NETWORK  = 1,
-	PAGE_UNIX     = 2,
+	PAGE_NETWORK = 1,
+	PAGE_UNIX = 2,
 };
 
 enum {
-    	NETWORK_HOSTNAME = 1,
+	NETWORK_HOSTNAME = 1,
 };
 
 struct Transport transports[] = {
-	/*{ N_("Disabled"),		SPAMASSASSIN_DISABLED,				PAGE_DISABLED,	0 },*/
-	{ N_("Localhost"),		SPAMASSASSIN_TRANSPORT_LOCALHOST,	PAGE_NETWORK,	0 },
-	{ N_("TCP"),			SPAMASSASSIN_TRANSPORT_TCP,			PAGE_NETWORK,	NETWORK_HOSTNAME },
+	/*{ N_("Disabled"),             SPAMASSASSIN_DISABLED,                          PAGE_DISABLED,  0 }, */
+	{N_("Localhost"), SPAMASSASSIN_TRANSPORT_LOCALHOST, PAGE_NETWORK, 0},
+	{N_("TCP"), SPAMASSASSIN_TRANSPORT_TCP, PAGE_NETWORK, NETWORK_HOSTNAME},
 #ifndef G_OS_WIN32
-	{ N_("Unix Socket"),	SPAMASSASSIN_TRANSPORT_UNIX,		PAGE_UNIX,		0 },
+	{N_("Unix Socket"), SPAMASSASSIN_TRANSPORT_UNIX, PAGE_UNIX, 0},
 #endif
 };
 
 #ifndef USE_ALT_ADDRBOOK
 static void spamassassin_whitelist_ab_select_cb(GtkWidget *widget, gpointer data)
 {
-	struct SpamAssassinPage *page = (struct SpamAssassinPage *) data;
+	struct SpamAssassinPage *page = (struct SpamAssassinPage *)data;
 	const gchar *folderpath = NULL;
 	gchar *new_path = NULL;
 
@@ -110,19 +108,18 @@ static void spamassassin_whitelist_ab_select_cb(GtkWidget *widget, gpointer data
 	if (new_path) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((page->whitelist_ab_folder_combo)))), new_path);
 		g_free(new_path);
-	} 
+	}
 }
 #endif
 
 static void foldersel_cb(GtkWidget *widget, gpointer data)
 {
-	struct SpamAssassinPage *page = (struct SpamAssassinPage *) data;
+	struct SpamAssassinPage *page = (struct SpamAssassinPage *)data;
 	FolderItem *item;
 	gchar *item_id;
 	gint newpos = 0;
-	
-	item = foldersel_folder_sel(NULL, FOLDER_SEL_MOVE, NULL, FALSE,
-			_("Select folder to save spam to"));
+
+	item = foldersel_folder_sel(NULL, FOLDER_SEL_MOVE, NULL, FALSE, _("Select folder to save spam to"));
 	if (item && (item_id = folder_item_get_identifier(item)) != NULL) {
 		gtk_editable_delete_text(GTK_EDITABLE(page->save_folder), 0, -1);
 		gtk_editable_insert_text(GTK_EDITABLE(page->save_folder), item_id, strlen(item_id), &newpos);
@@ -136,23 +133,23 @@ static void show_transport(struct SpamAssassinPage *page, struct Transport *tran
 
 	switch (transport->page) {
 		/*
-	case PAGE_DISABLED:
-		gtk_widget_show(page->hostname);
-		gtk_widget_show(page->colon);
-		gtk_widget_show(page->port);
-		gtk_widget_hide(page->socket);
-		gtk_widget_set_sensitive(page->username, FALSE);
-		gtk_widget_set_sensitive(page->hostname, FALSE);
-		gtk_widget_set_sensitive(page->colon, FALSE);
-		gtk_widget_set_sensitive(page->port, FALSE);
-		gtk_widget_set_sensitive(page->max_size, FALSE);
-		gtk_widget_set_sensitive(page->timeout, FALSE);
-		gtk_widget_set_sensitive(page->process_emails, FALSE);
-		gtk_widget_set_sensitive(page->receive_spam, FALSE);
-		gtk_widget_set_sensitive(page->save_folder, FALSE);
-		gtk_widget_set_sensitive(page->save_folder_select, FALSE);
-		break;
-		*/
+		   case PAGE_DISABLED:
+		   gtk_widget_show(page->hostname);
+		   gtk_widget_show(page->colon);
+		   gtk_widget_show(page->port);
+		   gtk_widget_hide(page->socket);
+		   gtk_widget_set_sensitive(page->username, FALSE);
+		   gtk_widget_set_sensitive(page->hostname, FALSE);
+		   gtk_widget_set_sensitive(page->colon, FALSE);
+		   gtk_widget_set_sensitive(page->port, FALSE);
+		   gtk_widget_set_sensitive(page->max_size, FALSE);
+		   gtk_widget_set_sensitive(page->timeout, FALSE);
+		   gtk_widget_set_sensitive(page->process_emails, FALSE);
+		   gtk_widget_set_sensitive(page->receive_spam, FALSE);
+		   gtk_widget_set_sensitive(page->save_folder, FALSE);
+		   gtk_widget_set_sensitive(page->save_folder_select, FALSE);
+		   break;
+		 */
 	case PAGE_UNIX:
 		gtk_widget_hide(page->hostname);
 		gtk_widget_hide(page->colon);
@@ -196,25 +193,22 @@ static void show_transport(struct SpamAssassinPage *page, struct Transport *tran
 
 static void transport_sel_cb(GtkMenuItem *menuitem, gpointer data)
 {
-	struct SpamAssassinPage *page = (struct SpamAssassinPage *) data;
+	struct SpamAssassinPage *page = (struct SpamAssassinPage *)data;
 	struct Transport *transport;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	
-	cm_return_if_fail(gtk_combo_box_get_active_iter(
-			GTK_COMBO_BOX(page->transport_optmenu), &iter));
-	
-	model = gtk_combo_box_get_model(GTK_COMBO_BOX(page->transport_optmenu));			
+
+	cm_return_if_fail(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(page->transport_optmenu), &iter));
+
+	model = gtk_combo_box_get_model(GTK_COMBO_BOX(page->transport_optmenu));
 	gtk_tree_model_get(model, &iter, 1, &transport, -1);
 
 	show_transport(page, transport);
 }
 
-static void spamassassin_create_widget_func(PrefsPage * _page,
-					    GtkWindow * window,
-					    gpointer data)
+static void spamassassin_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct SpamAssassinPage *page = (struct SpamAssassinPage *) _page;
+	struct SpamAssassinPage *page = (struct SpamAssassinPage *)_page;
 	SpamAssassinConfig *config;
 	guint i, active;
 
@@ -266,13 +260,13 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 	GtkCellRenderer *renderer;
 	GtkTreeIter iter;
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
 
-	vbox2 = gtk_vbox_new (FALSE, 4);
-	gtk_widget_show (vbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, FALSE, FALSE, 0);
+	vbox2 = gtk_vbox_new(FALSE, 4);
+	gtk_widget_show(vbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), vbox2, FALSE, FALSE, 0);
 
 	enable_sa_checkbtn = gtk_check_button_new_with_label(_("Enable SpamAssassin plugin"));
 	gtk_widget_show(enable_sa_checkbtn);
@@ -280,67 +274,52 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 
 	vbox_transport = gtkut_get_options_frame(vbox2, &frame_transport, _("Transport"));
 
-	table_transport = gtk_table_new (3, 3, FALSE);
-	gtk_widget_show (table_transport);
+	table_transport = gtk_table_new(3, 3, FALSE);
+	gtk_widget_show(table_transport);
 	gtk_box_pack_start(GTK_BOX(vbox_transport), table_transport, TRUE, TRUE, 0);
-	gtk_table_set_row_spacings (GTK_TABLE (table_transport), 4);
-	gtk_table_set_col_spacings (GTK_TABLE (table_transport), 8);
+	gtk_table_set_row_spacings(GTK_TABLE(table_transport), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(table_transport), 8);
 
 	transport_label = gtk_label_new(_("Type of transport"));
 	gtk_widget_show(transport_label);
-	gtk_table_attach (GTK_TABLE (table_transport), transport_label, 0, 1, 0, 1,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), transport_label, 0, 1, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_label_set_justify(GTK_LABEL(transport_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(transport_label), 1, 0.5);
 
 	store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	transport_optmenu = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
 	renderer = gtk_cell_renderer_text_new();
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(transport_optmenu),
-				   renderer, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(transport_optmenu),
-				       renderer, "text", 0, NULL);
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(transport_optmenu), renderer, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(transport_optmenu), renderer, "text", 0, NULL);
 	gtk_widget_show(transport_optmenu);
 
-	gtk_table_attach (GTK_TABLE (table_transport), transport_optmenu, 1, 2, 0, 1,
-			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), transport_optmenu, 1, 2, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 
 	user_label = gtk_label_new(_("User"));
 	gtk_widget_show(user_label);
-	gtk_table_attach (GTK_TABLE (table_transport), user_label, 0, 1, 1, 2,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), user_label, 0, 1, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_label_set_justify(GTK_LABEL(user_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(user_label), 1, 0.5);
 
 	user_entry = gtk_entry_new();
 	gtk_widget_show(user_entry);
-	gtk_table_attach (GTK_TABLE (table_transport), user_entry, 1, 2, 1, 2,
-			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), user_entry, 1, 2, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	CLAWS_SET_TIP(user_entry, _("User to use with spamd server"));
 
 	spamd_label = gtk_label_new(_("spamd"));
 	gtk_widget_show(spamd_label);
-	gtk_table_attach (GTK_TABLE (table_transport), spamd_label, 0, 1, 2, 3,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), spamd_label, 0, 1, 2, 3, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_label_set_justify(GTK_LABEL(spamd_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(spamd_label), 1, 0.5);
 
 	hbox_spamd = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_spamd);
-	gtk_table_attach (GTK_TABLE (table_transport), hbox_spamd, 1, 2, 2, 3,
-			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-			(GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table_transport), hbox_spamd, 1, 2, 2, 3, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 
 	spamd_hostname_entry = gtk_entry_new();
 	gtk_widget_show(spamd_hostname_entry);
 	gtk_box_pack_start(GTK_BOX(hbox_spamd), spamd_hostname_entry, TRUE, TRUE, 0);
-	CLAWS_SET_TIP(spamd_hostname_entry,
-			_("Hostname or IP address of spamd server"));
+	CLAWS_SET_TIP(spamd_hostname_entry, _("Hostname or IP address of spamd server"));
 
 	spamd_colon_label = gtk_label_new(":");
 	gtk_widget_show(spamd_colon_label);
@@ -350,8 +329,7 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 	spamd_port_spinbtn = gtk_spin_button_new(GTK_ADJUSTMENT(spamd_port_spinbtn_adj), 1, 0);
 	gtk_widget_show(spamd_port_spinbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_spamd), spamd_port_spinbtn, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(spamd_port_spinbtn,
-			_("Port of spamd server"));
+	CLAWS_SET_TIP(spamd_port_spinbtn, _("Port of spamd server"));
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spamd_port_spinbtn), TRUE);
 
 	spamd_socket_entry = gtk_entry_new();
@@ -361,18 +339,16 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 
 	hbox_compress = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_compress);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_compress, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_compress, TRUE, TRUE, 0);
 
-	compress_checkbtn = gtk_check_button_new_with_label(
-			_("Use compression"));
+	compress_checkbtn = gtk_check_button_new_with_label(_("Use compression"));
 	gtk_widget_show(compress_checkbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_compress), compress_checkbtn, TRUE, TRUE, 0);
-	CLAWS_SET_TIP(compress_checkbtn,
-			_("Enable compression if spamd uses it, otherwise disable it."));
+	CLAWS_SET_TIP(compress_checkbtn, _("Enable compression if spamd uses it, otherwise disable it."));
 
 	hbox_max_size = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_max_size);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_max_size, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_max_size, TRUE, TRUE, 0);
 
 	max_size_label = gtk_label_new(_("Maximum size"));
 	gtk_widget_show(max_size_label);
@@ -382,8 +358,7 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 	max_size_spinbtn = gtk_spin_button_new(GTK_ADJUSTMENT(max_size_spinbtn_adj), 1, 0);
 	gtk_widget_show(max_size_spinbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_max_size), max_size_spinbtn, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(max_size_spinbtn,
-			_("Messages larger than this will not be checked"));
+	CLAWS_SET_TIP(max_size_spinbtn, _("Messages larger than this will not be checked"));
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(max_size_spinbtn), TRUE);
 
 	max_size_kb_label = gtk_label_new(_("KiB"));
@@ -392,7 +367,7 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 
 	hbox_timeout = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_timeout);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_timeout, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_timeout, TRUE, TRUE, 0);
 
 	timeout_label = gtk_label_new(_("Timeout (secs)"));
 	gtk_widget_show(timeout_label);
@@ -402,9 +377,7 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 	timeout_spinbtn = gtk_spin_button_new(GTK_ADJUSTMENT(timeout_spinbtn_adj), 1, 0);
 	gtk_widget_show(timeout_spinbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_timeout), timeout_spinbtn, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(timeout_spinbtn,
-			_("Maximum time allowed for checking. If the check takes longer "
-				"it will be aborted."));
+	CLAWS_SET_TIP(timeout_spinbtn, _("Maximum time allowed for checking. If the check takes longer " "it will be aborted."));
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(timeout_spinbtn), TRUE);
 
 	timeout_seconds_label = gtk_label_new(_("seconds"));
@@ -413,61 +386,55 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 
 	hbox_process_emails = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_process_emails);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_process_emails, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_process_emails, TRUE, TRUE, 0);
 
-	process_emails_checkbtn = gtk_check_button_new_with_label(
-			_("Process messages on receiving"));
+	process_emails_checkbtn = gtk_check_button_new_with_label(_("Process messages on receiving"));
 	gtk_widget_show(process_emails_checkbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_process_emails), process_emails_checkbtn, TRUE, TRUE, 0);
 
 	hbox_save_spam = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_save_spam);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_save_spam, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_save_spam, TRUE, TRUE, 0);
 
 	save_spam_checkbtn = gtk_check_button_new_with_label(_("Save spam in"));
 	gtk_widget_show(save_spam_checkbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_save_spam), save_spam_checkbtn, FALSE, FALSE, 0);
 
 	save_spam_folder_entry = gtk_entry_new();
-	gtk_widget_show (save_spam_folder_entry);
-	gtk_box_pack_start (GTK_BOX (hbox_save_spam), save_spam_folder_entry, TRUE, TRUE, 0);
-	CLAWS_SET_TIP(save_spam_folder_entry,
-			_("Folder for storing identified spam. Leave empty to use the trash folder."));
+	gtk_widget_show(save_spam_folder_entry);
+	gtk_box_pack_start(GTK_BOX(hbox_save_spam), save_spam_folder_entry, TRUE, TRUE, 0);
+	CLAWS_SET_TIP(save_spam_folder_entry, _("Folder for storing identified spam. Leave empty to use the trash folder."));
 
 	save_spam_folder_select = gtkut_get_browse_directory_btn(_("_Browse"));
-	gtk_widget_show (save_spam_folder_select);
-	gtk_box_pack_start (GTK_BOX (hbox_save_spam), save_spam_folder_select, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(save_spam_folder_select,
-			_("Click this button to select a folder for storing spam"));
+	gtk_widget_show(save_spam_folder_select);
+	gtk_box_pack_start(GTK_BOX(hbox_save_spam), save_spam_folder_select, FALSE, FALSE, 0);
+	CLAWS_SET_TIP(save_spam_folder_select, _("Click this button to select a folder for storing spam"));
 
 	hbox_mark_as_read = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_mark_as_read);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_mark_as_read, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_mark_as_read, TRUE, TRUE, 0);
 
-	mark_as_read_checkbtn = gtk_check_button_new_with_label(
-			_("Mark spam as read"));
+	mark_as_read_checkbtn = gtk_check_button_new_with_label(_("Mark spam as read"));
 	gtk_widget_show(mark_as_read_checkbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_mark_as_read), mark_as_read_checkbtn, TRUE, TRUE, 0);
 
 	hbox_whitelist = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hbox_whitelist);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_whitelist, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_whitelist, TRUE, TRUE, 0);
 
 	whitelist_ab_checkbtn = gtk_check_button_new_with_label(_("Whitelist senders found in address book/folder"));
 	gtk_widget_show(whitelist_ab_checkbtn);
 	gtk_box_pack_start(GTK_BOX(hbox_whitelist), whitelist_ab_checkbtn, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(whitelist_ab_checkbtn,
-			_("Messages coming from your address book contacts will be received in the normal folder even if detected as spam"));
+	CLAWS_SET_TIP(whitelist_ab_checkbtn, _("Messages coming from your address book contacts will be received in the normal folder even if detected as spam"));
 
 	whitelist_ab_folder_combo = combobox_text_new(TRUE, _("Any"), NULL);
 	gtk_widget_set_size_request(whitelist_ab_folder_combo, 100, -1);
-	gtk_box_pack_start (GTK_BOX (hbox_whitelist), whitelist_ab_folder_combo, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_whitelist), whitelist_ab_folder_combo, TRUE, TRUE, 0);
 
 	whitelist_ab_select_btn = gtk_button_new_with_label(_("Select..."));
-	gtk_widget_show (whitelist_ab_select_btn);
-	gtk_box_pack_start (GTK_BOX (hbox_whitelist), whitelist_ab_select_btn, FALSE, FALSE, 0);
-	CLAWS_SET_TIP(whitelist_ab_select_btn,
-			_("Click this button to select a book or folder in the address book"));
+	gtk_widget_show(whitelist_ab_select_btn);
+	gtk_box_pack_start(GTK_BOX(hbox_whitelist), whitelist_ab_select_btn, FALSE, FALSE, 0);
+	CLAWS_SET_TIP(whitelist_ab_select_btn, _("Click this button to select a book or folder in the address book"));
 
 	SET_TOGGLE_SENSITIVITY(enable_sa_checkbtn, frame_transport);
 	SET_TOGGLE_SENSITIVITY(enable_sa_checkbtn, hbox_compress);
@@ -485,11 +452,9 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 #endif
 	config = spamassassin_get_config();
 
-	g_signal_connect(G_OBJECT(save_spam_folder_select), "clicked",
-			G_CALLBACK(foldersel_cb), page);
+	g_signal_connect(G_OBJECT(save_spam_folder_select), "clicked", G_CALLBACK(foldersel_cb), page);
 #ifndef USE_ALT_ADDRBOOK
-	g_signal_connect(G_OBJECT (whitelist_ab_select_btn), "clicked",
-			 G_CALLBACK(spamassassin_whitelist_ab_select_cb), page);
+	g_signal_connect(G_OBJECT(whitelist_ab_select_btn), "clicked", G_CALLBACK(spamassassin_whitelist_ab_select_cb), page);
 #else
 	gtk_widget_set_sensitive(GTK_WIDGET(whitelist_ab_select_btn), FALSE);
 #endif
@@ -504,21 +469,18 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 	if (config->whitelist_ab_folder != NULL) {
 		/* translate "Any" (stored UNtranslated) */
 		if (strcasecmp(config->whitelist_ab_folder, "Any") == 0)
-			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))),
-					config->whitelist_ab_folder);
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))), config->whitelist_ab_folder);
 		else
-		/* backward compatibility (when translated "Any" was stored) */
+			/* backward compatibility (when translated "Any" was stored) */
 		if (g_utf8_collate(config->whitelist_ab_folder, _("Any")) == 0)
-			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))),
-					config->whitelist_ab_folder);
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))), config->whitelist_ab_folder);
 		else
-			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))),
-					config->whitelist_ab_folder);
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))), config->whitelist_ab_folder);
 	}
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spamd_port_spinbtn), (float) config->port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spamd_port_spinbtn), (float)config->port);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(compress_checkbtn), config->compress);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(max_size_spinbtn), (float) config->max_size);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(timeout_spinbtn), (float) config->timeout);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(max_size_spinbtn), (float)config->max_size);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(timeout_spinbtn), (float)config->timeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(process_emails_checkbtn), config->process_emails);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(save_spam_checkbtn), config->receive_spam);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(whitelist_ab_checkbtn), config->whitelist_ab);
@@ -547,28 +509,22 @@ static void spamassassin_create_widget_func(PrefsPage * _page,
 
 	active = 0;
 	for (i = 0; i < (sizeof(transports) / sizeof(struct Transport)); i++) {
-		
+
 		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter,
-				   0, gettext(transports[i].name),
-				   1, &transports[i], -1);
+		gtk_list_store_set(store, &iter, 0, gettext(transports[i].name), 1, &transports[i], -1);
 		if (config->transport == transports[i].transport) {
 			show_transport(page, &transports[i]);
 			active = i;
-		} else if (config->transport == SPAMASSASSIN_DISABLED 
-			&& transports[i].transport == SPAMASSASSIN_TRANSPORT_LOCALHOST) {
+		} else if (config->transport == SPAMASSASSIN_DISABLED && transports[i].transport == SPAMASSASSIN_TRANSPORT_LOCALHOST) {
 			show_transport(page, &transports[i]);
 			active = i;
 			/* and disable via new way */
 			config->enable = FALSE;
-			gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(enable_sa_checkbtn), 
-				config->enable);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enable_sa_checkbtn), config->enable);
 		}
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(transport_optmenu), active);
-	g_signal_connect(G_OBJECT(transport_optmenu), "changed",
-			 G_CALLBACK(transport_sel_cb), page);
+	g_signal_connect(G_OBJECT(transport_optmenu), "changed", G_CALLBACK(transport_sel_cb), page);
 
 	page->page.widget = vbox1;
 }
@@ -580,7 +536,7 @@ static void spamassassin_destroy_widget_func(PrefsPage *_page)
 
 static void spamassassin_save_func(PrefsPage *_page)
 {
-	struct SpamAssassinPage *page = (struct SpamAssassinPage *) _page;
+	struct SpamAssassinPage *page = (struct SpamAssassinPage *)_page;
 	SpamAssassinConfig *config;
 
 	debug_print("Saving SpamAssassin Page\n");
@@ -632,8 +588,7 @@ static void spamassassin_save_func(PrefsPage *_page)
 	/* whitelist_ab */
 	config->whitelist_ab = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->whitelist_ab));
 	g_free(config->whitelist_ab_folder);
-	config->whitelist_ab_folder = gtk_editable_get_chars(
-				GTK_EDITABLE(gtk_bin_get_child(GTK_BIN((page->whitelist_ab_folder_combo)))), 0, -1);
+	config->whitelist_ab_folder = gtk_editable_get_chars(GTK_EDITABLE(gtk_bin_get_child(GTK_BIN((page->whitelist_ab_folder_combo)))), 0, -1);
 	/* store UNtranslated "Any" */
 	if (g_utf8_collate(config->whitelist_ab_folder, _("Any")) == 0) {
 		g_free(config->whitelist_ab_folder);
@@ -680,14 +635,18 @@ gint spamassassin_gtk_init(void)
 	spamassassin_page.page.save_page = spamassassin_save_func;
 	spamassassin_page.page.weight = 35.0;
 
-	prefs_gtk_register_page((PrefsPage *) &spamassassin_page);
+	prefs_gtk_register_page((PrefsPage *)&spamassassin_page);
 	spamassassin_set_message_callback(gtk_message_callback);
 
 	debug_print("SpamAssassin GTK plugin loaded\n");
-	return 0;	
+	return 0;
 }
 
 void spamassassin_gtk_done(void)
 {
-        prefs_gtk_unregister_page((PrefsPage *) &spamassassin_page);
+	prefs_gtk_unregister_page((PrefsPage *)&spamassassin_page);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

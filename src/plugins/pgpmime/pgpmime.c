@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -46,12 +46,11 @@
 
 typedef struct _PrivacyDataPGP PrivacyDataPGP;
 
-struct _PrivacyDataPGP
-{
-	PrivacyData	data;
-	
-	gboolean	done_sigtest;
-	gboolean	is_signed;
+struct _PrivacyDataPGP {
+	PrivacyData data;
+
+	gboolean done_sigtest;
+	gboolean is_signed;
 };
 
 static PrivacySystem pgpmime_system;
@@ -62,7 +61,7 @@ static PrivacyDataPGP *pgpmime_new_privacydata()
 
 	data = g_new0(PrivacyDataPGP, 1);
 	data->data.system = &pgpmime_system;
-	
+
 	return data;
 }
 
@@ -77,24 +76,22 @@ static gboolean pgpmime_is_signed(MimeInfo *mimeinfo)
 	MimeInfo *signature;
 	const gchar *protocol;
 	PrivacyDataPGP *data = NULL;
-	
+
 	cm_return_val_if_fail(mimeinfo != NULL, FALSE);
 	if (mimeinfo->privacy != NULL) {
 		data = (PrivacyDataPGP *) mimeinfo->privacy;
 		if (data->done_sigtest)
 			return data->is_signed;
 	}
-	
+
 	/* check parent */
 	parent = procmime_mimeinfo_parent(mimeinfo);
 	if (parent == NULL)
 		return FALSE;
-	if ((parent->type != MIMETYPE_MULTIPART) ||
-	    g_ascii_strcasecmp(parent->subtype, "signed"))
+	if ((parent->type != MIMETYPE_MULTIPART) || g_ascii_strcasecmp(parent->subtype, "signed"))
 		return FALSE;
 	protocol = procmime_mimeinfo_get_parameter(parent, "protocol");
-	if ((protocol == NULL) || 
-	    (g_ascii_strcasecmp(protocol, "application/pgp-signature")))
+	if ((protocol == NULL) || (g_ascii_strcasecmp(protocol, "application/pgp-signature")))
 		return FALSE;
 
 	/* check if mimeinfo is the first child */
@@ -102,17 +99,15 @@ static gboolean pgpmime_is_signed(MimeInfo *mimeinfo)
 		return FALSE;
 
 	/* check signature */
-	signature = parent->node->children->next != NULL ? 
-	    (MimeInfo *) parent->node->children->next->data : NULL;
+	signature = parent->node->children->next != NULL ? (MimeInfo *)parent->node->children->next->data : NULL;
 	if (signature == NULL)
 		return FALSE;
-	if ((signature->type != MIMETYPE_APPLICATION) ||
-	    (g_ascii_strcasecmp(signature->subtype, "pgp-signature")))
+	if ((signature->type != MIMETYPE_APPLICATION) || (g_ascii_strcasecmp(signature->subtype, "pgp-signature")))
 		return FALSE;
 
 	if (data == NULL) {
 		data = pgpmime_new_privacydata();
-		mimeinfo->privacy = (PrivacyData *) data;
+		mimeinfo->privacy = (PrivacyData *)data;
 	}
 	if (data != NULL) {
 		data->done_sigtest = TRUE;
@@ -139,27 +134,19 @@ static gchar *get_canonical_content(FILE *fp, const gchar *boundary)
 
 		if (IS_BOUNDARY(buf, boundary, boundary_len))
 			break;
-		
+
 		buf2 = canonicalize_str(buf);
 		g_string_append(textbuffer, buf2);
 		g_free(buf2);
 	}
 	g_string_truncate(textbuffer, textbuffer->len - 2);
-		
+
 	return g_string_free(textbuffer, FALSE);
 }
 
-static gint pgpmime_check_sig_async(MimeInfo *mimeinfo,
-	GCancellable *cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data)
+static gint pgpmime_check_sig_async(MimeInfo *mimeinfo, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data)
 {
-	return cm_check_detached_sig_async(mimeinfo,
-		cancellable,
-		callback,
-		user_data,
-		GPGME_PROTOCOL_OpenPGP,
-		get_canonical_content);
+	return cm_check_detached_sig_async(mimeinfo, cancellable, callback, user_data, GPGME_PROTOCOL_OpenPGP, get_canonical_content);
 }
 
 static gboolean pgpmime_is_encrypted(MimeInfo *mimeinfo)
@@ -179,23 +166,23 @@ static gboolean pgpmime_is_encrypted(MimeInfo *mimeinfo)
 		return FALSE;
 	if (g_node_n_children(mimeinfo->node) != 2)
 		return FALSE;
-	
-	tmpinfo = (MimeInfo *) g_node_nth_child(mimeinfo->node, 0)->data;
+
+	tmpinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 0)->data;
 	if (tmpinfo->type != MIMETYPE_APPLICATION)
 		return FALSE;
 	if (g_ascii_strcasecmp(tmpinfo->subtype, "pgp-encrypted"))
 		return FALSE;
-	
-	tmpinfo = (MimeInfo *) g_node_nth_child(mimeinfo->node, 1)->data;
+
+	tmpinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 1)->data;
 	if (tmpinfo->type != MIMETYPE_APPLICATION)
 		return FALSE;
 	if (g_ascii_strcasecmp(tmpinfo->subtype, "octet-stream"))
 		return FALSE;
-	
+
 	textdata = procmime_get_part_as_string(tmpinfo, TRUE);
 	if (!textdata)
 		return FALSE;
-	
+
 	if (!pgp_locate_armor_header(textdata, begin_indicator)) {
 		g_free(textdata);
 		return FALSE;
@@ -230,10 +217,10 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
 		return NULL;
 	}
-	
+
 	cm_return_val_if_fail(pgpmime_is_encrypted(mimeinfo), NULL);
-	
-	encinfo = (MimeInfo *) g_node_nth_child(mimeinfo->node, 1)->data;
+
+	encinfo = (MimeInfo *)g_node_nth_child(mimeinfo->node, 1)->data;
 
 	cipher = sgpgme_data_from_mimeinfo(encinfo);
 	plain = sgpgme_decrypt_verify(cipher, &sigstat, ctx);
@@ -254,8 +241,7 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 		return NULL;
 	}
 
-	fname = g_strdup_printf("%s%cplaintext.%08x",
-		get_mime_tmp_dir(), G_DIR_SEPARATOR, ++id);
+	fname = g_strdup_printf("%s%cplaintext.%08x", get_mime_tmp_dir(), G_DIR_SEPARATOR, ++id);
 
 	if ((dstfp = claws_fopen(fname, "wb")) == NULL) {
 		FILE_OP_ERROR(fname, "claws_fopen");
@@ -316,8 +302,7 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 			privacy_free_signature_data(sig_data);
 		return NULL;
 	}
-	decinfo = g_node_first_child(parseinfo->node) != NULL ?
-		g_node_first_child(parseinfo->node)->data : NULL;
+	decinfo = g_node_first_child(parseinfo->node) != NULL ? g_node_first_child(parseinfo->node)->data : NULL;
 	if (decinfo == NULL) {
 		privacy_set_error(_("Couldn't parse decrypted file parts."));
 		if (sig_data)
@@ -335,7 +320,7 @@ static MimeInfo *pgpmime_decrypt(MimeInfo *mimeinfo)
 			data = (PrivacyDataPGP *) decinfo->privacy;
 		} else {
 			data = pgpmime_new_privacydata();
-			decinfo->privacy = (PrivacyData *) data;
+			decinfo->privacy = (PrivacyData *)data;
 		}
 
 		if (data != NULL) {
@@ -362,7 +347,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	struct passphrase_cb_info_s info;
 	gpgme_sign_result_t result = NULL;
 	gchar *test_msg;
-	
+
 	fp = my_tmpfile();
 	if (fp == NULL) {
 		perror("my_tmpfile");
@@ -375,29 +360,27 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	/* read temporary file into memory */
 	test_msg = file_read_stream_to_str(fp);
 	claws_fclose(fp);
-	
-	memset (&info, 0, sizeof info);
+
+	memset(&info, 0, sizeof info);
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *) mimeinfo->node->children->data;
+	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
 	/* create temporary multipart for content */
 	sigmultipart = procmime_mimeinfo_new();
 	sigmultipart->type = MIMETYPE_MULTIPART;
 	sigmultipart->subtype = g_strdup("signed");
-	
+
 	do {
 		g_free(boundary);
 		boundary = generate_mime_boundary("Sig");
 	} while (strstr(test_msg, boundary) != NULL);
-	
+
 	g_free(test_msg);
 
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"),
-                            g_strdup(boundary));
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("protocol"),
-                            g_strdup("application/pgp-signature"));
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("boundary"), g_strdup(boundary));
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("protocol"), g_strdup("application/pgp-signature"));
 	g_node_append(sigmultipart->node, msgcontent->node);
 	g_node_append(mimeinfo->node, sigmultipart->node);
 
@@ -427,7 +410,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	}
 	gpgme_set_textmode(ctx, 1);
 	gpgme_set_armor(ctx, 1);
-	gpgme_signers_clear (ctx);
+	gpgme_signers_clear(ctx);
 
 	if (!sgpgme_setup_signers(ctx, account, from_addr)) {
 		gpgme_release(ctx);
@@ -438,8 +421,8 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if (g_getenv("GPG_AGENT_INFO") && prefs_gpg_get_config()->use_gpg_agent) {
 		debug_print("GPG_AGENT_INFO environment defined, running without passphrase callback\n");
 	} else {
-   		info.c = ctx;
-    		gpgme_set_passphrase_cb (ctx, gpgmegtk_passphrase_cb, &info);
+		info.c = ctx;
+		gpgme_set_passphrase_cb(ctx, gpgmegtk_passphrase_cb, &info);
 	}
 
 	err = gpgme_op_sign(ctx, gpgtext, gpgsig, GPGME_SIG_MODE_DETACH);
@@ -459,13 +442,11 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	if (result && result->signatures) {
 		gpgme_new_signature_t sig = result->signatures;
 		if (gpgme_get_protocol(ctx) == GPGME_PROTOCOL_OpenPGP) {
-			gchar *down_algo = g_ascii_strdown(gpgme_hash_algo_name(
-				result->signatures->hash_algo), -1);
+			gchar *down_algo = g_ascii_strdown(gpgme_hash_algo_name(result->signatures->hash_algo), -1);
 			micalg = g_strdup_printf("pgp-%s", down_algo);
 			g_free(down_algo);
 		} else {
-			micalg = g_strdup(gpgme_hash_algo_name(
-				result->signatures->hash_algo));
+			micalg = g_strdup(gpgme_hash_algo_name(result->signatures->hash_algo));
 		}
 		while (sig) {
 			debug_print("valid signature: %s\n", sig->fpr);
@@ -474,10 +455,8 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	} else if (result && result->invalid_signers) {
 		gpgme_invalid_key_t invalid = result->invalid_signers;
 		while (invalid) {
-			g_warning("invalid signer: %s (%s)", invalid->fpr, 
-				gpgme_strerror(invalid->reason));
-			privacy_set_error(_("Data signing failed due to invalid signer: %s"), 
-				gpgme_strerror(invalid->reason));
+			g_warning("invalid signer: %s (%s)", invalid->fpr, gpgme_strerror(invalid->reason));
+			privacy_set_error(_("Data signing failed due to invalid signer: %s"), gpgme_strerror(invalid->reason));
 			invalid = invalid->next;
 		}
 		gpgme_release(ctx);
@@ -504,8 +483,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 	}
 
 	/* add signature */
-	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("micalg"),
-                            micalg);
+	g_hash_table_insert(sigmultipart->typeparameters, g_strdup("micalg"), micalg);
 
 	newinfo = procmime_mimeinfo_new();
 	newinfo->type = MIMETYPE_APPLICATION;
@@ -523,6 +501,7 @@ gboolean pgpmime_sign(MimeInfo *mimeinfo, PrefsAccount *account, const gchar *fr
 
 	return TRUE;
 }
+
 gchar *pgpmime_get_encrypt_data(GSList *recp_names)
 {
 	return sgpgme_get_encrypt_data(recp_names, GPGME_PROTOCOL_OpenPGP);
@@ -533,8 +512,7 @@ static const gchar *pgpmime_get_encrypt_warning(void)
 	if (prefs_gpg_should_skip_encryption_warning(pgpmime_system.id))
 		return NULL;
 	else
-		return _("Please note that email headers, like Subject, "
-			 "are not encrypted by the PGP/Mime system.");
+		return _("Please note that email headers, like Subject, " "are not encrypted by the PGP/Mime system.");
 }
 
 static void pgpmime_inhibit_encrypt_warning(gboolean inhibit)
@@ -558,12 +536,12 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	gchar **fprs = g_strsplit(encrypt_data, " ", -1);
 	gint i = 0;
 	gpgme_error_t err;
-	
+
 	while (fprs[i] && strlen(fprs[i])) {
 		i++;
 	}
-	
-	kset = g_malloc0(sizeof(gpgme_key_t)*(i+1));
+
+	kset = g_malloc0(sizeof(gpgme_key_t) * (i + 1));
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
@@ -576,7 +554,7 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 		gpgme_key_t key;
 		err = gpgme_get_key(ctx, fprs[i], &key, 0);
 		if (err) {
-			debug_print("can't add key '%s'[%d] (%s)\n", fprs[i],i, gpgme_strerror(err));
+			debug_print("can't add key '%s'[%d] (%s)\n", fprs[i], i, gpgme_strerror(err));
 			privacy_set_error(_("Couldn't add GPG key %s, %s"), fprs[i], gpgme_strerror(err));
 			for (gint x = 0; x < i; x++)
 				gpgme_key_unref(kset[x]);
@@ -589,11 +567,11 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 		kset[i] = key;
 		i++;
 	}
-	
+
 	debug_print("Encrypting message content\n");
 
 	/* remove content node from message */
-	msgcontent = (MimeInfo *) mimeinfo->node->children->data;
+	msgcontent = (MimeInfo *)mimeinfo->node->children->data;
 	g_node_unlink(msgcontent->node);
 
 	/* create temporary multipart for content */
@@ -601,10 +579,8 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	encmultipart->type = MIMETYPE_MULTIPART;
 	encmultipart->subtype = g_strdup("encrypted");
 	boundary = generate_mime_boundary("Encrypt");
-	g_hash_table_insert(encmultipart->typeparameters, g_strdup("boundary"),
-                            g_strdup(boundary));
-	g_hash_table_insert(encmultipart->typeparameters, g_strdup("protocol"),
-                            g_strdup("application/pgp-encrypted"));
+	g_hash_table_insert(encmultipart->typeparameters, g_strdup("boundary"), g_strdup(boundary));
+	g_hash_table_insert(encmultipart->typeparameters, g_strdup("protocol"), g_strdup("application/pgp-encrypted"));
 	g_node_append(encmultipart->node, msgcontent->node);
 
 	/* write message content to temporary file */
@@ -634,7 +610,7 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	gpgme_data_new(&gpgenc);
 	gpgme_set_armor(ctx, 1);
 	cm_gpgme_data_rewind(gpgtext);
-	
+
 	err = gpgme_op_encrypt(ctx, kset, GPGME_ENCRYPT_ALWAYS_TRUST, gpgtext, gpgenc);
 
 	enccontent = sgpgme_data_release_and_get_mem(gpgenc, &len);
@@ -685,16 +661,16 @@ gboolean pgpmime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 }
 
 static PrivacySystem pgpmime_system = {
-	"pgpmime",			/* id */
-	"PGP MIME",			/* name */
+	"pgpmime", /* id */
+	"PGP MIME", /* name */
 
-	pgpmime_free_privacydata,	/* free_privacydata */
+	pgpmime_free_privacydata, /* free_privacydata */
 
-	pgpmime_is_signed,		/* is_signed(MimeInfo *) */
+	pgpmime_is_signed, /* is_signed(MimeInfo *) */
 	pgpmime_check_sig_async,
 
-	pgpmime_is_encrypted,		/* is_encrypted(MimeInfo *) */
-	pgpmime_decrypt,		/* decrypt(MimeInfo *) */
+	pgpmime_is_encrypted, /* is_encrypted(MimeInfo *) */
+	pgpmime_decrypt, /* decrypt(MimeInfo *) */
 
 	TRUE,
 	pgpmime_sign,
@@ -719,9 +695,13 @@ void pgpmime_done()
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_PRIVACY, N_("PGP/Mime")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_PRIVACY, N_("PGP/Mime")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
 #endif /* USE_GPGME */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

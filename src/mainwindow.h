@@ -21,7 +21,7 @@
 
 #include <glib.h>
 
-typedef struct _MainWindow  MainWindow;
+typedef struct _MainWindow MainWindow;
 
 #include "viewtypes.h"
 #include "logwindow.h"
@@ -33,8 +33,7 @@ typedef struct _MainWindow  MainWindow;
 #define MAIN_WINDOW_CLOSE "mainwindow_close"
 #define MAIN_WINDOW_GOT_ICONIFIED "mainwindow_iconified"
 #define THEME_CHANGED_HOOKLIST "theme_changed"
-typedef enum
-{
+typedef enum {
 	M_UNLOCKED,
 	M_MSG_EXIST,
 	M_TARGET_EXIST,
@@ -73,31 +72,28 @@ typedef enum
 	M_MSG_SELECTED,
 
 /* reserved */
-    M_MAX_RESERVED
+	M_MAX_RESERVED
 } SensitiveCond;
 
 typedef guint64 SensitiveCondMask;
 
-typedef enum
-{
-	NORMAL_LAYOUT       = 0,
-	VERTICAL_LAYOUT     = 1 << 0,
-	WIDE_LAYOUT         = 1 << 1,
+typedef enum {
+	NORMAL_LAYOUT = 0,
+	VERTICAL_LAYOUT = 1 << 0,
+	WIDE_LAYOUT = 1 << 1,
 	WIDE_MSGLIST_LAYOUT = 1 << 2,
 	SMALL_LAYOUT
 } LayoutType;
 
-typedef enum
-{	
-	TOOLBAR_NONE		= 0,
-	TOOLBAR_ICON		= 1,
-	TOOLBAR_TEXT		= 2,
-	TOOLBAR_BOTH		= 3,
-	TOOLBAR_BOTH_HORIZ	= 4
+typedef enum {
+	TOOLBAR_NONE = 0,
+	TOOLBAR_ICON = 1,
+	TOOLBAR_TEXT = 2,
+	TOOLBAR_BOTH = 3,
+	TOOLBAR_BOTH_HORIZ = 4
 } ToolbarStyle;
 
-struct _MainWindow
-{
+struct _MainWindow {
 	GtkWidget *hpaned;
 	GtkWidget *vpaned;
 
@@ -135,98 +131,89 @@ struct _MainWindow
 	guint menu_lock_count;
 	guint cursor_count;
 
-	FolderView	*folderview;
-	SummaryView	*summaryview;
-	MessageView	*messageview;
-	LogWindow	*logwin;
-	LogWindow	*filtering_debugwin;
+	FolderView *folderview;
+	SummaryView *summaryview;
+	MessageView *messageview;
+	LogWindow *logwin;
+	LogWindow *filtering_debugwin;
 
-	gint	progressindicator_hook;
-	
-	GtkWidget 	*colorlabel_menu;
-	GtkWidget	*warning_btn;
-	GtkWidget 	*tags_menu;
-	
-	gboolean	 in_folder;
-	GtkActionGroup	*action_group;
-	GtkUIManager	*ui_manager;
+	gint progressindicator_hook;
+
+	GtkWidget *colorlabel_menu;
+	GtkWidget *warning_btn;
+	GtkWidget *tags_menu;
+
+	gboolean in_folder;
+	GtkActionGroup *action_group;
+	GtkUIManager *ui_manager;
 
 #ifdef HAVE_LIBSM
 	gpointer smc_conn;
 #endif
 };
 
-MainWindow *main_window_create		(void);
+MainWindow *main_window_create(void);
 
-void main_window_update_actions_menu	(MainWindow	*mainwin);
+void main_window_update_actions_menu(MainWindow *mainwin);
 
-void main_window_cursor_wait		(MainWindow	*mainwin);
-void main_window_cursor_normal		(MainWindow	*mainwin);
+void main_window_cursor_wait(MainWindow *mainwin);
+void main_window_cursor_normal(MainWindow *mainwin);
 
-void main_window_lock			(MainWindow	*mainwin);
-void main_window_unlock			(MainWindow	*mainwin);
+void main_window_lock(MainWindow *mainwin);
+void main_window_unlock(MainWindow *mainwin);
 
-void main_window_reflect_prefs_all_real	(gboolean 	 pixmap_theme_changed);
-void main_window_reflect_prefs_all	(void);
-void main_window_reflect_prefs_all_now	(void);
-void main_window_reflect_prefs_custom_colors(MainWindow 	*mainwindow);
-void main_window_reflect_tags_changes(MainWindow 	*mainwindow);
-void main_window_set_summary_column	(void);
-void main_window_set_folder_column	(void);
-void main_window_set_account_menu	(GList		*account_list);
-void main_window_set_account_menu_only_toolbar	(GList		*account_list);
+void main_window_reflect_prefs_all_real(gboolean pixmap_theme_changed);
+void main_window_reflect_prefs_all(void);
+void main_window_reflect_prefs_all_now(void);
+void main_window_reflect_prefs_custom_colors(MainWindow *mainwindow);
+void main_window_reflect_tags_changes(MainWindow *mainwindow);
+void main_window_set_summary_column(void);
+void main_window_set_folder_column(void);
+void main_window_set_account_menu(GList *account_list);
+void main_window_set_account_menu_only_toolbar(GList *account_list);
 
 /* Mailing list support */
-void main_create_mailing_list_menu 	(MainWindow *mainwin, MsgInfo *msginfo);
-gint mailing_list_get_list_post_mailto 	(gchar **url, gchar *mailto, gint maxlen);
+void main_create_mailing_list_menu(MainWindow *mainwin, MsgInfo *msginfo);
+gint mailing_list_get_list_post_mailto(gchar **url, gchar *mailto, gint maxlen);
 
-void main_window_toggle_message_view	(MainWindow *mainwin);
+void main_window_toggle_message_view(MainWindow *mainwin);
 
-void main_window_get_size		(MainWindow	*mainwin);
-void main_window_get_position		(MainWindow	*mainwin);
+void main_window_get_size(MainWindow *mainwin);
+void main_window_get_position(MainWindow *mainwin);
 
-void main_window_progress_on		(MainWindow	*mainwin);
-void main_window_progress_off		(MainWindow	*mainwin);
-gboolean main_window_empty_trash	(MainWindow	*mainwin,
-					 gboolean	 confirm,
-					 gboolean 	 for_quit);
+void main_window_progress_on(MainWindow *mainwin);
+void main_window_progress_off(MainWindow *mainwin);
+gboolean main_window_empty_trash(MainWindow *mainwin, gboolean confirm, gboolean for_quit);
 
 SensitiveCondMask main_window_get_mask(SensitiveCond cond, ...);
 
-void main_window_set_menu_sensitive	(MainWindow	*mainwin);
+void main_window_set_menu_sensitive(MainWindow *mainwin);
 
+void main_window_show(MainWindow *mainwin);
+void main_window_hide(MainWindow *mainwin);
+void main_window_popup(MainWindow *mainwin);
 
-void main_window_show			(MainWindow 	*mainwin);
-void main_window_hide			(MainWindow 	*mainwin);
-void main_window_popup			(MainWindow	*mainwin);
+SensitiveCondMask main_window_get_current_state(MainWindow *mainwin);
 
-SensitiveCondMask main_window_get_current_state   (MainWindow *mainwin);
+void toolbar_set_compose_button(Toolbar *toolbar, ComposeButtonType compose_btn_type);
+void main_window_destroy_all(void);
 
-void toolbar_set_compose_button               (Toolbar		 *toolbar, 
-					       ComposeButtonType  compose_btn_type);
-void main_window_destroy_all                  (void);
+void main_window_toggle_work_offline(MainWindow *mainwin, gboolean offline, gboolean ask_sync);
 
-void main_window_toggle_work_offline          (MainWindow        *mainwin, 
-                                               gboolean           offline,
-					       gboolean		  ask_sync);
+MainWindow *mainwindow_get_mainwindow(void);
+void mainwindow_learn(MainWindow *mainwin, gboolean is_spam);
+void mainwindow_jump_to(const gchar *target, gboolean popup);
+void mainwindow_show_error(void);
+void mainwindow_clear_error(MainWindow *mainwin);
+void mainwindow_delete_duplicated(MainWindow *mainwin);
+void mainwindow_delete_duplicated_all(MainWindow *mainwin);
+gboolean mainwindow_is_obscured(void);
+void mainwindow_exit_folder(MainWindow *mainwin);
+void mainwindow_enter_folder(MainWindow *mainwin);
+void mainwindow_reset_paned(GtkPaned *paned);
 
-MainWindow *mainwindow_get_mainwindow 	      (void);
-void mainwindow_learn			      (MainWindow *mainwin,
-					       gboolean is_spam);
-void mainwindow_jump_to			      (const gchar 	 *target,
-					       gboolean popup);
-void mainwindow_show_error		      (void);
-void mainwindow_clear_error		      (MainWindow *mainwin);
-void mainwindow_delete_duplicated     (MainWindow *mainwin);
-void mainwindow_delete_duplicated_all (MainWindow *mainwin);
-gboolean mainwindow_is_obscured		      (void);
-void mainwindow_exit_folder		      (MainWindow *mainwin);
-void mainwindow_enter_folder		      (MainWindow *mainwin);
-void mainwindow_reset_paned		      (GtkPaned *paned);
+void mainwin_accel_changed_cb(GtkAccelGroup *accelgroup, guint keyval, GdkModifierType modifier, GClosure *closure, GtkMenuItem *item);
 
-void mainwin_accel_changed_cb (GtkAccelGroup *accelgroup, guint keyval, GdkModifierType modifier,
-				  GClosure *closure, GtkMenuItem *item);
-
-void mainwindow_import_mbox(const gchar* mbox_file);
+void mainwindow_import_mbox(const gchar *mbox_file);
 
 #endif /* __MAINWINDOW_H__ */

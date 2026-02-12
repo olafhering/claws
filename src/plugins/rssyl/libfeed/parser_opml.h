@@ -3,8 +3,7 @@
 
 #include <expat.h>
 
-typedef void (*OPMLProcessFunc) (gchar *title, gchar *url, gint depth,
-		gpointer data);
+typedef void (*OPMLProcessFunc)(gchar *title, gchar *url, gint depth, gpointer data);
 
 struct _OPMLProcessCtx {
 	XML_Parser parser;

@@ -35,32 +35,29 @@
 
 #include "passcrypt.h"
 
-static void crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
-		   unsigned chunksize, int decrypt);
+static void crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len, unsigned chunksize, int decrypt);
 
 void passcrypt_encrypt(gchar *password, guint len)
 {
-	crypt_cfb_buf(PASSCRYPT_KEY, password, len, 1, 0 );
+	crypt_cfb_buf(PASSCRYPT_KEY, password, len, 1, 0);
 }
 
 void passcrypt_decrypt(gchar *password, guint len)
 {
-	crypt_cfb_buf(PASSCRYPT_KEY, password, len, 1, 1 );
+	crypt_cfb_buf(PASSCRYPT_KEY, password, len, 1, 1);
 }
 
 /*
 * crypt_cfb_iv is the intermediate vector used for cypher feedback encryption
 */
 unsigned char crypt_cfb_iv[64];
-int crypt_cfb_blocksize = 8;	/* 8 for DES */
+int crypt_cfb_blocksize = 8; /* 8 for DES */
 
 #if defined (__FreeBSD__)
-static void
-crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
-	      unsigned chunksize, int decrypt)
+static void crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len, unsigned chunksize, int decrypt)
 {
 	char des_key[8];
-	
+
 	memcpy(des_key, PASSCRYPT_KEY, 8);
 	des_setparity(des_key);
 	if (decrypt)
@@ -69,20 +66,16 @@ crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
 		ecb_crypt(des_key, buf, len, DES_ENCRYPT);
 }
 #else
-static void crypt_cfb_shift(unsigned char *to,
-			    const unsigned char *from, unsigned len);
-static void crypt_cfb_xor(unsigned char *to, const unsigned char *from,
-			  unsigned len);
+static void crypt_cfb_shift(unsigned char *to, const unsigned char *from, unsigned len);
+static void crypt_cfb_xor(unsigned char *to, const unsigned char *from, unsigned len);
 static void crypt_unpack(unsigned char *a);
 
-static void
-crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
-	      unsigned chunksize, int decrypt)
+static void crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len, unsigned chunksize, int decrypt)
 {
 	struct des_ctx ctx;
 	unsigned char temp[64];
 
-	des_set_key(&ctx,(const uint8_t*) key);
+	des_set_key(&ctx, (const uint8_t *)key);
 	memset(temp, 0, sizeof(temp));
 
 	memset(crypt_cfb_iv, 0, sizeof(crypt_cfb_iv));
@@ -94,17 +87,17 @@ crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
 		memcpy(temp, crypt_cfb_iv, sizeof(temp));
 		/* simulate encrypt() via Nettle */
 		char temp2[8];
-		memset(temp2,0,sizeof(temp2));
-		crypt_cfb_xor(temp2,temp,sizeof(temp)/sizeof(temp2));
-		des_encrypt(&ctx,sizeof(temp2),(uint8_t*)temp2,(uint8_t*)temp2);
-		memcpy(temp,temp2,sizeof(temp2));
+		memset(temp2, 0, sizeof(temp2));
+		crypt_cfb_xor(temp2, temp, sizeof(temp) / sizeof(temp2));
+		des_encrypt(&ctx, sizeof(temp2), (uint8_t *) temp2, (uint8_t *) temp2);
+		memcpy(temp, temp2, sizeof(temp2));
 		crypt_unpack(temp);
 		/* */
 		if (chunksize > len)
 			chunksize = len;
 		if (decrypt)
 			crypt_cfb_shift(crypt_cfb_iv, buf, chunksize);
-		crypt_cfb_xor((unsigned char *) buf, temp, chunksize);
+		crypt_cfb_xor((unsigned char *)buf, temp, chunksize);
 		if (!decrypt)
 			crypt_cfb_shift(crypt_cfb_iv, buf, chunksize);
 		len -= chunksize;
@@ -117,8 +110,7 @@ crypt_cfb_buf(const char key[8], unsigned char *buf, unsigned len,
 * bytes from from at the end.  Caution: the to buffer is unpacked,
 * but the from buffer is not.
 */
-static void
-crypt_cfb_shift(unsigned char *to, const unsigned char *from, unsigned len)
+static void crypt_cfb_shift(unsigned char *to, const unsigned char *from, unsigned len)
 {
 	unsigned i;
 	unsigned j;
@@ -144,8 +136,7 @@ crypt_cfb_shift(unsigned char *to, const unsigned char *from, unsigned len)
 * XOR len bytes from from into the data at to.  Caution: the from buffer
 * is unpacked, but the to buffer is not.
 */
-static void
-crypt_cfb_xor(unsigned char *to, const unsigned char *from, unsigned len)
+static void crypt_cfb_xor(unsigned char *to, const unsigned char *from, unsigned len)
 {
 	unsigned i;
 	unsigned j;
@@ -172,3 +163,7 @@ static void crypt_unpack(unsigned char *a)
 			a[(i << 3) + j] = (a[i] & (0x80 >> j)) != 0;
 }
 #endif
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -29,9 +29,7 @@
 
 #ifdef USE_ENCHANT
 
-G_BEGIN_DECLS
-
-typedef struct _ClawsSpellEntry ClawsSpellEntry;
+G_BEGIN_DECLS typedef struct _ClawsSpellEntry ClawsSpellEntry;
 typedef struct _ClawsSpellEntryClass ClawsSpellEntryClass;
 
 #include <gtk/gtk.h>
@@ -42,20 +40,18 @@ typedef struct _ClawsSpellEntryClass ClawsSpellEntryClass;
 #define CLAWS_SPELL_ENTRY_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), CLAWS_TYPE_SPELL_ENTRY, ClawsSpellEntryClass))
 #define CLAWS_IS_SPELL_ENTRY(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), CLAWS_TYPE_SPELL_ENTRY))
 
-struct _ClawsSpellEntry
-{
+struct _ClawsSpellEntry {
 	GtkEntry parent_object;
-	
+
 	GtkAspell *gtkaspell;
-       
+
 	void (*gtk_reserved1)(void);
 	void (*gtk_reserved2)(void);
 	void (*gtk_reserved3)(void);
 	void (*gtk_reserved4)(void);
 };
 
-struct _ClawsSpellEntryClass
-{
+struct _ClawsSpellEntryClass {
 	GtkEntryClass parent_class;
 
 	void (*gtk_reserved1)(void);
@@ -64,18 +60,15 @@ struct _ClawsSpellEntryClass
 	void (*gtk_reserved4)(void);
 };
 
-GType		claws_spell_entry_get_type		(void);
-GtkWidget *	claws_spell_entry_new			(void);
-void		claws_spell_entry_set_gtkaspell		(ClawsSpellEntry *entry,
-							 GtkAspell *gtkaspell);
-void		claws_spell_entry_recheck_all		(ClawsSpellEntry *entry);
-void 		claws_spell_entry_check_all		(ClawsSpellEntry *entry);
-void 		claws_spell_entry_context_set		(ClawsSpellEntry *entry);
-void 		claws_spell_entry_check_backwards	(ClawsSpellEntry *entry);
-void 		claws_spell_entry_check_forwards_go	(ClawsSpellEntry *entry);
-
+GType claws_spell_entry_get_type(void);
+GtkWidget *claws_spell_entry_new(void);
+void claws_spell_entry_set_gtkaspell(ClawsSpellEntry *entry, GtkAspell *gtkaspell);
+void claws_spell_entry_recheck_all(ClawsSpellEntry *entry);
+void claws_spell_entry_check_all(ClawsSpellEntry *entry);
+void claws_spell_entry_context_set(ClawsSpellEntry *entry);
+void claws_spell_entry_check_backwards(ClawsSpellEntry *entry);
+void claws_spell_entry_check_forwards_go(ClawsSpellEntry *entry);
 
 G_END_DECLS
-
-#endif  /* USE_ENCHANT */
-#endif	/* __SPELL_ENTRY_H__ */
+#endif /* USE_ENCHANT */
+#endif /* __SPELL_ENTRY_H__ */

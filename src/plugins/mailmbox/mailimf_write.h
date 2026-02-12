@@ -53,9 +53,7 @@ extern "C" {
   @param str is the string to write
 */
 
-int mailimf_string_write(FILE * f, int * col,
-    const char * str, size_t length);
-
+	int mailimf_string_write(FILE *f, int *col, const char *str, size_t length);
 
 /*
   mailimf_fields_write writes the fields to a given stream
@@ -66,9 +64,7 @@ int mailimf_string_write(FILE * f, int * col,
   @param fields is the fields to write
 */
 
-int mailimf_fields_write(FILE * f, int * col,
-    struct mailimf_fields * fields);
-
+	int mailimf_fields_write(FILE *f, int *col, struct mailimf_fields *fields);
 
 /*
   mailimf_envelope_fields_write writes only some fields to a given stream
@@ -79,9 +75,7 @@ int mailimf_fields_write(FILE * f, int * col,
   @param fields is the fields to write
 */
 
-int mailimf_envelope_fields_write(FILE * f, int * col,
-    struct mailimf_fields * fields);
-
+	int mailimf_envelope_fields_write(FILE *f, int *col, struct mailimf_fields *fields);
 
 /*
   mailimf_field_write writes a field to a given stream
@@ -92,8 +86,7 @@ int mailimf_envelope_fields_write(FILE * f, int * col,
   @param field is the field to write
 */
 
-int mailimf_field_write(FILE * f, int * col,
-    struct mailimf_field * field);
+	int mailimf_field_write(FILE *f, int *col, struct mailimf_field *field);
 
 /*
   mailimf_quoted_string_write writes a string that is quoted
@@ -105,14 +98,11 @@ int mailimf_field_write(FILE * f, int * col,
   @param string is the string to quote and write
 */
 
-int mailimf_quoted_string_write(FILE * f, int * col,
-    const char * string, size_t len);
+	int mailimf_quoted_string_write(FILE *f, int *col, const char *string, size_t len);
 
-int mailimf_address_list_write(FILE * f, int * col,
-    struct mailimf_address_list * addr_list);
+	int mailimf_address_list_write(FILE *f, int *col, struct mailimf_address_list *addr_list);
 
-int mailimf_mailbox_list_write(FILE * f, int * col,
-    struct mailimf_mailbox_list * mb_list);
+	int mailimf_mailbox_list_write(FILE *f, int *col, struct mailimf_mailbox_list *mb_list);
 
 /*
   mailimf_header_string_write writes a header value and fold the header
@@ -124,11 +114,9 @@ int mailimf_mailbox_list_write(FILE * f, int * col,
   @param str is the string to write
 */
 
-int mailimf_header_string_write(FILE * f, int * col,
-    const char * str, size_t length);
+	int mailimf_header_string_write(FILE *f, int *col, const char *str, size_t length);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

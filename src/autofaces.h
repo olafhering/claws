@@ -24,9 +24,9 @@
 #define MAX_FACE_LEN	990
 #define AUTOFACES_DIR   "autofaces"
 
-gint get_default_xface	(gchar *buf, gint len);
-gint get_default_face	(gchar *buf, gint len);
-gint get_account_xface	(gchar *buf, gint len, gchar *name);
-gint get_account_face	(gchar *buf, gint len, gchar *name);
+gint get_default_xface(gchar *buf, gint len);
+gint get_default_face(gchar *buf, gint len);
+gint get_account_xface(gchar *buf, gint len, gchar *name);
+gint get_account_face(gchar *buf, gint len, gchar *name);
 
 #endif /* __AUTOFACES_H__ */

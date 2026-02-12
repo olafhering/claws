@@ -41,33 +41,29 @@ struct PluginFeature {
 };
 
 /* Functions to implement by the plugin */
-gint plugin_init		(gchar		**error);
-gboolean plugin_done		(void);
-const gchar *plugin_name	(void);
-const gchar *plugin_desc	(void);
-const gchar *plugin_version	(void);
-struct PluginFeature *plugin_provides (void);
-const gchar *plugin_type	(void);
-const gchar *plugin_licence	(void);
+gint plugin_init(gchar **error);
+gboolean plugin_done(void);
+const gchar *plugin_name(void);
+const gchar *plugin_desc(void);
+const gchar *plugin_version(void);
+struct PluginFeature *plugin_provides(void);
+const gchar *plugin_type(void);
+const gchar *plugin_licence(void);
 
 /* Functions by the Claws Mail plugin system */
-Plugin *plugin_load		(const gchar	 *filename,
-				 gchar		**error);
-void plugin_unload		(Plugin		 *plugin);
-void plugin_load_all		(const gchar	 *type);
-void plugin_unload_all		(const gchar	 *type);
-void plugin_save_list		(void);
-void plugin_load_standard_plugins (void);
+Plugin *plugin_load(const gchar *filename, gchar **error);
+void plugin_unload(Plugin *plugin);
+void plugin_load_all(const gchar *type);
+void plugin_unload_all(const gchar *type);
+void plugin_save_list(void);
+void plugin_load_standard_plugins(void);
 
-GSList *plugin_get_list		(void);
+GSList *plugin_get_list(void);
 GSList *plugin_get_unloaded_list(void);
-const gchar *plugin_get_name	(Plugin		 *plugin);
-const gchar *plugin_get_desc	(Plugin		 *plugin);
-const gchar *plugin_get_version	(Plugin		 *plugin);
-const gchar *plugin_get_error	(Plugin		 *plugin);
-Plugin      *plugin_get_loaded_by_name(const gchar *name);
-gint check_plugin_version	(guint32 minimum_claws_version,
-				 guint32 compiled_claws_version,
-				 const gchar *plugin_name,
-				 gchar **error);
+const gchar *plugin_get_name(Plugin *plugin);
+const gchar *plugin_get_desc(Plugin *plugin);
+const gchar *plugin_get_version(Plugin *plugin);
+const gchar *plugin_get_error(Plugin *plugin);
+Plugin *plugin_get_loaded_by_name(const gchar *name);
+gint check_plugin_version(guint32 minimum_claws_version, guint32 compiled_claws_version, const gchar *plugin_name, gchar **error);
 #endif

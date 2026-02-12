@@ -26,8 +26,7 @@
 #include "xml.h"
 #include "utils.h"
 
-void folder_local_folder_init(Folder *folder, const gchar *name,
-			      const gchar *path)
+void folder_local_folder_init(Folder *folder, const gchar *name, const gchar *path)
 {
 	folder_init(folder, name);
 	LOCAL_FOLDER(folder)->rootpath = g_strdup(path);
@@ -48,9 +47,10 @@ void folder_local_set_xml(Folder *_folder, XMLTag *tag)
 	folder_set_xml(_folder, tag);
 
 	for (cur = tag->attr; cur != NULL; cur = g_list_next(cur)) {
-		XMLAttr *attr = (XMLAttr *) cur->data;
+		XMLAttr *attr = (XMLAttr *)cur->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "path")) {
 			g_free(folder->rootpath);
 			folder->rootpath = g_strdup(attr->value);
@@ -69,3 +69,7 @@ XMLTag *folder_local_get_xml(Folder *_folder)
 
 	return tag;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -33,30 +33,18 @@
 #include "hooks.h"
 #include "prefs_common.h"
 
-static void hide_cb				(GtkWidget	*widget,
-						 LogWindow	*logwin);
-static gboolean key_pressed			(GtkWidget	*widget,
-						 GdkEventKey	*event,
-						 LogWindow	*logwin);
-static void size_allocate_cb	(GtkWidget *widget,
-					 GtkAllocation *allocation,
-					 gpointer data);
-static gboolean log_window_append		(gpointer 	 source,
-						 gpointer   	 data);
-static void log_window_clip			(LogWindow	*logwin,
-						 guint		 glip_length);
-static void log_window_clear			(GtkWidget	*widget,
-						 LogWindow	*logwin);
-static void log_window_popup_menu_extend	(GtkTextView	*textview,
-						 GtkMenu	*menu,
-						 LogWindow	*logwin);
-					 
+static void hide_cb(GtkWidget *widget, LogWindow *logwin);
+static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, LogWindow *logwin);
+static void size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer data);
+static gboolean log_window_append(gpointer source, gpointer data);
+static void log_window_clip(LogWindow *logwin, guint glip_length);
+static void log_window_clear(GtkWidget *widget, LogWindow *logwin);
+static void log_window_popup_menu_extend(GtkTextView *textview, GtkMenu *menu, LogWindow *logwin);
+
 /*!
  *\brief	Save Gtk object size to prefs dataset
  */
-static void size_allocate_cb(GtkWidget *widget,
-					 GtkAllocation *allocation,
-					 gpointer data)
+static void size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer data)
 {
 	gint *prefs_logwin_width = NULL;
 	gint *prefs_logwin_height = NULL;
@@ -96,19 +84,14 @@ LogWindow *log_window_create(LogInstance instance)
 	gtk_window_set_title(GTK_WINDOW(window), get_log_title(instance));
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(gtk_widget_hide_on_delete), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(key_pressed), logwin);
-	g_signal_connect_after(G_OBJECT(window), "hide",
-			 G_CALLBACK(hide_cb), logwin);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(key_pressed), logwin);
+	g_signal_connect_after(G_OBJECT(window), "hide", G_CALLBACK(hide_cb), logwin);
 	gtk_widget_realize(window);
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
-					    GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(window), scrolledwin);
 	gtk_widget_show(scrolledwin);
 
@@ -125,23 +108,19 @@ LogWindow *log_window_create(LogInstance instance)
 	gtk_text_buffer_get_start_iter(buffer, &iter);
 	logwin->end_mark = gtk_text_buffer_create_mark(buffer, "end", &iter, FALSE);
 
-	g_signal_connect(G_OBJECT(text), "populate-popup",
-			 G_CALLBACK(log_window_popup_menu_extend), logwin);
+	g_signal_connect(G_OBJECT(text), "populate-popup", G_CALLBACK(log_window_popup_menu_extend), logwin);
 	gtk_container_add(GTK_CONTAINER(scrolledwin), text);
 	gtk_widget_show(text);
 
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(size_allocate_cb), GINT_TO_POINTER(instance));
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(size_allocate_cb), GINT_TO_POINTER(instance));
 
 	if (!geometry.min_height) {
 		geometry.min_width = 520;
 		geometry.min_height = 400;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(window, *prefs_logwin_width,
-				    *prefs_logwin_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(window, *prefs_logwin_width, *prefs_logwin_height);
 
 	logwin->window = window;
 	logwin->scrolledwin = scrolledwin;
@@ -189,40 +168,20 @@ void log_window_init(LogWindow *logwin)
 
 			g_warning("LogWindow: color allocation failed");
 			style = gtk_widget_get_style(logwin->window);
-			logwin->msg_color = logwin->warn_color =
-					logwin->error_color = logwin->in_color =
-					logwin->out_color = logwin->status_ok_color =
-					logwin->status_nok_color = logwin->status_skip_color =
-					style->black;
+			logwin->msg_color = logwin->warn_color = logwin->error_color = logwin->in_color = logwin->out_color = logwin->status_ok_color = logwin->status_nok_color = logwin->status_skip_color = style->black;
 			break;
 		}
 	}
 
 	buffer = logwin->buffer;
-	gtk_text_buffer_create_tag(buffer, "message",
-				   "foreground-gdk", &logwin->msg_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "warn",
-				   "foreground-gdk", &logwin->warn_color,
-				   NULL);
-	logwin->error_tag = gtk_text_buffer_create_tag(buffer, "error",
-				   "foreground-gdk", &logwin->error_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "input",
-				   "foreground-gdk", &logwin->in_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "output",
-				   "foreground-gdk", &logwin->out_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "status_ok",
-				   "foreground-gdk", &logwin->status_ok_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "status_nok",
-				   "foreground-gdk", &logwin->status_nok_color,
-				   NULL);
-	gtk_text_buffer_create_tag(buffer, "status_skip",
-				   "foreground-gdk", &logwin->status_skip_color,
-				   NULL);
+	gtk_text_buffer_create_tag(buffer, "message", "foreground-gdk", &logwin->msg_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "warn", "foreground-gdk", &logwin->warn_color, NULL);
+	logwin->error_tag = gtk_text_buffer_create_tag(buffer, "error", "foreground-gdk", &logwin->error_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "input", "foreground-gdk", &logwin->in_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "output", "foreground-gdk", &logwin->out_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "status_ok", "foreground-gdk", &logwin->status_ok_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "status_nok", "foreground-gdk", &logwin->status_nok_color, NULL);
+	gtk_text_buffer_create_tag(buffer, "status_skip", "foreground-gdk", &logwin->status_skip_color, NULL);
 }
 
 #undef LOG_COLORS
@@ -276,7 +235,7 @@ void log_window_set_clipping(LogWindow *logwin, gboolean clip, guint clip_length
 static gboolean log_window_append(gpointer source, gpointer data)
 {
 	LogText *logtext = (LogText *) source;
-	LogWindow *logwindow = (LogWindow *) data;
+	LogWindow *logwindow = (LogWindow *)data;
 	GtkTextView *text;
 	GtkTextBuffer *buffer;
 	GtkTextIter iter;
@@ -328,46 +287,41 @@ static gboolean log_window_append(gpointer source, gpointer data)
 	if (logtext->instance == LOG_PROTOCOL) {
 		if (tag == NULL) {
 			if (strstr(logtext->text, "] POP>")
-			||  strstr(logtext->text, "] IMAP>")
-			||  strstr(logtext->text, "] SMTP>")
-			||  strstr(logtext->text, "] ESMTP>")
-			||  strstr(logtext->text, "] NNTP>"))
+			    || strstr(logtext->text, "] IMAP>")
+			    || strstr(logtext->text, "] SMTP>")
+			    || strstr(logtext->text, "] ESMTP>")
+			    || strstr(logtext->text, "] NNTP>"))
 				tag = "output";
 			if (strstr(logtext->text, "] POP<")
-			||  strstr(logtext->text, "] IMAP<")
-			||  strstr(logtext->text, "] SMTP<")
-			||  strstr(logtext->text, "] ESMTP<")
-			||  strstr(logtext->text, "] NNTP<"))
+			    || strstr(logtext->text, "] IMAP<")
+			    || strstr(logtext->text, "] SMTP<")
+			    || strstr(logtext->text, "] ESMTP<")
+			    || strstr(logtext->text, "] NNTP<"))
 				tag = "input";
 		}
 	}
 
 	if (head)
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, head, -1,
-							 tag, NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, head, -1, tag, NULL);
 
 	if (!g_utf8_validate(logtext->text, -1, NULL)) {
-		gchar * mybuf = g_malloc(strlen(logtext->text)*2 +1);
-		conv_localetodisp(mybuf, strlen(logtext->text)*2 +1, logtext->text);
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, mybuf, -1,
-							 tag, NULL);
+		gchar *mybuf = g_malloc(strlen(logtext->text) * 2 + 1);
+		conv_localetodisp(mybuf, strlen(logtext->text) * 2 + 1, logtext->text);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, mybuf, -1, tag, NULL);
 		g_free(mybuf);
 	} else {
-		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, logtext->text, -1,
-							 tag, NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, logtext->text, -1, tag, NULL);
 	}
 	gtk_text_buffer_get_start_iter(buffer, &iter);
 
 	if (logwindow->clip)
-	       log_window_clip (logwindow, logwindow->clip_length);
+		log_window_clip(logwindow, logwindow->clip_length);
 
 	if (!logwindow->hidden) {
 		GtkAdjustment *vadj = gtk_text_view_get_vadjustment(text);
-		gfloat upper = gtk_adjustment_get_upper(vadj) -
-		    gtk_adjustment_get_page_size(vadj);
+		gfloat upper = gtk_adjustment_get_upper(vadj) - gtk_adjustment_get_page_size(vadj);
 		gfloat value = gtk_adjustment_get_value(vadj);
-		if (value == upper || 
-		    (upper - value < 16 && value < 8))
+		if (value == upper || (upper - value < 16 && value < 8))
 			gtk_text_view_scroll_mark_onscreen(text, logwindow->end_mark);
 	}
 
@@ -379,12 +333,11 @@ static void hide_cb(GtkWidget *widget, LogWindow *logwin)
 	logwin->hidden = TRUE;
 }
 
-static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event,
-			LogWindow *logwin)
+static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, LogWindow *logwin)
 {
 	if (event && event->keyval == GDK_KEY_Escape)
 		gtk_widget_hide(logwin->window);
-	else if (event && event->keyval == GDK_KEY_Delete) 
+	else if (event && event->keyval == GDK_KEY_Delete)
 		log_window_clear(NULL, logwin);
 
 	return FALSE;
@@ -392,18 +345,18 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 static void log_window_clip(LogWindow *logwin, guint clip_length)
 {
-        guint length;
+	guint length;
 	guint point;
 	GtkTextBuffer *textbuf = logwin->buffer;
 	GtkTextIter start_iter, end_iter;
-	
+
 	length = gtk_text_buffer_get_line_count(textbuf);
 	/* debug_print("Log window length: %u\n", length); */
-	
+
 	if (length > clip_length) {
-	        /* find the end of the first line after the cut off
+		/* find the end of the first line after the cut off
 		 * point */
-       	        point = length - clip_length;
+		point = length - clip_length;
 		gtk_text_buffer_get_iter_at_line(textbuf, &end_iter, point);
 		if (!gtk_text_iter_forward_to_line_end(&end_iter))
 			return;
@@ -423,7 +376,7 @@ static void log_window_clear(GtkWidget *widget, LogWindow *logwin)
 {
 	GtkTextBuffer *textbuf = logwin->buffer;
 	GtkTextIter start_iter, end_iter;
-	
+
 	gtk_text_buffer_get_start_iter(textbuf, &start_iter);
 	gtk_text_buffer_get_end_iter(textbuf, &end_iter);
 	gtk_text_buffer_delete(textbuf, &start_iter, &end_iter);
@@ -434,11 +387,10 @@ static void log_window_go_to_last_error(GtkWidget *widget, LogWindow *logwin)
 	log_window_jump_to_error(logwin);
 }
 
-static void log_window_popup_menu_extend(GtkTextView *textview,
-   			GtkMenu *menu, LogWindow *logwin)
+static void log_window_popup_menu_extend(GtkTextView *textview, GtkMenu *menu, LogWindow *logwin)
 {
 	GtkWidget *menuitem;
-	
+
 	cm_return_if_fail(menu != NULL);
 	cm_return_if_fail(GTK_IS_MENU_SHELL(menu));
 
@@ -448,16 +400,17 @@ static void log_window_popup_menu_extend(GtkTextView *textview,
 
 	if (logwin->has_error_capability) {
 		menuitem = gtk_menu_item_new_with_mnemonic(_("_Go to last error"));
-		g_signal_connect(G_OBJECT(menuitem), "activate",
-				 G_CALLBACK(log_window_go_to_last_error), logwin);
+		g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(log_window_go_to_last_error), logwin);
 		gtk_menu_shell_prepend(GTK_MENU_SHELL(menu), menuitem);
 		gtk_widget_show(menuitem);
 	}
 
 	menuitem = gtk_menu_item_new_with_mnemonic(_("Clear _Log"));
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(log_window_clear), logwin);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(log_window_clear), logwin);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(menu), menuitem);
 	gtk_widget_show(menuitem);
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

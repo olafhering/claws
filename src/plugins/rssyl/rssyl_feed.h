@@ -16,14 +16,12 @@
 #define RSSYL_LOG_ERROR_PROC   _("RSSyl: Couldn't process feed at '%s'\n")
 #define RSSYL_LOG_ABORTED_EXITING _("RSSyl: Application is exiting, couldn't finish updating feed at '%s'\n")
 
-typedef enum
-{
+typedef enum {
 	RSSYL_SHOW_ERRORS = 1 << 0,
 	RSSYL_SHOW_RENAME_DIALOG = 1 << 1
 } RSSylVerboseFlags;
 
-MsgInfo *rssyl_feed_parse_item_to_msginfo(gchar *file, MsgFlags flags,
-		gboolean a, gboolean b, FolderItem *item);
+MsgInfo *rssyl_feed_parse_item_to_msginfo(gchar *file, MsgFlags flags, gboolean a, gboolean b, FolderItem *item);
 
 void rssyl_feed_start_refresh_timeout(RFolderItem *ritem);
 

@@ -63,13 +63,10 @@ typedef struct {
 static void filter_got_load_error(SieveSession *session, gpointer data);
 static void account_changed(GtkWidget *widget, SieveManagerPage *page);
 static void sieve_manager_close(GtkWidget *widget, SieveManagerPage *page);
-static gboolean sieve_manager_deleted(GtkWidget *widget, GdkEvent *event,
-		SieveManagerPage *page);
+static gboolean sieve_manager_deleted(GtkWidget *widget, GdkEvent *event, SieveManagerPage *page);
 static void filter_set_active(SieveManagerPage *page, gchar *filter_name);
-gboolean filter_find_by_name (GtkTreeModel *model, GtkTreeIter *iter,
-		gchar *filter_name);
-static void got_session_error(SieveSession *session, const gchar *msg,
-		SieveManagerPage *page);
+gboolean filter_find_by_name(GtkTreeModel *model, GtkTreeIter *iter, gchar *filter_name);
+static void got_session_error(SieveSession *session, const gchar *msg, SieveManagerPage *page);
 
 static GSList *manager_pages = NULL;
 
@@ -85,7 +82,7 @@ void sieve_managers_done()
 {
 	GSList *list = manager_pages;
 	manager_pages = NULL;
-	g_slist_free_full(list, (GDestroyNotify)sieve_manager_done);
+	g_slist_free_full(list, (GDestroyNotify) sieve_manager_done);
 }
 
 static void filters_list_clear(SieveManagerPage *page)
@@ -106,9 +103,7 @@ static void filters_list_delete_filter(SieveManagerPage *page, gchar *name)
 	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
-
-static void filters_list_rename_filter(SieveManagerPage *page,
-		gchar *name_old, char *name_new)
+static void filters_list_rename_filter(SieveManagerPage *page, gchar *name_old, char *name_new)
 {
 	GtkTreeIter iter;
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(page->filters_list));
@@ -116,22 +111,16 @@ static void filters_list_rename_filter(SieveManagerPage *page,
 	if (!filter_find_by_name(model, &iter, name_old))
 		return;
 
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			FILTER_NAME, name_new,
-			-1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, FILTER_NAME, name_new, -1);
 }
 
-static void filters_list_insert_filter(SieveManagerPage *page,
-		SieveScript *filter)
+static void filters_list_insert_filter(SieveManagerPage *page, SieveScript *filter)
 {
 	GtkListStore *list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(page->filters_list)));
 	GtkTreeIter iter;
 
 	gtk_list_store_append(list_store, &iter);
-	gtk_list_store_set(list_store, &iter,
-			FILTER_NAME, filter->name,
-			FILTER_ACTIVE, filter->active,
-			-1);
+	gtk_list_store_set(list_store, &iter, FILTER_NAME, filter->name, FILTER_ACTIVE, filter->active, -1);
 }
 
 static gchar *filters_list_get_selected_filter(GtkWidget *list_view)
@@ -158,7 +147,7 @@ static void filter_add(GtkWidget *widget, SieveManagerPage *page)
 	if (!session)
 		return;
 	gchar *filter_name = input_dialog(_("Add Sieve script"),
-			_("Enter name for a new Sieve filter script."), "");
+					  _("Enter name for a new Sieve filter script."), "");
 	if (!filter_name || !filter_name[0])
 		return;
 
@@ -167,8 +156,7 @@ static void filter_add(GtkWidget *widget, SieveManagerPage *page)
 		/* TODO: show error that filter already exists */
 		sieve_editor_present(editor);
 		g_free(filter_name);
-		sieve_editor_load(editor,
-			(sieve_session_cb_fn)filter_got_load_error, page);
+		sieve_editor_load(editor, (sieve_session_cb_fn) filter_got_load_error, page);
 	} else {
 		editor = sieve_editor_new(session, filter_name);
 		editor->is_new = TRUE;
@@ -204,13 +192,11 @@ static void filter_edit(GtkWidget *widget, SieveManagerPage *page)
 		editor = sieve_editor_new(session, filter_name);
 		/* filter_name becomes ownership of newly created
 		 * SieveEditorPage, so we do not need to free it here. */
-		sieve_editor_load(editor,
-			(sieve_session_cb_fn)filter_got_load_error, page);
+		sieve_editor_load(editor, (sieve_session_cb_fn) filter_got_load_error, page);
 	}
 }
 
-static void filter_renamed(SieveSession *session, gboolean abort,
-		gboolean success, CommandDataRename *data)
+static void filter_renamed(SieveSession *session, gboolean abort, gboolean success, CommandDataRename *data)
 {
 	SieveManagerPage *page = data->page;
 	GSList *cur;
@@ -220,8 +206,7 @@ static void filter_renamed(SieveSession *session, gboolean abort,
 		got_session_error(session, "Unable to rename script", page);
 	} else {
 		manager_sessions_foreach(cur, session, page) {
-			filters_list_rename_filter(page, data->name_old,
-					data->name_new);
+			filters_list_rename_filter(page, data->name_old, data->name_new);
 		}
 	}
 	g_free(data->name_old);
@@ -243,8 +228,7 @@ static void filter_rename(GtkWidget *widget, SieveManagerPage *page)
 	if (!session)
 		return;
 
-	name_new = input_dialog(_("Add Sieve script"),
-			_("Enter new name for the script."), name_old);
+	name_new = input_dialog(_("Add Sieve script"), _("Enter new name for the script."), name_old);
 	if (!name_new)
 		return;
 
@@ -252,12 +236,10 @@ static void filter_rename(GtkWidget *widget, SieveManagerPage *page)
 	cmd_data->name_new = name_new;
 	cmd_data->name_old = name_old;
 	cmd_data->page = page;
-	sieve_session_rename_script(session, name_old, name_new,
-			(sieve_session_data_cb_fn)filter_renamed, (gpointer)cmd_data);
+	sieve_session_rename_script(session, name_old, name_new, (sieve_session_data_cb_fn) filter_renamed, (gpointer)cmd_data);
 }
 
-static void filter_activated(SieveSession *session, gboolean abort,
-		const gchar *err, CommandDataName *cmd_data)
+static void filter_activated(SieveSession *session, gboolean abort, const gchar *err, CommandDataName *cmd_data)
 {
 	SieveManagerPage *page = cmd_data->page;
 	GSList *cur;
@@ -284,13 +266,10 @@ static void sieve_set_active_filter(SieveManagerPage *page, gchar *filter_name)
 	cmd_data->filter_name = filter_name;
 	cmd_data->page = page;
 
-	sieve_session_set_active_script(session, filter_name,
-			(sieve_session_data_cb_fn)filter_activated, cmd_data);
+	sieve_session_set_active_script(session, filter_name, (sieve_session_data_cb_fn) filter_activated, cmd_data);
 }
 
-static void filter_deleted(SieveSession *session, gboolean abort,
-		const gchar *err_msg,
-		CommandDataName *cmd_data)
+static void filter_deleted(SieveSession *session, gboolean abort, const gchar *err_msg, CommandDataName *cmd_data)
 {
 	SieveManagerPage *page = cmd_data->page;
 	GSList *cur;
@@ -300,14 +279,12 @@ static void filter_deleted(SieveSession *session, gboolean abort,
 		got_session_error(session, err_msg, page);
 	} else {
 		manager_sessions_foreach(cur, session, page) {
-			filters_list_delete_filter(page,
-					cmd_data->filter_name);
+			filters_list_delete_filter(page, cmd_data->filter_name);
 		}
 	}
 	g_free(cmd_data->filter_name);
 	g_free(cmd_data);
 }
-
 
 static void filter_delete(GtkWidget *widget, SieveManagerPage *page)
 {
@@ -324,19 +301,15 @@ static void filter_delete(GtkWidget *widget, SieveManagerPage *page)
 	if (!session)
 		return;
 
-	g_snprintf(buf, sizeof(buf),
-		   _("Do you really want to delete the filter '%s'?"), filter_name);
-	if (alertpanel_full(_("Delete filter"), buf,
-				GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL, ALERTFOCUS_FIRST, FALSE,
-				NULL, ALERT_WARNING) != G_ALERTALTERNATE)
+	g_snprintf(buf, sizeof(buf), _("Do you really want to delete the filter '%s'?"), filter_name);
+	if (alertpanel_full(_("Delete filter"), buf, GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE)
 		return;
 
 	cmd_data = g_new(CommandDataName, 1);
 	cmd_data->filter_name = filter_name;
 	cmd_data->page = page;
 
-	sieve_session_delete_script(session, filter_name,
-			(sieve_session_data_cb_fn)filter_deleted, cmd_data);
+	sieve_session_delete_script(session, filter_name, (sieve_session_data_cb_fn) filter_deleted, cmd_data);
 }
 
 /*
@@ -345,16 +318,16 @@ static void filter_delete(GtkWidget *widget, SieveManagerPage *page)
  * return TRUE is successfully selected, FALSE otherwise
  */
 
-static gboolean filter_select (GtkWidget *list_view, GtkTreeModel *model,
-		GtkTreeIter *iter)
+static gboolean filter_select(GtkWidget *list_view, GtkTreeModel *model, GtkTreeIter *iter)
 {
 	GtkTreeSelection *selection;
-	GtkTreePath* path;
+	GtkTreePath *path;
 
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(list_view));
 	gtk_tree_selection_select_iter(selection, iter);
 	path = gtk_tree_model_get_path(model, iter);
-	if (path == NULL) return FALSE;
+	if (path == NULL)
+		return FALSE;
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(list_view), path, NULL, FALSE);
 	gtk_tree_path_free(path);
 	return TRUE;
@@ -363,46 +336,43 @@ static gboolean filter_select (GtkWidget *list_view, GtkTreeModel *model,
 /*
  * find matching filter. return FALSE on match
  */
-static gboolean filter_search_equal_fn (GtkTreeModel *model, gint column,
-		const gchar *key, GtkTreeIter *iter, gpointer search_data)
+static gboolean filter_search_equal_fn(GtkTreeModel *model, gint column, const gchar *key, GtkTreeIter *iter, gpointer search_data)
 {
 	SieveManagerPage *page = (SieveManagerPage *)search_data;
 	gchar *filter_name;
 
-	if (!key) return TRUE;
+	if (!key)
+		return TRUE;
 
-	gtk_tree_model_get (model, iter, FILTER_NAME, &filter_name, -1);
+	gtk_tree_model_get(model, iter, FILTER_NAME, &filter_name, -1);
 
-	if (strncmp (key, filter_name, strlen(key)) != 0) return TRUE;
+	if (strncmp(key, filter_name, strlen(key)) != 0)
+		return TRUE;
 	return !filter_select(page->filters_list, model, iter);
 }
 
 /*
  * search for a filter row by its name. return true if found.
  */
-gboolean filter_find_by_name (GtkTreeModel *model, GtkTreeIter *iter,
-		gchar *filter_name)
+gboolean filter_find_by_name(GtkTreeModel *model, GtkTreeIter *iter, gchar *filter_name)
 {
 	gchar *name;
 
-	if (!gtk_tree_model_get_iter_first (model, iter))
+	if (!gtk_tree_model_get_iter_first(model, iter))
 		return FALSE;
 
 	do {
-		gtk_tree_model_get (model, iter, FILTER_NAME, &name, -1);
+		gtk_tree_model_get(model, iter, FILTER_NAME, &name, -1);
 		if (strcmp(filter_name, name) == 0) {
 			return TRUE;
 		}
-	} while (gtk_tree_model_iter_next (model, iter));
+	} while (gtk_tree_model_iter_next(model, iter));
 	return FALSE;
 }
 
-static gboolean filter_set_inactive(GtkTreeModel *model,
-		GtkTreePath *path, GtkTreeIter *iter, gpointer data)
+static gboolean filter_set_inactive(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data)
 {
-	gtk_list_store_set(GTK_LIST_STORE(model), iter,
-			FILTER_ACTIVE, FALSE,
-			-1);
+	gtk_list_store_set(GTK_LIST_STORE(model), iter, FILTER_ACTIVE, FALSE, -1);
 	return FALSE;
 }
 
@@ -420,18 +390,14 @@ static void filter_set_active(SieveManagerPage *page, gchar *filter_name)
 
 	/* Set active filter */
 	if (filter_name) {
-		if (!filter_find_by_name (model, &iter, filter_name))
+		if (!filter_find_by_name(model, &iter, filter_name))
 			return;
 
-		gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-				FILTER_ACTIVE, TRUE,
-				-1);
+		gtk_list_store_set(GTK_LIST_STORE(model), &iter, FILTER_ACTIVE, TRUE, -1);
 	}
 }
 
-static void filter_active_toggled(GtkCellRendererToggle *widget,
-				    gchar *path,
-				    SieveManagerPage *page)
+static void filter_active_toggled(GtkCellRendererToggle *widget, gchar *path, SieveManagerPage *page)
 {
 	GtkTreeIter iter;
 	gchar *filter_name;
@@ -442,23 +408,17 @@ static void filter_active_toggled(GtkCellRendererToggle *widget,
 		return;
 
 	/* get existing value */
-	gtk_tree_model_get(model, &iter,
-			FILTER_NAME, &filter_name,
-			FILTER_ACTIVE, &active,
-			-1);
+	gtk_tree_model_get(model, &iter, FILTER_NAME, &filter_name, FILTER_ACTIVE, &active, -1);
 
 	sieve_set_active_filter(page, active ? NULL : filter_name);
 }
 
-static void filter_double_clicked(GtkTreeView *list_view,
-				   GtkTreePath *path, GtkTreeViewColumn *column,
-				   SieveManagerPage *page)
+static void filter_double_clicked(GtkTreeView *list_view, GtkTreePath *path, GtkTreeViewColumn *column, SieveManagerPage *page)
 {
 	filter_edit(GTK_WIDGET(list_view), page);
 }
 
-static void filters_create_list_view_columns(SieveManagerPage *page,
-		GtkWidget *list_view)
+static void filters_create_list_view_columns(SieveManagerPage *page, GtkWidget *list_view)
 {
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
@@ -466,48 +426,34 @@ static void filters_create_list_view_columns(SieveManagerPage *page,
 
 	/* Name */
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-		(_("Name"), renderer,
-		 "text", FILTER_NAME,
-		 NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Name"), renderer, "text", FILTER_NAME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
 	gtk_tree_view_column_set_expand(column, TRUE);
 
 	/* Active */
 	renderer = gtk_cell_renderer_toggle_new();
-	g_object_set(renderer,
-		     "radio", TRUE,
-		     "activatable", TRUE,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes
-		(_("Active"), renderer,
-		 "active", FILTER_ACTIVE,
-		 NULL);
+	g_object_set(renderer, "radio", TRUE, "activatable", TRUE, NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Active"), renderer, "active", FILTER_ACTIVE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
-	gtk_tree_view_column_set_alignment (column, 0.5);
+	gtk_tree_view_column_set_alignment(column, 0.5);
 
 	/* the column header needs a widget to have a tooltip */
 	label = gtk_label_new(gtk_tree_view_column_get_title(column));
 	gtk_widget_show(label);
 	gtk_tree_view_column_set_widget(column, label);
-	CLAWS_SET_TIP(label,
-			_("An account can only have one active script at a time."));
+	CLAWS_SET_TIP(label, _("An account can only have one active script at a time."));
 
-	g_signal_connect(G_OBJECT(renderer), "toggled",
-			 G_CALLBACK(filter_active_toggled), page);
+	g_signal_connect(G_OBJECT(renderer), "toggled", G_CALLBACK(filter_active_toggled), page);
 
 	gtk_tree_view_set_search_column(GTK_TREE_VIEW(list_view), FILTER_NAME);
-	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(list_view),
-			filter_search_equal_fn, page, NULL);
+	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(list_view), filter_search_equal_fn, page, NULL);
 }
 
-
-static GtkListStore* filters_create_data_store(void)
+static GtkListStore *filters_create_data_store(void)
 {
-	return gtk_list_store_new(N_FILTER_COLUMNS,
-			G_TYPE_STRING,	/* FILTER_NAME */
-			G_TYPE_BOOLEAN,	/* FILTER_ACTIVE */
-			-1);
+	return gtk_list_store_new(N_FILTER_COLUMNS, G_TYPE_STRING, /* FILTER_NAME */
+				  G_TYPE_BOOLEAN, /* FILTER_ACTIVE */
+				  -1);
 }
 
 static GtkWidget *filters_list_view_create(SieveManagerPage *page)
@@ -526,17 +472,14 @@ static GtkWidget *filters_list_view_create(SieveManagerPage *page)
 	filters_create_list_view_columns(page, GTK_WIDGET(list_view));
 
 	/* set a double click listener */
-	g_signal_connect(G_OBJECT(list_view), "row_activated",
-			G_CALLBACK(filter_double_clicked),
-			page);
+	g_signal_connect(G_OBJECT(list_view), "row_activated", G_CALLBACK(filter_double_clicked), page);
 
 	return GTK_WIDGET(list_view);
 }
 
-static gboolean manager_key_pressed(GtkWidget *widget, GdkEventKey *event,
-				    gpointer data)
+static gboolean manager_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-	SieveManagerPage* page = (SieveManagerPage *) data;
+	SieveManagerPage *page = (SieveManagerPage *)data;
 
 	if (event && event->keyval == GDK_KEY_Escape)
 		sieve_manager_done(page);
@@ -552,8 +495,7 @@ static void size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation)
 	sieve_config.manager_win_height = allocation->height;
 }
 
-static void got_session_error(SieveSession *session, const gchar *msg,
-		SieveManagerPage *page)
+static void got_session_error(SieveSession *session, const gchar *msg, SieveManagerPage *page)
 {
 	if (!g_slist_find(manager_pages, page))
 		return;
@@ -562,28 +504,24 @@ static void got_session_error(SieveSession *session, const gchar *msg,
 	gtk_label_set_text(GTK_LABEL(page->status_text), msg);
 }
 
-static void sieve_manager_on_error(SieveSession *session,
-		const gchar *msg, gpointer user_data)
+static void sieve_manager_on_error(SieveSession *session, const gchar *msg, gpointer user_data)
 {
 	SieveManagerPage *page = (SieveManagerPage *)user_data;
 	got_session_error(session, msg, page);
 }
 
-static void sieve_manager_on_connected(SieveSession *session,
-		gboolean connected, gpointer user_data)
+static void sieve_manager_on_connected(SieveSession *session, gboolean connected, gpointer user_data)
 {
 	SieveManagerPage *page = (SieveManagerPage *)user_data;
 	if (page->active_session != session)
 		return;
 	if (!connected) {
 		gtk_widget_set_sensitive(GTK_WIDGET(page->vbox_buttons), FALSE);
-		gtk_label_set_text(GTK_LABEL(page->status_text),
-				_("Unable to connect"));
+		gtk_label_set_text(GTK_LABEL(page->status_text), _("Unable to connect"));
 	}
 }
 
-static void got_filter_listed(SieveSession *session, gboolean abort,
-		SieveScript *script, SieveManagerPage *page)
+static void got_filter_listed(SieveSession *session, gboolean abort, SieveScript *script, SieveManagerPage *page)
 {
 	if (abort)
 		return;
@@ -618,20 +556,14 @@ static void account_changed(GtkWidget *widget, SieveManagerPage *page)
 	if (!account)
 		return;
 	session = page->active_session = sieve_session_get_for_account(account);
-	sieve_session_handle_status(session,
-			sieve_manager_on_error,
-			sieve_manager_on_connected,
-			page);
+	sieve_session_handle_status(session, sieve_manager_on_error, sieve_manager_on_connected, page);
 	filters_list_clear(page);
 	if (session_is_connected(SESSION(session))) {
-		gtk_label_set_text(GTK_LABEL(page->status_text),
-				_("Listing scripts..."));
+		gtk_label_set_text(GTK_LABEL(page->status_text), _("Listing scripts..."));
 	} else {
-		gtk_label_set_text(GTK_LABEL(page->status_text),
-				_("Connecting..."));
+		gtk_label_set_text(GTK_LABEL(page->status_text), _("Connecting..."));
 	}
-	sieve_session_list_scripts(session,
-			(sieve_session_data_cb_fn)got_filter_listed, (gpointer)page);
+	sieve_session_list_scripts(session, (sieve_session_data_cb_fn) got_filter_listed, (gpointer)page);
 }
 
 static SieveManagerPage *sieve_manager_page_new()
@@ -659,53 +591,46 @@ static SieveManagerPage *sieve_manager_page_new()
 	/* Manage Window */
 
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "sievemanager");
-	gtk_container_set_border_width (GTK_CONTAINER (window), 8);
-	gtk_window_set_title (GTK_WINDOW (window), _("Manage Sieve Filters"));
+	gtk_container_set_border_width(GTK_CONTAINER(window), 8);
+	gtk_window_set_title(GTK_WINDOW(window), _("Manage Sieve Filters"));
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	MANAGE_WINDOW_SIGNALS_CONNECT (window);
+	MANAGE_WINDOW_SIGNALS_CONNECT(window);
 
-	g_signal_connect (G_OBJECT (window), "key_press_event",
-			G_CALLBACK (manager_key_pressed), page);
-	g_signal_connect (G_OBJECT(window), "size_allocate",
-			 G_CALLBACK (size_allocate_cb), NULL);
-	g_signal_connect (G_OBJECT(window), "delete_event",
-			 G_CALLBACK (sieve_manager_deleted), page);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(manager_key_pressed), page);
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(size_allocate_cb), NULL);
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(sieve_manager_deleted), page);
 
 	if (!geometry.min_height) {
 		geometry.min_width = 350;
 		geometry.min_height = 280;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_widget_set_size_request(window, sieve_config.manager_win_width,
-			sieve_config.manager_win_height);
-	gtk_window_set_type_hint(GTK_WINDOW(window),
-			GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_widget_set_size_request(window, sieve_config.manager_win_width, sieve_config.manager_win_height);
+	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
 
-	vbox = gtk_vbox_new (FALSE, 10);
-	gtk_container_add (GTK_CONTAINER (window), vbox);
+	vbox = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(window), vbox);
 
-	hbox = gtk_hbox_new (FALSE, 8);
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+	hbox = gtk_hbox_new(FALSE, 8);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 	/* Accounts list */
 
-	label = gtk_label_new (_("Account"));
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	label = gtk_label_new(_("Account"));
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
 	accounts_menu = gtkut_sc_combobox_create(NULL, FALSE);
 	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(accounts_menu)));
-	gtk_box_pack_start (GTK_BOX (hbox), accounts_menu, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(accounts_menu), "changed",
-			  G_CALLBACK (account_changed), page);
+	gtk_box_pack_start(GTK_BOX(hbox), accounts_menu, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(accounts_menu), "changed", G_CALLBACK(account_changed), page);
 
 	account_list = account_get_list();
 	for (cur = account_list; cur != NULL; cur = cur->next) {
 		ap = (PrefsAccount *)cur->data;
 		config = sieve_prefs_account_get_config(ap);
 		if (config->enable) {
-			COMBOBOX_ADD (menu, ap->account_name, ap->account_id);
+			COMBOBOX_ADD(menu, ap->account_name, ap->account_id);
 			if (!default_account || ap->is_default)
 				default_account = ap;
 		}
@@ -719,78 +644,68 @@ static SieveManagerPage *sieve_manager_page_new()
 	}
 
 	/* status */
-	status_text = gtk_label_new ("");
-	gtk_box_pack_start (GTK_BOX (hbox), status_text, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (status_text), GTK_JUSTIFY_LEFT);
+	status_text = gtk_label_new("");
+	gtk_box_pack_start(GTK_BOX(hbox), status_text, FALSE, FALSE, 0);
+	gtk_label_set_justify(GTK_LABEL(status_text), GTK_JUSTIFY_LEFT);
 
 	/* Filters list */
 
-	hbox = gtk_hbox_new (FALSE, 8);
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 2);
+	hbox = gtk_hbox_new(FALSE, 8);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 2);
 
 	/* Table */
 
-	scrolledwin = gtk_scrolled_window_new (NULL, NULL);
-	gtk_box_pack_start (GTK_BOX (hbox), scrolledwin, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwin),
-					GTK_POLICY_AUTOMATIC,
-					GTK_POLICY_AUTOMATIC);
+	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), scrolledwin, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
 	list_view = filters_list_view_create(page);
 	gtk_container_add(GTK_CONTAINER(scrolledwin), list_view);
 
 	/* Buttons */
 
-	vbox_allbuttons = gtk_vbox_new (FALSE, 8);
-	gtk_box_pack_start (GTK_BOX (hbox), vbox_allbuttons, FALSE, FALSE, 0);
+	vbox_allbuttons = gtk_vbox_new(FALSE, 8);
+	gtk_box_pack_start(GTK_BOX(hbox), vbox_allbuttons, FALSE, FALSE, 0);
 
 	/* buttons that depend on there being a connection */
-	vbox_buttons = gtk_vbox_new (FALSE, 8);
+	vbox_buttons = gtk_vbox_new(FALSE, 8);
 	gtk_widget_set_sensitive(vbox_buttons, FALSE);
-	gtk_box_pack_start (GTK_BOX (vbox_allbuttons), vbox_buttons, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox_allbuttons), vbox_buttons, FALSE, FALSE, 0);
 
 	/* new */
 	btn = gtk_button_new_from_stock(GTK_STOCK_NEW);
-	gtk_box_pack_start (GTK_BOX (vbox_buttons), btn, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(btn), "clicked",
-			  G_CALLBACK (filter_add), page);
+	gtk_box_pack_start(GTK_BOX(vbox_buttons), btn, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(filter_add), page);
 
 	/* edit */
-	btn = gtk_button_new_from_stock (GTK_STOCK_EDIT);
-	gtk_box_pack_start (GTK_BOX (vbox_buttons), btn, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(btn), "clicked",
-			G_CALLBACK (filter_edit), page);
+	btn = gtk_button_new_from_stock(GTK_STOCK_EDIT);
+	gtk_box_pack_start(GTK_BOX(vbox_buttons), btn, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(filter_edit), page);
 
 	/* delete */
 	btn = gtk_button_new_from_stock(GTK_STOCK_DELETE);
-	gtk_box_pack_start (GTK_BOX (vbox_buttons), btn, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(btn), "clicked",
-			G_CALLBACK (filter_delete), page);
+	gtk_box_pack_start(GTK_BOX(vbox_buttons), btn, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(filter_delete), page);
 
 	/* rename */
 	btn = gtk_button_new_with_label(_("Rename"));
-	gtk_box_pack_start (GTK_BOX (vbox_buttons), btn, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(btn), "clicked",
-			G_CALLBACK (filter_rename), page);
+	gtk_box_pack_start(GTK_BOX(vbox_buttons), btn, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(filter_rename), page);
 
 	/* refresh */
 	btn = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
-	gtk_box_pack_end (GTK_BOX (vbox_allbuttons), btn, FALSE, FALSE, 0);
-	g_signal_connect (G_OBJECT(btn), "clicked",
-			G_CALLBACK (account_changed), page);
+	gtk_box_pack_end(GTK_BOX(vbox_allbuttons), btn, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(account_changed), page);
 
 	/* bottom area stuff */
 
-	gtkut_stock_button_set_create(&hbox,
-			&btn, GTK_STOCK_CLOSE,
-			NULL, NULL, NULL, NULL);
+	gtkut_stock_button_set_create(&hbox, &btn, GTK_STOCK_CLOSE, NULL, NULL, NULL, NULL);
 
 	/* close */
-	gtk_box_pack_end (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-	gtk_widget_grab_default (btn);
-	g_signal_connect (G_OBJECT (btn), "clicked",
-			  G_CALLBACK (sieve_manager_close), page);
+	gtk_box_pack_end(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+	gtk_widget_grab_default(btn);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(sieve_manager_close), page);
 
 	page->window = window;
 	page->accounts_menu = accounts_menu;
@@ -800,18 +715,15 @@ static SieveManagerPage *sieve_manager_page_new()
 
 	/* select default (first) account */
 	if (default_account) {
-		combobox_select_by_data(GTK_COMBO_BOX(accounts_menu),
-				default_account->account_id);
+		combobox_select_by_data(GTK_COMBO_BOX(accounts_menu), default_account->account_id);
 	} else {
-		gtk_label_set_text(GTK_LABEL(status_text),
-				_("To use Sieve, enable it in an account's preferences."));
+		gtk_label_set_text(GTK_LABEL(status_text), _("To use Sieve, enable it in an account's preferences."));
 	}
 
 	return page;
 }
 
-static gboolean sieve_manager_deleted(GtkWidget *widget, GdkEvent *event,
-		SieveManagerPage *page)
+static gboolean sieve_manager_deleted(GtkWidget *widget, GdkEvent *event, SieveManagerPage *page)
 {
 	sieve_manager_done(page);
 	return FALSE;
@@ -840,10 +752,14 @@ void sieve_manager_show()
 void sieve_manager_script_created(SieveSession *session, const gchar *name)
 {
 	SieveManagerPage *page;
-	SieveScript script = {.name = (gchar *)name};
+	SieveScript script = {.name = (gchar *)name };
 	GSList *cur;
 
 	manager_sessions_foreach(cur, session, page) {
 		filters_list_insert_filter(page, &script);
 	}
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -24,6 +24,6 @@
 
 #include "folder.h"
 
-GSList *grouplist_dialog	(Folder *folder);
+GSList *grouplist_dialog(Folder *folder);
 
 #endif /* __GROUPLISTDIALOG_H__ */

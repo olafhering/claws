@@ -39,53 +39,37 @@
 
 static gulong hook_id = HOOK_NONE;
 
-static FILE *NewLog   = NULL;
-static char *LogName  = NULL;
-static int   truncLog = 1;
+static FILE *NewLog = NULL;
+static char *LogName = NULL;
+static int truncLog = 1;
 static char *pluginDesc = NULL;
 
-static gchar *defstr (gchar *s)
+static gchar *defstr(gchar *s)
 {
 	return s ? s : "(null)";
 } /* defstr */
 
-gboolean newmail_hook (gpointer source, gpointer data)
+gboolean newmail_hook(gpointer source, gpointer data)
 {
-	auto MsgInfo    *msginfo = (MsgInfo *)source;
+	auto MsgInfo *msginfo = (MsgInfo *)source;
 	auto FolderItem *tof;
 
-	if (!msginfo) return FALSE;
-	if (!NewLog) return FALSE;
+	if (!msginfo)
+		return FALSE;
+	if (!NewLog)
+		return FALSE;
 
 	tof = msginfo->folder;
-	(void)fprintf (NewLog, "---\n"
-		"Date:\t%s\n"
-		"Subject:\t%s\n"
-		"From:\t%s\n"
-		"To:\t%s\n"
-		"Cc:\t%s\n"
-		"Size:\t%jd\n"
-		"Path:\t%s\n"
-		"Message:\t%d\n"
-		"Folder:\t%s\n",
-		defstr (msginfo->date),
-		defstr (msginfo->subject),
-		defstr (msginfo->from),
-		defstr (msginfo->to),
-		defstr (msginfo->cc),
-		(intmax_t) msginfo->size,
-		defstr (procmsg_get_message_file_path (msginfo)),
-		msginfo->msgnum,
-		tof ? defstr (tof->name) : "(null)");
+	(void)fprintf(NewLog, "---\n" "Date:\t%s\n" "Subject:\t%s\n" "From:\t%s\n" "To:\t%s\n" "Cc:\t%s\n" "Size:\t%jd\n" "Path:\t%s\n" "Message:\t%d\n" "Folder:\t%s\n", defstr(msginfo->date), defstr(msginfo->subject), defstr(msginfo->from), defstr(msginfo->to), defstr(msginfo->cc), (intmax_t) msginfo->size, defstr(procmsg_get_message_file_path(msginfo)), msginfo->msgnum, tof ? defstr(tof->name) : "(null)");
 
 	return (FALSE);
 } /* newmail_hook */
 
-gboolean plugin_done (void)
+gboolean plugin_done(void)
 {
 	if (NewLog) {
-		(void)claws_fclose (NewLog);
-		NewLog  = NULL;
+		(void)claws_fclose(NewLog);
+		NewLog = NULL;
 	}
 	if (LogName) {
 		g_free(LogName);
@@ -95,85 +79,82 @@ gboolean plugin_done (void)
 		g_free(pluginDesc);
 		pluginDesc = NULL;
 	}
-	hooks_unregister_hook (MAIL_POSTFILTERING_HOOKLIST, hook_id);
+	hooks_unregister_hook(MAIL_POSTFILTERING_HOOKLIST, hook_id);
 
-	debug_print ("Newmail plugin unloaded\n");
+	debug_print("Newmail plugin unloaded\n");
 	return TRUE;
 } /* plugin_done */
 
-gint plugin_init (gchar **error)
+gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				VERSION_NUMERIC, _("NewMail"), error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, _("NewMail"), error))
 		return -1;
 
-	hook_id = hooks_register_hook (MAIL_POSTFILTERING_HOOKLIST, newmail_hook, NULL);
+	hook_id = hooks_register_hook(MAIL_POSTFILTERING_HOOKLIST, newmail_hook, NULL);
 	if (hook_id == HOOK_NONE) {
-		*error = g_strdup (_("Failed to register newmail hook"));
+		*error = g_strdup(_("Failed to register newmail hook"));
 		return (-1);
 	}
 
 	if (!NewLog) {
 		auto char *mode = truncLog ? "w" : "a";
 		if (!LogName) {
-			LogName = g_strconcat(g_getenv ("HOME"), G_DIR_SEPARATOR_S, DEFAULT_DIR,
-					G_DIR_SEPARATOR_S, LOG_NAME, NULL);
+			LogName = g_strconcat(g_getenv("HOME"), G_DIR_SEPARATOR_S, DEFAULT_DIR, G_DIR_SEPARATOR_S, LOG_NAME, NULL);
 		}
-		if (!(NewLog = claws_fopen (LogName, mode))) {
-			debug_print ("Failed to open default log %s\n", LogName);
+		if (!(NewLog = claws_fopen(LogName, mode))) {
+			debug_print("Failed to open default log %s\n", LogName);
 			/* try fallback location */
 			g_free(LogName);
 			LogName = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, LOG_NAME, NULL);
-			if (!(NewLog = claws_fopen (LogName, mode))) {
-				debug_print ("Failed to open fallback log %s\n", LogName);
-				*error = g_strdup_printf(_("Could not open log file %s: %s\n"),
-						LogName, g_strerror(errno));
-				plugin_done ();
+			if (!(NewLog = claws_fopen(LogName, mode))) {
+				debug_print("Failed to open fallback log %s\n", LogName);
+				*error = g_strdup_printf(_("Could not open log file %s: %s\n"), LogName, g_strerror(errno));
+				plugin_done();
 				return (-1);
 			}
 		}
-		setbuf (NewLog, NULL);
+		setbuf(NewLog, NULL);
 	}
 
-	debug_print ("Newmail plugin loaded\n"
-              "Message header summaries written to %s\n", LogName);
+	debug_print("Newmail plugin loaded\n" "Message header summaries written to %s\n", LogName);
 	if (pluginDesc == NULL)
-		pluginDesc = g_strdup_printf(
-			_("This plugin writes a header summary to a log file for each "
-			"mail received after sorting.\n\n"
-			"Default is ~/Mail/NewLog\n\nCurrent log is %s"), LogName);
+		pluginDesc = g_strdup_printf(_("This plugin writes a header summary to a log file for each " "mail received after sorting.\n\n" "Default is ~/Mail/NewLog\n\nCurrent log is %s"), LogName);
 	return (0);
 } /* plugin_init */
 
-const gchar *plugin_name (void)
+const gchar *plugin_name(void)
 {
-    return _("NewMail");
+	return _("NewMail");
 } /* plugin_name */
 
-const gchar *plugin_desc (void)
+const gchar *plugin_desc(void)
 {
-    return pluginDesc;
+	return pluginDesc;
 } /* plugin_desc */
 
-const gchar *plugin_type (void)
+const gchar *plugin_type(void)
 {
-    return ("Common");
+	return ("Common");
 } /* plugin_type */
 
-const gchar *plugin_licence (void)
+const gchar *plugin_licence(void)
 {
-    return ("GPL3+");
+	return ("GPL3+");
 } /* plugin_licence */
 
-const gchar *plugin_version (void)
+const gchar *plugin_version(void)
 {
-    return (VERSION);
+	return (VERSION);
 } /* plugin_version */
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_NOTIFIER, N_("Log file")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_NOTIFIER, N_("Log file")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

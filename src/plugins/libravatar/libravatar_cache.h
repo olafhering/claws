@@ -23,17 +23,14 @@
 
 #define LIBRAVATAR_CACHE_DIR "avatarcache"
 
-typedef struct _AvatarCacheStats	AvatarCacheStats;
-typedef struct _AvatarCleanupResult	AvatarCleanupResult;
+typedef struct _AvatarCacheStats AvatarCacheStats;
+typedef struct _AvatarCleanupResult AvatarCleanupResult;
 
-gchar			*libravatar_cache_init		(const char *dirs[],
-							 gint start,
-							 gint end);
-AvatarCacheStats	*libravatar_cache_stats		();
-AvatarCleanupResult	*libravatar_cache_clean		();
+gchar *libravatar_cache_init(const char *dirs[], gint start, gint end);
+AvatarCacheStats *libravatar_cache_stats();
+AvatarCleanupResult *libravatar_cache_clean();
 
-struct _AvatarCacheStats
-{
+struct _AvatarCacheStats {
 	gint bytes;
 	gint files;
 	gint dirs;
@@ -41,8 +38,7 @@ struct _AvatarCacheStats
 	gint errors;
 };
 
-struct _AvatarCleanupResult
-{
+struct _AvatarCleanupResult {
 	guint removed;
 	guint e_stat;
 	guint e_unlink;

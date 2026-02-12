@@ -16,10 +16,10 @@
  */
 
 #ifndef NOTIFICATION_COMMAND_H
-#define NOTIFICATION_COMMAND_H NOTIFICATION_COMMAND_H 
+#define NOTIFICATION_COMMAND_H NOTIFICATION_COMMAND_H
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_COMMAND
@@ -28,7 +28,7 @@
 
 #define COMMAND_SPECIFIC_FOLDER_ID_STR "command"
 
-void notification_command_msg(MsgInfo*);
+void notification_command_msg(MsgInfo *);
 
 #endif /* NOTIFICATION_COMMAND */
 

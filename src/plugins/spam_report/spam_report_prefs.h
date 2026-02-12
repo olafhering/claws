@@ -28,7 +28,7 @@
 
 #define SPAM_REPORT_USERAGENT "Claws Mail SpamReport plugin "
 
-typedef struct _SpamReportPrefs	SpamReportPrefs;
+typedef struct _SpamReportPrefs SpamReportPrefs;
 
 typedef enum {
 	INTF_SIGNALSPAM,
@@ -55,8 +55,7 @@ typedef struct _ReportInterface {
 
 extern ReportInterface spam_interfaces[];
 
-struct _SpamReportPrefs
-{
+struct _SpamReportPrefs {
 	gboolean enabled[INTF_LAST];
 	gchar *user[INTF_LAST];
 	gchar *pass[INTF_LAST];

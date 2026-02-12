@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -81,11 +81,11 @@ static PrefParam param[] = {
 	 NULL, NULL, NULL},
 	{"default_alt_dictionary", NULL, &tmp_prefs.default_alt_dictionary, P_STRING,
 	 NULL, NULL, NULL},
-#endif	 
+#endif
 	{"always_sign", "0", &tmp_prefs.always_sign, P_ENUM,
- 	 NULL, NULL, NULL},
+	 NULL, NULL, NULL},
 	{"always_encrypt", "0", &tmp_prefs.always_encrypt, P_ENUM,
- 	 NULL, NULL, NULL},
+	 NULL, NULL, NULL},
 	{"save_copy_to_folder", NULL, &tmp_prefs.save_copy_to_folder, P_BOOL,
 	 NULL, NULL, NULL},
 	{"folder_color", "#000000", &tmp_prefs.color, P_COLOR,
@@ -138,9 +138,9 @@ static PrefParam param[] = {
 
 static FolderItemPrefs *folder_item_prefs_clear(FolderItemPrefs *prefs);
 
-void folder_item_prefs_read_config(FolderItem * item)
+void folder_item_prefs_read_config(FolderItem *item)
 {
-	gchar * id;
+	gchar *id;
 	gchar *rcpath;
 
 	id = folder_item_get_identifier(item);
@@ -155,11 +155,11 @@ void folder_item_prefs_read_config(FolderItem * item)
 	prefs_update_config_version_folder_item(item);
 }
 
-void folder_item_prefs_save_config(FolderItem * item)
-{	
-	gchar * id;
+void folder_item_prefs_save_config(FolderItem *item)
+{
+	gchar *id;
 
-	tmp_prefs = * item->prefs;
+	tmp_prefs = *item->prefs;
 
 	id = folder_item_get_identifier(item);
 	if (id == NULL)
@@ -172,21 +172,19 @@ void folder_item_prefs_save_config(FolderItem * item)
 
 static gboolean folder_item_prefs_save_config_func(GNode *node, gpointer data)
 {
-	FolderItem *item = (FolderItem *) node->data;
+	FolderItem *item = (FolderItem *)node->data;
 	folder_item_prefs_save_config(item);
 	return FALSE;
 }
 
-void folder_item_prefs_save_config_recursive(FolderItem * item)
-{	
-	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL,
-			-1, folder_item_prefs_save_config_func, NULL);
+void folder_item_prefs_save_config_recursive(FolderItem *item)
+{
+	g_node_traverse(item->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_item_prefs_save_config_func, NULL);
 }
 
 void folder_prefs_save_config_recursive(Folder *folder)
-{	
-	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL,
-			-1, folder_item_prefs_save_config_func, NULL);
+{
+	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_item_prefs_save_config_func, NULL);
 }
 
 static FolderItemPrefs *folder_item_prefs_clear(FolderItemPrefs *prefs)
@@ -246,16 +244,16 @@ static FolderItemPrefs *folder_item_prefs_clear(FolderItemPrefs *prefs)
 	return prefs;
 }
 
-FolderItemPrefs * folder_item_prefs_new(void)
+FolderItemPrefs *folder_item_prefs_new(void)
 {
-	FolderItemPrefs * prefs;
+	FolderItemPrefs *prefs;
 
 	prefs = g_new0(FolderItemPrefs, 1);
 
 	return folder_item_prefs_clear(prefs);
 }
 
-void folder_item_prefs_free(FolderItemPrefs * prefs)
+void folder_item_prefs_free(FolderItemPrefs *prefs)
 {
 	g_free(prefs->default_from);
 	g_free(prefs->default_to);
@@ -278,61 +276,60 @@ void folder_item_prefs_free(FolderItemPrefs * prefs)
 #define SAFE_STRING(str) \
 	(str) ? (str) : ""
 
-void folder_item_prefs_copy_prefs(FolderItem * src, FolderItem * dest)
+void folder_item_prefs_copy_prefs(FolderItem *src, FolderItem *dest)
 {
 	GSList *tmp_prop_list = NULL, *tmp;
 	folder_item_prefs_read_config(src);
 
-	tmp_prefs.directory			= g_strdup(src->prefs->directory);
-        tmp_prefs.enable_processing             = src->prefs->enable_processing;
-        tmp_prefs.enable_processing_when_opening = src->prefs->enable_processing_when_opening;
-	tmp_prefs.newmailcheck                  = src->prefs->newmailcheck;
-	tmp_prefs.offlinesync                   = src->prefs->offlinesync;
-	tmp_prefs.offlinesync_days              = src->prefs->offlinesync_days;
-	tmp_prefs.remove_old_bodies             = src->prefs->remove_old_bodies;
-	tmp_prefs.promote_html_part             = src->prefs->promote_html_part;
-	tmp_prefs.skip_on_goto_unread_or_new    = src->prefs->skip_on_goto_unread_or_new;
+	tmp_prefs.directory = g_strdup(src->prefs->directory);
+	tmp_prefs.enable_processing = src->prefs->enable_processing;
+	tmp_prefs.enable_processing_when_opening = src->prefs->enable_processing_when_opening;
+	tmp_prefs.newmailcheck = src->prefs->newmailcheck;
+	tmp_prefs.offlinesync = src->prefs->offlinesync;
+	tmp_prefs.offlinesync_days = src->prefs->offlinesync_days;
+	tmp_prefs.remove_old_bodies = src->prefs->remove_old_bodies;
+	tmp_prefs.promote_html_part = src->prefs->promote_html_part;
+	tmp_prefs.skip_on_goto_unread_or_new = src->prefs->skip_on_goto_unread_or_new;
 
 	prefs_matcher_read_config();
 
 	for (tmp = src->prefs->processing; tmp != NULL && tmp->data != NULL;) {
 		FilteringProp *prop = (FilteringProp *)tmp->data;
-		
-		tmp_prop_list = g_slist_append(tmp_prop_list,
-					   filteringprop_copy(prop));
+
+		tmp_prop_list = g_slist_append(tmp_prop_list, filteringprop_copy(prop));
 		tmp = tmp->next;
 	}
-	tmp_prefs.processing			= tmp_prop_list;
-	
-	tmp_prefs.request_return_receipt	= src->prefs->request_return_receipt;
-	tmp_prefs.enable_default_from		= src->prefs->enable_default_from;
-	tmp_prefs.default_from			= g_strdup(src->prefs->default_from);
-	tmp_prefs.enable_default_to		= src->prefs->enable_default_to;
-	tmp_prefs.default_to			= g_strdup(src->prefs->default_to);
-	tmp_prefs.enable_default_reply_to	= src->prefs->enable_default_reply_to;
-	tmp_prefs.default_reply_to		= g_strdup(src->prefs->default_reply_to);
-	tmp_prefs.enable_default_cc		= src->prefs->enable_default_cc;
-	tmp_prefs.default_cc			= g_strdup(src->prefs->default_cc);
-	tmp_prefs.enable_default_bcc		= src->prefs->enable_default_bcc;
-	tmp_prefs.default_bcc			= g_strdup(src->prefs->default_bcc);
-	tmp_prefs.enable_default_replyto		= src->prefs->enable_default_replyto;
-	tmp_prefs.default_replyto			= g_strdup(src->prefs->default_replyto);
-	tmp_prefs.enable_simplify_subject	= src->prefs->enable_simplify_subject;
-	tmp_prefs.simplify_subject_regexp	= g_strdup(src->prefs->simplify_subject_regexp);
-	tmp_prefs.enable_folder_chmod		= src->prefs->enable_folder_chmod;
-	tmp_prefs.folder_chmod			= src->prefs->folder_chmod;
-	tmp_prefs.enable_default_account	= src->prefs->enable_default_account;
-	tmp_prefs.default_account		= src->prefs->default_account;
+	tmp_prefs.processing = tmp_prop_list;
+
+	tmp_prefs.request_return_receipt = src->prefs->request_return_receipt;
+	tmp_prefs.enable_default_from = src->prefs->enable_default_from;
+	tmp_prefs.default_from = g_strdup(src->prefs->default_from);
+	tmp_prefs.enable_default_to = src->prefs->enable_default_to;
+	tmp_prefs.default_to = g_strdup(src->prefs->default_to);
+	tmp_prefs.enable_default_reply_to = src->prefs->enable_default_reply_to;
+	tmp_prefs.default_reply_to = g_strdup(src->prefs->default_reply_to);
+	tmp_prefs.enable_default_cc = src->prefs->enable_default_cc;
+	tmp_prefs.default_cc = g_strdup(src->prefs->default_cc);
+	tmp_prefs.enable_default_bcc = src->prefs->enable_default_bcc;
+	tmp_prefs.default_bcc = g_strdup(src->prefs->default_bcc);
+	tmp_prefs.enable_default_replyto = src->prefs->enable_default_replyto;
+	tmp_prefs.default_replyto = g_strdup(src->prefs->default_replyto);
+	tmp_prefs.enable_simplify_subject = src->prefs->enable_simplify_subject;
+	tmp_prefs.simplify_subject_regexp = g_strdup(src->prefs->simplify_subject_regexp);
+	tmp_prefs.enable_folder_chmod = src->prefs->enable_folder_chmod;
+	tmp_prefs.folder_chmod = src->prefs->folder_chmod;
+	tmp_prefs.enable_default_account = src->prefs->enable_default_account;
+	tmp_prefs.default_account = src->prefs->default_account;
 #if USE_ENCHANT
-	tmp_prefs.enable_default_dictionary	= src->prefs->enable_default_dictionary;
-	tmp_prefs.default_dictionary		= g_strdup(src->prefs->default_dictionary);
-	tmp_prefs.enable_default_alt_dictionary	= src->prefs->enable_default_alt_dictionary;
-	tmp_prefs.default_alt_dictionary	= g_strdup(src->prefs->default_alt_dictionary);
+	tmp_prefs.enable_default_dictionary = src->prefs->enable_default_dictionary;
+	tmp_prefs.default_dictionary = g_strdup(src->prefs->default_dictionary);
+	tmp_prefs.enable_default_alt_dictionary = src->prefs->enable_default_alt_dictionary;
+	tmp_prefs.default_alt_dictionary = g_strdup(src->prefs->default_alt_dictionary);
 #endif
-	tmp_prefs.always_sign    	= src->prefs->always_sign;
-	tmp_prefs.always_encrypt    = src->prefs->always_encrypt;
-	tmp_prefs.save_copy_to_folder		= src->prefs->save_copy_to_folder;
-	tmp_prefs.color				= src->prefs->color;
+	tmp_prefs.always_sign = src->prefs->always_sign;
+	tmp_prefs.always_encrypt = src->prefs->always_encrypt;
+	tmp_prefs.save_copy_to_folder = src->prefs->save_copy_to_folder;
+	tmp_prefs.color = src->prefs->color;
 
 	tmp_prefs.compose_with_format = src->prefs->compose_with_format;
 	tmp_prefs.compose_subject_format = g_strdup(src->prefs->compose_subject_format);
@@ -353,11 +350,15 @@ void folder_item_prefs_copy_prefs(FolderItem * src, FolderItem * dest)
 
 	dest->collapsed = src->collapsed;
 	dest->thread_collapsed = src->thread_collapsed;
-	dest->threaded  = src->threaded;
-	dest->ret_rcpt  = src->ret_rcpt;
+	dest->threaded = src->threaded;
+	dest->ret_rcpt = src->ret_rcpt;
 	dest->hide_read_msgs = src->hide_read_msgs;
 	dest->hide_del_msgs = src->hide_del_msgs;
 	dest->hide_read_threads = src->hide_read_threads;
-	dest->sort_key  = src->sort_key;
+	dest->sort_key = src->sort_key;
 	dest->sort_type = src->sort_type;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

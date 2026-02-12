@@ -35,7 +35,7 @@ Feed *feed_new(gchar *url)
 
 	g_return_val_if_fail(url != NULL, NULL);
 
-	feed = g_malloc( sizeof(Feed) );
+	feed = g_malloc(sizeof(Feed));
 
 	feed->is_valid = TRUE;
 	feed->timeout = FEED_DEFAULT_TIMEOUT;
@@ -69,18 +69,18 @@ static void _free_auth(Feed *feed)
 		return;
 
 	if (feed->auth != NULL) {
-                if (feed->auth->username != NULL)
-                        g_free(feed->auth->username);
-                if (feed->auth->password != NULL)
-                        g_free(feed->auth->password);
-                g_free(feed->auth);
+		if (feed->auth->username != NULL)
+			g_free(feed->auth->username);
+		if (feed->auth->password != NULL)
+			g_free(feed->auth->password);
+		g_free(feed->auth);
 		feed->auth = NULL;
-        }
+	}
 }
 
 void feed_free(Feed *feed)
 {
-	if( feed == NULL )
+	if (feed == NULL)
 		return;	/* Return silently, without printing a glib error. */
 
 	g_free(feed->url);
@@ -95,7 +95,7 @@ void feed_free(Feed *feed)
 	g_free(feed->cookies_path);
 	g_free(feed->cacert_file);
 
-	if( feed->items != NULL ) {
+	if (feed->items != NULL) {
 		g_slist_foreach(feed->items, _free_items, NULL);
 		g_slist_free(feed->items);
 	}
@@ -106,10 +106,10 @@ void feed_free(Feed *feed)
 
 void feed_free_items(Feed *feed)
 {
-	if( feed == NULL )
+	if (feed == NULL)
 		return;
 
-	if( feed->items != NULL ) {
+	if (feed->items != NULL) {
 		g_slist_foreach(feed->items, _free_items, NULL);
 		g_slist_free(feed->items);
 		feed->items = NULL;
@@ -135,7 +135,7 @@ void feed_set_url(Feed *feed, gchar *url)
 	g_return_if_fail(feed != NULL);
 	g_return_if_fail(url != NULL);
 
-	if( feed->url != NULL ) {
+	if (feed->url != NULL) {
 		g_free(feed->url);
 		feed->url = NULL;
 	}
@@ -228,7 +228,7 @@ gint feed_n_items(Feed *feed)
 {
 	g_return_val_if_fail(feed != NULL, -1);
 
-	if( feed->items == NULL )	/* No items here. */
+	if (feed->items == NULL) /* No items here. */
 		return 0;
 
 	return g_slist_length(feed->items);
@@ -262,7 +262,7 @@ guint feed_update(Feed *feed, time_t last_update)
 	g_return_val_if_fail(eh != NULL, FEED_ERR_INIT);
 
 	/* Curl initialized, create parser context now. */
-	feed_ctx = g_malloc( sizeof(FeedParserCtx) );
+	feed_ctx = g_malloc(sizeof(FeedParserCtx));
 
 	feed_ctx->parser = XML_ParserCreate(NULL);
 	feed_ctx->depth = 0;
@@ -297,9 +297,8 @@ guint feed_update(Feed *feed, time_t last_update)
 
 	/* Use HTTP's If-Modified-Since feature, if application provided
 	 * the timestamp of last update. */
-	if( last_update != -1 ) {
-		curl_easy_setopt(eh, CURLOPT_TIMECONDITION,
-				CURL_TIMECOND_IFMODSINCE);
+	if (last_update != -1) {
+		curl_easy_setopt(eh, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 		curl_easy_setopt(eh, CURLOPT_TIMEVALUE, (long)last_update);
 	}
 
@@ -313,7 +312,7 @@ guint feed_update(Feed *feed, time_t last_update)
 	if (feed->cacert_file != NULL)
 		curl_easy_setopt(eh, CURLOPT_CAINFO, feed->cacert_file);
 
-	if(feed->cookies_path != NULL)
+	if (feed->cookies_path != NULL)
 		curl_easy_setopt(eh, CURLOPT_COOKIEFILE, feed->cookies_path);
 
 	if (feed->auth != NULL) {
@@ -322,10 +321,8 @@ guint feed_update(Feed *feed, time_t last_update)
 			break;
 		case FEED_AUTH_BASIC:
 			curl_easy_setopt(eh, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-			curl_easy_setopt(eh, CURLOPT_USERNAME,
-					 feed->auth->username);
-			curl_easy_setopt(eh, CURLOPT_PASSWORD,
-					 feed->auth->password);
+			curl_easy_setopt(eh, CURLOPT_USERNAME, feed->auth->username);
+			curl_easy_setopt(eh, CURLOPT_PASSWORD, feed->auth->password);
 			break;
 		default:
 			response_code = FEED_ERR_UNAUTH; /* unknown auth */
@@ -336,14 +333,14 @@ guint feed_update(Feed *feed, time_t last_update)
 	res = curl_easy_perform(eh);
 	XML_Parse(feed_ctx->parser, "", 0, TRUE);
 
-	if( res != CURLE_OK ) {
+	if (res != CURLE_OK) {
 		feed->fetcherr = g_strdup(curl_easy_strerror(res));
 		response_code = FEED_ERR_FETCH;
 	} else {
 		curl_easy_getinfo(eh, CURLINFO_RESPONSE_CODE, &response_code);
 	}
 
-cleanup:
+ cleanup:
 	curl_easy_cleanup(eh);
 
 	/* Cleanup, we should be done. */
@@ -407,7 +404,7 @@ void feed_set_cookies_path(Feed *feed, gchar *path)
 {
 	g_return_if_fail(feed != NULL);
 
-	if( feed->cookies_path != NULL ) {
+	if (feed->cookies_path != NULL) {
 		g_free(feed->cookies_path);
 		feed->cookies_path = NULL;
 	}
@@ -437,10 +434,14 @@ void feed_set_cacert_file(Feed *feed, const gchar *path)
 {
 	g_return_if_fail(feed != NULL);
 
-	if( feed->cacert_file != NULL ) {
+	if (feed->cacert_file != NULL) {
 		g_free(feed->cacert_file);
 		feed->cacert_file = NULL;
 	}
 
 	feed->cacert_file = (path != NULL ? g_strdup(path) : NULL);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -34,16 +34,16 @@
 #include "combobox.h"
 
 #if HAVE_LIBCOMPFACE
-#  include <compface.h>
+#include <compface.h>
 #endif
 
 #if HAVE_LIBCOMPFACE
-#define XPM_XFACE_HEIGHT	(HEIGHT + 3)  /* 3 = 1 header + 2 colors */
+#define XPM_XFACE_HEIGHT	(HEIGHT + 3) /* 3 = 1 header + 2 colors */
 #endif
 
 #if (HAVE_WCTYPE_H && HAVE_WCHAR_H)
-#  include <wchar.h>
-#  include <wctype.h>
+#include <wchar.h>
+#include <wctype.h>
 #endif
 
 #include "defs.h"
@@ -58,8 +58,7 @@
 #include "manage_window.h"
 #include "manual.h"
 
-gboolean gtkut_get_font_size(GtkWidget *widget,
-			     gint *width, gint *height)
+gboolean gtkut_get_font_size(GtkWidget *widget, gint *width, gint *height)
 {
 	PangoLayout *layout;
 	const gchar *str = "Abcdef";
@@ -102,9 +101,9 @@ void gtkut_convert_int_to_gdk_color(gint rgbvalue, GdkColor *color)
 	cm_return_if_fail(color != NULL);
 
 	color->pixel = 0L;
-	color->red   = (int) (((gdouble)((rgbvalue & 0xff0000) >> 16) / 255.0) * 65535.0);
-	color->green = (int) (((gdouble)((rgbvalue & 0x00ff00) >>  8) / 255.0) * 65535.0);
-	color->blue  = (int) (((gdouble) (rgbvalue & 0x0000ff)        / 255.0) * 65535.0);
+	color->red = (int)(((gdouble)((rgbvalue & 0xff0000) >> 16) / 255.0) * 65535.0);
+	color->green = (int)(((gdouble)((rgbvalue & 0x00ff00) >> 8) / 255.0) * 65535.0);
+	color->blue = (int)(((gdouble)(rgbvalue & 0x0000ff) / 255.0) * 65535.0);
 }
 
 #define CL(x)	(((gulong) (x) >> (gulong) 8) & 0xFFUL)
@@ -125,33 +124,23 @@ void gtkut_stock_button_add_help(GtkWidget *bbox, GtkWidget **help_btn)
 	*help_btn = gtk_button_new_from_stock(GTK_STOCK_HELP);
 
 	gtk_widget_set_can_default(*help_btn, TRUE);
-	gtk_box_pack_end(GTK_BOX (bbox), *help_btn, TRUE, TRUE, 0);
-	gtk_button_box_set_child_secondary(GTK_BUTTON_BOX (bbox),
-			*help_btn, TRUE);
-	gtk_widget_set_sensitive(*help_btn,
-			manual_available(MANUAL_MANUAL_CLAWS));
+	gtk_box_pack_end(GTK_BOX(bbox), *help_btn, TRUE, TRUE, 0);
+	gtk_button_box_set_child_secondary(GTK_BUTTON_BOX(bbox), *help_btn, TRUE);
+	gtk_widget_set_sensitive(*help_btn, manual_available(MANUAL_MANUAL_CLAWS));
 	gtk_widget_show(*help_btn);
 }
 
-void gtkut_stock_button_set_create_with_help(GtkWidget **bbox,
-		GtkWidget **help_button,
-		GtkWidget **button1, const gchar *label1,
-		GtkWidget **button2, const gchar *label2,
-		GtkWidget **button3, const gchar *label3)
+void gtkut_stock_button_set_create_with_help(GtkWidget **bbox, GtkWidget **help_button, GtkWidget **button1, const gchar *label1, GtkWidget **button2, const gchar *label2, GtkWidget **button3, const gchar *label3)
 {
 	cm_return_if_fail(bbox != NULL);
 	cm_return_if_fail(button1 != NULL);
 
-	gtkut_stock_button_set_create(bbox, button1, label1,
-			button2, label2, button3, label3);
+	gtkut_stock_button_set_create(bbox, button1, label1, button2, label2, button3, label3);
 
 	gtkut_stock_button_add_help(*bbox, help_button);
 }
 
-void gtkut_stock_button_set_create(GtkWidget **bbox,
-				   GtkWidget **button1, const gchar *label1,
-				   GtkWidget **button2, const gchar *label2,
-				   GtkWidget **button3, const gchar *label3)
+void gtkut_stock_button_set_create(GtkWidget **bbox, GtkWidget **button1, const gchar *label1, GtkWidget **button2, const gchar *label2, GtkWidget **button3, const gchar *label3)
 {
 	cm_return_if_fail(bbox != NULL);
 	cm_return_if_fail(button1 != NULL);
@@ -180,10 +169,7 @@ void gtkut_stock_button_set_create(GtkWidget **bbox,
 	}
 }
 
-void gtkut_stock_with_text_button_set_create(GtkWidget **bbox,
-				   GtkWidget **button1, const gchar *label1, const gchar *text1,
-				   GtkWidget **button2, const gchar *label2, const gchar *text2,
-				   GtkWidget **button3, const gchar *label3, const gchar *text3)
+void gtkut_stock_with_text_button_set_create(GtkWidget **bbox, GtkWidget **button1, const gchar *label1, const gchar *text1, GtkWidget **button2, const gchar *label2, const gchar *text2, GtkWidget **button3, const gchar *label3, const gchar *text3)
 {
 	cm_return_if_fail(bbox != NULL);
 	cm_return_if_fail(button1 != NULL);
@@ -193,16 +179,14 @@ void gtkut_stock_with_text_button_set_create(GtkWidget **bbox,
 	gtk_box_set_spacing(GTK_BOX(*bbox), 5);
 
 	*button1 = gtk_button_new_with_mnemonic(text1);
-	gtk_button_set_image(GTK_BUTTON(*button1),
-		gtk_image_new_from_stock(label1, GTK_ICON_SIZE_BUTTON));
+	gtk_button_set_image(GTK_BUTTON(*button1), gtk_image_new_from_stock(label1, GTK_ICON_SIZE_BUTTON));
 	gtk_widget_set_can_default(*button1, TRUE);
 	gtk_box_pack_start(GTK_BOX(*bbox), *button1, TRUE, TRUE, 0);
 	gtk_widget_show(*button1);
 
 	if (button2) {
 		*button2 = gtk_button_new_with_mnemonic(text2);
-		gtk_button_set_image(GTK_BUTTON(*button2),
-			gtk_image_new_from_stock(label2, GTK_ICON_SIZE_BUTTON));
+		gtk_button_set_image(GTK_BUTTON(*button2), gtk_image_new_from_stock(label2, GTK_ICON_SIZE_BUTTON));
 		gtk_widget_set_can_default(*button2, TRUE);
 		gtk_box_pack_start(GTK_BOX(*bbox), *button2, TRUE, TRUE, 0);
 		gtk_widget_show(*button2);
@@ -210,8 +194,7 @@ void gtkut_stock_with_text_button_set_create(GtkWidget **bbox,
 
 	if (button3) {
 		*button3 = gtk_button_new_with_mnemonic(text3);
-		gtk_button_set_image(GTK_BUTTON(*button3),
-			gtk_image_new_from_stock(label3, GTK_ICON_SIZE_BUTTON));
+		gtk_button_set_image(GTK_BUTTON(*button3), gtk_image_new_from_stock(label3, GTK_ICON_SIZE_BUTTON));
 		gtk_widget_set_can_default(*button3, TRUE);
 		gtk_box_pack_start(GTK_BOX(*bbox), *button3, TRUE, TRUE, 0);
 		gtk_widget_show(*button3);
@@ -237,7 +220,8 @@ void gtkut_ctree_node_move_if_on_the_edge(GtkCMCTree *ctree, GtkCMCTreeNode *nod
 
 	row = (_row != -1 ? _row : g_list_position(clist->row_list, (GList *)node));
 
-	if (row < 0 || row >= clist->rows || clist->row_height == 0) return;
+	if (row < 0 || row >= clist->rows || clist->row_height == 0)
+		return;
 	row_visibility = gtk_cmclist_row_is_visible(clist, row);
 	prev_row_visibility = gtk_cmclist_row_is_visible(clist, row - 1);
 	next_row_visibility = gtk_cmclist_row_is_visible(clist, row + 1);
@@ -245,18 +229,15 @@ void gtkut_ctree_node_move_if_on_the_edge(GtkCMCTree *ctree, GtkCMCTreeNode *nod
 	if (row_visibility == GTK_VISIBILITY_NONE) {
 		row_align = 0.5;
 		if (gtk_cmclist_row_is_above_viewport(clist, row))
-			row_align = 0.2;
+			 row_align = 0.2;
 		else if (gtk_cmclist_row_is_below_viewport(clist, row))
-			row_align = 0.8;
+			 row_align = 0.8;
 		gtk_cmclist_moveto(clist, row, -1, row_align, 0);
 		return;
 	}
-	if (row_visibility == GTK_VISIBILITY_FULL &&
-	    prev_row_visibility == GTK_VISIBILITY_FULL &&
-	    next_row_visibility == GTK_VISIBILITY_FULL)
+	if (row_visibility == GTK_VISIBILITY_FULL && prev_row_visibility == GTK_VISIBILITY_FULL && next_row_visibility == GTK_VISIBILITY_FULL)
 		return;
-	if (prev_row_visibility != GTK_VISIBILITY_FULL &&
-	    next_row_visibility != GTK_VISIBILITY_FULL)
+	if (prev_row_visibility != GTK_VISIBILITY_FULL && next_row_visibility != GTK_VISIBILITY_FULL)
 		return;
 
 	if (prev_row_visibility != GTK_VISIBILITY_FULL) {
@@ -286,7 +267,8 @@ GtkCMCTreeNode *gtkut_ctree_node_next(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 {
 	GtkCMCTreeNode *parent;
 
-	if (!node) return NULL;
+	if (!node)
+		return NULL;
 
 	if (GTK_CMCTREE_ROW(node)->children)
 		return GTK_CMCTREE_ROW(node)->children;
@@ -294,8 +276,7 @@ GtkCMCTreeNode *gtkut_ctree_node_next(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 	if (GTK_CMCTREE_ROW(node)->sibling)
 		return GTK_CMCTREE_ROW(node)->sibling;
 
-	for (parent = GTK_CMCTREE_ROW(node)->parent; parent != NULL;
-	     parent = GTK_CMCTREE_ROW(parent)->parent) {
+	for (parent = GTK_CMCTREE_ROW(node)->parent; parent != NULL; parent = GTK_CMCTREE_ROW(parent)->parent) {
 		if (GTK_CMCTREE_ROW(parent)->sibling)
 			return GTK_CMCTREE_ROW(parent)->sibling;
 	}
@@ -309,7 +290,8 @@ GtkCMCTreeNode *gtkut_ctree_node_prev(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 	GtkCMCTreeNode *prev;
 	GtkCMCTreeNode *child;
 
-	if (!node) return NULL;
+	if (!node)
+		return NULL;
 
 	prev = GTK_CMCTREE_NODE_PREV(node);
 	if (prev == GTK_CMCTREE_ROW(node)->parent)
@@ -338,10 +320,10 @@ gboolean gtkut_ctree_node_is_selected(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 	return FALSE;
 }
 
-GtkCMCTreeNode *gtkut_ctree_find_collapsed_parent(GtkCMCTree *ctree,
-						GtkCMCTreeNode *node)
+GtkCMCTreeNode *gtkut_ctree_find_collapsed_parent(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 {
-	if (!node) return NULL;
+	if (!node)
+		return NULL;
 
 	while ((node = GTK_CMCTREE_ROW(node)->parent) != NULL) {
 		if (!GTK_CMCTREE_ROW(node)->expanded)
@@ -367,13 +349,13 @@ gboolean gtkut_ctree_node_is_parent(GtkCMCTreeNode *parent, GtkCMCTreeNode *node
 	cm_return_val_if_fail(node != NULL, FALSE);
 	cm_return_val_if_fail(parent != NULL, FALSE);
 	tmp = node;
-	
+
 	while (tmp) {
-		if(GTK_CMCTREE_ROW(tmp)->parent && GTK_CMCTREE_ROW(tmp)->parent == parent)
+		if (GTK_CMCTREE_ROW(tmp)->parent && GTK_CMCTREE_ROW(tmp)->parent == parent)
 			return TRUE;
 		tmp = GTK_CMCTREE_ROW(tmp)->parent;
 	}
-	
+
 	return FALSE;
 }
 
@@ -381,8 +363,7 @@ void gtkut_ctree_set_focus_row(GtkCMCTree *ctree, GtkCMCTreeNode *node)
 {
 	if (node == NULL)
 		return;
-	gtkut_clist_set_focus_row(GTK_CMCLIST(ctree),
-				  gtkut_ctree_get_nth_from_node(ctree, node));
+	gtkut_clist_set_focus_row(GTK_CMCLIST(ctree), gtkut_ctree_get_nth_from_node(ctree, node));
 }
 
 void gtkut_clist_set_focus_row(GtkCMCList *clist, gint row)
@@ -396,10 +377,7 @@ void gtkut_container_remove(GtkContainer *container, GtkWidget *widget)
 	gtk_container_remove(container, widget);
 }
 
-static gboolean gtkut_text_buffer_match_string(GtkTextBuffer *textbuf,
-					const GtkTextIter *iter,
-					gunichar *wcs, gint len,
-					gboolean case_sens)
+static gboolean gtkut_text_buffer_match_string(GtkTextBuffer *textbuf, const GtkTextIter *iter, gunichar *wcs, gint len, gboolean case_sens)
 {
 	GtkTextIter start_iter, end_iter;
 	gchar *utf8str, *p;
@@ -408,18 +386,16 @@ static gboolean gtkut_text_buffer_match_string(GtkTextBuffer *textbuf,
 	start_iter = end_iter = *iter;
 	gtk_text_iter_forward_chars(&end_iter, len);
 
-	utf8str = gtk_text_buffer_get_text(textbuf, &start_iter, &end_iter,
-					   FALSE);
-	if (!utf8str) return FALSE;
+	utf8str = gtk_text_buffer_get_text(textbuf, &start_iter, &end_iter, FALSE);
+	if (!utf8str)
+		return FALSE;
 
 	if ((gint)g_utf8_strlen(utf8str, -1) != len) {
 		g_free(utf8str);
 		return FALSE;
 	}
 
-	for (p = utf8str, match_count = 0;
-	     *p != '\0' && match_count < len;
-	     p = g_utf8_next_char(p), match_count++) {
+	for (p = utf8str, match_count = 0; *p != '\0' && match_count < len; p = g_utf8_next_char(p), match_count++) {
 		gunichar wc;
 
 		wc = g_utf8_get_char(p);
@@ -428,8 +404,7 @@ static gboolean gtkut_text_buffer_match_string(GtkTextBuffer *textbuf,
 			if (wc != wcs[match_count])
 				break;
 		} else {
-			if (g_unichar_tolower(wc) !=
-			    g_unichar_tolower(wcs[match_count]))
+			if (g_unichar_tolower(wc) != g_unichar_tolower(wcs[match_count]))
 				break;
 		}
 	}
@@ -442,9 +417,7 @@ static gboolean gtkut_text_buffer_match_string(GtkTextBuffer *textbuf,
 		return FALSE;
 }
 
-static gboolean gtkut_text_buffer_find(GtkTextBuffer *buffer, const GtkTextIter *iter,
-				const gchar *str, gboolean case_sens,
-				GtkTextIter *match_pos)
+static gboolean gtkut_text_buffer_find(GtkTextBuffer *buffer, const GtkTextIter *iter, const gchar *str, gboolean case_sens, GtkTextIter *match_pos)
 {
 	gunichar *wcs;
 	gint len;
@@ -455,17 +428,16 @@ static gboolean gtkut_text_buffer_find(GtkTextBuffer *buffer, const GtkTextIter 
 
 	wcs = g_utf8_to_ucs4(str, -1, &items_read, &items_written, &error);
 	if (error != NULL) {
-		g_warning("an error occurred while converting a string from UTF-8 to UCS-4: %s",
-			  error->message);
+		g_warning("an error occurred while converting a string from UTF-8 to UCS-4: %s", error->message);
 		g_error_free(error);
 	}
-	if (!wcs || items_written <= 0) return FALSE;
+	if (!wcs || items_written <= 0)
+		return FALSE;
 	len = (gint)items_written;
 
 	iter_ = *iter;
 	do {
-		found = gtkut_text_buffer_match_string
-			(buffer, &iter_, wcs, len, case_sens);
+		found = gtkut_text_buffer_match_string(buffer, &iter_, wcs, len, case_sens);
 		if (found) {
 			*match_pos = iter_;
 			break;
@@ -477,10 +449,7 @@ static gboolean gtkut_text_buffer_find(GtkTextBuffer *buffer, const GtkTextIter 
 	return found;
 }
 
-static gboolean gtkut_text_buffer_find_backward(GtkTextBuffer *buffer,
-					 const GtkTextIter *iter,
-					 const gchar *str, gboolean case_sens,
-					 GtkTextIter *match_pos)
+static gboolean gtkut_text_buffer_find_backward(GtkTextBuffer *buffer, const GtkTextIter *iter, const gchar *str, gboolean case_sens, GtkTextIter *match_pos)
 {
 	gunichar *wcs;
 	gint len;
@@ -491,17 +460,16 @@ static gboolean gtkut_text_buffer_find_backward(GtkTextBuffer *buffer,
 
 	wcs = g_utf8_to_ucs4(str, -1, &items_read, &items_written, &error);
 	if (error != NULL) {
-		g_warning("an error occurred while converting a string from UTF-8 to UCS-4: %s",
-			  error->message);
+		g_warning("an error occurred while converting a string from UTF-8 to UCS-4: %s", error->message);
 		g_error_free(error);
 	}
-	if (!wcs || items_written <= 0) return FALSE;
+	if (!wcs || items_written <= 0)
+		return FALSE;
 	len = (gint)items_written;
 
 	iter_ = *iter;
 	while (gtk_text_iter_backward_char(&iter_)) {
-		found = gtkut_text_buffer_match_string
-			(buffer, &iter_, wcs, len, case_sens);
+		found = gtkut_text_buffer_match_string(buffer, &iter_, wcs, len, case_sens);
 		if (found) {
 			*match_pos = iter_;
 			break;
@@ -522,16 +490,12 @@ gchar *gtkut_text_view_get_selection(GtkTextView *textview)
 	cm_return_val_if_fail(GTK_IS_TEXT_VIEW(textview), NULL);
 
 	buffer = gtk_text_view_get_buffer(textview);
-	found = gtk_text_buffer_get_selection_bounds(buffer,
-						     &start_iter,
-						     &end_iter);
+	found = gtk_text_buffer_get_selection_bounds(buffer, &start_iter, &end_iter);
 	if (found)
-		return gtk_text_buffer_get_text(buffer, &start_iter, &end_iter,
-						FALSE);
+		return gtk_text_buffer_get_text(buffer, &start_iter, &end_iter, FALSE);
 	else
 		return NULL;
 }
-
 
 void gtkut_text_view_set_position(GtkTextView *text, gint pos)
 {
@@ -549,8 +513,7 @@ void gtkut_text_view_set_position(GtkTextView *text, gint pos)
 	gtk_text_view_scroll_to_mark(text, mark, 0.0, FALSE, 0.0, 0.0);
 }
 
-gboolean gtkut_text_view_search_string(GtkTextView *text, const gchar *str,
-					gboolean case_sens)
+gboolean gtkut_text_view_search_string(GtkTextView *text, const gchar *str, gboolean case_sens)
 {
 	GtkTextBuffer *buffer;
 	GtkTextIter iter, match_pos;
@@ -568,8 +531,7 @@ gboolean gtkut_text_view_search_string(GtkTextView *text, const gchar *str,
 	mark = gtk_text_buffer_get_insert(buffer);
 	gtk_text_buffer_get_iter_at_mark(buffer, &iter, mark);
 
-	if (gtkut_text_buffer_find(buffer, &iter, str, case_sens,
-				   &match_pos)) {
+	if (gtkut_text_buffer_find(buffer, &iter, str, case_sens, &match_pos)) {
 		GtkTextIter end = match_pos;
 
 		gtk_text_iter_forward_chars(&end, len);
@@ -582,8 +544,7 @@ gboolean gtkut_text_view_search_string(GtkTextView *text, const gchar *str,
 	return FALSE;
 }
 
-gboolean gtkut_text_view_search_string_backward(GtkTextView *text, const gchar *str,
-					gboolean case_sens)
+gboolean gtkut_text_view_search_string_backward(GtkTextView *text, const gchar *str, gboolean case_sens)
 {
 	GtkTextBuffer *buffer;
 	GtkTextIter iter, match_pos;
@@ -601,8 +562,7 @@ gboolean gtkut_text_view_search_string_backward(GtkTextView *text, const gchar *
 	mark = gtk_text_buffer_get_insert(buffer);
 	gtk_text_buffer_get_iter_at_mark(buffer, &iter, mark);
 
-	if (gtkut_text_buffer_find_backward(buffer, &iter, str, case_sens,
-					    &match_pos)) {
+	if (gtkut_text_buffer_find_backward(buffer, &iter, str, case_sens, &match_pos)) {
 		GtkTextIter end = match_pos;
 
 		gtk_text_iter_forward_chars(&end, len);
@@ -628,8 +588,12 @@ void gtkut_window_popup(GtkWidget *window)
 	sy = MAX(1, gdk_screen_height());
 
 	gdk_window_get_origin(gdkwin, &x, &y);
-	new_x = x % sx; if (new_x < 0) new_x = 0;
-	new_y = y % sy; if (new_y < 0) new_y = 0;
+	new_x = x % sx;
+	if (new_x < 0)
+		new_x = 0;
+	new_y = y % sy;
+	if (new_y < 0)
+		new_y = 0;
 	if (new_x != x || new_y != y)
 		gdk_window_move(gdkwin, new_x, new_y);
 
@@ -654,8 +618,12 @@ void gtkut_widget_get_uposition(GtkWidget *widget, gint *px, gint *py)
 	/* gdk_window_get_root_origin ever return *rootwindow*'s position */
 	gdk_window_get_root_origin(gdkwin, &x, &y);
 
-	x %= sx; if (x < 0) x = 0;
-	y %= sy; if (y < 0) y = 0;
+	x %= sx;
+	if (x < 0)
+		x = 0;
+	y %= sy;
+	if (y < 0)
+		y = 0;
 	*px = x;
 	*py = y;
 }
@@ -670,17 +638,10 @@ static void gtkut_clist_bindings_add(GtkWidget *clist)
 {
 	GtkBindingSet *binding_set;
 
-	binding_set = gtk_binding_set_by_class
-		(GTK_CMCLIST_GET_CLASS(clist));
+	binding_set = gtk_binding_set_by_class(GTK_CMCLIST_GET_CLASS(clist));
 
-	gtk_binding_entry_add_signal(binding_set, GDK_KEY_n, GDK_CONTROL_MASK,
-				     "scroll_vertical", 2,
-				     G_TYPE_ENUM, GTK_SCROLL_STEP_FORWARD,
-				     G_TYPE_FLOAT, 0.0);
-	gtk_binding_entry_add_signal(binding_set, GDK_KEY_p, GDK_CONTROL_MASK,
-				     "scroll_vertical", 2,
-				     G_TYPE_ENUM, GTK_SCROLL_STEP_BACKWARD,
-				     G_TYPE_FLOAT, 0.0);
+	gtk_binding_entry_add_signal(binding_set, GDK_KEY_n, GDK_CONTROL_MASK, "scroll_vertical", 2, G_TYPE_ENUM, GTK_SCROLL_STEP_FORWARD, G_TYPE_FLOAT, 0.0);
+	gtk_binding_entry_add_signal(binding_set, GDK_KEY_p, GDK_CONTROL_MASK, "scroll_vertical", 2, G_TYPE_ENUM, GTK_SCROLL_STEP_BACKWARD, G_TYPE_FLOAT, 0.0);
 }
 
 void gtkut_widget_init(void)
@@ -689,19 +650,19 @@ void gtkut_widget_init(void)
 
 	clist = gtk_cmclist_new(1);
 	g_object_ref(G_OBJECT(clist));
-	g_object_ref_sink (G_OBJECT(clist));
+	g_object_ref_sink(G_OBJECT(clist));
 	gtkut_clist_bindings_add(clist);
 	g_object_unref(G_OBJECT(clist));
 
 	clist = gtk_cmctree_new(1, 0);
 	g_object_ref(G_OBJECT(clist));
-	g_object_ref_sink (G_OBJECT(clist));
+	g_object_ref_sink(G_OBJECT(clist));
 	gtkut_clist_bindings_add(clist);
 	g_object_unref(G_OBJECT(clist));
 
 	clist = gtk_sctree_new_with_titles(1, 0, NULL);
 	g_object_ref(G_OBJECT(clist));
-	g_object_ref_sink (G_OBJECT(clist));
+	g_object_ref_sink(G_OBJECT(clist));
 	gtkut_clist_bindings_add(clist);
 	g_object_unref(G_OBJECT(clist));
 }
@@ -778,7 +739,7 @@ GtkWidget *label_window_create(const gchar *str)
 	manage_window_set_transient(GTK_WINDOW(window));
 
 	label = gtk_label_new(str);
-	
+
 	vbox = gtk_vbox_new(FALSE, 6);
 	hbox = gtk_hbox_new(FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, FALSE, 0);
@@ -786,14 +747,14 @@ GtkWidget *label_window_create(const gchar *str)
 	hbox = gtk_hbox_new(FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(hbox), wait_progress, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-	
+
 	gtk_container_add(GTK_CONTAINER(window), vbox);
 	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 	gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
 	gtk_widget_show_all(vbox);
 
 	gtk_widget_show_now(window);
-	
+
 	if (move_bar_id == 0) {
 		move_bar_id = g_timeout_add(200, move_bar_cb, wait_progress);
 		move_bar = TRUE;
@@ -810,12 +771,10 @@ void label_window_destroy(GtkWidget *window)
 	g_source_remove(move_bar_id);
 	move_bar_id = 0;
 	GTK_EVENTS_FLUSH();
-	gtk_widget_destroy(window);	
+	gtk_widget_destroy(window);
 }
 
-GtkWidget *gtkut_account_menu_new(GList			*ac_list,
-					GCallback		callback,
-				  gpointer		data)
+GtkWidget *gtkut_account_menu_new(GList *ac_list, GCallback callback, gpointer data)
 {
 	GList *cur_ac;
 	GtkWidget *optmenu;
@@ -823,29 +782,24 @@ GtkWidget *gtkut_account_menu_new(GList			*ac_list,
 	GtkTreeIter iter;
 	PrefsAccount *account;
 	gchar *name;
-	
+
 	cm_return_val_if_fail(ac_list != NULL, NULL);
 
 	optmenu = gtkut_sc_combobox_create(NULL, FALSE);
 	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(optmenu)));
 
 	for (cur_ac = ac_list; cur_ac != NULL; cur_ac = cur_ac->next) {
-		account = (PrefsAccount *) cur_ac->data;
+		account = (PrefsAccount *)cur_ac->data;
 		if (account->name)
-			name = g_strdup_printf("%s: %s <%s>",
-					       account->account_name,
-					       account->name,
-					       account->address);
+			name = g_strdup_printf("%s: %s <%s>", account->account_name, account->name, account->address);
 		else
-			name = g_strdup_printf("%s: %s",
-					       account->account_name,
-					       account->address);
+			name = g_strdup_printf("%s: %s", account->account_name, account->address);
 		COMBOBOX_ADD_ESCAPED(menu, name, account->account_id);
 		g_free(name);
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(optmenu), 0);
 
-	if( callback != NULL )
+	if (callback != NULL)
 		g_signal_connect(G_OBJECT(optmenu), "changed", callback, data);
 
 	return optmenu;
@@ -858,13 +812,13 @@ void gtkut_set_widget_bgcolor_rgb(GtkWidget *widget, guint rgbvalue)
 
 	gtkut_convert_int_to_gdk_color(rgbvalue, &gdk_color);
 	newstyle = gtk_style_copy(gtk_widget_get_default_style());
-	newstyle->bg[GTK_STATE_NORMAL]   = gdk_color;
+	newstyle->bg[GTK_STATE_NORMAL] = gdk_color;
 	newstyle->bg[GTK_STATE_PRELIGHT] = gdk_color;
-	newstyle->bg[GTK_STATE_ACTIVE]   = gdk_color;
+	newstyle->bg[GTK_STATE_ACTIVE] = gdk_color;
 	gtk_widget_set_style(widget, newstyle);
 	g_object_unref(newstyle);
 }
-  
+
 /*!
  *\brief	Tries to find a focused child using a lame strategy
  */
@@ -889,30 +843,29 @@ GtkWidget *gtkut_get_focused_child(GtkContainer *parent)
 			}
 		}
 	}
-	
+
 	/* See if the returned widget is a container itself; if it is,
 	 * see if one of its children is focused. If the focused 
 	 * container has no focused child, it is itself a focusable 
 	 * child, and has focus. */
 	if (result && GTK_IS_CONTAINER(result)) {
-		GtkWidget *tmp =  gtkut_get_focused_child(GTK_CONTAINER(result)); 
-		
-		if (tmp) 
+		GtkWidget *tmp = gtkut_get_focused_child(GTK_CONTAINER(result));
+
+		if (tmp)
 			result = tmp;
 	} else {
 		/* Try the same for each container in the chain */
 		for (c = child_list; c != NULL && !result; c = g_list_next(c)) {
-			if (c->data && GTK_IS_WIDGET(c->data) 
-			&&  GTK_IS_CONTAINER(c->data)) {
-				result = gtkut_get_focused_child
-					(GTK_CONTAINER(c->data));
+			if (c->data && GTK_IS_WIDGET(c->data)
+			    && GTK_IS_CONTAINER(c->data)) {
+				result = gtkut_get_focused_child(GTK_CONTAINER(c->data));
 			}
 		}
-	
+
 	}
-	
+
 	g_list_free(child_list);
-		
+
 	return result;
 }
 
@@ -924,8 +877,7 @@ GtkWidget *gtkut_get_browse_file_btn(const gchar *button_label)
 	GtkWidget *button;
 
 	button = gtk_button_new_with_mnemonic(button_label);
-	gtk_button_set_image(GTK_BUTTON(button),
-		gtk_image_new_from_stock(GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_BUTTON));
+	gtk_button_set_image(GTK_BUTTON(button), gtk_image_new_from_stock(GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_BUTTON));
 
 	return button;
 }
@@ -938,8 +890,7 @@ GtkWidget *gtkut_get_browse_directory_btn(const gchar *button_label)
 	GtkWidget *button;
 
 	button = gtk_button_new_with_mnemonic(button_label);
-	gtk_button_set_image(GTK_BUTTON(button),
-		gtk_image_new_from_stock(GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_BUTTON));
+	gtk_button_set_image(GTK_BUTTON(button), gtk_image_new_from_stock(GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_BUTTON));
 
 	return button;
 }
@@ -949,8 +900,7 @@ GtkWidget *gtkut_get_replace_btn(const gchar *button_label)
 	GtkWidget *button;
 
 	button = gtk_button_new_with_mnemonic(button_label);
-	gtk_button_set_image(GTK_BUTTON(button),
-		gtk_image_new_from_stock(GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON));
+	gtk_button_set_image(GTK_BUTTON(button), gtk_image_new_from_stock(GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON));
 
 	return button;
 }
@@ -963,8 +913,7 @@ GtkWidget *gtkut_get_replace_btn(const gchar *button_label)
  *	is assigned but the frame is anyway created and added to @box.
  * \param frame_label frame label of new created frame.
  */
-GtkWidget *gtkut_get_options_frame(GtkWidget *box, GtkWidget **pframe,
-		const gchar *frame_label)
+GtkWidget *gtkut_get_options_frame(GtkWidget *box, GtkWidget **pframe, const gchar *frame_label)
 {
 	GtkWidget *vbox;
 	GtkWidget *frame;
@@ -974,10 +923,10 @@ GtkWidget *gtkut_get_options_frame(GtkWidget *box, GtkWidget **pframe,
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 	gtk_frame_set_label_align(GTK_FRAME(frame), 0.01, 0.5);
 
-	vbox = gtk_vbox_new (FALSE, 4);
+	vbox = gtk_vbox_new(FALSE, 4);
 	gtk_widget_show(vbox);
-	gtk_container_add(GTK_CONTAINER (frame), vbox);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
+	gtk_container_add(GTK_CONTAINER(frame), vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
 
 	if (pframe != NULL)
 		*pframe = frame;
@@ -1008,12 +957,12 @@ static gint create_xpm_from_xface(gchar *xpm[], const gchar *xface)
 	};
 
 	static gchar *xface_header = "48 48 2 1";
-	static gchar *xface_black  = "# c #000000";
-	static gchar *xface_white  = ". c #ffffff";
+	static gchar *xface_black = "# c #000000";
+	static gchar *xface_white = ". c #ffffff";
 
 	gint i, line = 0;
 	const guchar *p;
-	gchar buf[WIDTH * 4 + 1];  /* 4 = strlen("0x0000") */
+	gchar buf[WIDTH * 4 + 1]; /* 4 = strlen("0x0000") */
 
 	p = xface;
 
@@ -1025,11 +974,11 @@ static gint create_xpm_from_xface(gchar *xpm[], const gchar *xface)
 		gint col;
 
 		buf[0] = '\0';
-     
+
 		for (col = 0; col < 3; col++) {
 			gint figure;
 
-			p += 2;  /* skip '0x' */
+			p += 2;	/* skip '0x' */
 
 			for (figure = 0; figure < 4; figure++) {
 				gint n = 0;
@@ -1043,10 +992,10 @@ static gint create_xpm_from_xface(gchar *xpm[], const gchar *xface)
 				}
 
 				strcat(buf, bit_pattern[n]);
-				p++;  /* skip ',' */
+				p++; /* skip ',' */
 			}
 
-			p++;  /* skip '\n' */
+			p++; /* skip '\n' */
 		}
 
 		strcpy(xpm[line++], buf);
@@ -1057,10 +1006,7 @@ static gint create_xpm_from_xface(gchar *xpm[], const gchar *xface)
 }
 #endif
 
-gboolean get_tag_range(GtkTextIter *iter,
-				       GtkTextTag *tag,
-				       GtkTextIter *start_iter,
-				       GtkTextIter *end_iter)
+gboolean get_tag_range(GtkTextIter *iter, GtkTextTag *tag, GtkTextIter *start_iter, GtkTextIter *end_iter)
 {
 	GtkTextIter _start_iter, _end_iter;
 
@@ -1090,10 +1036,10 @@ GtkWidget *xface_get_from_header(const gchar *o_xface)
 	GdkPixbuf *pixbuf;
 	GtkWidget *ret;
 	gchar xface[2048];
-	
+
 	if (o_xface == NULL)
 		return NULL;
-	
+
 	strncpy(xface, o_xface, sizeof(xface) - 1);
 	xface[sizeof(xface) - 1] = '\0';
 
@@ -1129,9 +1075,9 @@ GtkWidget *face_get_from_header(const gchar *o_face)
 	gsize pngsize;
 	GdkPixbuf *pixbuf;
 	GError *error = NULL;
-	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+	GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
 	GtkWidget *image;
-	
+
 	if (o_face == NULL || strlen(o_face) == 0)
 		return NULL;
 
@@ -1143,8 +1089,7 @@ GtkWidget *face_get_from_header(const gchar *o_face)
 	face_png = g_base64_decode(face, &pngsize);
 	debug_print("---------------------- loaded face png\n");
 
-	if (!gdk_pixbuf_loader_write (loader, face_png, pngsize, &error) ||
-	    !gdk_pixbuf_loader_close (loader, &error)) {
+	if (!gdk_pixbuf_loader_write(loader, face_png, pngsize, &error) || !gdk_pixbuf_loader_close(loader, &error)) {
 		g_warning("loading face failed");
 		g_object_unref(loader);
 		g_free(face_png);
@@ -1183,7 +1128,7 @@ static void link_btn_enter(GtkButton *button, gpointer data)
 
 	gtk_button_set_relief(button, GTK_RELIEF_NONE);
 	gtk_widget_set_state(GTK_WIDGET(button), GTK_STATE_NORMAL);
-	
+
 }
 
 static void link_btn_leave(GtkButton *button, gpointer data)
@@ -1223,8 +1168,7 @@ static void link_btn_clicked(GtkButton *button, gpointer data)
 static void link_btn_unrealize(GtkButton *button, gpointer data)
 {
 	gchar *url = (gchar *)data;
-	g_signal_handlers_disconnect_by_func(G_OBJECT(button), 
-			 G_CALLBACK(link_btn_clicked), url);
+	g_signal_handlers_disconnect_by_func(G_OBJECT(button), G_CALLBACK(link_btn_clicked), url);
 	g_free(url);
 }
 
@@ -1234,17 +1178,15 @@ GtkWidget *gtkut_get_link_btn(GtkWidget *window, const gchar *url, const gchar *
 	GtkWidget *btn_label;
 	GdkColormap *cmap;
 	gboolean success[2];
-	GdkColor uri_color[2] = {{0, 0, 0, 0xffff}, {0, 0xffff, 0, 0}};
+	GdkColor uri_color[2] = { {0, 0, 0, 0xffff}, {0, 0xffff, 0, 0} };
 	gchar *local_url = NULL;
 	if (!url)
 		return NULL;
 
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_URI],
-					       &uri_color[0]);
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_URI],
-					       &uri_color[1]);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_URI], &uri_color[0]);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_URI], &uri_color[1]);
 
-	btn = gtk_button_new_with_label(label?label:url);
+	btn = gtk_button_new_with_label(label ? label : url);
 	gtk_button_set_relief(GTK_BUTTON(btn), GTK_RELIEF_NONE);
 	btn_label = gtk_bin_get_child(GTK_BIN((btn)));
 	cmap = gdk_drawable_get_colormap(gtk_widget_get_window(window));
@@ -1252,35 +1194,27 @@ GtkWidget *gtkut_get_link_btn(GtkWidget *window, const gchar *url, const gchar *
 	if (success[0] == TRUE && success[1] == TRUE) {
 		GtkStyle *style;
 		gtk_widget_ensure_style(btn_label);
-		style = gtk_style_copy
-			(gtk_widget_get_style(btn_label));
-		style->fg[GTK_STATE_NORMAL]   = uri_color[0];
-		style->fg[GTK_STATE_ACTIVE]   = uri_color[1];
+		style = gtk_style_copy(gtk_widget_get_style(btn_label));
+		style->fg[GTK_STATE_NORMAL] = uri_color[0];
+		style->fg[GTK_STATE_ACTIVE] = uri_color[1];
 		style->fg[GTK_STATE_PRELIGHT] = uri_color[0];
 		gtk_widget_set_style(btn_label, style);
 		g_object_unref(style);
 	} else
 		g_warning("color allocation failed");
 
-	g_signal_connect(G_OBJECT(btn), "enter",
-			 G_CALLBACK(link_btn_enter), window);
-	g_signal_connect(G_OBJECT(btn), "leave",
-			 G_CALLBACK(link_btn_leave), window);
-	g_signal_connect(G_OBJECT(btn), "pressed",
-			 G_CALLBACK(link_btn_pressed), window);
-	g_signal_connect(G_OBJECT(btn), "released",
-			 G_CALLBACK(link_btn_released), window);
-			 
+	g_signal_connect(G_OBJECT(btn), "enter", G_CALLBACK(link_btn_enter), window);
+	g_signal_connect(G_OBJECT(btn), "leave", G_CALLBACK(link_btn_leave), window);
+	g_signal_connect(G_OBJECT(btn), "pressed", G_CALLBACK(link_btn_pressed), window);
+	g_signal_connect(G_OBJECT(btn), "released", G_CALLBACK(link_btn_released), window);
+
 	local_url = g_strdup(url);
-	g_signal_connect(G_OBJECT(btn), "clicked",
-			 G_CALLBACK(link_btn_clicked), local_url);
-	g_signal_connect(G_OBJECT(btn), "unrealize",
-			 G_CALLBACK(link_btn_unrealize), local_url);
+	g_signal_connect(G_OBJECT(btn), "clicked", G_CALLBACK(link_btn_clicked), local_url);
+	g_signal_connect(G_OBJECT(btn), "unrealize", G_CALLBACK(link_btn_unrealize), local_url);
 	return btn;
 }
 
-static gboolean _combobox_separator_func(GtkTreeModel *model,
-		GtkTreeIter *iter, gpointer data)
+static gboolean _combobox_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	gchar *txt = NULL;
 
@@ -1288,9 +1222,9 @@ static gboolean _combobox_separator_func(GtkTreeModel *model,
 
 	gtk_tree_model_get(model, iter, COMBOBOX_TEXT, &txt, -1);
 
-	if( txt == NULL )
+	if (txt == NULL)
 		return TRUE;
-	
+
 	g_free(txt);
 	return FALSE;
 }
@@ -1307,24 +1241,18 @@ GtkWidget *gtkut_sc_combobox_create(GtkWidget *eventbox, gboolean focus_on_click
 
 	rend = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combobox), rend, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combobox), rend,
-			"markup", COMBOBOX_TEXT,
-			"sensitive", COMBOBOX_SENS,
-			NULL);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combobox), rend, "markup", COMBOBOX_TEXT, "sensitive", COMBOBOX_SENS, NULL);
 
-	if( eventbox != NULL )
+	if (eventbox != NULL)
 		gtk_container_add(GTK_CONTAINER(eventbox), combobox);
 	gtk_combo_box_set_focus_on_click(GTK_COMBO_BOX(combobox), focus_on_click);
 
-	gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(combobox),
-			(GtkTreeViewRowSeparatorFunc)_combobox_separator_func, NULL, NULL);
+	gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(combobox), (GtkTreeViewRowSeparatorFunc) _combobox_separator_func, NULL, NULL);
 
 	return combobox;
 }
 
-static void gtkutils_smooth_scroll_do(GtkWidget *widget, GtkAdjustment *vadj,
-				      gfloat old_value, gfloat last_value,
-				      gint step)
+static void gtkutils_smooth_scroll_do(GtkWidget *widget, GtkAdjustment *vadj, gfloat old_value, gfloat last_value, gint step)
 {
 	gint change_value;
 	gboolean up;
@@ -1340,8 +1268,7 @@ static void gtkutils_smooth_scroll_do(GtkWidget *widget, GtkAdjustment *vadj,
 
 	for (i = step; i <= change_value; i += step) {
 		gtk_adjustment_set_value(vadj, old_value + (up ? -i : i));
-		g_signal_emit_by_name(G_OBJECT(vadj),
-				      "value_changed", 0);
+		g_signal_emit_by_name(G_OBJECT(vadj), "value_changed", 0);
 	}
 
 	gtk_adjustment_set_value(vadj, last_value);
@@ -1368,9 +1295,7 @@ static gboolean gtkutils_smooth_scroll_page(GtkWidget *widget, GtkAdjustment *va
 			last_value = old_value + page_incr;
 			last_value = MIN(last_value, upper);
 
-			gtkutils_smooth_scroll_do(widget, vadj, old_value,
-						  last_value,
-						  prefs_common.scroll_step);
+			gtkutils_smooth_scroll_do(widget, vadj, old_value, last_value, prefs_common.scroll_step);
 		} else
 			return FALSE;
 	} else {
@@ -1378,9 +1303,7 @@ static gboolean gtkutils_smooth_scroll_page(GtkWidget *widget, GtkAdjustment *va
 			last_value = old_value - page_incr;
 			last_value = MAX(last_value, 0.0);
 
-			gtkutils_smooth_scroll_do(widget, vadj, old_value,
-						  last_value,
-						  prefs_common.scroll_step);
+			gtkutils_smooth_scroll_do(widget, vadj, old_value, last_value, prefs_common.scroll_step);
 		} else
 			return FALSE;
 	}
@@ -1408,8 +1331,7 @@ gboolean gtkutils_scroll_page(GtkWidget *widget, GtkAdjustment *vadj, gboolean u
 			old_value += page_incr;
 			old_value = MIN(old_value, upper);
 			gtk_adjustment_set_value(vadj, old_value);
-			g_signal_emit_by_name(G_OBJECT(vadj),
-					      "value_changed", 0);
+			g_signal_emit_by_name(G_OBJECT(vadj), "value_changed", 0);
 		} else
 			return FALSE;
 	} else {
@@ -1417,8 +1339,7 @@ gboolean gtkutils_scroll_page(GtkWidget *widget, GtkAdjustment *vadj, gboolean u
 			old_value -= page_incr;
 			old_value = MAX(old_value, 0.0);
 			gtk_adjustment_set_value(vadj, old_value);
-			g_signal_emit_by_name(G_OBJECT(vadj),
-					      "value_changed", 0);
+			g_signal_emit_by_name(G_OBJECT(vadj), "value_changed", 0);
 		} else
 			return FALSE;
 	}
@@ -1438,18 +1359,14 @@ static void gtkutils_smooth_scroll_one_line(GtkWidget *widget, GtkAdjustment *va
 			last_value = old_value + gtk_adjustment_get_step_increment(vadj);
 			last_value = MIN(last_value, upper);
 
-			gtkutils_smooth_scroll_do(widget, vadj, old_value,
-						  last_value,
-						  prefs_common.scroll_step);
+			gtkutils_smooth_scroll_do(widget, vadj, old_value, last_value, prefs_common.scroll_step);
 		}
 	} else {
 		if (old_value > 0.0) {
 			last_value = old_value - gtk_adjustment_get_step_increment(vadj);
 			last_value = MAX(last_value, 0.0);
 
-			gtkutils_smooth_scroll_do(widget, vadj, old_value,
-						  last_value,
-						  prefs_common.scroll_step);
+			gtkutils_smooth_scroll_do(widget, vadj, old_value, last_value, prefs_common.scroll_step);
 		}
 	}
 }
@@ -1471,23 +1388,19 @@ void gtkutils_scroll_one_line(GtkWidget *widget, GtkAdjustment *vadj, gboolean u
 			old_value += gtk_adjustment_get_step_increment(vadj);
 			old_value = MIN(old_value, upper);
 			gtk_adjustment_set_value(vadj, old_value);
-			g_signal_emit_by_name(G_OBJECT(vadj),
-					      "value_changed", 0);
+			g_signal_emit_by_name(G_OBJECT(vadj), "value_changed", 0);
 		}
 	} else {
 		if (old_value > 0.0) {
 			old_value -= gtk_adjustment_get_step_increment(vadj);
 			old_value = MAX(old_value, 0.0);
 			gtk_adjustment_set_value(vadj, old_value);
-			g_signal_emit_by_name(G_OBJECT(vadj),
-					      "value_changed", 0);
+			g_signal_emit_by_name(G_OBJECT(vadj), "value_changed", 0);
 		}
 	}
 }
 
-gboolean gtkut_tree_model_text_iter_prev(GtkTreeModel *model,
-				 GtkTreeIter *iter,
-				 const gchar* text)
+gboolean gtkut_tree_model_text_iter_prev(GtkTreeModel *model, GtkTreeIter *iter, const gchar *text)
 /* do the same as gtk_tree_model_iter_next, but _prev instead.
    to use with widgets with one text column (gtk_combo_box_text_new()
    and with GtkComboBoxEntry's for instance),
@@ -1521,11 +1434,10 @@ gboolean gtkut_tree_model_text_iter_prev(GtkTreeModel *model,
 		valid = gtk_tree_model_iter_next(model, &cur_iter);
 		count++;
 	}
-	return FALSE;		
+	return FALSE;
 }
 
-gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model,
-				 GtkTreeIter *iter)
+gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model, GtkTreeIter *iter)
 /* do the same as gtk_tree_model_get_iter_first, but _last instead.
 */
 {
@@ -1542,17 +1454,14 @@ gboolean gtkut_tree_model_get_iter_last(GtkTreeModel *model,
 	return gtk_tree_model_iter_nth_child(model, iter, NULL, count - 1);
 }
 
-GtkWidget *gtkut_window_new		(GtkWindowType	 type,
-					 const gchar	*class)
+GtkWidget *gtkut_window_new(GtkWindowType type, const gchar *class)
 {
 	GtkWidget *window = gtk_window_new(type);
 	gtk_window_set_role(GTK_WINDOW(window), class);
 	return window;
 }
 
-static gboolean gtkut_tree_iter_comp(GtkTreeModel *model, 
-				     GtkTreeIter *iter1, 
-				     GtkTreeIter *iter2)
+static gboolean gtkut_tree_iter_comp(GtkTreeModel *model, GtkTreeIter *iter1, GtkTreeIter *iter2)
 {
 	GtkTreePath *path1 = gtk_tree_model_get_path(model, iter1);
 	GtkTreePath *path2 = gtk_tree_model_get_path(model, iter2);
@@ -1562,7 +1471,7 @@ static gboolean gtkut_tree_iter_comp(GtkTreeModel *model,
 
 	gtk_tree_path_free(path1);
 	gtk_tree_path_free(path2);
-	
+
 	return result;
 }
 
@@ -1578,22 +1487,22 @@ gint gtkut_list_view_get_selected_row(GtkWidget *list_view)
 	GtkTreeIter iter;
 	int row;
 
-	if (n_rows == 0) 
+	if (n_rows == 0)
 		return -1;
-	
+
 	selection = gtk_tree_view_get_selection(view);
 	if (!gtk_tree_selection_get_selected(selection, &model, &iter))
 		return -1;
-	
+
 	/* get all iterators and compare them... */
 	for (row = 0; row < n_rows; row++) {
 		GtkTreeIter itern;
 
 		if (gtk_tree_model_iter_nth_child(model, &itern, NULL, row)
-		 && gtkut_tree_iter_comp(model, &iter, &itern))
+		    && gtkut_tree_iter_comp(model, &iter, &itern))
 			return row;
 	}
-	
+
 	return -1;
 }
 
@@ -1610,13 +1519,13 @@ gboolean gtkut_list_view_select_row(GtkWidget *list, gint row)
 
 	if (!gtk_tree_model_iter_nth_child(model, &iter, NULL, row))
 		return FALSE;
-	
+
 	gtk_tree_selection_select_iter(selection, &iter);
 
 	path = gtk_tree_model_get_path(model, &iter);
 	gtk_tree_view_set_cursor(list_view, path, NULL, FALSE);
 	gtk_tree_path_free(path);
-	
+
 	return TRUE;
 }
 
@@ -1635,73 +1544,61 @@ GtkUIManager *gtkut_ui_manager(void)
 
 typedef struct _ClawsIOClosure ClawsIOClosure;
 
-struct _ClawsIOClosure
-{
-  ClawsIOFunc function;
-  GIOCondition condition;
-  GDestroyNotify notify;
-  gpointer data;
+struct _ClawsIOClosure {
+	ClawsIOFunc function;
+	GIOCondition condition;
+	GDestroyNotify notify;
+	gpointer data;
 };
 
-static gboolean  
-claws_io_invoke (GIOChannel   *source,
-	         GIOCondition  condition,
-	         gpointer      data)
+static gboolean claws_io_invoke(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-  ClawsIOClosure *closure = data;
-  int fd;
+	ClawsIOClosure *closure = data;
+	int fd;
 #ifndef G_OS_WIN32
-  fd = g_io_channel_unix_get_fd (source);
+	fd = g_io_channel_unix_get_fd(source);
 #else
-  fd = g_io_channel_win32_get_fd (source);
+	fd = g_io_channel_win32_get_fd(source);
 #endif
-  if (closure->condition & condition)
-    closure->function (closure->data, fd, condition);
+	if (closure->condition & condition)
+		closure->function(closure->data, fd, condition);
 
-  return TRUE;
+	return TRUE;
 }
 
-static void
-claws_io_destroy (gpointer data)
+static void claws_io_destroy(gpointer data)
 {
-  ClawsIOClosure *closure = data;
+	ClawsIOClosure *closure = data;
 
-  if (closure->notify)
-    closure->notify (closure->data);
+	if (closure->notify)
+		closure->notify(closure->data);
 
-  g_free (closure);
+	g_free(closure);
 }
 
-gint
-claws_input_add    (gint	      source,
-		    GIOCondition      condition,
-		    ClawsIOFunc       function,
-		    gpointer	      data,
-		    gboolean	      is_sock)
+gint claws_input_add(gint source, GIOCondition condition, ClawsIOFunc function, gpointer data, gboolean is_sock)
 {
-  guint result;
-  ClawsIOClosure *closure = g_new (ClawsIOClosure, 1);
-  GIOChannel *channel;
+	guint result;
+	ClawsIOClosure *closure = g_new(ClawsIOClosure, 1);
+	GIOChannel *channel;
 
-  closure->function = function;
-  closure->condition = condition;
-  closure->notify = NULL;
-  closure->data = data;
+	closure->function = function;
+	closure->condition = condition;
+	closure->notify = NULL;
+	closure->data = data;
 
 #ifndef G_OS_WIN32
-  channel = g_io_channel_unix_new (source);
+	channel = g_io_channel_unix_new(source);
 #else
-  if (is_sock)
-    channel = g_io_channel_win32_new_socket(source);
-  else
-    channel = g_io_channel_win32_new_fd(source);
+	if (is_sock)
+		channel = g_io_channel_win32_new_socket(source);
+	else
+		channel = g_io_channel_win32_new_fd(source);
 #endif
-  result = g_io_add_watch_full (channel, G_PRIORITY_DEFAULT, condition, 
-				claws_io_invoke,
-				closure, claws_io_destroy);
-  g_io_channel_unref (channel);
+	result = g_io_add_watch_full(channel, G_PRIORITY_DEFAULT, condition, claws_io_invoke, closure, claws_io_destroy);
+	g_io_channel_unref(channel);
 
-  return result;
+	return result;
 }
 
 /**
@@ -1715,8 +1612,7 @@ claws_input_add    (gint	      source,
  *
  * @return a GdkPixbuf
  */
-GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *src_pixbuf, gboolean inline_img,
-				     gboolean fit_img_height, int box_width, int box_height)
+GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *src_pixbuf, gboolean inline_img, gboolean fit_img_height, int box_width, int box_height)
 {
 	gint w, h, orientation, angle;
 	gint avail_width, avail_height;
@@ -1736,28 +1632,35 @@ GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *src_pixbuf, gboolean inline_img,
 	orient_str = gdk_pixbuf_get_option(pixbuf, "orientation");
 	if (orient_str != NULL && *orient_str != '\0') {
 		orientation = atoi(orient_str);
-		switch(orientation) {
+		switch (orientation) {
 			/* See EXIF standard for different values */
-			case 1:	break;
-			case 2:	flip_horiz = 1;
-				break;
-			case 3:	angle = 180;
-				break;
-			case 4:	flip_vert = 1;
-				break;
-			case 5:	angle = 90;
-				flip_horiz = 1;
-				break;
-			case 6:	angle = 270;
-				break;
-			case 7:	angle = 90;
-				flip_vert = 1;
-				break;
-			case 8:	angle = 90;
-				break;
+		case 1:
+			break;
+		case 2:
+			flip_horiz = 1;
+			break;
+		case 3:
+			angle = 180;
+			break;
+		case 4:
+			flip_vert = 1;
+			break;
+		case 5:
+			angle = 90;
+			flip_horiz = 1;
+			break;
+		case 6:
+			angle = 270;
+			break;
+		case 7:
+			angle = 90;
+			flip_vert = 1;
+			break;
+		case 8:
+			angle = 90;
+			break;
 		}
 	}
-
 
 	/* Rotate if needed */
 	if (angle != 0) {
@@ -1783,9 +1686,9 @@ GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *src_pixbuf, gboolean inline_img,
 	w = gdk_pixbuf_get_width(pixbuf);
 	h = gdk_pixbuf_get_height(pixbuf);
 
-	avail_width = box_width-32;
+	avail_width = box_width - 32;
 	avail_height = box_height;
-		
+
 	if (box_width != -1 && box_height != -1 && avail_width - 100 > 0) {
 		if (inline_img || fit_img_height) {
 			if (w > avail_width) {
@@ -1802,8 +1705,7 @@ GdkPixbuf *claws_load_pixbuf_fitting(GdkPixbuf *src_pixbuf, gboolean inline_img,
 				w = avail_width;
 			}
 		}
-		t_pixbuf = gdk_pixbuf_scale_simple(pixbuf, 
-			w, h, GDK_INTERP_BILINEAR);
+		t_pixbuf = gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_BILINEAR);
 		g_object_unref(pixbuf);
 		pixbuf = t_pixbuf;
 	}
@@ -1820,8 +1722,7 @@ static void auto_configure_done(const gchar *hostname, gint port, gboolean ssl, 
 		if (data->hostname_entry)
 			gtk_entry_set_text(data->hostname_entry, hostname);
 		if (data->set_port)
-			gtk_toggle_button_set_active(data->set_port,
-				(ssl && port != data->default_ssl_port) || (!ssl && port != data->default_port));
+			gtk_toggle_button_set_active(data->set_port, (ssl && port != data->default_ssl_port) || (!ssl && port != data->default_port));
 		if (data->port)
 			gtk_spin_button_set_value(data->port, port);
 		else if (data->hostname_entry) {
@@ -1889,7 +1790,7 @@ static void auto_configure_done(const gchar *hostname, gint port, gboolean ssl, 
 static void resolve_done(GObject *source, GAsyncResult *result, gpointer user_data)
 {
 	AutoConfigureData *data = (AutoConfigureData *)user_data;
-	GResolver *resolver = (GResolver *)source;
+	GResolver *resolver = (GResolver *) source;
 	GError *error = NULL;
 	gchar *hostname = NULL;
 	guint16 port;
@@ -1901,10 +1802,10 @@ static void resolve_done(GObject *source, GAsyncResult *result, gpointer user_da
 
 	if (answers) {
 		for (cur = g_srv_target_list_sort(answers); cur; cur = cur->next) {
-			GSrvTarget *target = (GSrvTarget *)cur->data;
+			GSrvTarget *target = (GSrvTarget *) cur->data;
 			const gchar *h = g_srv_target_get_hostname(target);
 			port = g_srv_target_get_port(target);
-			if (h && strcmp(h,"") && port > 0) {
+			if (h && strcmp(h, "") && port > 0) {
 				hostname = g_strdup(h);
 				found = TRUE;
 				break;
@@ -1948,8 +1849,7 @@ void auto_configure_service(AutoConfigureData *data)
 		gtk_label_set_text(data->info_label, _("Configuring..."));
 		gtk_widget_hide(GTK_WIDGET(data->configure_button));
 		gtk_widget_show(GTK_WIDGET(data->cancel_button));
-		g_resolver_lookup_service_async(resolver, cur_service, "tcp", domain,
-					data->cancel, resolve_done, data);
+		g_resolver_lookup_service_async(resolver, cur_service, "tcp", domain, data->cancel, resolve_done, data);
 	}
 }
 
@@ -1974,10 +1874,10 @@ gboolean auto_configure_service_sync(const gchar *service, const gchar *domain, 
 
 	if (answers) {
 		for (cur = g_srv_target_list_sort(answers); cur; cur = cur->next) {
-			GSrvTarget *target = (GSrvTarget *)cur->data;
+			GSrvTarget *target = (GSrvTarget *) cur->data;
 			const gchar *hostname = g_srv_target_get_hostname(target);
 			guint16 port = g_srv_target_get_port(target);
-			if (hostname && strcmp(hostname,"") && port > 0) {
+			if (hostname && strcmp(hostname, "") && port > 0) {
 				result = TRUE;
 				*srvhost = g_strdup(hostname);
 				*srvport = port;
@@ -1994,9 +1894,7 @@ gboolean auto_configure_service_sync(const gchar *service, const gchar *domain, 
 }
 #endif
 
-gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view,
-		gint column, GtkTreeModel **_model, GtkTreeSelection **_selection,
-		GtkTreeIter *_iter)
+gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view, gint column, GtkTreeModel **_model, GtkTreeSelection **_selection, GtkTreeIter *_iter)
 {
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -2024,14 +1922,10 @@ gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view,
 	if (gtk_tree_selection_count_selected_rows(sel) > 1)
 		return NULL; /* Can't work with multiselect */
 
-	cm_return_val_if_fail(
-			gtk_tree_model_get_n_columns(model) > column,
-			NULL);
+	cm_return_val_if_fail(gtk_tree_model_get_n_columns(model) > column, NULL);
 
 	type = gtk_tree_model_get_column_type(model, column);
-	cm_return_val_if_fail(
-			type == G_TYPE_POINTER || type == G_TYPE_STRING,
-			NULL);
+	cm_return_val_if_fail(type == G_TYPE_POINTER || type == G_TYPE_STRING, NULL);
 
 	gtk_tree_model_get(model, &iter, column, &ptr, -1);
 
@@ -2040,7 +1934,7 @@ gpointer gtkut_tree_view_get_selected_pointer(GtkTreeView *view,
 
 static GList *get_predefined_times(void)
 {
-	int h,m;
+	int h, m;
 	GList *times = NULL;
 	for (h = 0; h < 24; h++) {
 		for (m = 0; m < 60; m += 15) {
@@ -2056,7 +1950,7 @@ static int get_list_item_num(int h, int m)
 	if (m % 15 != 0)
 		return -1;
 
-	return (h*4 + m/15);
+	return (h * 4 + m / 15);
 }
 
 GtkWidget *gtkut_time_select_combo_new()
@@ -2071,7 +1965,6 @@ GtkWidget *gtkut_time_select_combo_new()
 
 	return combo;
 }
-
 
 void gtkut_time_select_select_by_time(GtkComboBox *combo, int hour, int minute)
 {
@@ -2091,7 +1984,7 @@ static void get_time_from_combo(GtkComboBox *combo, int *h, int *m)
 	gchar *tmp;
 	gchar **parts;
 
-	if (!h || !m) 
+	if (!h || !m)
 		return;
 
 	tmp = gtk_editable_get_chars(GTK_EDITABLE(gtk_bin_get_child(GTK_BIN(combo))), 0, -1);
@@ -2126,11 +2019,15 @@ gboolean gtkut_time_select_get_time(GtkComboBox *combo, int *hour, int *minute)
 
 void gtk_calendar_select_today(GtkCalendar *calendar)
 {
-	time_t t = time (NULL);
+	time_t t = time(NULL);
 	struct tm buft;
- 	struct tm *lt = localtime_r (&t, &buft);
+	struct tm *lt = localtime_r(&t, &buft);
 
 	mktime(lt);
 	gtk_calendar_select_day(calendar, lt->tm_mday);
 	gtk_calendar_select_month(calendar, lt->tm_mon, lt->tm_year + 1900);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

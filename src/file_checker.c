@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -63,31 +63,27 @@ static gboolean verify_folderlist_xml()
 
 	fileexists = is_file_exist(filename);
 
-	bak = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
- 			  FOLDER_LIST, ".bak", NULL);
+	bak = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDER_LIST, ".bak", NULL);
 	bakexists = is_file_exist(bak);
-	
+
 	if (bakexists) {
 		date = get_file_mtime(bak);
 		ts = localtime(&date);
 		strftime(buf, sizeof(buf), "%a %d-%b-%Y %H:%M %Z", ts);
 	}
-	
+
 	if (!fileexists && bakexists) {
 		AlertValue aval;
 		gchar *msg;
 
-		msg = g_strdup_printf
-			(_("The file %s is missing! "
-			   "Do you want to use the backup file from %s?"), FOLDER_LIST,buf);
-		aval = alertpanel(_("Warning"), msg, GTK_STOCK_NO, GTK_STOCK_YES, NULL,
-				ALERTFOCUS_FIRST);
+		msg = g_strdup_printf(_("The file %s is missing! " "Do you want to use the backup file from %s?"), FOLDER_LIST, buf);
+		aval = alertpanel(_("Warning"), msg, GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
 		g_free(msg);
 		if (aval != G_ALERTALTERNATE)
 			return FALSE;
 		else {
-			if (copy_file(bak,filename,FALSE) < 0) {
-				alertpanel_warning(_("Could not copy %s to %s"),bak,filename);
+			if (copy_file(bak, filename, FALSE) < 0) {
+				alertpanel_warning(_("Could not copy %s to %s"), bak, filename);
 				return FALSE;
 			}
 			g_free(bak);
@@ -101,17 +97,14 @@ static gboolean verify_folderlist_xml()
 			AlertValue aval;
 			gchar *msg;
 
-			msg = g_strdup_printf
-				(_("The file %s is empty or corrupted! "
-				   "Do you want to use the backup file from %s?"), FOLDER_LIST,buf);
-			aval = alertpanel(_("Warning"), msg, GTK_STOCK_NO, GTK_STOCK_YES, NULL,
-					ALERTFOCUS_FIRST);
+			msg = g_strdup_printf(_("The file %s is empty or corrupted! " "Do you want to use the backup file from %s?"), FOLDER_LIST, buf);
+			aval = alertpanel(_("Warning"), msg, GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
 			g_free(msg);
 			if (aval != G_ALERTALTERNATE)
 				return FALSE;
 			else {
-				if (copy_file(bak,filename,FALSE) < 0) {
-					alertpanel_warning(_("Could not copy %s to %s"),bak,filename);
+				if (copy_file(bak, filename, FALSE) < 0) {
+					alertpanel_warning(_("Could not copy %s to %s"), bak, filename);
 					return FALSE;
 				}
 				g_free(bak);
@@ -119,7 +112,11 @@ static gboolean verify_folderlist_xml()
 			}
 		}
 		xml_free_tree(node);
-  	}
+	}
 
 	return TRUE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

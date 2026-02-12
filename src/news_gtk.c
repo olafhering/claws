@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -51,24 +51,22 @@ static void update_tree_cb(GtkAction *action, gpointer data);
 static void download_cb(GtkAction *action, gpointer data);
 static void sync_cb(GtkAction *action, gpointer data);
 
-static GtkActionEntry news_popup_entries[] =
-{
-	{"FolderViewPopup/Subscribe",		NULL, N_("_Subscribe to newsgroup..."), NULL, NULL, G_CALLBACK(subscribe_newsgroup_cb) },
-	{"FolderViewPopup/Unsubscribe",		NULL, N_("_Unsubscribe newsgroup"), NULL, NULL, G_CALLBACK(unsubscribe_newsgroup_cb) },
+static GtkActionEntry news_popup_entries[] = {
+	{"FolderViewPopup/Subscribe", NULL, N_("_Subscribe to newsgroup..."), NULL, NULL, G_CALLBACK(subscribe_newsgroup_cb)},
+	{"FolderViewPopup/Unsubscribe", NULL, N_("_Unsubscribe newsgroup"), NULL, NULL, G_CALLBACK(unsubscribe_newsgroup_cb)},
 
-	{"FolderViewPopup/Synchronise",		NULL, N_("Synchronise"), NULL, NULL, G_CALLBACK(sync_cb) },
-	{"FolderViewPopup/DownloadMessages",	NULL, N_("Down_load messages"), NULL, NULL, G_CALLBACK(download_cb) },
-	{"FolderViewPopup/RenameFolder",	NULL, N_("_Rename folder..."), NULL, NULL, G_CALLBACK(rename_newsgroup_cb) },
+	{"FolderViewPopup/Synchronise", NULL, N_("Synchronise"), NULL, NULL, G_CALLBACK(sync_cb)},
+	{"FolderViewPopup/DownloadMessages", NULL, N_("Down_load messages"), NULL, NULL, G_CALLBACK(download_cb)},
+	{"FolderViewPopup/RenameFolder", NULL, N_("_Rename folder..."), NULL, NULL, G_CALLBACK(rename_newsgroup_cb)},
 
-	{"FolderViewPopup/CheckNewMessages",	NULL, N_("_Check for new messages"), NULL, NULL, G_CALLBACK(update_tree_cb) },
+	{"FolderViewPopup/CheckNewMessages", NULL, N_("_Check for new messages"), NULL, NULL, G_CALLBACK(update_tree_cb)},
 
 };
 
 static void set_sensitivity(GtkUIManager *ui_manager, FolderItem *item);
 static void add_menuitems(GtkUIManager *ui_manager, FolderItem *item);
 
-static FolderViewPopup news_popup =
-{
+static FolderViewPopup news_popup = {
 	"news",
 	"<NewsFolder>",
 	news_popup_entries,
@@ -87,47 +85,31 @@ void news_gtk_init(void)
 static void add_menuitems(GtkUIManager *ui_manager, FolderItem *item)
 {
 	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "Subscribe", "FolderViewPopup/Subscribe", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "Unsubscribe", "FolderViewPopup/Unsubscribe", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews1", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "Synchronise", "FolderViewPopup/Synchronise", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "DownloadMessages", "FolderViewPopup/DownloadMessages", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "RenameFolder", "FolderViewPopup/RenameFolder", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews2", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "CheckNewMessages", "FolderViewPopup/CheckNewMessages", GTK_UI_MANAGER_MENUITEM)
-	MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews3", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "Unsubscribe", "FolderViewPopup/Unsubscribe", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews1", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "Synchronise", "FolderViewPopup/Synchronise", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "DownloadMessages", "FolderViewPopup/DownloadMessages", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "RenameFolder", "FolderViewPopup/RenameFolder", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews2", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "CheckNewMessages", "FolderViewPopup/CheckNewMessages", GTK_UI_MANAGER_MENUITEM)
+	    MENUITEM_ADDUI_MANAGER(ui_manager, "/Popup/FolderViewPopup", "SeparatorNews3", "FolderViewPopup/---", GTK_UI_MANAGER_SEPARATOR)
 }
-	
+
 static void set_sensitivity(GtkUIManager *ui_manager, FolderItem *item)
 {
 	MainWindow *mainwin = mainwindow_get_mainwindow();
-	
+
 #define SET_SENS(name, sens) \
 	cm_menu_set_sensitive_full(ui_manager, "Popup/"name, sens)
 
-	SET_SENS("FolderViewPopup/Subscribe", 
-			folder_item_parent(item) == NULL 
-			&& mainwin->lock_count == 0
-			&& news_folder_locked(item->folder) == 0);
-	SET_SENS("FolderViewPopup/Unsubscribe",     
-			folder_item_parent(item) != NULL 
-			&& mainwin->lock_count == 0
-			&& news_folder_locked(item->folder) == 0);
-	SET_SENS("FolderViewPopup/CheckNewMessages",    
-			folder_item_parent(item) == NULL 
-			&& mainwin->lock_count == 0
-			&& news_folder_locked(item->folder) == 0);
-	SET_SENS("FolderViewPopup/Synchronise",    
-			item ? (folder_item_parent(item) != NULL
-			&& folder_want_synchronise(item->folder))
-			: FALSE);
-	SET_SENS("FolderViewPopup/DownloadMessages",
-			item ? (folder_item_parent(item) != NULL
-			&& !item->no_select)
-			: FALSE);
-	SET_SENS("FolderViewPopup/RenameFolder",
-			folder_item_parent(item) != NULL 
-			&& mainwin->lock_count == 0
-			&& news_folder_locked(item->folder) == 0);
+	SET_SENS("FolderViewPopup/Subscribe", folder_item_parent(item) == NULL && mainwin->lock_count == 0 && news_folder_locked(item->folder) == 0);
+	SET_SENS("FolderViewPopup/Unsubscribe", folder_item_parent(item) != NULL && mainwin->lock_count == 0 && news_folder_locked(item->folder) == 0);
+	SET_SENS("FolderViewPopup/CheckNewMessages", folder_item_parent(item) == NULL && mainwin->lock_count == 0 && news_folder_locked(item->folder) == 0);
+	SET_SENS("FolderViewPopup/Synchronise", item ? (folder_item_parent(item) != NULL && folder_want_synchronise(item->folder))
+		 : FALSE);
+	SET_SENS("FolderViewPopup/DownloadMessages", item ? (folder_item_parent(item) != NULL && !item->no_select)
+		 : FALSE);
+	SET_SENS("FolderViewPopup/RenameFolder", folder_item_parent(item) != NULL && mainwin->lock_count == 0 && news_folder_locked(item->folder) == 0);
 #undef SET_SENS
 }
 
@@ -157,8 +139,9 @@ static void subscribe_newsgroup_cb(GtkAction *action, gpointer data)
 	GSList *cur;
 	GNode *gnode;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
-	
-	if ((item = folderview_get_selected_item(folderview)) == NULL) return;
+
+	if ((item = folderview_get_selected_item(folderview)) == NULL)
+		return;
 
 	if (mainwin->lock_count || news_folder_locked(item->folder))
 		return;
@@ -174,12 +157,11 @@ static void subscribe_newsgroup_cb(GtkAction *action, gpointer data)
 	new_subscr = grouplist_dialog(folder);
 
 	/* remove unsubscribed newsgroups */
-	for (gnode = folder->node->children; gnode != NULL; ) {
+	for (gnode = folder->node->children; gnode != NULL;) {
 		GNode *next = gnode->next;
 
 		item = FOLDER_ITEM(gnode->data);
-		if (g_slist_find_custom(new_subscr, item->path,
-					(GCompareFunc)g_ascii_strcasecmp) != NULL) {
+		if (g_slist_find_custom(new_subscr, item->path, (GCompareFunc) g_ascii_strcasecmp) != NULL) {
 			gnode = next;
 			continue;
 		}
@@ -231,8 +213,9 @@ static void unsubscribe_newsgroup_cb(GtkAction *action, gpointer data)
 	gchar *old_id;
 	AlertValue avalue;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
-	
-	if (!folderview->selected) return;
+
+	if (!folderview->selected)
+		return;
 
 	item = folderview_get_selected_item(folderview);
 	cm_return_if_fail(item != NULL);
@@ -248,30 +231,28 @@ static void unsubscribe_newsgroup_cb(GtkAction *action, gpointer data)
 
 	name = trim_string(item->path, 32);
 	message = g_strdup_printf(_("Really unsubscribe newsgroup '%s'?"), name);
-	avalue = alertpanel_full(_("Unsubscribe newsgroup"), message,
-		 	         GTK_STOCK_CANCEL, _("_Unsubscribe"), NULL,
-							 ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
+	avalue = alertpanel_full(_("Unsubscribe newsgroup"), message, GTK_STOCK_CANCEL, _("_Unsubscribe"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
 	g_free(message);
 	g_free(name);
 	if (avalue != G_ALERTALTERNATE) {
 		g_free(old_id);
 		return;
-    }
+	}
 
 	if (item == folderview_get_opened_item(folderview)) {
 		summary_clear_all(folderview->summaryview);
 		folderview_close_opened(folderview, TRUE);
 	}
 
-	if(item->folder->klass->remove_folder(item->folder, item) < 0) {
+	if (item->folder->klass->remove_folder(item->folder, item) < 0) {
 		folder_item_scan(item);
 		alertpanel_error(_("Can't remove the folder '%s'."), name);
 		g_free(old_id);
 		return;
 	}
-	
+
 	folder_write_list();
-	
+
 	prefs_filtering_delete_path(old_id);
 	g_free(old_id);
 }
@@ -295,12 +276,16 @@ static void rename_newsgroup_cb(GtkAction *action, gpointer data)
 	g_free(message);
 	g_free(name);
 
-	if (!new_folder) return;
-	AUTORELEASE_STR(new_folder, {g_free(new_folder); return;});
+	if (!new_folder)
+		return;
+	AUTORELEASE_STR(new_folder, {
+			g_free(new_folder);
+			return;
+			}
+	);
 
 	if (strchr(new_folder, G_DIR_SEPARATOR) != NULL) {
-		alertpanel_error(_("'%c' can't be included in folder name."),
-				 G_DIR_SEPARATOR);
+		alertpanel_error(_("'%c' can't be included in folder name."), G_DIR_SEPARATOR);
 		return;
 	}
 
@@ -312,8 +297,7 @@ static void rename_newsgroup_cb(GtkAction *action, gpointer data)
 	}
 
 	if (folder_item_rename(item, new_folder) < 0) {
-		alertpanel_error(_("The folder could not be renamed.\n"
-				   "The new folder name is not allowed."));
+		alertpanel_error(_("The folder could not be renamed.\n" "The new folder name is not allowed."));
 		return;
 	}
 
@@ -325,7 +309,7 @@ static void update_tree_cb(GtkAction *action, gpointer data)
 	FolderView *folderview = (FolderView *)data;
 	FolderItem *item;
 	MainWindow *mainwin = mainwindow_get_mainwindow();
-	
+
 	item = folderview_get_selected_item(folderview);
 	cm_return_if_fail(item != NULL);
 
@@ -377,15 +361,15 @@ void news_gtk_synchronise(FolderItem *item, gint days)
 	mlist = folder_item_get_msg_list(item);
 	for (cur = mlist; cur != NULL; cur = cur->next) {
 		MsgInfo *msginfo = (MsgInfo *)cur->data;
-		gint age = (t - msginfo->date_t) / (60*60*24);
+		gint age = (t - msginfo->date_t) / (60 * 60 * 24);
 		if (days == 0 || age <= days)
 			folder_item_fetch_msg_full(msginfo->folder, msginfo->msgnum, TRUE, TRUE);
-		statusbar_progress_all(num++,total, 100);
+		statusbar_progress_all(num++, total, 100);
 		if (num % 100 == 0)
 			GTK_EVENTS_FLUSH();
 	}
 
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 	procmsg_msg_list_free(mlist);
 	folder_set_ui_func(item->folder, NULL, NULL);
 	main_window_progress_off(mainwin);
@@ -400,8 +384,13 @@ static void download_cb(GtkAction *action, gpointer data)
 	FolderView *folderview = (FolderView *)data;
 	FolderItem *item;
 
-	if (!folderview->selected) return;
+	if (!folderview->selected)
+		return;
 
 	item = folderview_get_selected_item(folderview);
 	news_gtk_synchronise(item, 0);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -32,7 +32,7 @@ FeedItemEnclosure *feed_item_enclosure_new(gchar *url, gchar *type, gulong size)
 	g_return_val_if_fail(type != NULL, NULL);
 	g_return_val_if_fail(size > 0, NULL);
 
-	enclosure = g_malloc( sizeof(FeedItemEnclosure) );
+	enclosure = g_malloc(sizeof(FeedItemEnclosure));
 	enclosure->url = g_strdup(url);
 	enclosure->type = g_strdup(type);
 	enclosure->size = size;
@@ -42,7 +42,7 @@ FeedItemEnclosure *feed_item_enclosure_new(gchar *url, gchar *type, gulong size)
 
 void feed_item_enclosure_free(FeedItemEnclosure *enclosure)
 {
-	if( enclosure == NULL )
+	if (enclosure == NULL)
 		return;
 
 	g_free(enclosure->url);
@@ -104,6 +104,9 @@ FeedItemEnclosure *feed_item_enclosure_copy(FeedItemEnclosure *enclosure)
 	if (enclosure == NULL)
 		return NULL;
 
-	return feed_item_enclosure_new(enclosure->url, enclosure->type,
-			enclosure->size);
+	return feed_item_enclosure_new(enclosure->url, enclosure->type, enclosure->size);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

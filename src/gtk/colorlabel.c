@@ -37,7 +37,7 @@
 
 static gchar *labels[COLORLABELS] = {
 	N_("Orange"),
-	N_("Red") ,
+	N_("Red"),
 	N_("Pink"),
 	N_("Sky blue"),
 	N_("Blue"),
@@ -54,75 +54,73 @@ static gchar *labels[COLORLABELS] = {
 };
 
 static GdkColor default_colors[COLORLABELS] = {
-	{ 0, 0xffff, (0x99 << 8), 0x0 },
-	{ 0, 0xffff, 0x0, 0x0 },
-	{ 0, 0xffff, (0x66 << 8), 0xffff },
-	{ 0, 0x0, (0xcc << 8), 0xffff },
-	{ 0, 0x0, 0x0, 0xffff },
-	{ 0, 0x0, (0x99 << 8), 0x0 },
-	{ 0, (0x66 << 8), (0x33 << 8), (0x33 << 8) },
-	{ 0, (0xaa << 8), (0xaa << 8), (0xaa << 8) },
-	{ 0, (0xc0 << 8), (0x72 << 8), (0x54 << 8) },
-	{ 0, (0xc0 << 8), 0x0, 0x0 },
-	{ 0, (0xcc << 8), (0x10 << 8), (0x74 << 8) },
-	{ 0, (0x50 << 8), (0x94 << 8), (0xcd << 8) },
-	{ 0, 0xffff, (0xd5 << 8), 0x0 },
-	{ 0, 0x0, (0xd8 << 8), 0x0 },
-	{ 0, (0xc0 << 8), (0x60 << 8), (0xc0 << 8) }
+	{0, 0xffff, (0x99 << 8), 0x0},
+	{0, 0xffff, 0x0, 0x0},
+	{0, 0xffff, (0x66 << 8), 0xffff},
+	{0, 0x0, (0xcc << 8), 0xffff},
+	{0, 0x0, 0x0, 0xffff},
+	{0, 0x0, (0x99 << 8), 0x0},
+	{0, (0x66 << 8), (0x33 << 8), (0x33 << 8)},
+	{0, (0xaa << 8), (0xaa << 8), (0xaa << 8)},
+	{0, (0xc0 << 8), (0x72 << 8), (0x54 << 8)},
+	{0, (0xc0 << 8), 0x0, 0x0},
+	{0, (0xcc << 8), (0x10 << 8), (0x74 << 8)},
+	{0, (0x50 << 8), (0x94 << 8), (0xcd << 8)},
+	{0, 0xffff, (0xd5 << 8), 0x0},
+	{0, 0x0, (0xd8 << 8), 0x0},
+	{0, (0xc0 << 8), (0x60 << 8), (0xc0 << 8)}
 };
 
-	
 typedef enum LabelColorChangeFlags_ {
 	LCCF_COLOR = 1 << 0,
 	LCCF_LABEL = 1 << 1,
-	LCCF_ALL   = LCCF_COLOR | LCCF_LABEL
+	LCCF_ALL = LCCF_COLOR | LCCF_LABEL
 } LabelColorChangeFlags;
 
 /* XXX: if you add colors, make sure you also check the procmsg.h.
  * color indices are stored as 3 bits; that explains the max. of 7 colors */
-static struct 
-{
-	LabelColorChangeFlags	changed; 
+static struct {
+	LabelColorChangeFlags changed;
 	/* color here is initialized from default_colors[] at startup */
-	GdkColor		color;
+	GdkColor color;
 
 	/* XXX: note that the label member is supposed to be dynamically 
 	 * allocated and freed */
-	gchar			*label;
-	GtkWidget		*widget;
+	gchar *label;
+	GtkWidget *widget;
 } label_colors[NUM_MENUS][COLORLABELS] = {
-    {
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL }},
-    {
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL },
-	{ LCCF_ALL, { 0 }, NULL, NULL }}
+	{
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL}},
+	{
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL},
+	 {LCCF_ALL, {0}, NULL, NULL}}
 };
 
 #define LABEL_COLOR_WIDTH	28
@@ -140,8 +138,8 @@ static struct
 	gdkcolor.green = ((intcolor >>  8UL) & 0xFFUL) << 8UL; \
 	gdkcolor.blue  = ((intcolor)         & 0xFFUL) << 8UL;
 
-static void colorlabel_recreate        (gint);
-static void colorlabel_recreate_label  (gint);
+static void colorlabel_recreate(gint);
+static void colorlabel_recreate_label(gint);
 
 void colorlabel_update_colortable_from_prefs(void)
 {
@@ -149,15 +147,12 @@ void colorlabel_update_colortable_from_prefs(void)
 
 	for (i = 0; i < NUM_MENUS; i++) {
 		for (c = 0; c < COLORLABELS; c++) {
-			INTCOLOR_TO_GDKCOLOR(prefs_common.custom_colorlabel[c].color,
-					label_colors[i][c].color);
+			INTCOLOR_TO_GDKCOLOR(prefs_common.custom_colorlabel[c].color, label_colors[i][c].color);
 			g_free(label_colors[i][c].label);
-			label_colors[i][c].label =
-					g_strdup(prefs_common.custom_colorlabel[c].label);
+			label_colors[i][c].label = g_strdup(prefs_common.custom_colorlabel[c].label);
 		}
 	}
 }
-
 
 gint colorlabel_get_color_count(void)
 {
@@ -181,7 +176,7 @@ GdkColor colorlabel_get_default_color(gint color_index)
 
 	return default_colors[color_index];
 }
-		
+
 gchar *colorlabel_get_color_default_text(gint color_index)
 {
 	G_RETURN_VAL_IF_INVALID_COLOR(color_index, NULL);
@@ -189,9 +184,7 @@ gchar *colorlabel_get_color_default_text(gint color_index)
 	return labels[color_index];
 }
 
-static gboolean colorlabel_drawing_area_expose_event_cb
-	(GtkWidget *widget, GdkEventExpose *expose, gpointer data)
-{
+static gboolean colorlabel_drawing_area_expose_event_cb(GtkWidget *widget, GdkEventExpose *expose, gpointer data) {
 	cairo_t *cr;
 	GdkWindow *drawable = gtk_widget_get_window(widget);
 	GtkAllocation allocation;
@@ -199,20 +192,15 @@ static gboolean colorlabel_drawing_area_expose_event_cb
 	GdkColor color;
 
 	INTCOLOR_TO_GDKCOLOR(c, color)
-
-	gdk_colormap_alloc_color(gtk_widget_get_colormap(widget), &color, FALSE, TRUE);
+	    gdk_colormap_alloc_color(gtk_widget_get_colormap(widget), &color, FALSE, TRUE);
 	cr = gdk_cairo_create(drawable);
 	gtk_widget_get_allocation(widget, &allocation);
 
 	cairo_set_source_rgb(cr, 0., 0., 0.);
-	cairo_rectangle(cr, 0, 0,
-	    allocation.width - 1,
-	    allocation.height - 1);
+	cairo_rectangle(cr, 0, 0, allocation.width - 1, allocation.height - 1);
 	cairo_stroke(cr);
 	gdk_cairo_set_source_color(cr, &color);
-	cairo_rectangle(cr, 1, 1,
-	    allocation.width - 2,
-	    allocation.height - 2);
+	cairo_rectangle(cr, 1, 1, allocation.width - 2, allocation.height - 2);
 	cairo_fill(cr);
 	cairo_destroy(cr);
 
@@ -224,19 +212,14 @@ static GtkWidget *colorlabel_create_color_widget(GdkColor color)
 	GtkWidget *widget;
 
 	widget = gtk_drawing_area_new();
-	gtk_widget_set_size_request(widget, LABEL_COLOR_WIDTH - 2, 
-				    LABEL_COLOR_HEIGHT - 4);
+	gtk_widget_set_size_request(widget, LABEL_COLOR_WIDTH - 2, LABEL_COLOR_HEIGHT - 4);
 
-#define CL(x)		(((gulong) (x) >> (gulong) 8) & 0xFFUL)	
+#define CL(x)		(((gulong) (x) >> (gulong) 8) & 0xFFUL)
 #define CR(r, g, b)	((CL(r) << (gulong) 16) | \
 			 (CL(g) << (gulong)  8) | \
 			 (CL(b)))
 
-	g_signal_connect(G_OBJECT(widget), "expose_event", 
-			 G_CALLBACK
-			   	(colorlabel_drawing_area_expose_event_cb),
-			 GINT_TO_POINTER
-			   	((gint)CR(color.red, color.green, color.blue)));
+	g_signal_connect(G_OBJECT(widget), "expose_event", G_CALLBACK(colorlabel_drawing_area_expose_event_cb), GINT_TO_POINTER((gint)CR(color.red, color.green, color.blue)));
 
 	return widget;
 }
@@ -248,7 +231,7 @@ static void colorlabel_recreate_color(gint color)
 {
 	GtkWidget *widget;
 	int i;
-	
+
 	for (i = 0; i < NUM_MENUS; i++) {
 		if (!(label_colors[i][color].changed & LCCF_COLOR))
 			continue;
@@ -256,10 +239,10 @@ static void colorlabel_recreate_color(gint color)
 		widget = colorlabel_create_color_widget(label_colors[i][color].color);
 		cm_return_if_fail(widget);
 
-		if (label_colors[i][color].widget) 
+		if (label_colors[i][color].widget)
 			gtk_widget_destroy(label_colors[i][color].widget);
 
-		label_colors[i][color].widget = widget;		
+		label_colors[i][color].widget = widget;
 		label_colors[i][color].changed &= ~LCCF_COLOR;
 	}
 }
@@ -267,12 +250,12 @@ static void colorlabel_recreate_color(gint color)
 static void colorlabel_recreate_label(gint color)
 {
 	int i;
-	
+
 	for (i = 0; i < NUM_MENUS; i++) {
 		if (!(label_colors[i][color].changed & LCCF_LABEL))
 			continue;
 
-		if (label_colors[i][color].label == NULL) 
+		if (label_colors[i][color].label == NULL)
 			label_colors[i][color].label = g_strdup(gettext(labels[color]));
 
 		label_colors[i][color].changed &= ~LCCF_LABEL;
@@ -291,7 +274,7 @@ static void colorlabel_recreate_all(void)
 {
 	gint n;
 
-	for ( n = 0; n < LABEL_COLORS_ELEMS; n++) 
+	for (n = 0; n < LABEL_COLORS_ELEMS; n++)
 		colorlabel_recreate(n);
 }
 
@@ -299,12 +282,12 @@ static void colorlabel_recreate_all(void)
  * menu item with a check box */
 GtkWidget *colorlabel_create_check_color_menu_item(gint color_index, gboolean force, gint menu_index)
 {
-	GtkWidget *label; 
-	GtkWidget *hbox; 
-	GtkWidget *vbox; 
+	GtkWidget *label;
+	GtkWidget *hbox;
+	GtkWidget *vbox;
 	GtkWidget *item;
 	gchar *accel;
-	
+
 	G_RETURN_VAL_IF_INVALID_COLOR(color_index, NULL);
 
 	item = gtk_check_menu_item_new();
@@ -328,14 +311,13 @@ GtkWidget *colorlabel_create_check_color_menu_item(gint color_index, gboolean fo
 	gtk_widget_show(vbox);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), 1);
 
-	gtk_container_add(GTK_CONTAINER(vbox),
-			  label_colors[menu_index][color_index].widget);
+	gtk_container_add(GTK_CONTAINER(vbox), label_colors[menu_index][color_index].widget);
 	gtk_widget_show(label_colors[menu_index][color_index].widget);
 
 	gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 4);
 	if (color_index < 9) {
-		accel = gtk_accelerator_get_label(GDK_KEY_1+color_index, GDK_CONTROL_MASK);
+		accel = gtk_accelerator_get_label(GDK_KEY_1 + color_index, GDK_CONTROL_MASK);
 		label = gtk_label_new(accel);
 		gtk_widget_show(label);
 		gtk_misc_set_alignment(GTK_MISC(label), 1, 0.5);
@@ -356,7 +338,7 @@ GtkWidget *colorlabel_create_check_color_menu_item(gint color_index, gboolean fo
  * checkitems, probably for use in combo items */
 GtkWidget *colorlabel_create_color_menu(void)
 {
-	GtkWidget *label; 
+	GtkWidget *label;
 	GtkWidget *item;
 	GtkWidget *menu;
 	gint i;
@@ -378,16 +360,15 @@ GtkWidget *colorlabel_create_color_menu(void)
 
 	/* and the color items */
 	for (i = 0; i < LABEL_COLORS_ELEMS; i++) {
-		GtkWidget *hbox; 
+		GtkWidget *hbox;
 		GtkWidget *vbox;
 		GtkWidget *widget;
 
-		item  = gtk_menu_item_new();
-		g_object_set_data(G_OBJECT(item), "color",
-				  GUINT_TO_POINTER(i + 1));
+		item = gtk_menu_item_new();
+		g_object_set_data(G_OBJECT(item), "color", GUINT_TO_POINTER(i + 1));
 
 		label = gtk_label_new(label_colors[0][i].label);
-		
+
 		gtk_widget_show(label);
 		hbox = gtk_hbox_new(FALSE, 0);
 		gtk_widget_show(hbox);
@@ -403,11 +384,11 @@ GtkWidget *colorlabel_create_color_menu(void)
 
 		gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 		gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 4);
-		
+
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_show(item);
 	}
-	
+
 	gtk_widget_show(menu);
 
 	return menu;
@@ -419,7 +400,10 @@ guint colorlabel_get_color_menu_active_item(GtkWidget *menu)
 	guint color;
 
 	menuitem = gtk_menu_get_active(GTK_MENU(menu));
-	color = GPOINTER_TO_UINT
-		(g_object_get_data(G_OBJECT(menuitem), "color"));
+	color = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(menuitem), "color"));
 	return color;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

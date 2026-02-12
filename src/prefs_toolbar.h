@@ -21,8 +21,8 @@
 
 #include "toolbar.h"
 
-void prefs_toolbar_init		(void);
-void prefs_toolbar_done		(void);
+void prefs_toolbar_init(void);
+void prefs_toolbar_done(void);
 
 /* parent is a MainWindow, Compose, or MessageView, depending on the ToolbarType during registration */
 typedef void (*ToolbarPluginCallback)(gpointer parent, const gchar *item_name, gpointer data);
@@ -32,4 +32,4 @@ void prefs_toolbar_unregister_plugin_item(ToolbarType toolbar_type, const gchar 
 void prefs_toolbar_execute_plugin_item(gpointer parent, ToolbarType toolbar_type, const gchar *id);
 void prefs_toolbar_update_action_btns(void);
 
-#endif /* __PREFS_CUSTOM_TOOLBAR_H__ */ 
+#endif /* __PREFS_CUSTOM_TOOLBAR_H__ */

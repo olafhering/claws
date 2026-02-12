@@ -13,13 +13,14 @@ struct td {
 };
 
 struct td from_utf8_empty = { "", "" };
+
 /* TODO: more tests */
 
 struct td to_utf8_empty = { "", "" };
+
 /* TODO: more tests */
 
-static void
-test_filename_from_utf8_null()
+static void test_filename_from_utf8_null()
 {
 	if (!g_test_undefined())
 		return;
@@ -37,8 +38,7 @@ test_filename_from_utf8_null()
 	g_test_trap_assert_passed();
 }
 
-static void
-test_filename_from_utf8(gconstpointer user_data)
+static void test_filename_from_utf8(gconstpointer user_data)
 {
 	struct td *data = (struct td *)user_data;
 
@@ -59,8 +59,7 @@ test_filename_from_utf8(gconstpointer user_data)
 	g_test_trap_assert_passed();
 }
 
-static void
-test_filename_to_utf8(gconstpointer user_data)
+static void test_filename_to_utf8(gconstpointer user_data)
 {
 	struct td *data = (struct td *)user_data;
 
@@ -81,24 +80,21 @@ test_filename_to_utf8(gconstpointer user_data)
 	g_test_trap_assert_passed();
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	g_test_init(&argc, &argv, NULL);
 
-	g_test_add_func("/common/codeconv/filename_from_utf8/null",
-			test_filename_from_utf8_null);
-	g_test_add_data_func("/common/codeconv/filename_from_utf8/empty",
-			&from_utf8_empty,
-			test_filename_from_utf8);
+	g_test_add_func("/common/codeconv/filename_from_utf8/null", test_filename_from_utf8_null);
+	g_test_add_data_func("/common/codeconv/filename_from_utf8/empty", &from_utf8_empty, test_filename_from_utf8);
 
-	g_test_add_func("/common/codeconv/filename_to_utf8/null",
-			test_filename_from_utf8_null);
-	g_test_add_data_func("/common/codeconv/filename_to_utf8/empty",
-			&to_utf8_empty,
-			test_filename_to_utf8);
+	g_test_add_func("/common/codeconv/filename_to_utf8/null", test_filename_from_utf8_null);
+	g_test_add_data_func("/common/codeconv/filename_to_utf8/empty", &to_utf8_empty, test_filename_to_utf8);
 
 	/* TODO: more tests */
 
 	return g_test_run();
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

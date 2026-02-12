@@ -36,9 +36,9 @@
 #include <stdio.h>
 
 #ifdef HAVE_LIBPISOCK_PI_ADDRESS_H
-#  include <libpisock/pi-address.h>
+#include <libpisock/pi-address.h>
 #else
-#  include <pi-address.h>
+#include <pi-address.h>
 #endif
 
 #include "addritem.h"
@@ -50,57 +50,56 @@ typedef struct _JPilotFile JPilotFile;
 struct _JPilotFile {
 	AddressBookType type;
 	AddressCache *addressCache;
-	gint     retVal;
-	FILE     *file;
-	gchar    *path;
+	gint retVal;
+	FILE *file;
+	gchar *path;
 	struct AddressAppInfo addrInfo;
 	gboolean readMetadata;
-	GList    *customLabels;
-	GList    *labelInd;
+	GList *customLabels;
+	GList *labelInd;
 	gboolean havePC3;
-	time_t   pc3ModifyTime;
+	time_t pc3ModifyTime;
 };
 
 /* Limits */
-#define JPILOT_NUM_LABELS	22	/* Number of labels */
-#define JPILOT_NUM_PHONELABELS	8 	/* Number of phone number labels */
-#define JPILOT_NUM_CATEG	16	/* Number of categories */
-#define JPILOT_LEN_LABEL	15	/* Max length of label */
-#define JPILOT_LEN_CATEG	15	/* Max length of category */
-#define JPILOT_NUM_ADDR_PHONE	5	/* Number of phone entries a person */
+#define JPILOT_NUM_LABELS	22 /* Number of labels */
+#define JPILOT_NUM_PHONELABELS	8 /* Number of phone number labels */
+#define JPILOT_NUM_CATEG	16 /* Number of categories */
+#define JPILOT_LEN_LABEL	15 /* Max length of label */
+#define JPILOT_LEN_CATEG	15 /* Max length of category */
+#define JPILOT_NUM_ADDR_PHONE	5 /* Number of phone entries a person */
 					/* can have */
 
 /* Function prototypes */
-JPilotFile *jpilot_create		( void );
-JPilotFile *jpilot_create_path		( const gchar *path );
-void jpilot_set_name			( JPilotFile* pilotFile, const gchar *value );
-void jpilot_set_file			( JPilotFile* pilotFile, const gchar *value );
-void jpilot_free			( JPilotFile *pilotFile );
-gint jpilot_get_status			( JPilotFile *pilotFile );
-gboolean jpilot_get_modified		( JPilotFile *pilotFile );
-gboolean jpilot_get_accessed		( JPilotFile *pilotFile );
-void jpilot_set_accessed		( JPilotFile *pilotFile, const gboolean value );
-gboolean jpilot_get_read_flag		( JPilotFile *pilotFile );
-ItemFolder *jpilot_get_root_folder	( JPilotFile *pilotFile );
-gchar *jpilot_get_name			( JPilotFile *pilotFile );
+JPilotFile *jpilot_create(void);
+JPilotFile *jpilot_create_path(const gchar *path);
+void jpilot_set_name(JPilotFile *pilotFile, const gchar *value);
+void jpilot_set_file(JPilotFile *pilotFile, const gchar *value);
+void jpilot_free(JPilotFile *pilotFile);
+gint jpilot_get_status(JPilotFile *pilotFile);
+gboolean jpilot_get_modified(JPilotFile *pilotFile);
+gboolean jpilot_get_accessed(JPilotFile *pilotFile);
+void jpilot_set_accessed(JPilotFile *pilotFile, const gboolean value);
+gboolean jpilot_get_read_flag(JPilotFile *pilotFile);
+ItemFolder *jpilot_get_root_folder(JPilotFile *pilotFile);
+gchar *jpilot_get_name(JPilotFile *pilotFile);
 
-gint jpilot_read_data			( JPilotFile *pilotFile );
-GList *jpilot_get_list_person		( JPilotFile *pilotFile );
-GList *jpilot_get_list_folder		( JPilotFile *pilotFile );
-GList *jpilot_get_all_persons		( JPilotFile *pilotFile );
+gint jpilot_read_data(JPilotFile *pilotFile);
+GList *jpilot_get_list_person(JPilotFile *pilotFile);
+GList *jpilot_get_list_folder(JPilotFile *pilotFile);
+GList *jpilot_get_all_persons(JPilotFile *pilotFile);
 
-GList *jpilot_load_custom_label		( JPilotFile *pilotFile, GList *labelList );
+GList *jpilot_load_custom_label(JPilotFile *pilotFile, GList *labelList);
 
-gchar *jpilot_find_pilotdb		( void );
+gchar *jpilot_find_pilotdb(void);
 
+void jpilot_clear_custom_labels(JPilotFile *pilotFile);
+void jpilot_add_custom_label(JPilotFile *pilotFile, const gchar *labelName);
+GList *jpilot_get_custom_labels(JPilotFile *pilotFile);
+gboolean jpilot_test_custom_label(JPilotFile *pilotFile, const gchar *labelName);
+gboolean jpilot_test_pilot_lib(void);
 
-void jpilot_clear_custom_labels		( JPilotFile *pilotFile );
-void jpilot_add_custom_label		( JPilotFile *pilotFile, const gchar *labelName );
-GList *jpilot_get_custom_labels		( JPilotFile *pilotFile );
-gboolean jpilot_test_custom_label	( JPilotFile *pilotFile, const gchar *labelName );
-gboolean jpilot_test_pilot_lib		( void );
-
-gint jpilot_read_modified		( JPilotFile *pilotFile );
+gint jpilot_read_modified(JPilotFile *pilotFile);
 
 #endif /* USE_JPILOT */
 

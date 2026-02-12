@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
 
 /* Global includes */
@@ -51,7 +51,7 @@ static RDeletedItem *_new_deleted_item()
 
 static void _free_deleted_item(gpointer d, gpointer user_data)
 {
-	RDeletedItem *ditem = (RDeletedItem *)d;
+	RDeletedItem *ditem = (RDeletedItem *) d;
 
 	if (ditem == NULL)
 		return;
@@ -73,7 +73,7 @@ void rssyl_deleted_free(RFolderItem *ritem)
 	}
 }
 
-static gchar * _deleted_file_path(RFolderItem *ritem)
+static gchar *_deleted_file_path(RFolderItem *ritem)
 {
 	gchar *itempath, *deleted_file;
 
@@ -139,8 +139,7 @@ void rssyl_deleted_update(RFolderItem *ritem)
 		i++;
 	}
 	if (ditem)
-		g_warning("short read while parsing the list of deleted items for '%s'\n",
-				deleted_file);
+		g_warning("short read while parsing the list of deleted items for '%s'\n", deleted_file);
 	g_free(deleted_file);
 
 	g_free(lines);
@@ -154,19 +153,14 @@ void rssyl_deleted_update(RFolderItem *ritem)
 
 static void _store_one_deleted_item(gpointer data, gpointer user_data)
 {
-	RDeletedItem *ditem = (RDeletedItem *)data;
+	RDeletedItem *ditem = (RDeletedItem *) data;
 	FILE *f = (FILE *)user_data;
 	gboolean err = FALSE;
 
 	if (ditem == NULL || ditem->id == NULL)
 		return;
 
-	err |= (fprintf(f,
-			"ID: %s\n"
-			"TITLE: %s\n"
-			"DPUB: %" CM_TIME_FORMAT "\n",
-			ditem->id, ditem->title,
-			ditem->date_published) < 0);
+	err |= (fprintf(f, "ID: %s\n" "TITLE: %s\n" "DPUB: %" CM_TIME_FORMAT "\n", ditem->id, ditem->title, ditem->date_published) < 0);
 
 	if (err)
 		debug_print("RSSyl: Error during writing deletion file.\n");
@@ -178,8 +172,7 @@ static void rssyl_deleted_store_internal(GSList *deleted_items, const gchar *del
 
 	if (g_file_test(deleted_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
 		if (g_remove(deleted_file) != 0) {
-			debug_print("RSSyl: Oops, couldn't delete '%s', bailing out\n",
-					deleted_file);
+			debug_print("RSSyl: Oops, couldn't delete '%s', bailing out\n", deleted_file);
 			return;
 		}
 	}
@@ -192,8 +185,7 @@ static void rssyl_deleted_store_internal(GSList *deleted_items, const gchar *del
 		return;
 	}
 
-	g_slist_foreach(deleted_items, (GFunc)_store_one_deleted_item,
-			(gpointer)f);
+	g_slist_foreach(deleted_items, (GFunc) _store_one_deleted_item, (gpointer)f);
 
 	claws_safe_fclose(f);
 	debug_print("RSSyl: written and closed deletion file\n");
@@ -209,7 +201,6 @@ void rssyl_deleted_store(RFolderItem *ritem)
 	rssyl_deleted_store_internal(ritem->deleted_items, path);
 	g_free(path);
 }
-
 
 /* Creates a FeedItem from a message file and uses the data to add a item
  * to the list of deleted stuff. */
@@ -228,20 +219,19 @@ void rssyl_deleted_add(RFolderItem *ritem, gchar *path)
 
 	ditem = _new_deleted_item();
 	ditem->id = g_strdup(feed_item_get_id(fitem));
-	ditem->title = conv_unmime_header(feed_item_get_title(fitem),
-			CS_UTF_8, FALSE);
+	ditem->title = conv_unmime_header(feed_item_get_title(fitem), CS_UTF_8, FALSE);
 	ditem->date_published = feed_item_get_date_published(fitem);
 
 	ritem->deleted_items = g_slist_prepend(ritem->deleted_items, ditem);
 
-	RFeedCtx *ctx = (RFeedCtx *)fitem->data;
+	RFeedCtx *ctx = (RFeedCtx *) fitem->data;
 	g_free(ctx->path);
 	feed_item_free(fitem);
 }
 
 static gint _rssyl_deleted_check_func(gconstpointer a, gconstpointer b)
 {
-	RDeletedItem *ditem = (RDeletedItem *)a;
+	RDeletedItem *ditem = (RDeletedItem *) a;
 	FeedItem *fitem = (FeedItem *)b;
 	gchar *id;
 	gboolean id_match = FALSE;
@@ -258,19 +248,15 @@ static gint _rssyl_deleted_check_func(gconstpointer a, gconstpointer b)
 	if ((id = feed_item_get_id(fitem)) == NULL)
 		id = feed_item_get_url(fitem);
 
-	if (ditem->id && id &&
-			!strcmp(ditem->id, id))
+	if (ditem->id && id && !strcmp(ditem->id, id))
 		id_match = TRUE;
 
 	/* title, ... */
-	if (ditem->title && feed_item_get_title(fitem) &&
-			!strcmp(ditem->title, feed_item_get_title(fitem)))
+	if (ditem->title && feed_item_get_title(fitem) && !strcmp(ditem->title, feed_item_get_title(fitem)))
 		title_match = TRUE;
 
 	/* ...and time of publishing */
-	if (ditem->date_published == -1 ||
-			ditem->date_published == feed_item_get_date_published(fitem) ||
-			ditem->date_published == feed_item_get_date_modified(fitem))
+	if (ditem->date_published == -1 || ditem->date_published == feed_item_get_date_published(fitem) || ditem->date_published == feed_item_get_date_modified(fitem))
 		pubdate_match = TRUE;
 
 	/* if all three match, it's the same item */
@@ -293,8 +279,7 @@ gboolean rssyl_deleted_check(RFolderItem *ritem, FeedItem *fitem)
 	if (ritem->deleted_items == NULL)
 		return FALSE;
 
-	if (g_slist_find_custom(ritem->deleted_items, (gconstpointer)fitem,
-				_rssyl_deleted_check_func) != NULL)
+	if (g_slist_find_custom(ritem->deleted_items, (gconstpointer) fitem, _rssyl_deleted_check_func) != NULL)
 		return TRUE;
 
 	return FALSE;
@@ -311,7 +296,7 @@ typedef struct _RDelExpireCtx RDelExpireCtx;
 static void _rssyl_deleted_expire_func_f(gpointer data, gpointer user_data)
 {
 	FeedItem *fitem = (FeedItem *)data;
-	RDelExpireCtx *ctx = (RDelExpireCtx *)user_data;
+	RDelExpireCtx *ctx = (RDelExpireCtx *) user_data;
 	gchar *id;
 	gboolean id_match = FALSE;
 	gboolean title_match = FALSE;
@@ -324,19 +309,15 @@ static void _rssyl_deleted_expire_func_f(gpointer data, gpointer user_data)
 	if ((id = feed_item_get_id(fitem)) == NULL)
 		id = feed_item_get_url(fitem);
 
-	if (ctx->ditem->id && id &&
-			!strcmp(ctx->ditem->id, id))
+	if (ctx->ditem->id && id && !strcmp(ctx->ditem->id, id))
 		id_match = TRUE;
 
 	/* title, ... */
-	if (ctx->ditem->title && feed_item_get_title(fitem) &&
-			!strcmp(ctx->ditem->title, feed_item_get_title(fitem)))
+	if (ctx->ditem->title && feed_item_get_title(fitem) && !strcmp(ctx->ditem->title, feed_item_get_title(fitem)))
 		title_match = TRUE;
 
 	/* time of publishing, if set... */
-	if (ctx->ditem->date_published == -1 ||
-			ctx->ditem->date_published == feed_item_get_date_published(fitem) ||
-			ctx->ditem->date_published == feed_item_get_date_modified(fitem))
+	if (ctx->ditem->date_published == -1 || ctx->ditem->date_published == feed_item_get_date_published(fitem) || ctx->ditem->date_published == feed_item_get_date_modified(fitem))
 		pubdate_match = TRUE;
 
 	/* if it's our item, set to NOT delete, since it's obviously
@@ -361,7 +342,7 @@ void rssyl_deleted_expire(RFolderItem *ritem, Feed *feed)
 	/* Iterate over all items in the list */
 	d = ritem->deleted_items;
 	while (d) {
-		ditem = (RDeletedItem *)d->data;
+		ditem = (RDeletedItem *) d->data;
 		ctx = g_new0(RDelExpireCtx, 1);
 		ctx->ditem = ditem;
 		ctx->delete = TRUE;
@@ -384,3 +365,7 @@ void rssyl_deleted_expire(RFolderItem *ritem, Feed *feed)
 		g_free(ctx);
 	}
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

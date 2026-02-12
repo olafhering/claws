@@ -24,35 +24,33 @@
 typedef struct _LibravatarPrefs LibravatarPrefs;
 
 /* http://wiki.libravatar.org/api/ */
-enum
-{
-	DEF_MODE_NONE		= 0,
-	DEF_MODE_URL		= 1,
-	DEF_MODE_404		= 10, /* not used, only useful in web pages */
-	DEF_MODE_MM		= 11,
-	DEF_MODE_IDENTICON	= 12,
-	DEF_MODE_MONSTERID	= 13,
-	DEF_MODE_WAVATAR	= 14,
-	DEF_MODE_RETRO		= 15,
-	DEF_MODE_ROBOHASH	= 16,
-	DEF_MODE_PAGAN		= 17
+enum {
+	DEF_MODE_NONE = 0,
+	DEF_MODE_URL = 1,
+	DEF_MODE_404 = 10, /* not used, only useful in web pages */
+	DEF_MODE_MM = 11,
+	DEF_MODE_IDENTICON = 12,
+	DEF_MODE_MONSTERID = 13,
+	DEF_MODE_WAVATAR = 14,
+	DEF_MODE_RETRO = 15,
+	DEF_MODE_ROBOHASH = 16,
+	DEF_MODE_PAGAN = 17
 };
 
-struct _LibravatarPrefs
-{
-	gchar		*base_url; /* hidden pref */
-	guint		cache_interval;
-	gboolean	cache_icons;
-	guint		default_mode;
-	gchar		*default_mode_url;
-	gboolean	allow_redirects;
+struct _LibravatarPrefs {
+	gchar *base_url; /* hidden pref */
+	guint cache_interval;
+	gboolean cache_icons;
+	guint default_mode;
+	gchar *default_mode_url;
+	gboolean allow_redirects;
 #if defined USE_GNUTLS
-	gboolean	allow_federated;
+	gboolean allow_federated;
 #endif
-	guint		timeout;
-	guint		max_redirects_url; /* hidden pref */
-	guint		max_redirects_mm; /* hidden pref */
-	guint		max_redirects;   /* hidden pref */
+	guint timeout;
+	guint max_redirects_url; /* hidden pref */
+	guint max_redirects_mm;	/* hidden pref */
+	guint max_redirects; /* hidden pref */
 };
 
 extern LibravatarPrefs libravatarprefs;
@@ -62,4 +60,3 @@ void libravatar_prefs_init(void);
 void libravatar_prefs_done(void);
 
 #endif
-

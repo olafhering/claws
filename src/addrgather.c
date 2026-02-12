@@ -21,7 +21,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -47,10 +47,10 @@
 
 #include "addrharvest.h"
 #ifndef USE_ALT_ADDRBOOK
-	#include "addrindex.h"
-	#include "addrbook.h"
+#include "addrindex.h"
+#include "addrbook.h"
 #else
-	#include "addressbook-dbus.h"
+#include "addressbook-dbus.h"
 #endif
 #define PAGE_FIELDS     0
 #define PAGE_FINISH     1
@@ -66,7 +66,7 @@
 
 typedef enum {
 	FIELD_COL_HEADER = 0,
-	FIELD_COL_COUNT  = 1
+	FIELD_COL_COUNT = 1
 } AddrHarvest;
 
 /*
@@ -77,7 +77,7 @@ static struct _AddrHarvest {
 	GtkWidget *notebook;
 	GtkWidget *labelFolder;
 	GtkWidget *entryBook;
-	GtkWidget *checkHeader[ NUM_FIELDS ];
+	GtkWidget *checkHeader[NUM_FIELDS];
 #ifndef USE_ALT_ADDRBOOK
 	GtkWidget *spinbtnFolder;
 #endif
@@ -85,10 +85,10 @@ static struct _AddrHarvest {
 	GtkWidget *btnOk;
 	GtkWidget *btnCancel;
 	GtkWidget *statusbar;
-	gint      status_cid;
-	gboolean  cancelled;
-	gboolean  done;
-	gchar     *folderPath;
+	gint status_cid;
+	gboolean cancelled;
+	gboolean done;
+	gchar *folderPath;
 	GtkWidget *viewCount;
 } addrgather_dlg;
 
@@ -104,6 +104,7 @@ static gchar *_harv_headerNames_[] = {
 	HEADER_CC,
 	HEADER_ERRORS_TO
 };
+
 static GList *_harv_messageList_;
 
 enum {
@@ -112,48 +113,44 @@ enum {
 	N_ADDRGATHER_COLS
 };
 
-static void addrgather_dlg_status_show( gchar *msg ) {
-	if( addrgather_dlg.statusbar != NULL ) {
-		gtk_statusbar_pop( GTK_STATUSBAR(addrgather_dlg.statusbar),
-			addrgather_dlg.status_cid );
-		if( msg ) {
-			gtk_statusbar_push(
-				GTK_STATUSBAR(addrgather_dlg.statusbar),
-				addrgather_dlg.status_cid, msg );
+static void addrgather_dlg_status_show(gchar *msg)
+{
+	if (addrgather_dlg.statusbar != NULL) {
+		gtk_statusbar_pop(GTK_STATUSBAR(addrgather_dlg.statusbar), addrgather_dlg.status_cid);
+		if (msg) {
+			gtk_statusbar_push(GTK_STATUSBAR(addrgather_dlg.statusbar), addrgather_dlg.status_cid, msg);
 		}
 	}
 }
 
-static gint addrgather_dlg_delete_event(
-	GtkWidget *widget, GdkEventAny *event, gpointer data )
+static gint addrgather_dlg_delete_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	addrgather_dlg.cancelled = TRUE;
 	gtk_main_quit();
 	return TRUE;
 }
 
-static gboolean addrgather_dlg_key_pressed(
-	GtkWidget *widget, GdkEventKey *event, gpointer data )
+static gboolean addrgather_dlg_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-	if( event && event->keyval == GDK_KEY_Escape ) {
+	if (event && event->keyval == GDK_KEY_Escape) {
 		addrgather_dlg.cancelled = TRUE;
 		gtk_main_quit();
 	}
 	return FALSE;
 }
 
-static void addrgather_size_allocate(
-	GtkWidget *widget, GtkAllocation *allocation )
+static void addrgather_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 {
-	cm_return_if_fail( allocation != NULL );
-	
-	prefs_common.addrgather_width	= allocation->width;
-	prefs_common.addrgather_height	= allocation->height;
+	cm_return_if_fail(allocation != NULL);
+
+	prefs_common.addrgather_width = allocation->width;
+	prefs_common.addrgather_height = allocation->height;
 }
 
 #define FMT_BUFSIZE 32
 
-static gboolean addrgather_dlg_harvest() {
+static gboolean addrgather_dlg_harvest()
+{
 	GtkWidget *view;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
@@ -163,93 +160,82 @@ static gboolean addrgather_dlg_harvest() {
 	AddressBookFile *abf;
 	gchar *newFile;
 #else
-    GList* list;
-    ContactData* contact;
-    GError* error = NULL;
+	GList *list;
+	ContactData *contact;
+	GError *error = NULL;
 #endif
-	gchar str[ FMT_BUFSIZE ];
+	gchar str[FMT_BUFSIZE];
 	gint cnt;
 	gint i;
 #ifndef USE_ALT_ADDRBOOK
 	gint sz;
 
-	name = gtk_editable_get_chars( GTK_EDITABLE(addrgather_dlg.entryBook), 0, -1 );
-	if( name == NULL || strlen( name ) < 1 ) {
-		addrgather_dlg_status_show(
-			_( "Please specify name for address book." ) );
-		g_free( name );
+	name = gtk_editable_get_chars(GTK_EDITABLE(addrgather_dlg.entryBook), 0, -1);
+	if (name == NULL || strlen(name) < 1) {
+		addrgather_dlg_status_show(_("Please specify name for address book."));
+		g_free(name);
 		return FALSE;
 #else
-	name = gtk_editable_get_chars( GTK_EDITABLE(addrgather_dlg.entryBook), 0, -1 );
-	if( name == NULL || strlen( name ) < 1 ) {
-		addrgather_dlg_status_show(
-			_("No available address book."));
-		g_free( name );
+	name = gtk_editable_get_chars(GTK_EDITABLE(addrgather_dlg.entryBook), 0, -1);
+	if (name == NULL || strlen(name) < 1) {
+		addrgather_dlg_status_show(_("No available address book."));
+		g_free(name);
 		return FALSE;
 #endif
 	}
 
 	/* Create harvest helper */
 	harvester = addrharvest_create();
-	addrharvest_set_path( harvester, addrgather_dlg.folderPath );
+	addrharvest_set_path(harvester, addrgather_dlg.folderPath);
 
-	for( i = 0; i < NUM_FIELDS; i++ ) {
-		addrharvest_set_header( harvester, _harv_headerNames_[i],
-		gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i]) ) );
+	for (i = 0; i < NUM_FIELDS; i++) {
+		addrharvest_set_header(harvester, _harv_headerNames_[i], gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i])));
 	}
-	addrharvest_set_recurse( harvester,
-		gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON( addrgather_dlg.checkRecurse ) ) );
+	addrharvest_set_recurse(harvester, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkRecurse)));
 
-	if( addrharvest_check_header( harvester ) == FALSE ) {
-		addrgather_dlg_status_show(
-			_( "Please select the mail headers to search." ) );
-		addrharvest_free( harvester );
-		g_free( name );
+	if (addrharvest_check_header(harvester) == FALSE) {
+		addrgather_dlg_status_show(_("Please select the mail headers to search."));
+		addrharvest_free(harvester);
+		g_free(name);
 		return FALSE;
 	}
 
 	/* Go fer it */
-	addrgather_dlg_status_show( _( "Collecting addresses..." ) );
+	addrgather_dlg_status_show(_("Collecting addresses..."));
 	GTK_EVENTS_FLUSH();
 #ifndef USE_ALT_ADDRBOOK
-	sz = gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON( addrgather_dlg.spinbtnFolder ) );
-	addrharvest_set_folder_size( harvester, sz );
+	sz = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(addrgather_dlg.spinbtnFolder));
+	addrharvest_set_folder_size(harvester, sz);
 #endif
 
 #ifndef USE_ALT_ADDRBOOK
 	/* Create address book */
 	abf = addrbook_create_book();
-	addrbook_set_path( abf, _harv_addressIndex_->filePath );
-	newFile = addrbook_guess_next_file( abf );
-	addrbook_set_file( abf, newFile );
-	addrbook_set_name( abf, name );
-	g_free( newFile );
-	g_free( name );
+	addrbook_set_path(abf, _harv_addressIndex_->filePath);
+	newFile = addrbook_guess_next_file(abf);
+	addrbook_set_file(abf, newFile);
+	addrbook_set_name(abf, name);
+	g_free(newFile);
+	g_free(name);
 #endif
 
 	/* Harvest addresses */
 #ifndef USE_ALT_ADDRBOOK
-	addrharvest_harvest(
-		harvester, abf->addressCache, _harv_messageList_ );
+	addrharvest_harvest(harvester, abf->addressCache, _harv_messageList_);
 	/* save address book */
-	addrbook_save_data( abf );
+	addrbook_save_data(abf);
 	_harv_addressBook_ = abf;
 #else
-	addrharvest_harvest(
-		harvester, NULL, _harv_messageList_ );
+	addrharvest_harvest(harvester, NULL, _harv_messageList_);
 	list = g_hash_table_get_values(harvester->dupTable);
 	for (; list; list = g_list_next(list)) {
 		contact = g_new0(ContactData, 1);
-		ContactEntry* person = (ContactEntry *) list->data;
+		ContactEntry *person = (ContactEntry *) list->data;
 		if (person->first_name)
-			contact->name = g_strconcat(
-					person->first_name, " ", person->last_name, NULL);
+			contact->name = g_strconcat(person->first_name, " ", person->last_name, NULL);
 		else
 			contact->name = g_strdup(person->last_name);
-		if (! contact->name || strlen(contact->name) < 1)
+		if (!contact->name || strlen(contact->name) < 1)
 			contact->name = g_strdup(person->email);
 		contact->remarks = g_strdup(N_("address added by Claws Mail"));
 		contact->email = g_strdup(person->email);
@@ -264,48 +250,45 @@ static gboolean addrgather_dlg_harvest() {
 	/* Update summary count */
 	view = addrgather_dlg.viewCount;
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(view));
-	gtk_list_store_clear( GTK_LIST_STORE(model) );
-	for( i = 0; i < NUM_FIELDS; i++ ) {
-		cnt = addrharvest_get_count( harvester, _harv_headerNames_[i] );
-		if( cnt < 1 ) {
-			strcpy( str, "-" );
-		}
-		else {
-			snprintf( str, FMT_BUFSIZE, "%d", cnt );
+	gtk_list_store_clear(GTK_LIST_STORE(model));
+	for (i = 0; i < NUM_FIELDS; i++) {
+		cnt = addrharvest_get_count(harvester, _harv_headerNames_[i]);
+		if (cnt < 1) {
+			strcpy(str, "-");
+		} else {
+			snprintf(str, FMT_BUFSIZE, "%d", cnt);
 		}
 		gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-		gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-				ADDRGATHER_COL_HEADER, _harv_headerNames_[i],
-				ADDRGATHER_COL_COUNT, str,
-				-1);
+		gtk_list_store_set(GTK_LIST_STORE(model), &iter, ADDRGATHER_COL_HEADER, _harv_headerNames_[i], ADDRGATHER_COL_COUNT, str, -1);
 	}
 
-	addrharvest_free( harvester );
+	addrharvest_free(harvester);
 
 	addrgather_dlg_status_show(_("Addresses collected successfully."));
 
 	/* Display summary page */
-	gtk_notebook_set_current_page(
-		GTK_NOTEBOOK(addrgather_dlg.notebook), PAGE_FINISH );
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(addrgather_dlg.notebook), PAGE_FINISH);
 	addrgather_dlg.done = TRUE;
-	gtk_widget_set_sensitive( addrgather_dlg.btnCancel, FALSE );
-	gtk_widget_grab_default( addrgather_dlg.btnOk );
+	gtk_widget_set_sensitive(addrgather_dlg.btnCancel, FALSE);
+	gtk_widget_grab_default(addrgather_dlg.btnOk);
 
 	return TRUE;
 }
 
-static void addrgather_dlg_ok( GtkWidget *widget, gpointer data ) {
-	if(addrgather_dlg.done) {
+static void addrgather_dlg_ok(GtkWidget *widget, gpointer data)
+{
+	if (addrgather_dlg.done) {
 		addrgather_dlg.done = FALSE;
 		gtk_main_quit();
 		return;
 	}
-	if( addrgather_dlg_harvest() ) {
+	if (addrgather_dlg_harvest()) {
 		addrgather_dlg.cancelled = FALSE;
 	}
 }
 
-static void addrgather_dlg_cancel( GtkWidget *widget, gpointer data ) {
+static void addrgather_dlg_cancel(GtkWidget *widget, gpointer data)
+{
 	gtk_main_quit();
 }
 
@@ -333,7 +316,7 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
 	gint top;
 	gint i;
 #ifdef USE_ALT_ADDRBOOK
-	GError* error = NULL;
+	GError *error = NULL;
 	GSList *books, *cur;
 #endif
 
@@ -345,9 +328,7 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
 	/* Notebook page */
 	label = gtk_label_new(pageLbl);
 	gtk_widget_show(label);
-	gtk_notebook_set_tab_label(GTK_NOTEBOOK(addrgather_dlg.notebook),
-				   gtk_notebook_get_nth_page(GTK_NOTEBOOK(addrgather_dlg.notebook),
-							     pageNum), label);
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK(addrgather_dlg.notebook), gtk_notebook_get_nth_page(GTK_NOTEBOOK(addrgather_dlg.notebook), pageNum), label);
 
 	/* Upper area - Field list */
 	table = gtk_table_new(4, 2, FALSE);
@@ -358,48 +339,44 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
 	/* First row */
 	top = 0;
 	label = gtk_label_new(_("Current folder:"));
-	gtk_table_attach( GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0 );
-	gtk_misc_set_alignment( GTK_MISC(label), 1.0, 0.5 );
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
 	labelFolder = gtk_label_new("");
-	gtk_table_attach( GTK_TABLE(table), labelFolder, 1, 2, top, (top + 1),
-		GTK_EXPAND|GTK_SHRINK|GTK_FILL, 0, 0, 0 );
-	gtk_misc_set_alignment( GTK_MISC(labelFolder), 0, 0.5 );
+	gtk_table_attach(GTK_TABLE(table), labelFolder, 1, 2, top, (top + 1), GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(labelFolder), 0, 0.5);
 
 	/* Second row */
 	top = 1;
 	label = gtk_label_new(_("Address book name:"));
-	gtk_table_attach( GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0 );
-	gtk_misc_set_alignment( GTK_MISC(label), 1.0, 0.5 );
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
 
 #ifndef USE_ALT_ADDRBOOK
 	entryBook = gtk_entry_new();
 #else
-        books = addressbook_dbus_get_books(&error);
-        entryBook = gtk_combo_box_text_new();
-        if (books) {
-            for (cur = books; cur; cur = g_slist_next(cur)) {
-                gchar* book = (gchar *) cur->data;
-                gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(entryBook), book);
-                g_free(book);
-            }
-            g_slist_free(books);
-       	}
-        else
-            gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(entryBook), "");
-        gtk_combo_box_set_active(GTK_COMBO_BOX(entryBook), 0);
+	books = addressbook_dbus_get_books(&error);
+	entryBook = gtk_combo_box_text_new();
+	if (books) {
+		for (cur = books; cur; cur = g_slist_next(cur)) {
+			gchar *book = (gchar *)cur->data;
+			gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(entryBook), book);
+			g_free(book);
+		}
+		g_slist_free(books);
+	} else
+		gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(entryBook), "");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(entryBook), 0);
 #endif
-	gtk_table_attach( GTK_TABLE(table), entryBook, 1, 2, top, (top + 1),
-		GTK_EXPAND|GTK_SHRINK|GTK_FILL, 0, 0, 0 );
+	gtk_table_attach(GTK_TABLE(table), entryBook, 1, 2, top, (top + 1), GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0, 0);
 
 #ifndef USE_ALT_ADDRBOOK
 	/* Third row */
 	top = 2;
 	label = gtk_label_new(_("Address book folder size:"));
-	gtk_table_attach( GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0 );
-	gtk_misc_set_alignment( GTK_MISC(label), 1.0, 0.5 );
-	CLAWS_SET_TIP(label,
-			_("Maximum amount of entries per folder within the newly created address book"));
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, top, (top + 1), GTK_FILL, 0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
+	CLAWS_SET_TIP(label, _("Maximum amount of entries per folder within the newly created address book"));
 
 	hboxs = gtk_hbox_new(FALSE, 8);
 	adjFolder = GTK_ADJUSTMENT(gtk_adjustment_new(DFL_FOLDER_SIZE, MIN_FOLDER_SIZE, G_MAXINT, 1, 10, 0));
@@ -407,8 +384,7 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
 	gtk_box_pack_start(GTK_BOX(hboxs), spinbtnFolder, FALSE, FALSE, 0);
 	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtnFolder), TRUE);
 	gtk_table_attach(GTK_TABLE(table), hboxs, 1, 2, top, (top + 1), GTK_FILL, 0, 0, 0);
-	CLAWS_SET_TIP(spinbtnFolder,
-			_("Maximum amount of entries per folder within the newly created address book"));
+	CLAWS_SET_TIP(spinbtnFolder, _("Maximum amount of entries per folder within the newly created address book"));
 #endif
 	/* Fourth row */
 	top = 3;
@@ -424,23 +400,21 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
 	gtk_container_set_border_width(GTK_CONTAINER(vboxf), 8);
 
 	for (i = 0; i < NUM_FIELDS; i++) {
-		PACK_CHECK_BUTTON(vboxf, checkHeader[i],
-			prefs_common_translated_header_name(_harv_headerNames_[i]));
+		PACK_CHECK_BUTTON(vboxf, checkHeader[i], prefs_common_translated_header_name(_harv_headerNames_[i]));
 		addrgather_dlg.checkHeader[i] = checkHeader[i];
 	}
 
 	/* Recurse folders */
 	top += 4;
-	checkRecurse = gtk_check_button_new_with_label( _("Include subfolders" ) );
-	gtk_table_attach( GTK_TABLE(table), checkRecurse, 0, 2, top, (top + 1),
-			GTK_EXPAND|GTK_SHRINK|GTK_FILL, 0, 0, 0 );
+	checkRecurse = gtk_check_button_new_with_label(_("Include subfolders"));
+	gtk_table_attach(GTK_TABLE(table), checkRecurse, 0, 2, top, (top + 1), GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0, 0);
 
-	addrgather_dlg.labelFolder   = labelFolder;
-	addrgather_dlg.entryBook     = entryBook;
+	addrgather_dlg.labelFolder = labelFolder;
+	addrgather_dlg.entryBook = entryBook;
 #ifndef USE_ALT_ADDRBOOK
 	addrgather_dlg.spinbtnFolder = spinbtnFolder;
 #endif
-	addrgather_dlg.checkRecurse  = checkRecurse;
+	addrgather_dlg.checkRecurse = checkRecurse;
 }
 
 /*
@@ -448,7 +422,8 @@ static void addrgather_page_fields(gint pageNum, gchar *pageLbl)
  * Enter: pageNum Page number.
  *        pageLbl Page label.
  */
-static void addrgather_page_finish( gint pageNum, gchar *pageLbl ) {
+static void addrgather_page_finish(gint pageNum, gchar *pageLbl)
+{
 	GtkWidget *label;
 	GtkWidget *vbox;
 	GtkWidget *scrollwin;
@@ -459,26 +434,20 @@ static void addrgather_page_finish( gint pageNum, gchar *pageLbl ) {
 	GtkTreeModel *model;
 
 	vbox = gtk_vbox_new(FALSE, 8);
-	gtk_container_add( GTK_CONTAINER( addrgather_dlg.notebook ), vbox );
-	gtk_container_set_border_width( GTK_CONTAINER (vbox), 8 );
+	gtk_container_add(GTK_CONTAINER(addrgather_dlg.notebook), vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
 
-	label = gtk_label_new( pageLbl );
-	gtk_widget_show( label );
-	gtk_notebook_set_tab_label(
-		GTK_NOTEBOOK( addrgather_dlg.notebook ),
-		gtk_notebook_get_nth_page( GTK_NOTEBOOK( addrgather_dlg.notebook ), pageNum ),
-		label );
+	label = gtk_label_new(pageLbl);
+	gtk_widget_show(label);
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK(addrgather_dlg.notebook), gtk_notebook_get_nth_page(GTK_NOTEBOOK(addrgather_dlg.notebook), pageNum), label);
 
 	/* Summary count */
-	scrollwin = gtk_scrolled_window_new( NULL, NULL );
-	gtk_container_add( GTK_CONTAINER(vbox), scrollwin );
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
+	scrollwin = gtk_scrolled_window_new(NULL, NULL);
+	gtk_container_add(GTK_CONTAINER(vbox), scrollwin);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
 	/* Treeview */
-	model = GTK_TREE_MODEL(gtk_list_store_new(N_ADDRGATHER_COLS,
-			G_TYPE_STRING, G_TYPE_STRING, -1));
+	model = GTK_TREE_MODEL(gtk_list_store_new(N_ADDRGATHER_COLS, G_TYPE_STRING, G_TYPE_STRING, -1));
 
 	viewCount = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
 	g_object_unref(model);
@@ -489,19 +458,15 @@ static void addrgather_page_finish( gint pageNum, gchar *pageLbl ) {
 
 	/* Columns for the treeview */
 	rdr = gtk_cell_renderer_text_new();
-	col = gtk_tree_view_column_new_with_attributes(_("Header Name"), rdr,
-			"markup", ADDRGATHER_COL_HEADER,
-			NULL);
+	col = gtk_tree_view_column_new_with_attributes(_("Header Name"), rdr, "markup", ADDRGATHER_COL_HEADER, NULL);
 	gtk_tree_view_column_set_min_width(col, FIELDS_COL_WIDTH_HEADER);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewCount), col);
 
-	col = gtk_tree_view_column_new_with_attributes(_("Address Count"), rdr,
-			"text", ADDRGATHER_COL_COUNT,
-			NULL);
+	col = gtk_tree_view_column_new_with_attributes(_("Address Count"), rdr, "text", ADDRGATHER_COL_COUNT, NULL);
 	gtk_tree_view_column_set_min_width(col, FIELDS_COL_WIDTH_COUNT);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewCount), col);
 
-	gtk_container_add( GTK_CONTAINER(scrollwin), viewCount );
+	gtk_container_add(GTK_CONTAINER(scrollwin), viewCount);
 
 	addrgather_dlg.viewCount = viewCount;
 }
@@ -522,19 +487,16 @@ static void addrgather_dlg_create(void)
 	GtkWidget *hbbox;
 	GtkWidget *hsbox;
 	static GdkGeometry geometry;
-	
+
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "addrgather");
 	gtk_container_set_border_width(GTK_CONTAINER(window), 4);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	
-	g_signal_connect(G_OBJECT(window), "delete_event",
-			 G_CALLBACK(addrgather_dlg_delete_event), NULL);
-	g_signal_connect(G_OBJECT(window), "key_press_event",
-			 G_CALLBACK(addrgather_dlg_key_pressed), NULL);
-	g_signal_connect(G_OBJECT(window), "size_allocate",
-			 G_CALLBACK(addrgather_size_allocate), NULL);
+
+	g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(addrgather_dlg_delete_event), NULL);
+	g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(addrgather_dlg_key_pressed), NULL);
+	g_signal_connect(G_OBJECT(window), "size_allocate", G_CALLBACK(addrgather_size_allocate), NULL);
 
 	vbox = gtk_vbox_new(FALSE, 6);
 	gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -553,34 +515,27 @@ static void addrgather_dlg_create(void)
 	gtk_box_pack_start(GTK_BOX(hsbox), statusbar, TRUE, TRUE, 0);
 
 	/* Button panel */
-	gtkut_stock_button_set_create(&hbbox, &btnCancel, GTK_STOCK_CANCEL,
-				      &btnOk, GTK_STOCK_OK,
-				      NULL, NULL);
+	gtkut_stock_button_set_create(&hbbox, &btnCancel, GTK_STOCK_CANCEL, &btnOk, GTK_STOCK_OK, NULL, NULL);
 	gtk_box_pack_end(GTK_BOX(vbox), hbbox, FALSE, FALSE, 0);
 
 	/* Signal handlers */
-	g_signal_connect(G_OBJECT(btnOk), "clicked",
-			 G_CALLBACK(addrgather_dlg_ok), NULL);
-	g_signal_connect(G_OBJECT(btnCancel), "clicked",
-			 G_CALLBACK(addrgather_dlg_cancel), NULL);
+	g_signal_connect(G_OBJECT(btnOk), "clicked", G_CALLBACK(addrgather_dlg_ok), NULL);
+	g_signal_connect(G_OBJECT(btnCancel), "clicked", G_CALLBACK(addrgather_dlg_cancel), NULL);
 
 	if (!geometry.min_width) {
 		geometry.min_width = 450;
 		geometry.min_height = -1;
 	}
 
-	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry,
-				      GDK_HINT_MIN_SIZE);
-	gtk_window_set_default_size(GTK_WINDOW(window), prefs_common.addrgather_width,
-				    prefs_common.addrgather_height);
+	gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &geometry, GDK_HINT_MIN_SIZE);
+	gtk_window_set_default_size(GTK_WINDOW(window), prefs_common.addrgather_width, prefs_common.addrgather_height);
 
-	addrgather_dlg.window     = window;
-	addrgather_dlg.notebook   = notebook;
-	addrgather_dlg.btnOk      = btnOk;
-	addrgather_dlg.btnCancel  = btnCancel;
-	addrgather_dlg.statusbar  = statusbar;
-	addrgather_dlg.status_cid = gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar),
-								 "Collect Email Address Dialog");
+	addrgather_dlg.window = window;
+	addrgather_dlg.notebook = notebook;
+	addrgather_dlg.btnOk = btnOk;
+	addrgather_dlg.btnCancel = btnCancel;
+	addrgather_dlg.statusbar = statusbar;
+	addrgather_dlg.status_cid = gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar), "Collect Email Address Dialog");
 
 	/* Create notebook pages */
 	addrgather_page_fields(PAGE_FIELDS, _("Header Fields"));
@@ -597,8 +552,7 @@ static void addrgather_dlg_create(void)
  * Return: Populated address book file, or NULL if none created.
  */
 #ifndef USE_ALT_ADDRBOOK
-AddressBookFile *addrgather_dlg_execute(FolderItem *folderItem, AddressIndex *addrIndex,
-					gboolean sourceInd, GList *msgList)
+AddressBookFile *addrgather_dlg_execute(FolderItem *folderItem, AddressIndex *addrIndex, gboolean sourceInd, GList *msgList)
 #else
 void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *msgList)
 #endif
@@ -614,7 +568,7 @@ void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *m
 	/* Create dialog */
 	if (!addrgather_dlg.window)
 		addrgather_dlg_create();
-	
+
 	addrgather_dlg.done = FALSE;
 
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(addrgather_dlg.notebook), PAGE_FIELDS);
@@ -628,11 +582,9 @@ void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *m
 #endif
 
 	for (i = 0; i < NUM_FIELDS; i++) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i]),
-					     FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i]), FALSE);
 		if (g_utf8_collate(_harv_headerNames_[i], HEADER_FROM) == 0)
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i]),
-						    TRUE);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkHeader[i]), TRUE);
 	}
 
 	gtk_widget_set_sensitive(addrgather_dlg.btnOk, TRUE);
@@ -641,12 +593,10 @@ void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *m
 
 	/* Apply window title */
 	if (sourceInd) {
-		gtk_window_set_title(GTK_WINDOW(addrgather_dlg.window),
-				     _("Collect email addresses from selected messages"));
+		gtk_window_set_title(GTK_WINDOW(addrgather_dlg.window), _("Collect email addresses from selected messages"));
 		gtk_widget_set_sensitive(addrgather_dlg.checkRecurse, FALSE);
 	} else {
-		gtk_window_set_title(GTK_WINDOW(addrgather_dlg.window),
-				     _("Collect email addresses from folder"));
+		gtk_window_set_title(GTK_WINDOW(addrgather_dlg.window), _("Collect email addresses from folder"));
 		gtk_widget_set_sensitive(addrgather_dlg.checkRecurse, TRUE);
 	}
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addrgather_dlg.checkRecurse), FALSE);
@@ -671,8 +621,11 @@ void addrgather_dlg_execute(FolderItem *folderItem, gboolean sourceInd, GList *m
 	return _harv_addressBook_;
 #endif
 }
+
 /*
 * End of Source.
 */
 
-
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

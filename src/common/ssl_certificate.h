@@ -37,8 +37,7 @@
 
 typedef struct _SSLCertificate SSLCertificate;
 
-struct _SSLCertificate
-{
+struct _SSLCertificate {
 	gnutls_x509_crt_t x509_cert;
 	gchar *host;
 	gushort port;
@@ -48,26 +47,24 @@ struct _SSLCertificate
 
 typedef struct _SSLCertHookData SSLCertHookData;
 
-struct _SSLCertHookData
-{
+struct _SSLCertHookData {
 	SSLCertificate *cert;
 	SSLCertificate *old_cert;
 	gboolean expired;
 	gboolean accept;
 };
 
-SSLCertificate *ssl_certificate_find (const gchar *host, gushort port, const gchar *fingerprint);
-gboolean ssl_certificate_check (gnutls_x509_crt_t x509_cert, guint status, const gchar *host, gushort port, gboolean accept_if_valid);
-gboolean ssl_certificate_check_chain(gnutls_x509_crt_t *certs, gint chain_len, const gchar *host, gushort port, gboolean accept_if_valid);
+SSLCertificate *ssl_certificate_find(const gchar *host, gushort port, const gchar *fingerprint);
+gboolean ssl_certificate_check(gnutls_x509_crt_t x509_cert, guint status, const gchar *host, gushort port, gboolean accept_if_valid);
+gboolean ssl_certificate_check_chain(gnutls_x509_crt_t * certs, gint chain_len, const gchar *host, gushort port, gboolean accept_if_valid);
 void ssl_certificate_destroy(SSLCertificate *cert);
 void ssl_certificate_delete_from_disk(SSLCertificate *cert);
-char * readable_fingerprint(unsigned char *src, int len);
-char *ssl_certificate_check_signer (SSLCertificate *cert, guint status);
+char *readable_fingerprint(unsigned char *src, int len);
+char *ssl_certificate_check_signer(SSLCertificate *cert, guint status);
 
 gnutls_x509_crt_t ssl_certificate_get_x509_from_pem_file(const gchar *file);
 gnutls_x509_privkey_t ssl_certificate_get_pkey_from_pem_file(const gchar *file);
-void ssl_certificate_get_x509_and_pkey_from_p12_file(const gchar *file, 
-			const gchar *password, gnutls_x509_crt_t *crt, gnutls_x509_privkey_t *key);
+void ssl_certificate_get_x509_and_pkey_from_p12_file(const gchar *file, const gchar *password, gnutls_x509_crt_t * crt, gnutls_x509_privkey_t * key);
 size_t gnutls_i2d_X509(gnutls_x509_crt_t x509_cert, unsigned char **output);
 size_t gnutls_i2d_PrivateKey(gnutls_x509_privkey_t pkey, unsigned char **output);
 gboolean ssl_certificate_check_subject_cn(SSLCertificate *cert);

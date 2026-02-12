@@ -16,17 +16,17 @@
 //#define DEBUG 1
 
 #ifdef DEBUG
-#  define TRACE(x) x
+#define TRACE(x) x
 #else
-#  define TRACE(x) do {} while (FALSE);
+#define TRACE(x) do {} while (FALSE);
 #endif
 
 typedef struct _Binding {
-	TomboyBindkeyHandler  handler;
-	gpointer              user_data;
-	char                 *keystring;
-	uint                  keycode;
-	uint                  modifiers;
+	TomboyBindkeyHandler handler;
+	gpointer user_data;
+	char *keystring;
+	uint keycode;
+	uint modifiers;
 } Binding;
 
 static GSList *bindings = NULL;
@@ -35,138 +35,105 @@ static gboolean processing_event = FALSE;
 
 static guint num_lock_mask, caps_lock_mask, scroll_lock_mask;
 
-static void
-lookup_ignorable_modifiers (GdkKeymap *keymap)
+static void lookup_ignorable_modifiers(GdkKeymap *keymap)
 {
-	egg_keymap_resolve_virtual_modifiers (keymap, 
-					      EGG_VIRTUAL_LOCK_MASK,
-					      &caps_lock_mask);
+	egg_keymap_resolve_virtual_modifiers(keymap, EGG_VIRTUAL_LOCK_MASK, &caps_lock_mask);
 
-	egg_keymap_resolve_virtual_modifiers (keymap, 
-					      EGG_VIRTUAL_NUM_LOCK_MASK,
-					      &num_lock_mask);
+	egg_keymap_resolve_virtual_modifiers(keymap, EGG_VIRTUAL_NUM_LOCK_MASK, &num_lock_mask);
 
-	egg_keymap_resolve_virtual_modifiers (keymap, 
-					      EGG_VIRTUAL_SCROLL_LOCK_MASK,
-					      &scroll_lock_mask);
+	egg_keymap_resolve_virtual_modifiers(keymap, EGG_VIRTUAL_SCROLL_LOCK_MASK, &scroll_lock_mask);
 }
 
-static void
-grab_ungrab_with_ignorable_modifiers (GdkWindow *rootwin, 
-				      Binding   *binding,
-				      gboolean   grab)
+static void grab_ungrab_with_ignorable_modifiers(GdkWindow *rootwin, Binding *binding, gboolean grab)
 {
-	guint mod_masks [] = {
+	guint mod_masks[] = {
 		0, /* modifier only */
 		num_lock_mask,
 		caps_lock_mask,
 		scroll_lock_mask,
-		num_lock_mask  | caps_lock_mask,
-		num_lock_mask  | scroll_lock_mask,
+		num_lock_mask | caps_lock_mask,
+		num_lock_mask | scroll_lock_mask,
 		caps_lock_mask | scroll_lock_mask,
-		num_lock_mask  | caps_lock_mask | scroll_lock_mask,
+		num_lock_mask | caps_lock_mask | scroll_lock_mask,
 	};
 	int i;
 
-	for (i = 0; i < G_N_ELEMENTS (mod_masks); i++) {
+	for (i = 0; i < G_N_ELEMENTS(mod_masks); i++) {
 		if (grab) {
-			XGrabKey (GDK_WINDOW_XDISPLAY (rootwin), 
-				  binding->keycode, 
-				  binding->modifiers | mod_masks [i], 
-				  GDK_WINDOW_XWINDOW (rootwin), 
-				  False, 
-				  GrabModeAsync,
-				  GrabModeAsync);
+			XGrabKey(GDK_WINDOW_XDISPLAY(rootwin), binding->keycode, binding->modifiers | mod_masks[i], GDK_WINDOW_XWINDOW(rootwin), False, GrabModeAsync, GrabModeAsync);
 		} else {
-			XUngrabKey (GDK_WINDOW_XDISPLAY (rootwin),
-				    binding->keycode,
-				    binding->modifiers | mod_masks [i], 
-				    GDK_WINDOW_XWINDOW (rootwin));
+			XUngrabKey(GDK_WINDOW_XDISPLAY(rootwin), binding->keycode, binding->modifiers | mod_masks[i], GDK_WINDOW_XWINDOW(rootwin));
 		}
 	}
 }
 
-static gboolean 
-do_grab_key (Binding *binding)
+static gboolean do_grab_key(Binding *binding)
 {
-	GdkKeymap *keymap = gdk_keymap_get_default ();
-	GdkWindow *rootwin = gdk_get_default_root_window ();
+	GdkKeymap *keymap = gdk_keymap_get_default();
+	GdkWindow *rootwin = gdk_get_default_root_window();
 
 	EggVirtualModifierType virtual_mods = 0;
 	guint keysym = 0;
 
-	TRACE (g_print ("Preparing to bind %s\n", binding->keystring));
-	
-	g_return_val_if_fail (keymap != NULL, FALSE);
-	g_return_val_if_fail (rootwin != NULL, FALSE);
+	TRACE(g_print("Preparing to bind %s\n", binding->keystring));
 
-	if (!egg_accelerator_parse_virtual (binding->keystring, 
-					    &keysym, 
-					    &virtual_mods)) {
-		TRACE (g_print("Failed to parse '%s'", binding->keystring));
+	g_return_val_if_fail(keymap != NULL, FALSE);
+	g_return_val_if_fail(rootwin != NULL, FALSE);
+
+	if (!egg_accelerator_parse_virtual(binding->keystring, &keysym, &virtual_mods)) {
+		TRACE(g_print("Failed to parse '%s'", binding->keystring));
 		return FALSE;
 	}
 
-	TRACE (g_print ("Got accel %d, %d\n", keysym, virtual_mods));
+	TRACE(g_print("Got accel %d, %d\n", keysym, virtual_mods));
 
-	binding->keycode = XKeysymToKeycode (GDK_WINDOW_XDISPLAY (rootwin), 
-					     keysym);
+	binding->keycode = XKeysymToKeycode(GDK_WINDOW_XDISPLAY(rootwin), keysym);
 	if (binding->keycode == 0)
 		return FALSE;
 
-	TRACE (g_print ("Got keycode %d\n", binding->keycode));
+	TRACE(g_print("Got keycode %d\n", binding->keycode));
 
-	egg_keymap_resolve_virtual_modifiers (keymap,
-					      virtual_mods,
-					      &binding->modifiers);
+	egg_keymap_resolve_virtual_modifiers(keymap, virtual_mods, &binding->modifiers);
 
-	TRACE (g_print ("Got modmask %d\n", binding->modifiers));
+	TRACE(g_print("Got modmask %d\n", binding->modifiers));
 
-	gdk_error_trap_push ();
+	gdk_error_trap_push();
 
-	grab_ungrab_with_ignorable_modifiers (rootwin, 
-					      binding, 
-					      TRUE /* grab */);
+	grab_ungrab_with_ignorable_modifiers(rootwin, binding, TRUE /* grab */ );
 
-	gdk_flush ();
+	gdk_flush();
 
-	if (gdk_error_trap_pop ()) {
-	   g_warning("binding '%s' failed!", binding->keystring);
-	   return FALSE;
+	if (gdk_error_trap_pop()) {
+		g_warning("binding '%s' failed!", binding->keystring);
+		return FALSE;
 	}
 
 	return TRUE;
 }
 
-static gboolean 
-do_ungrab_key (Binding *binding)
+static gboolean do_ungrab_key(Binding *binding)
 {
-	GdkWindow *rootwin = gdk_get_default_root_window ();
+	GdkWindow *rootwin = gdk_get_default_root_window();
 
-	TRACE (g_print ("Removing grab for '%s'\n", binding->keystring));
+	TRACE(g_print("Removing grab for '%s'\n", binding->keystring));
 
-	grab_ungrab_with_ignorable_modifiers (rootwin, 
-					      binding, 
-					      FALSE /* ungrab */);
+	grab_ungrab_with_ignorable_modifiers(rootwin, binding, FALSE /* ungrab */ );
 
 	return TRUE;
 }
 
-static GdkFilterReturn
-filter_func (GdkXEvent *gdk_xevent, GdkEvent *event, gpointer data)
+static GdkFilterReturn filter_func(GdkXEvent *gdk_xevent, GdkEvent *event, gpointer data)
 {
 	GdkFilterReturn return_val = GDK_FILTER_CONTINUE;
 	XEvent *xevent = (XEvent *) gdk_xevent;
 	guint event_mods;
 	GSList *iter;
 
-	TRACE (g_print ("Got Event! %d, %d\n", xevent->type, event->type));
+	TRACE(g_print("Got Event! %d, %d\n", xevent->type, event->type));
 
 	switch (xevent->type) {
 	case KeyPress:
-		TRACE (g_print ("Got KeyPress! keycode: %d, modifiers: %d\n", 
-				xevent->xkey.keycode, 
-				xevent->xkey.state));
+		TRACE(g_print("Got KeyPress! keycode: %d, modifiers: %d\n", xevent->xkey.keycode, xevent->xkey.state));
 
 		/* 
 		 * Set the last event time for use when showing
@@ -175,117 +142,99 @@ filter_func (GdkXEvent *gdk_xevent, GdkEvent *event, gpointer data)
 		processing_event = TRUE;
 		last_event_time = xevent->xkey.time;
 
-		event_mods = xevent->xkey.state & ~(num_lock_mask  | 
-						    caps_lock_mask | 
-						    scroll_lock_mask);
+		event_mods = xevent->xkey.state & ~(num_lock_mask | caps_lock_mask | scroll_lock_mask);
 
 		for (iter = bindings; iter != NULL; iter = iter->next) {
-			Binding *binding = (Binding *) iter->data;
-						       
-			if (binding->keycode == xevent->xkey.keycode &&
-			    binding->modifiers == event_mods) {
+			Binding *binding = (Binding *)iter->data;
 
-				TRACE (g_print ("Calling handler for '%s'...\n", 
-						binding->keystring));
+			if (binding->keycode == xevent->xkey.keycode && binding->modifiers == event_mods) {
 
-				(binding->handler) (binding->keystring, 
-						    binding->user_data);
+				TRACE(g_print("Calling handler for '%s'...\n", binding->keystring));
+
+				(binding->handler) (binding->keystring, binding->user_data);
 			}
 		}
 
 		processing_event = FALSE;
 		break;
 	case KeyRelease:
-		TRACE (g_print ("Got KeyRelease! \n"));
+		TRACE(g_print("Got KeyRelease! \n"));
 		break;
 	}
 
 	return return_val;
 }
 
-static void 
-keymap_changed (GdkKeymap *map)
+static void keymap_changed(GdkKeymap *map)
 {
-	GdkKeymap *keymap = gdk_keymap_get_default ();
+	GdkKeymap *keymap = gdk_keymap_get_default();
 	GSList *iter;
 
-	TRACE (g_print ("Keymap changed! Regrabbing keys..."));
+	TRACE(g_print("Keymap changed! Regrabbing keys..."));
 
 	for (iter = bindings; iter != NULL; iter = iter->next) {
-		Binding *binding = (Binding *) iter->data;
-		do_ungrab_key (binding);
+		Binding *binding = (Binding *)iter->data;
+		do_ungrab_key(binding);
 	}
 
-	lookup_ignorable_modifiers (keymap);
+	lookup_ignorable_modifiers(keymap);
 
 	for (iter = bindings; iter != NULL; iter = iter->next) {
-		Binding *binding = (Binding *) iter->data;
-		do_grab_key (binding);
+		Binding *binding = (Binding *)iter->data;
+		do_grab_key(binding);
 	}
 }
 
-void 
-tomboy_keybinder_init (void)
+void tomboy_keybinder_init(void)
 {
-	GdkKeymap *keymap = gdk_keymap_get_default ();
-	GdkWindow *rootwin = gdk_get_default_root_window ();
+	GdkKeymap *keymap = gdk_keymap_get_default();
+	GdkWindow *rootwin = gdk_get_default_root_window();
 
-	lookup_ignorable_modifiers (keymap);
+	lookup_ignorable_modifiers(keymap);
 
-	gdk_window_add_filter (rootwin, 
-			       filter_func, 
-			       NULL);
+	gdk_window_add_filter(rootwin, filter_func, NULL);
 
-	g_signal_connect (keymap, 
-			  "keys_changed",
-			  G_CALLBACK (keymap_changed),
-			  NULL);
+	g_signal_connect(keymap, "keys_changed", G_CALLBACK(keymap_changed), NULL);
 }
 
-gboolean
-tomboy_keybinder_bind (const char           *keystring,
-		       TomboyBindkeyHandler  handler,
-		       gpointer              user_data)
+gboolean tomboy_keybinder_bind(const char *keystring, TomboyBindkeyHandler handler, gpointer user_data)
 {
 	Binding *binding;
 	gboolean success;
 
-	binding = g_new0 (Binding, 1);
-	binding->keystring = g_strdup (keystring);
+	binding = g_new0(Binding, 1);
+	binding->keystring = g_strdup(keystring);
 	binding->handler = handler;
 	binding->user_data = user_data;
 
 	/* Sets the binding's keycode and modifiers */
-	success = do_grab_key (binding);
+	success = do_grab_key(binding);
 
 	if (success) {
-		bindings = g_slist_prepend (bindings, binding);
+		bindings = g_slist_prepend(bindings, binding);
 	} else {
-		g_free (binding->keystring);
-		g_free (binding);
+		g_free(binding->keystring);
+		g_free(binding);
 	}
 	return success;
 }
 
-void
-tomboy_keybinder_unbind (const char           *keystring, 
-			 TomboyBindkeyHandler  handler)
+void tomboy_keybinder_unbind(const char *keystring, TomboyBindkeyHandler handler)
 {
 	GSList *iter;
 
 	for (iter = bindings; iter != NULL; iter = iter->next) {
-		Binding *binding = (Binding *) iter->data;
+		Binding *binding = (Binding *)iter->data;
 
-		if (strcmp (keystring, binding->keystring) != 0 ||
-		    handler != binding->handler) 
+		if (strcmp(keystring, binding->keystring) != 0 || handler != binding->handler)
 			continue;
 
-		do_ungrab_key (binding);
+		do_ungrab_key(binding);
 
-		bindings = g_slist_remove (bindings, binding);
+		bindings = g_slist_remove(bindings, binding);
 
-		g_free (binding->keystring);
-		g_free (binding);
+		g_free(binding->keystring);
+		g_free(binding);
 		break;
 	}
 }
@@ -293,15 +242,14 @@ tomboy_keybinder_unbind (const char           *keystring,
 /* 
  * From eggcellrenderkeys.c.
  */
-gboolean
-tomboy_keybinder_is_modifier (guint keycode)
+gboolean tomboy_keybinder_is_modifier(guint keycode)
 {
 	gint i;
 	gint map_size;
 	XModifierKeymap *mod_keymap;
 	gboolean retval = FALSE;
 
-	mod_keymap = XGetModifierMapping (gdk_display);
+	mod_keymap = XGetModifierMapping(gdk_display);
 
 	map_size = 8 * mod_keymap->max_keypermod;
 
@@ -314,16 +262,19 @@ tomboy_keybinder_is_modifier (guint keycode)
 		++i;
 	}
 
-	XFreeModifiermap (mod_keymap);
+	XFreeModifiermap(mod_keymap);
 
 	return retval;
 }
 
-guint32
-tomboy_keybinder_get_current_event_time (void)
+guint32 tomboy_keybinder_get_current_event_time(void)
 {
-	if (processing_event) 
+	if (processing_event)
 		return last_event_time;
 	else
 		return GDK_CURRENT_TIME;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

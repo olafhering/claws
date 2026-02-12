@@ -43,12 +43,13 @@
  * Create new object.
  * \return Initialized LDIF file object.
  */
-LdifFile *ldif_create() {
+LdifFile *ldif_create()
+{
 	LdifFile *ldifFile;
-	ldifFile = g_new0( LdifFile, 1 );
+	ldifFile = g_new0(LdifFile, 1);
 	ldifFile->path = NULL;
 	ldifFile->file = NULL;
-	ldifFile->hashFields = g_hash_table_new( g_str_hash, g_str_equal );
+	ldifFile->hashFields = g_hash_table_new(g_str_hash, g_str_equal);
 	ldifFile->tempList = NULL;
 	ldifFile->dirtyFlag = TRUE;
 	ldifFile->accessFlag = FALSE;
@@ -63,18 +64,18 @@ LdifFile *ldif_create() {
  * \param ldifFile LDIF import control object.
  * \param value    Value of access flag.
  */
-void ldif_set_file( LdifFile *ldifFile, const gchar *value ) {
-	cm_return_if_fail( ldifFile != NULL );
+void ldif_set_file(LdifFile *ldifFile, const gchar *value)
+{
+	cm_return_if_fail(ldifFile != NULL);
 
-	if( ldifFile->path ) {
-		if( strcmp( ldifFile->path, value ) != 0 )
+	if (ldifFile->path) {
+		if (strcmp(ldifFile->path, value) != 0)
 			ldifFile->dirtyFlag = TRUE;
-	}
-	else {
+	} else {
 		ldifFile->dirtyFlag = TRUE;
 	}
-	ldifFile->path = mgu_replace_string( ldifFile->path, value );
-	g_strstrip( ldifFile->path );
+	ldifFile->path = mgu_replace_string(ldifFile->path, value);
+	g_strstrip(ldifFile->path);
 	ldifFile->importCount = 0;
 }
 
@@ -83,8 +84,9 @@ void ldif_set_file( LdifFile *ldifFile, const gchar *value ) {
  * \param ldifFile LDIF import control object.
  * \param value    File specification.
  */
-void ldif_set_accessed( LdifFile *ldifFile, const gboolean value ) {
-	cm_return_if_fail( ldifFile != NULL );
+void ldif_set_accessed(LdifFile *ldifFile, const gboolean value)
+{
+	cm_return_if_fail(ldifFile != NULL);
 	ldifFile->accessFlag = value;
 }
 
@@ -92,9 +94,10 @@ void ldif_set_accessed( LdifFile *ldifFile, const gboolean value ) {
  * Create field record object.
  * \return Initialized LDIF field object.
  */
-static Ldif_FieldRec *ldif_create_fieldrec( const gchar *field ) {
-	Ldif_FieldRec *rec = g_new0( Ldif_FieldRec, 1 );
-	rec->tagName = g_strdup( field );
+static Ldif_FieldRec *ldif_create_fieldrec(const gchar *field)
+{
+	Ldif_FieldRec *rec = g_new0(Ldif_FieldRec, 1);
+	rec->tagName = g_strdup(field);
 	rec->userName = NULL;
 	rec->reserved = FALSE;
 	rec->selected = FALSE;
@@ -105,15 +108,16 @@ static Ldif_FieldRec *ldif_create_fieldrec( const gchar *field ) {
  * Free field record object.
  * \param rec LDIF field object.
  */
-static void ldif_free_fieldrec( Ldif_FieldRec *rec ) {
-	if( rec ) {
-		g_free( rec->tagName );
-		g_free( rec->userName );
+static void ldif_free_fieldrec(Ldif_FieldRec *rec)
+{
+	if (rec) {
+		g_free(rec->tagName);
+		g_free(rec->userName);
 		rec->tagName = NULL;
 		rec->userName = NULL;
 		rec->reserved = FALSE;
 		rec->selected = FALSE;
-		g_free( rec );
+		g_free(rec);
 	}
 }
 
@@ -123,12 +127,13 @@ static void ldif_free_fieldrec( Ldif_FieldRec *rec ) {
  * \param value User name to set. Note that reserved fields cannot be
  *              named.
  */
-void ldif_field_set_name( Ldif_FieldRec *rec, const gchar *value ) {
-	cm_return_if_fail( rec != NULL );
+void ldif_field_set_name(Ldif_FieldRec *rec, const gchar *value)
+{
+	cm_return_if_fail(rec != NULL);
 
-	if( ! rec->reserved ) {
-		rec->userName = mgu_replace_string( rec->userName, value );
-		g_strstrip( rec->userName );
+	if (!rec->reserved) {
+		rec->userName = mgu_replace_string(rec->userName, value);
+		g_strstrip(rec->userName);
 	}
 }
 
@@ -138,10 +143,11 @@ void ldif_field_set_name( Ldif_FieldRec *rec, const gchar *value ) {
  * \param value Set to <i>TRUE</i> to select field. Note that reserved
  *              fields cannot be unselected.
  */
-void ldif_field_set_selected( Ldif_FieldRec *rec, const gboolean value ) {
-	cm_return_if_fail( rec != NULL );
+void ldif_field_set_selected(Ldif_FieldRec *rec, const gboolean value)
+{
+	cm_return_if_fail(rec != NULL);
 
-	if( ! rec->reserved ) {
+	if (!rec->reserved) {
 		rec->selected = value;
 	}
 }
@@ -151,10 +157,11 @@ void ldif_field_set_selected( Ldif_FieldRec *rec, const gboolean value ) {
  * toggled.
  * \param rec   LDIF field object.
  */
-void ldif_field_toggle( Ldif_FieldRec *rec ) {
-	cm_return_if_fail( rec != NULL );
+void ldif_field_toggle(Ldif_FieldRec *rec)
+{
+	cm_return_if_fail(rec != NULL);
 
-	if( ! rec->reserved ) {
+	if (!rec->reserved) {
 		rec->selected = !rec->selected;
 	}
 }
@@ -166,8 +173,9 @@ void ldif_field_toggle( Ldif_FieldRec *rec ) {
  * \param  data  User data.
  * \return <code>-1</code>.
 */
-static gint ldif_hash_free_vis( gpointer key, gpointer value, gpointer data ) {
-	ldif_free_fieldrec( ( Ldif_FieldRec * ) value );
+static gint ldif_hash_free_vis(gpointer key, gpointer value, gpointer data)
+{
+	ldif_free_fieldrec((Ldif_FieldRec *)value);
 	return -1;
 }
 
@@ -175,18 +183,20 @@ static gint ldif_hash_free_vis( gpointer key, gpointer value, gpointer data ) {
  * Free up object by releasing internal memory.
  * \param ldifFile LDIF import control object.
  */
-void ldif_free( LdifFile *ldifFile ) {
-	cm_return_if_fail( ldifFile != NULL );
+void ldif_free(LdifFile *ldifFile)
+{
+	cm_return_if_fail(ldifFile != NULL);
 
 	/* Close file */
-	if( ldifFile->file ) claws_fclose( ldifFile->file );
+	if (ldifFile->file)
+		claws_fclose(ldifFile->file);
 
 	/* Free internal stuff */
-	g_free( ldifFile->path );
+	g_free(ldifFile->path);
 
 	/* Free field list */
-	g_hash_table_foreach_remove( ldifFile->hashFields, ldif_hash_free_vis, NULL );
-	g_hash_table_destroy( ldifFile->hashFields );
+	g_hash_table_foreach_remove(ldifFile->hashFields, ldif_hash_free_vis, NULL);
+	g_hash_table_destroy(ldifFile->hashFields);
 	ldifFile->hashFields = NULL;
 
 	/* Clear pointers */
@@ -199,7 +209,7 @@ void ldif_free( LdifFile *ldifFile ) {
 	ldifFile->cbProgress = NULL;
 
 	/* Now release file object */
-	g_free( ldifFile );
+	g_free(ldifFile);
 }
 
 /**
@@ -207,17 +217,17 @@ void ldif_free( LdifFile *ldifFile ) {
  * \param  ldifFile LDIF import control object.
  * \return <i>TRUE</i> if file opened successfully.
  */
-static gint ldif_open_file( LdifFile* ldifFile ) {
+static gint ldif_open_file(LdifFile *ldifFile)
+{
 	/* g_print( "Opening file\n" ); */
-	if( ldifFile->path ) {
-		ldifFile->file = claws_fopen( ldifFile->path, "rb" );
-		if( ! ldifFile->file ) {
+	if (ldifFile->path) {
+		ldifFile->file = claws_fopen(ldifFile->path, "rb");
+		if (!ldifFile->file) {
 			/* g_print( "can't open %s\n", ldifFile->path ); */
 			ldifFile->retVal = MGU_OPEN_FILE;
 			return ldifFile->retVal;
 		}
-	}
-	else {
+	} else {
 		/* g_print( "file not specified\n" ); */
 		ldifFile->retVal = MGU_NO_FILE;
 		return ldifFile->retVal;
@@ -232,9 +242,11 @@ static gint ldif_open_file( LdifFile* ldifFile ) {
  * Close file.
  * \param  ldifFile LDIF import control object.
  */
-static void ldif_close_file( LdifFile *ldifFile ) {
-	cm_return_if_fail( ldifFile != NULL );
-	if( ldifFile->file ) claws_fclose( ldifFile->file );
+static void ldif_close_file(LdifFile *ldifFile)
+{
+	cm_return_if_fail(ldifFile != NULL);
+	if (ldifFile->file)
+		claws_fclose(ldifFile->file);
 	ldifFile->file = NULL;
 }
 
@@ -243,23 +255,24 @@ static void ldif_close_file( LdifFile *ldifFile ) {
  * \param  ldifFile LDIF import control object.
  * \return ptr to buffer where line starts (must be freed by caller).
  */
-static gchar *ldif_get_line( LdifFile *ldifFile ) {
+static gchar *ldif_get_line(LdifFile *ldifFile)
+{
 	gchar *buf = g_malloc(LDIFBUFSIZE);
 	gint ch;
 	int i = 0;
 	int cur_alloc = LDIFBUFSIZE;
 
-	if( claws_feof( ldifFile->file ) ) {
+	if (claws_feof(ldifFile->file)) {
 		g_free(buf);
 		return NULL;
 	}
 
-	while( i < cur_alloc-1 ) {
-		ch = fgetc( ldifFile->file );
-		if (claws_ferror( ldifFile->file ))
+	while (i < cur_alloc - 1) {
+		ch = fgetc(ldifFile->file);
+		if (claws_ferror(ldifFile->file))
 			ldifFile->retVal = MGU_ERROR_READ;
-		if( ch == '\0' || ch == EOF ) {
-			if( i == 0 ) {
+		if (ch == '\0' || ch == EOF) {
+			if (i == 0) {
 				g_free(buf);
 				return NULL;
 			}
@@ -267,14 +280,14 @@ static gchar *ldif_get_line( LdifFile *ldifFile ) {
 		}
 #if HAVE_DOSISH_SYSTEM
 #else
-		if( ch == '\r' ) 
+		if (ch == '\r')
 			continue;
 #endif
-		if( ch == '\n' ) 
+		if (ch == '\n')
 			break;
 		buf[i] = ch;
 		i++;
-		if (i == cur_alloc-1 && cur_alloc < LDIFBUFSIZE * 32) {
+		if (i == cur_alloc - 1 && cur_alloc < LDIFBUFSIZE * 32) {
 			cur_alloc += LDIFBUFSIZE;
 			buf = g_realloc(buf, cur_alloc);
 		}
@@ -291,33 +304,35 @@ static gchar *ldif_get_line( LdifFile *ldifFile ) {
  * \return Buffer containing the tag name, or NULL if no delimiter char found.
  *         If a double delimiter (::) is found, flag64 is set.
  */
-static gchar *ldif_get_tagname( char* line, gboolean *flag64 ) {
+static gchar *ldif_get_tagname(char *line, gboolean *flag64)
+{
 	gint len = 0;
 	gchar *tag = NULL;
 	gchar *lptr = line;
 	gchar *sptr = NULL;
-	
-	while( *lptr++ ) {
+
+	while (*lptr++) {
 		/* Check for language tag */
-		if( *lptr == LDIF_LANG_TAG ) {
-			if( sptr == NULL ) sptr = lptr;
+		if (*lptr == LDIF_LANG_TAG) {
+			if (sptr == NULL)
+				sptr = lptr;
 		}
 
 		/* Check for delimiter */
-		if( *lptr == LDIF_SEP_TAG ) {
-			if( sptr ) {
+		if (*lptr == LDIF_SEP_TAG) {
+			if (sptr) {
 				len = sptr - line;
-			}
-			else {
+			} else {
 				len = lptr - line;
 			}
 
 			/* Base-64 encoding? */
-			if( * ++lptr == LDIF_SEP_TAG ) *flag64 = TRUE;
+			if (*++lptr == LDIF_SEP_TAG)
+				*flag64 = TRUE;
 
-			tag = g_strndup( line, len+1 );
-			tag[ len ] = '\0';
-                        return tag;
+			tag = g_strndup(line, len + 1);
+			tag[len] = '\0';
+			return tag;
 		}
 	}
 	return tag;
@@ -329,29 +344,30 @@ static gchar *ldif_get_tagname( char* line, gboolean *flag64 ) {
  * \return Buffer containing the tag value. Empty string is returned if
  *         no delimiter char found.
  */
-static gchar *ldif_get_tagvalue( gchar* line ) {
+static gchar *ldif_get_tagvalue(gchar *line)
+{
 	gchar *value = NULL;
 	gchar *start = NULL;
 	gchar *lptr;
 	gint len = 0;
 
-	for( lptr = line; *lptr; lptr++ ) {
-		if( *lptr == LDIF_SEP_TAG ) {
-			if( ! start )
+	for (lptr = line; *lptr; lptr++) {
+		if (*lptr == LDIF_SEP_TAG) {
+			if (!start)
 				start = lptr + 1;
 		}
 	}
-	if( start ) {
-		if( *start == LDIF_SEP_TAG ) start++;
+	if (start) {
+		if (*start == LDIF_SEP_TAG)
+			start++;
 		len = lptr - start;
-		value = g_strndup( start, len+1 );
-		g_strstrip( value );
-	}
-	else {
+		value = g_strndup(start, len + 1);
+		g_strstrip(value);
+	} else {
 		/* Ensure that we get an empty string */
-		value = g_strndup( "", 1 );
+		value = g_strndup("", 1);
 	}
-	value[ len ] = '\0';
+	value[len] = '\0';
 	return value;
 }
 
@@ -385,8 +401,7 @@ struct _Ldif_UserAttr_ {
  * \param rec      LDIF field object.
  * \param cache    Address cache to be populated with data.
  */
-static void ldif_build_items(
-		LdifFile *ldifFile, Ldif_ParsedRec *rec, AddressCache *cache )
+static void ldif_build_items(LdifFile *ldifFile, Ldif_ParsedRec *rec, AddressCache *cache)
 {
 	GSList *nodeFirst;
 	GSList *nodeAddress;
@@ -398,88 +413,84 @@ static void ldif_build_items(
 	ItemEMail *email;
 
 	nodeAddress = rec->listAddress;
-//	if( nodeAddress == NULL ) return;
+//      if( nodeAddress == NULL ) return;
 
 	/* Find longest first name in list */
 	nodeFirst = rec->listFName;
-	while( nodeFirst ) {
-		if( firstName == NULL ) {
+	while (nodeFirst) {
+		if (firstName == NULL) {
 			firstName = nodeFirst->data;
-			iLen = strlen( firstName );
-		}
-		else {
-			if( ( iLenT = strlen( nodeFirst->data ) ) > iLen ) {
+			iLen = strlen(firstName);
+		} else {
+			if ((iLenT = strlen(nodeFirst->data)) > iLen) {
 				firstName = nodeFirst->data;
 				iLen = iLenT;
 			}
 		}
-		nodeFirst = g_slist_next( nodeFirst );
+		nodeFirst = g_slist_next(nodeFirst);
 	}
 
 	/* Format name */
-	if( rec->listLName ) {
+	if (rec->listLName) {
 		lastName = rec->listLName->data;
 	}
 
-	if( firstName ) {
-		if( lastName ) {
-			fullName = g_strdup_printf(
-				"%s %s", firstName, lastName );
+	if (firstName) {
+		if (lastName) {
+			fullName = g_strdup_printf("%s %s", firstName, lastName);
+		} else {
+			fullName = g_strdup_printf("%s", firstName);
 		}
-		else {
-			fullName = g_strdup_printf( "%s", firstName );
-		}
-	}
-	else {
-		if( lastName ) {
-			fullName = g_strdup_printf( "%s", lastName );
+	} else {
+		if (lastName) {
+			fullName = g_strdup_printf("%s", lastName);
 		}
 	}
-	
+
 	if (!fullName || strlen(fullName) == 0) {
 		g_free(fullName);
 		fullName = NULL;
 		if (rec->listCName)
 			fullName = g_strdup(rec->listCName->data);
 	}
-	
-	if( fullName ) {
-		g_strstrip( fullName );
+
+	if (fullName) {
+		g_strstrip(fullName);
 	}
 
-	if( rec->listNName ) {
+	if (rec->listNName) {
 		nickName = rec->listNName->data;
 	}
 
 	person = addritem_create_item_person();
-	addritem_person_set_common_name( person, fullName );
-	addritem_person_set_first_name( person, firstName );
-	addritem_person_set_last_name( person, lastName );
-	addritem_person_set_nick_name( person, nickName );
-	addrcache_id_person( cache, person );
-	addrcache_add_person( cache, person );
+	addritem_person_set_common_name(person, fullName);
+	addritem_person_set_first_name(person, firstName);
+	addritem_person_set_last_name(person, lastName);
+	addritem_person_set_nick_name(person, nickName);
+	addrcache_id_person(cache, person);
+	addrcache_add_person(cache, person);
 	++ldifFile->importCount;
 
 	/* Add address item */
-	while( nodeAddress ) {
+	while (nodeAddress) {
 		email = addritem_create_item_email();
-		addritem_email_set_address( email, nodeAddress->data );
-		addrcache_id_email( cache, email );
-		addrcache_person_add_email( cache, person, email );
-		nodeAddress = g_slist_next( nodeAddress );
+		addritem_email_set_address(email, nodeAddress->data);
+		addrcache_id_email(cache, email);
+		addrcache_person_add_email(cache, person, email);
+		nodeAddress = g_slist_next(nodeAddress);
 	}
-	g_free( fullName );
+	g_free(fullName);
 	fullName = firstName = lastName = NULL;
 
 	/* Add user attributes */
 	nodeAttr = rec->userAttr;
-	while( nodeAttr ) {
+	while (nodeAttr) {
 		Ldif_UserAttr *attr = nodeAttr->data;
 		UserAttribute *attrib = addritem_create_attribute();
-		addritem_attrib_set_name( attrib, attr->name );
-		addritem_attrib_set_value( attrib, attr->value );
-		addritem_person_add_attribute( person, attrib );
-		nodeAttr = g_slist_next( nodeAttr );
+		addritem_attrib_set_name(attrib, attr->name);
+		addritem_attrib_set_value(attrib, attr->value);
+		addritem_person_add_attribute(person, attrib);
+		nodeAttr = g_slist_next(nodeAttr);
 	}
 	nodeAttr = NULL;
 }
@@ -491,26 +502,25 @@ static void ldif_build_items(
  * \param tagValue  Data value.
  * \param hashField Hash table to populate.
  */
-static void ldif_add_user_attr(
-		Ldif_ParsedRec *rec, gchar *tagName, gchar *tagValue,
-		GHashTable *hashField )
+static void ldif_add_user_attr(Ldif_ParsedRec *rec, gchar *tagName, gchar *tagValue, GHashTable *hashField)
 {
 	Ldif_FieldRec *fld = NULL;
 	Ldif_UserAttr *attr = NULL;
 	gchar *name;
 
-	fld = g_hash_table_lookup( hashField, tagName );
-	if( fld ) {
-		if( ! fld->selected ) return;
+	fld = g_hash_table_lookup(hashField, tagName);
+	if (fld) {
+		if (!fld->selected)
+			return;
 
 		name = fld->tagName;
-		if( fld->userName ) {
+		if (fld->userName) {
 			name = fld->userName;
 		}
-		attr = g_new0( Ldif_UserAttr, 1 );
-		attr->name = g_strdup( name );
-		attr->value = g_strdup( tagValue );
-		rec->userAttr = g_slist_append( rec->userAttr, attr );
+		attr = g_new0(Ldif_UserAttr, 1);
+		attr->name = g_strdup(name);
+		attr->value = g_strdup(tagValue);
+		rec->userAttr = g_slist_append(rec->userAttr, attr);
 	}
 }
 
@@ -521,67 +531,60 @@ static void ldif_add_user_attr(
  * \param tagValue  Data value.
  * \param hashField Hash table to populate.
  */
-static void ldif_add_value(
-	       Ldif_ParsedRec *rec, gchar *tagName, gchar *tagValue,
-	       GHashTable *hashField )
+static void ldif_add_value(Ldif_ParsedRec *rec, gchar *tagName, gchar *tagValue, GHashTable *hashField)
 {
 	gchar *nm, *val;
 
-	nm = g_utf8_strdown( tagName, -1 );
-	if( tagValue ) {
-		val = g_strdup( tagValue );
+	nm = g_utf8_strdown(tagName, -1);
+	if (tagValue) {
+		val = g_strdup(tagValue);
+	} else {
+		val = g_strdup("");
 	}
-	else {
-		val = g_strdup( "" );
-	}
-	g_strstrip( val );
+	g_strstrip(val);
 
-	if( g_utf8_collate( nm, g_utf8_strdown( LDIF_TAG_COMMONNAME, -1 ) ) == 0 ) {
-		rec->listCName = g_slist_append( rec->listCName, val );
-	}
-	else if( g_utf8_collate( nm, g_utf8_strdown( LDIF_TAG_FIRSTNAME, -1 ) ) == 0 ) {
-		rec->listFName = g_slist_append( rec->listFName, val );
-	}
-	else if( g_utf8_collate( nm, g_utf8_strdown( LDIF_TAG_LASTNAME, -1 ) ) == 0 ) {
-		rec->listLName = g_slist_append( rec->listLName, val );
-	}
-	else if( g_utf8_collate( nm, g_utf8_strdown( LDIF_TAG_NICKNAME, -1 ) ) == 0 ) {
-		rec->listNName = g_slist_append( rec->listNName, val );
-	}
-	else if( g_utf8_collate( nm, g_utf8_strdown( LDIF_TAG_EMAIL, -1 ) ) == 0 ) {
-		rec->listAddress = g_slist_append( rec->listAddress, val );
-	}
-	else {
+	if (g_utf8_collate(nm, g_utf8_strdown(LDIF_TAG_COMMONNAME, -1)) == 0) {
+		rec->listCName = g_slist_append(rec->listCName, val);
+	} else if (g_utf8_collate(nm, g_utf8_strdown(LDIF_TAG_FIRSTNAME, -1)) == 0) {
+		rec->listFName = g_slist_append(rec->listFName, val);
+	} else if (g_utf8_collate(nm, g_utf8_strdown(LDIF_TAG_LASTNAME, -1)) == 0) {
+		rec->listLName = g_slist_append(rec->listLName, val);
+	} else if (g_utf8_collate(nm, g_utf8_strdown(LDIF_TAG_NICKNAME, -1)) == 0) {
+		rec->listNName = g_slist_append(rec->listNName, val);
+	} else if (g_utf8_collate(nm, g_utf8_strdown(LDIF_TAG_EMAIL, -1)) == 0) {
+		rec->listAddress = g_slist_append(rec->listAddress, val);
+	} else {
 		/* Add field as user attribute */
-		ldif_add_user_attr( rec, tagName, tagValue, hashField );
+		ldif_add_user_attr(rec, tagName, tagValue, hashField);
 	}
-	g_free( nm );
+	g_free(nm);
 }
 
 /**
  * Clear parsed data record.
  * \param rec LDIF field object.
  */
-static void ldif_clear_rec( Ldif_ParsedRec *rec ) {
+static void ldif_clear_rec(Ldif_ParsedRec *rec)
+{
 	GSList *list;
 
 	/* Free up user attributes */
 	list = rec->userAttr;
-	while( list ) {
+	while (list) {
 		Ldif_UserAttr *attr = list->data;
-		g_free( attr->name );
-		g_free( attr->value );
-		g_free( attr );
-		list = g_slist_next( list );
+		g_free(attr->name);
+		g_free(attr->value);
+		g_free(attr);
+		list = g_slist_next(list);
 	}
-	g_slist_free( rec->userAttr );
+	g_slist_free(rec->userAttr);
 
-	g_slist_free( rec->listCName );
-	g_slist_free( rec->listFName );
-	g_slist_free( rec->listLName );
-	g_slist_free( rec->listNName );
-	g_slist_free( rec->listAddress );
-	g_slist_free( rec->listID );
+	g_slist_free(rec->listCName);
+	g_slist_free(rec->listFName);
+	g_slist_free(rec->listLName);
+	g_slist_free(rec->listNName);
+	g_slist_free(rec->listAddress);
+	g_slist_free(rec->listID);
 
 	rec->userAttr = NULL;
 	rec->listCName = NULL;
@@ -601,7 +604,8 @@ static void ldif_clear_rec( Ldif_ParsedRec *rec ) {
  * \param  ldifFile LDIF import control object.
  * \param  cache    Address cache to be populated with data.
  */
-static void ldif_read_file( LdifFile *ldifFile, AddressCache *cache ) {
+static void ldif_read_file(LdifFile *ldifFile, AddressCache *cache)
+{
 	gchar *tagName = NULL, *tagValue = NULL;
 	gchar *lastTag = NULL, *fullValue = NULL;
 	GSList *listValue = NULL;
@@ -614,76 +618,70 @@ static void ldif_read_file( LdifFile *ldifFile, AddressCache *cache ) {
 	gsize len;
 
 	hashField = ldifFile->hashFields;
-	rec = g_new0( Ldif_ParsedRec, 1 );
-	ldif_clear_rec( rec );
+	rec = g_new0(Ldif_ParsedRec, 1);
+	ldif_clear_rec(rec);
 
 	/* Find EOF for progress indicator */
-	fseek( ldifFile->file, 0L, SEEK_END );
-	posEnd = ftell( ldifFile->file );
-	fseek( ldifFile->file, 0L, SEEK_SET );
+	fseek(ldifFile->file, 0L, SEEK_END);
+	posEnd = ftell(ldifFile->file);
+	fseek(ldifFile->file, 0L, SEEK_SET);
 
-	while( ! flagEOF ) {
-		gchar *line =  ldif_get_line( ldifFile );
+	while (!flagEOF) {
+		gchar *line = ldif_get_line(ldifFile);
 
-		posCur = ftell( ldifFile->file );
-		if( ldifFile->cbProgress ) {
+		posCur = ftell(ldifFile->file);
+		if (ldifFile->cbProgress) {
 			/* Call progress indicator */
-			( ldifFile->cbProgress ) ( ldifFile, & posEnd, & posCur );
+			(ldifFile->cbProgress) (ldifFile, &posEnd, &posCur);
 		}
 
 		flag64 = FALSE;
-		if( line == NULL ) {
+		if (line == NULL) {
 			flagEOF = flagEOR = TRUE;
-		}
-		else if( *line == '\0' ) {
+		} else if (*line == '\0') {
 			flagEOR = TRUE;
 		}
 
-		if( flagEOR ) {
+		if (flagEOR) {
 			/* EOR, Output address data */
-			if( lastTag ) {
+			if (lastTag) {
 				/* Save record */
-				fullValue = mgu_list_coalesce( listValue );
+				fullValue = mgu_list_coalesce(listValue);
 				if (fullValue && last64) {
 					gchar *tmp = g_base64_decode_zero(fullValue, &len);
 					g_free(fullValue);
 					fullValue = tmp;
 				}
 
-				ldif_add_value( rec, lastTag, fullValue, hashField );
+				ldif_add_value(rec, lastTag, fullValue, hashField);
 				/* ldif_print_record( rec, stdout ); */
-				ldif_build_items( ldifFile, rec, cache );
-				ldif_clear_rec( rec );
-				g_free( lastTag );
-				g_slist_free_full( listValue, g_free );
+				ldif_build_items(ldifFile, rec, cache);
+				ldif_clear_rec(rec);
+				g_free(lastTag);
+				g_slist_free_full(listValue, g_free);
 				g_free(fullValue);
 				lastTag = NULL;
 				listValue = NULL;
 				last64 = FALSE;
 			}
 		}
-		if( line ) {
+		if (line) {
 			flagEOR = FALSE;
-			if( *line == ' ' ) {
+			if (*line == ' ') {
 				/* Continuation line */
-				listValue = g_slist_append(
-					listValue, g_strdup( line+1 ) );
-			}
-			else if( *line == '=' ) {
+				listValue = g_slist_append(listValue, g_strdup(line + 1));
+			} else if (*line == '=') {
 				/* Base-64 encoded continuation field */
-				listValue = g_slist_append(
-					listValue, g_strdup( line ) );
-			}
-			else {
+				listValue = g_slist_append(listValue, g_strdup(line));
+			} else {
 				/* Parse line */
-				tagName = ldif_get_tagname( line, &flag64 );
-				if( tagName ) {
-					tagValue = ldif_get_tagvalue( line );
-					if( tagValue ) {
-						if( lastTag ) {
+				tagName = ldif_get_tagname(line, &flag64);
+				if (tagName) {
+					tagValue = ldif_get_tagvalue(line);
+					if (tagValue) {
+						if (lastTag) {
 							/* Save data */
-							fullValue =
-								mgu_list_coalesce( listValue );
+							fullValue = mgu_list_coalesce(listValue);
 							if (fullValue && last64) {
 								gchar *tmp = g_base64_decode_zero(fullValue, &len);
 								g_free(fullValue);
@@ -691,39 +689,35 @@ static void ldif_read_file( LdifFile *ldifFile, AddressCache *cache ) {
 							}
 							/* Base-64 encoded data */
 							/*
-							if( last64 ) {
-								ldif_dump_b64( fullValue );
-							}
-							*/
+							   if( last64 ) {
+							   ldif_dump_b64( fullValue );
+							   }
+							 */
 
-							ldif_add_value(
-								rec, lastTag, fullValue,
-								hashField );
-							g_free( lastTag );
-							g_slist_free_full( listValue, g_free );
+							ldif_add_value(rec, lastTag, fullValue, hashField);
+							g_free(lastTag);
+							g_slist_free_full(listValue, g_free);
 							lastTag = NULL;
 							listValue = NULL;
 						}
 
-						lastTag = g_strdup( tagName );
-						listValue = g_slist_append(
-							listValue,
-							g_strdup( tagValue ) );
-						g_free( tagValue );
+						lastTag = g_strdup(tagName);
+						listValue = g_slist_append(listValue, g_strdup(tagValue));
+						g_free(tagValue);
 						last64 = flag64;
 					}
-					g_free( tagName );
+					g_free(tagName);
 				}
 			}
-			g_free( line );
+			g_free(line);
 		}
 	}
 
 	/* Release data */
-	ldif_clear_rec( rec );
-	g_free( rec );
-	g_free( lastTag );
-	g_slist_free_full( listValue, g_free );
+	ldif_clear_rec(rec);
+	g_free(rec);
+	g_free(lastTag);
+	g_slist_free_full(listValue, g_free);
 }
 
 /**
@@ -731,44 +725,40 @@ static void ldif_read_file( LdifFile *ldifFile, AddressCache *cache ) {
  * \param table Hashtable.
  * \param list  List of fields.
  */
-static void ldif_hash_add_list( GHashTable *table, GSList *list ) {
+static void ldif_hash_add_list(GHashTable *table, GSList *list)
+{
 	GSList *node = list;
 
 	/* mgu_print_list( list, stdout ); */
-	while( node ) {
+	while (node) {
 		gchar *tag = node->data;
-		if( ! g_hash_table_lookup( table, tag ) ) {
+		if (!g_hash_table_lookup(table, tag)) {
 			Ldif_FieldRec *rec = NULL;
-			gchar *key = g_utf8_strdown( tag, -1 );
+			gchar *key = g_utf8_strdown(tag, -1);
 
-			rec = ldif_create_fieldrec( tag );
-			if( g_utf8_collate( key, LDIF_TAG_DN ) == 0 ) {
+			rec = ldif_create_fieldrec(tag);
+			if (g_utf8_collate(key, LDIF_TAG_DN) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( "dn" );
-			}
-			else if( g_utf8_collate( key, g_utf8_strdown( LDIF_TAG_COMMONNAME, -1 ) ) == 0 ) {
+				rec->userName = g_strdup("dn");
+			} else if (g_utf8_collate(key, g_utf8_strdown(LDIF_TAG_COMMONNAME, -1)) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( _( "Display Name" ) );
-			}
-			else if( g_utf8_collate( key, g_utf8_strdown( LDIF_TAG_FIRSTNAME, -1 ) ) == 0 ) {
+				rec->userName = g_strdup(_("Display Name"));
+			} else if (g_utf8_collate(key, g_utf8_strdown(LDIF_TAG_FIRSTNAME, -1)) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( _( "First Name" ) );
-			}
-			else if( g_utf8_collate( key, g_utf8_strdown( LDIF_TAG_LASTNAME, -1 ) ) == 0 ) {
+				rec->userName = g_strdup(_("First Name"));
+			} else if (g_utf8_collate(key, g_utf8_strdown(LDIF_TAG_LASTNAME, -1)) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( _( "Last Name" ) );
-			}
-			else if( g_utf8_collate( key, g_utf8_strdown( LDIF_TAG_NICKNAME, -1 ) ) == 0 ) {
+				rec->userName = g_strdup(_("Last Name"));
+			} else if (g_utf8_collate(key, g_utf8_strdown(LDIF_TAG_NICKNAME, -1)) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( _( "Nick Name" ) );
-			}
-			else if( g_utf8_collate( key, g_utf8_strdown( LDIF_TAG_EMAIL, -1 ) ) == 0 ) {
+				rec->userName = g_strdup(_("Nick Name"));
+			} else if (g_utf8_collate(key, g_utf8_strdown(LDIF_TAG_EMAIL, -1)) == 0) {
 				rec->reserved = rec->selected = TRUE;
-				rec->userName = g_strdup( _( "Email Address" ) );
+				rec->userName = g_strdup(_("Email Address"));
 			}
-			g_hash_table_insert( table, key, rec );
+			g_hash_table_insert(table, key, rec);
 		}
-		node = g_slist_next( node );
+		node = g_slist_next(node);
 	}
 }
 
@@ -779,21 +769,21 @@ static void ldif_hash_add_list( GHashTable *table, GSList *list ) {
  * \return <code>-1, 0, +1</code> if first record less than, equal,
  *         greater than second.
  */
-static gint ldif_field_compare( gconstpointer ptr1, gconstpointer ptr2 ) {
+static gint ldif_field_compare(gconstpointer ptr1, gconstpointer ptr2)
+{
 	const Ldif_FieldRec *rec1 = ptr1;
 	const Ldif_FieldRec *rec2 = ptr2;
 
-	if( rec1->reserved ) {
-		if( ! rec2->reserved ) {
+	if (rec1->reserved) {
+		if (!rec2->reserved) {
 			return +1;
 		}
-	}
-	else {
-		if( rec2->reserved ) {
+	} else {
+		if (rec2->reserved) {
 			return -1;
 		}
 	}
-	return g_utf8_collate( rec1->tagName, rec2->tagName );
+	return g_utf8_collate(rec1->tagName, rec2->tagName);
 }
 
 /*
@@ -802,17 +792,18 @@ static gint ldif_field_compare( gconstpointer ptr1, gconstpointer ptr2 ) {
  * \param value Data value.
  * \param data  User data (the LDIF import control object).
  */
-static void ldif_hash2list_vis( gpointer key, gpointer value, gpointer data ) {
+static void ldif_hash2list_vis(gpointer key, gpointer value, gpointer data)
+{
 	LdifFile *ldf = data;
-	ldf->tempList =
-		g_list_insert_sorted( ldf->tempList, value, ldif_field_compare );
+	ldf->tempList = g_list_insert_sorted(ldf->tempList, value, ldif_field_compare);
 }
 
 /**
  * Read tag names for file data.
  * \param  ldifFile LDIF import control object.
  */
-static void ldif_read_tag_list( LdifFile *ldifFile ) {
+static void ldif_read_tag_list(LdifFile *ldifFile)
+{
 	gchar *tagName = NULL;
 	GSList *listTags = NULL;
 	gboolean flagEOF = FALSE, flagEOR = FALSE, flagMail = FALSE;
@@ -821,65 +812,58 @@ static void ldif_read_tag_list( LdifFile *ldifFile ) {
 	long posCur = 0L;
 
 	/* Clear hash table */
-	g_hash_table_foreach_remove(
-		ldifFile->hashFields, ldif_hash_free_vis, NULL );
+	g_hash_table_foreach_remove(ldifFile->hashFields, ldif_hash_free_vis, NULL);
 
 	/* Find EOF for progress indicator */
-	fseek( ldifFile->file, 0L, SEEK_END );
-	posEnd = ftell( ldifFile->file );
-	fseek( ldifFile->file, 0L, SEEK_SET );
+	fseek(ldifFile->file, 0L, SEEK_END);
+	posEnd = ftell(ldifFile->file);
+	fseek(ldifFile->file, 0L, SEEK_SET);
 
 	if (posEnd == 0) {
 		ldifFile->retVal = MGU_EOF;
 		return;
 	}
-		
+
 	/* Process file */
-	while( ! flagEOF ) {
-		gchar *line = ldif_get_line( ldifFile );
-		posCur = ftell( ldifFile->file );
-		if( ldifFile->cbProgress ) {
+	while (!flagEOF) {
+		gchar *line = ldif_get_line(ldifFile);
+		posCur = ftell(ldifFile->file);
+		if (ldifFile->cbProgress) {
 			/* Call progress indicator */
-			( ldifFile->cbProgress ) ( ldifFile, & posEnd, & posCur );
+			(ldifFile->cbProgress) (ldifFile, &posEnd, &posCur);
 		}
 
 		flag64 = FALSE;
-		if( line == NULL ) {
+		if (line == NULL) {
 			flagEOF = flagEOR = TRUE;
-		}
-		else if( *line == '\0' ) {
+		} else if (*line == '\0') {
 			flagEOR = TRUE;
 		}
 
-		if( flagEOR ) {
+		if (flagEOR) {
 			/* EOR, Output address data */
 			/* Save field list to hash table */
-			if( flagMail ) {
-				ldif_hash_add_list(
-					ldifFile->hashFields, listTags );
+			if (flagMail) {
+				ldif_hash_add_list(ldifFile->hashFields, listTags);
 			}
-			g_slist_free_full( listTags, g_free );
+			g_slist_free_full(listTags, g_free);
 			listTags = NULL;
 			flagMail = FALSE;
 		}
-		if( line ) {
+		if (line) {
 			flagEOR = FALSE;
-			if( *line == ' ' ) {
+			if (*line == ' ') {
 				/* Continuation line */
-			}
-			else if( *line == '=' ) {
+			} else if (*line == '=') {
 				/* Base-64 encoded continuation field */
-			}
-			else {
+			} else {
 				/* Parse line */
-				tagName = ldif_get_tagname( line, &flag64 );
-				if( tagName ) {
+				tagName = ldif_get_tagname(line, &flag64);
+				if (tagName) {
 					/* Add tag to list */
-					listTags = g_slist_append( listTags, tagName );
+					listTags = g_slist_append(listTags, tagName);
 
-					if( g_utf8_collate(
-						tagName, LDIF_TAG_EMAIL ) == 0 )
-					{
+					if (g_utf8_collate(tagName, LDIF_TAG_EMAIL) == 0) {
 						flagMail = TRUE;
 					}
 				} else {
@@ -890,12 +874,12 @@ static void ldif_read_tag_list( LdifFile *ldifFile ) {
 					}
 				}
 			}
-			g_free( line );
+			g_free(line);
 		}
 	}
 
 	/* Release data */
-	g_slist_free_full( listTags, g_free );
+	g_slist_free_full(listTags, g_free);
 	listTags = NULL;
 }
 
@@ -905,16 +889,17 @@ static void ldif_read_tag_list( LdifFile *ldifFile ) {
  * \param  cache    Address cache to load.
  * \return Status code.
  */
-gint ldif_import_data( LdifFile *ldifFile, AddressCache *cache ) {
-	cm_return_val_if_fail( ldifFile != NULL, MGU_BAD_ARGS );
+gint ldif_import_data(LdifFile *ldifFile, AddressCache *cache)
+{
+	cm_return_val_if_fail(ldifFile != NULL, MGU_BAD_ARGS);
 	ldifFile->retVal = MGU_SUCCESS;
-	addrcache_clear( cache );
+	addrcache_clear(cache);
 	cache->dataRead = FALSE;
-	ldif_open_file( ldifFile );
-	if( ldifFile->retVal == MGU_SUCCESS ) {
+	ldif_open_file(ldifFile);
+	if (ldifFile->retVal == MGU_SUCCESS) {
 		/* Read data into the cache */
-		ldif_read_file( ldifFile, cache );
-		ldif_close_file( ldifFile );
+		ldif_read_file(ldifFile, cache);
+		ldif_close_file(ldifFile);
 
 		/* Mark cache */
 		cache->modified = FALSE;
@@ -929,15 +914,16 @@ gint ldif_import_data( LdifFile *ldifFile, AddressCache *cache ) {
  * \param  ldifFile LDIF import control object.
  * \return Status code.
  */
-gint ldif_read_tags( LdifFile *ldifFile ) {
-	cm_return_val_if_fail( ldifFile != NULL, MGU_BAD_ARGS );
+gint ldif_read_tags(LdifFile *ldifFile)
+{
+	cm_return_val_if_fail(ldifFile != NULL, MGU_BAD_ARGS);
 	ldifFile->retVal = MGU_SUCCESS;
-	if( ldifFile->dirtyFlag ) {
-		ldif_open_file( ldifFile );
-		if( ldifFile->retVal == MGU_SUCCESS ) {
+	if (ldifFile->dirtyFlag) {
+		ldif_open_file(ldifFile);
+		if (ldifFile->retVal == MGU_SUCCESS) {
 			/* Read data into the cache */
-			ldif_read_tag_list( ldifFile );
-			ldif_close_file( ldifFile );
+			ldif_read_tag_list(ldifFile);
+			ldif_close_file(ldifFile);
 			ldifFile->dirtyFlag = FALSE;
 			ldifFile->accessFlag = TRUE;
 		}
@@ -953,13 +939,14 @@ gint ldif_read_tags( LdifFile *ldifFile ) {
  *         be freed since they refer to objects inside the internal cache.
  *         These objects will be freed when LDIF file object is freed.
  */
-GList *ldif_get_fieldlist( LdifFile *ldifFile ) {
+GList *ldif_get_fieldlist(LdifFile *ldifFile)
+{
 	GList *list = NULL;
 
-	cm_return_val_if_fail( ldifFile != NULL, NULL );
-	if( ldifFile->hashFields ) {
+	cm_return_val_if_fail(ldifFile != NULL, NULL);
+	if (ldifFile->hashFields) {
 		ldifFile->tempList = NULL;
-		g_hash_table_foreach( ldifFile->hashFields, ldif_hash2list_vis, ldifFile );
+		g_hash_table_foreach(ldifFile->hashFields, ldif_hash2list_vis, ldifFile);
 		list = ldifFile->tempList;
 		ldifFile->tempList = NULL;
 	}
@@ -974,13 +961,18 @@ GList *ldif_get_fieldlist( LdifFile *ldifFile ) {
  * \param value  Data value.
  * \return <i>TRUE</i> if data output.
  */
-gboolean ldif_write_value( FILE *stream, const gchar *name, const gchar *value ) {
-	if( name == NULL ) return FALSE;
-	if( value == NULL ) return FALSE;
-	if( strlen( name ) < 1 ) return FALSE;
-	if( strlen( value ) < 1 ) return FALSE;
-	fprintf( stream, "%s: ", name );
-	fprintf( stream, "%s\n", value );
+gboolean ldif_write_value(FILE *stream, const gchar *name, const gchar *value)
+{
+	if (name == NULL)
+		return FALSE;
+	if (value == NULL)
+		return FALSE;
+	if (strlen(name) < 1)
+		return FALSE;
+	if (strlen(value) < 1)
+		return FALSE;
+	fprintf(stream, "%s: ", name);
+	fprintf(stream, "%s\n", value);
 	return TRUE;
 }
 
@@ -989,9 +981,10 @@ gboolean ldif_write_value( FILE *stream, const gchar *name, const gchar *value )
  * \param stream File output stream.
  * \return <i>TRUE</i> if data output.
  */
-void ldif_write_eor( FILE *stream ) {
+void ldif_write_eor(FILE *stream)
+{
 	/* Simple but caller should not need to know how to end record. */
-	fprintf( stream, "\n" );
+	fprintf(stream, "\n");
 }
 
 /*
@@ -1000,3 +993,6 @@ void ldif_write_eor( FILE *stream ) {
  * ============================================================================
  */
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

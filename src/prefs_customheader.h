@@ -22,7 +22,7 @@
 
 #include "prefs_account.h"
 
-void prefs_custom_header_read_config	(PrefsAccount *ac);
-void prefs_custom_header_open		(PrefsAccount *ac);
+void prefs_custom_header_read_config(PrefsAccount *ac);
+void prefs_custom_header_open(PrefsAccount *ac);
 
 #endif /* __PREFS_CUSTOMHEADER_H__ */

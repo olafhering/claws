@@ -32,7 +32,7 @@ typedef struct _VCalViewer VCalViewer;
 
 void vcalendar_init(void);
 void vcalendar_done(void);
-void vcalviewer_display_event (VCalViewer *vcalviewer, VCalEvent *event);
+void vcalviewer_display_event(VCalViewer *vcalviewer, VCalEvent *event);
 gchar *vcalviewer_get_uid_from_mimeinfo(MimeInfo *mimeinfo);
 void vcalviewer_reload(FolderItem *item);
 void vcalendar_cancel_meeting(FolderItem *item, const gchar *uid);

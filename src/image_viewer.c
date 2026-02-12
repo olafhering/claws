@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -36,19 +36,16 @@
 typedef struct _ImageViewer ImageViewer;
 
 MimeViewerFactory image_viewer_factory;
-void image_viewer_get_resized_size(gint w, gint h, gint aw, gint ah,
-					  gint * sw, gint * sh);
+void image_viewer_get_resized_size(gint w, gint h, gint aw, gint ah, gint *sw, gint *sh);
 static void image_viewer_clear_viewer(MimeViewer *imageviewer);
-static void scrolledwin_resize_cb(GtkWidget *scrolledwin, GtkAllocation *alloc,
-				  ImageViewer *imageviewer);
-struct _ImageViewer
-{
+static void scrolledwin_resize_cb(GtkWidget *scrolledwin, GtkAllocation *alloc, ImageViewer *imageviewer);
+struct _ImageViewer {
 	MimeViewer mimeviewer;
 
-	gchar	  *file;
-	MimeInfo  *mimeinfo;
-	gboolean   resize_img;
-	gboolean   fit_img_height;
+	gchar *file;
+	MimeInfo *mimeinfo;
+	gboolean resize_img;
+	gboolean fit_img_height;
 
 	GtkWidget *scrolledwin;
 	GtkWidget *image;
@@ -63,7 +60,7 @@ struct _ImageViewer
 
 static GtkWidget *image_viewer_get_widget(MimeViewer *_mimeviewer)
 {
-	ImageViewer *imageviewer = (ImageViewer *) _mimeviewer;
+	ImageViewer *imageviewer = (ImageViewer *)_mimeviewer;
 
 	debug_print("image_viewer_get_widget\n");
 
@@ -88,7 +85,6 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 		g_warning("couldn't get image MIME part");
 		return;
 	}
-
 #if GDK_PIXBUF_MINOR >= 28
 	animation = gdk_pixbuf_animation_new_from_stream(stream, NULL, &error);
 #else
@@ -105,7 +101,6 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 		g_error_free(error);
 		return;
 	}
-
 #if GDK_PIXBUF_MINOR >= 28
 	if (animation && gdk_pixbuf_animation_is_static_image(animation)
 	    || imageviewer->resize_img || imageviewer->fit_img_height) {
@@ -118,17 +113,13 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 #endif
 		if (imageviewer->resize_img) {
 			gtk_widget_get_allocation(imageviewer->scrolledwin, &allocation);
-			pixbuf = claws_load_pixbuf_fitting(pixbuf, FALSE,
-				imageviewer->fit_img_height,
-				allocation.width,
-				allocation.height);
-		}
-		else
+			pixbuf = claws_load_pixbuf_fitting(pixbuf, FALSE, imageviewer->fit_img_height, allocation.width, allocation.height);
+		} else
 			pixbuf = claws_load_pixbuf_fitting(pixbuf, FALSE, imageviewer->fit_img_height, -1, -1);
 	}
 
 	if (!pixbuf && !animation) {
-		g_warning("couldn't load the image");	
+		g_warning("couldn't load the image");
 		return;
 	}
 
@@ -137,13 +128,11 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 	else
 		gtk_image_set_from_pixbuf(GTK_IMAGE(imageviewer->image), pixbuf);
 
-	g_signal_handlers_block_by_func(G_OBJECT(imageviewer->scrolledwin), 
-			 G_CALLBACK(scrolledwin_resize_cb), imageviewer);
+	g_signal_handlers_block_by_func(G_OBJECT(imageviewer->scrolledwin), G_CALLBACK(scrolledwin_resize_cb), imageviewer);
 
 	gtk_widget_show(imageviewer->image);
 	GTK_EVENTS_FLUSH();
-	g_signal_handlers_unblock_by_func(G_OBJECT(imageviewer->scrolledwin), 
-			 G_CALLBACK(scrolledwin_resize_cb), imageviewer);
+	g_signal_handlers_unblock_by_func(G_OBJECT(imageviewer->scrolledwin), G_CALLBACK(scrolledwin_resize_cb), imageviewer);
 
 	if (pixbuf)
 		g_object_unref(pixbuf);
@@ -153,7 +142,7 @@ static void image_viewer_load_image(ImageViewer *imageviewer)
 
 static void image_viewer_set_notebook_page(MimeViewer *_mimeviewer)
 {
-	ImageViewer *imageviewer = (ImageViewer *) _mimeviewer;
+	ImageViewer *imageviewer = (ImageViewer *)_mimeviewer;
 
 	if (!prefs_common.display_img)
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(imageviewer->notebook), 0);
@@ -163,7 +152,7 @@ static void image_viewer_set_notebook_page(MimeViewer *_mimeviewer)
 
 static void image_viewer_show_mimepart(MimeViewer *_mimeviewer, const gchar *file, MimeInfo *mimeinfo)
 {
-	ImageViewer *imageviewer = (ImageViewer *) _mimeviewer;
+	ImageViewer *imageviewer = (ImageViewer *)_mimeviewer;
 
 	debug_print("image_viewer_show_mimepart\n");
 
@@ -172,11 +161,8 @@ static void image_viewer_show_mimepart(MimeViewer *_mimeviewer, const gchar *fil
 	imageviewer->file = g_strdup(file);
 	imageviewer->mimeinfo = mimeinfo;
 
-	gtk_label_set_text(GTK_LABEL(imageviewer->filename),
-			   (procmime_mimeinfo_get_parameter(mimeinfo, "name") != NULL)?
-			   procmime_mimeinfo_get_parameter(mimeinfo, "name") :
-			   procmime_mimeinfo_get_parameter(mimeinfo, "filename"));
-	gtk_label_set_text(GTK_LABEL(imageviewer->filesize), to_human_readable((goffset)mimeinfo->length));
+	gtk_label_set_text(GTK_LABEL(imageviewer->filename), (procmime_mimeinfo_get_parameter(mimeinfo, "name") != NULL) ? procmime_mimeinfo_get_parameter(mimeinfo, "name") : procmime_mimeinfo_get_parameter(mimeinfo, "filename"));
+	gtk_label_set_text(GTK_LABEL(imageviewer->filesize), to_human_readable((goffset) mimeinfo->length));
 	gtk_label_set_text(GTK_LABEL(imageviewer->content_type), mimeinfo->subtype);
 	gtk_label_set_text(GTK_LABEL(imageviewer->error_lbl), "");
 	gtk_label_set_text(GTK_LABEL(imageviewer->error_msg), "");
@@ -187,7 +173,7 @@ static void image_viewer_show_mimepart(MimeViewer *_mimeviewer, const gchar *fil
 
 static void image_viewer_clear_viewer(MimeViewer *_mimeviewer)
 {
-	ImageViewer *imageviewer = (ImageViewer *) _mimeviewer;
+	ImageViewer *imageviewer = (ImageViewer *)_mimeviewer;
 	GtkAdjustment *hadj, *vadj;
 
 	debug_print("image_viewer_clear_viewer\n");
@@ -195,14 +181,12 @@ static void image_viewer_clear_viewer(MimeViewer *_mimeviewer)
 	image_viewer_set_notebook_page(_mimeviewer);
 
 	if (imageviewer->scrolledwin) {
-		hadj = gtk_scrolled_window_get_hadjustment
-			(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin));
+		hadj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin));
 		if (hadj) {
 			gtk_adjustment_set_value(hadj, 0.0);
 			gtk_adjustment_changed(hadj);
 		}
-		vadj = gtk_scrolled_window_get_vadjustment
-			(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin));
+		vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin));
 		if (vadj) {
 			gtk_adjustment_set_value(vadj, 0.0);
 			gtk_adjustment_changed(vadj);
@@ -217,7 +201,7 @@ static void image_viewer_clear_viewer(MimeViewer *_mimeviewer)
 
 static void image_viewer_destroy_viewer(MimeViewer *_mimeviewer)
 {
-	ImageViewer *imageviewer = (ImageViewer *) _mimeviewer;
+	ImageViewer *imageviewer = (ImageViewer *)_mimeviewer;
 
 	debug_print("image_viewer_destroy_viewer\n");
 
@@ -226,17 +210,16 @@ static void image_viewer_destroy_viewer(MimeViewer *_mimeviewer)
 	g_free(imageviewer);
 }
 
-void image_viewer_get_resized_size(gint w, gint h, gint aw, gint ah,
-			     gint *sw, gint *sh)
+void image_viewer_get_resized_size(gint w, gint h, gint aw, gint ah, gint *sw, gint *sh)
 {
 	gfloat wratio = 1.0;
 	gfloat hratio = 1.0;
-	gfloat ratio  = 1.0;
+	gfloat ratio = 1.0;
 
 	if (w > aw)
-		wratio = (gfloat)aw / (gfloat)w;
+		wratio = (gfloat) aw / (gfloat) w;
 	if (h > ah)
-		hratio = (gfloat)ah / (gfloat)h;
+		hratio = (gfloat) ah / (gfloat) h;
 
 	ratio = (wratio > hratio) ? hratio : wratio;
 
@@ -256,8 +239,7 @@ static void load_cb(GtkButton *button, ImageViewer *imageviewer)
 	image_viewer_load_image(imageviewer);
 }
 
-static gboolean scrolledwin_button_cb(GtkWidget *scrolledwin, GdkEventButton *event,
-				      ImageViewer *imageviewer)
+static gboolean scrolledwin_button_cb(GtkWidget *scrolledwin, GdkEventButton *event, ImageViewer *imageviewer)
 {
 	if (event->button == 1 && imageviewer->image) {
 		imageviewer->resize_img = !imageviewer->resize_img;
@@ -271,8 +253,7 @@ static gboolean scrolledwin_button_cb(GtkWidget *scrolledwin, GdkEventButton *ev
 	return FALSE;
 }
 
-static void scrolledwin_resize_cb(GtkWidget *scrolledwin, GtkAllocation *alloc,
-				  ImageViewer *imageviewer)
+static void scrolledwin_resize_cb(GtkWidget *scrolledwin, GtkAllocation *alloc, ImageViewer *imageviewer)
 {
 	if (imageviewer->resize_img)
 		image_viewer_load_image(imageviewer);
@@ -312,72 +293,52 @@ static MimeViewer *image_viewer_create(void)
 
 	label3 = gtk_label_new(_("Filename:"));
 	gtk_widget_show(label3);
-	gtk_table_attach(GTK_TABLE(table1), label3, 0, 1, 0, 1,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), label3, 0, 1, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(label3), 0, 0.5);
 
 	label4 = gtk_label_new(_("Filesize:"));
 	gtk_widget_show(label4);
-	gtk_table_attach(GTK_TABLE(table1), label4, 0, 1, 1, 2,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), label4, 0, 1, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(label4), 0, 0.5);
 
 	filename = gtk_label_new("");
 	gtk_widget_show(filename);
-	gtk_table_attach(GTK_TABLE(table1), filename, 1, 3, 0, 1,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), filename, 1, 3, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(filename), 0, 0.5);
 
 	filesize = gtk_label_new("");
 	gtk_widget_show(filesize);
-	gtk_table_attach(GTK_TABLE(table1), filesize, 1, 3, 1, 2,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), filesize, 1, 3, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(filesize), 0, 0.5);
 
 	label5 = gtk_label_new(_("Content-Type:"));
 	gtk_widget_show(label5);
-	gtk_table_attach(GTK_TABLE(table1), label5, 0, 1, 2, 3,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), label5, 0, 1, 2, 3, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(label5), 0, 0.5);
 
 	content_type = gtk_label_new("");
 	gtk_widget_show(content_type);
-	gtk_table_attach(GTK_TABLE(table1), content_type, 1, 3, 2, 3,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), content_type, 1, 3, 2, 3, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(content_type), 0, 0.5);
 
 	error_lbl = gtk_label_new("");
 	gtk_widget_show(error_lbl);
-	gtk_table_attach(GTK_TABLE(table1), error_lbl, 0, 1, 3, 4,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), error_lbl, 0, 1, 3, 4, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(error_lbl), 0, 0.5);
 
 	error_msg = gtk_label_new("");
 	gtk_widget_show(error_msg);
-	gtk_table_attach(GTK_TABLE(table1), error_msg, 1, 3, 3, 4,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), error_msg, 1, 3, 3, 4, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment(GTK_MISC(error_msg), 0, 0.5);
 
 	load_button = gtk_button_new_with_label(_("Load Image"));
 	gtk_widget_show(load_button);
-	gtk_table_attach(GTK_TABLE(table1), load_button, 0, 1, 4, 5,
-			 (GtkAttachOptions) (GTK_FILL),
-			 (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach(GTK_TABLE(table1), load_button, 0, 1, 4, 5, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show(scrolledwin);
 	gtk_container_add(GTK_CONTAINER(notebook), scrolledwin);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_AUTOMATIC,
-				       GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	/*
 	 *  end of glade code
 	 */
@@ -392,44 +353,37 @@ static MimeViewer *image_viewer_create(void)
 	imageviewer->mimeviewer.destroy_viewer = image_viewer_destroy_viewer;
 	imageviewer->mimeviewer.get_selection = NULL;
 
-	imageviewer->resize_img   = prefs_common.resize_img;
-	imageviewer->fit_img_height   = prefs_common.fit_img_height;
+	imageviewer->resize_img = prefs_common.resize_img;
+	imageviewer->fit_img_height = prefs_common.fit_img_height;
 
-	imageviewer->scrolledwin  = scrolledwin;
+	imageviewer->scrolledwin = scrolledwin;
 	imageviewer->image = gtk_image_new();
-	gtk_scrolled_window_add_with_viewport
-		(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin),
-		 imageviewer->image);
-	imageviewer->notebook	  = notebook;
-	imageviewer->filename	  = filename;
-	imageviewer->filesize	  = filesize;
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(imageviewer->scrolledwin), imageviewer->image);
+	imageviewer->notebook = notebook;
+	imageviewer->filename = filename;
+	imageviewer->filesize = filesize;
 	imageviewer->content_type = content_type;
-	imageviewer->error_msg    = error_msg;
-	imageviewer->error_lbl    = error_lbl;
+	imageviewer->error_msg = error_msg;
+	imageviewer->error_lbl = error_lbl;
 	imageviewer->load_button = load_button;
 
 	g_object_ref(notebook);
 
-	g_signal_connect(G_OBJECT(load_button), "clicked",
-			 G_CALLBACK(load_cb), imageviewer);
-	g_signal_connect(G_OBJECT(scrolledwin), "button-press-event",
-			 G_CALLBACK(scrolledwin_button_cb), imageviewer);
-	g_signal_connect(G_OBJECT(scrolledwin), "size-allocate",
-			 G_CALLBACK(scrolledwin_resize_cb), imageviewer);
+	g_signal_connect(G_OBJECT(load_button), "clicked", G_CALLBACK(load_cb), imageviewer);
+	g_signal_connect(G_OBJECT(scrolledwin), "button-press-event", G_CALLBACK(scrolledwin_button_cb), imageviewer);
+	g_signal_connect(G_OBJECT(scrolledwin), "size-allocate", G_CALLBACK(scrolledwin_resize_cb), imageviewer);
 
 	image_viewer_set_notebook_page((MimeViewer *)imageviewer);
 
-	return (MimeViewer *) imageviewer;
+	return (MimeViewer *)imageviewer;
 }
 
-static gchar *content_types[] =
-	{"image/*", NULL};
+static gchar *content_types[] = { "image/*", NULL };
 
-MimeViewerFactory image_viewer_factory =
-{
+MimeViewerFactory image_viewer_factory = {
 	content_types,
 	0,
-	
+
 	image_viewer_create,
 };
 
@@ -442,3 +396,7 @@ void image_viewer_done(void)
 {
 	mimeview_unregister_viewer_factory(&image_viewer_factory);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -52,10 +52,12 @@ gchar *get_name_from_addr(const gchar *addr)
 	if (name == NULL)
 		return NULL;
 	--name;
-	while (name >= addr && !g_ascii_isspace(*name)) --name;
-	while (name >= addr && g_ascii_isspace(*name)) --name;
+	while (name >= addr && !g_ascii_isspace(*name))
+		--name;
+	while (name >= addr && g_ascii_isspace(*name))
+		--name;
 	if (name > addr) {
-		++name; /* recover non-space char */
+		++name;	/* recover non-space char */
 		return g_strndup(addr, name - addr);
 	}
 	return NULL;
@@ -78,8 +80,10 @@ gchar *get_comment_from_addr(const gchar *addr)
 	if (comm == NULL)
 		return NULL;
 	++comm;
-	while (*comm && !g_ascii_isspace(*comm)) ++comm;
-	while (*comm && g_ascii_isspace(*comm)) ++comm;
+	while (*comm && !g_ascii_isspace(*comm))
+		++comm;
+	while (*comm && g_ascii_isspace(*comm))
+		++comm;
 	if (*comm)
 		return g_strdup(comm);
 	return NULL;
@@ -112,7 +116,7 @@ gboolean matches_blocked_address(gchar *addr, MatcherList *blocked)
  * @param addr The address to be added.
  * @param blocked The regexp matching blocked addresses.
  */
-void keep_if_unknown(AddressBookFile * abf, ItemFolder * folder, gchar *addr, MatcherList *blocked)
+void keep_if_unknown(AddressBookFile *abf, ItemFolder *folder, gchar *addr, MatcherList *blocked)
 {
 	gchar *clean_addr = NULL;
 	gchar *keepto = addkeeperprefs.addressbook_folder;
@@ -128,8 +132,7 @@ void keep_if_unknown(AddressBookFile * abf, ItemFolder * folder, gchar *addr, Ma
 	if (complete_matches_found(clean_addr) == 0) {
 		gchar *a_name;
 		gchar *a_comment;
-		debug_print("adding addr '%s' to addressbook '%s'\n",
-			    clean_addr, keepto);
+		debug_print("adding addr '%s' to addressbook '%s'\n", clean_addr, keepto);
 		a_name = get_name_from_addr(addr);
 		a_comment = get_comment_from_addr(addr);
 		if (!addrbook_add_contact(abf, folder, a_name, clean_addr, a_comment)) {
@@ -142,8 +145,7 @@ void keep_if_unknown(AddressBookFile * abf, ItemFolder * folder, gchar *addr, Ma
 		if (a_comment != NULL)
 			g_free(a_comment);
 	} else {
-		debug_print("found addr '%s' in addressbook '%s', skipping\n",
-			    clean_addr, keepto);
+		debug_print("found addr '%s' in addressbook '%s', skipping\n", clean_addr, keepto);
 	}
 	end_address_completion();
 	g_free(clean_addr);
@@ -172,7 +174,7 @@ static gboolean addrk_before_send_hook(gpointer source, gpointer data)
 
 	debug_print("address_keeper invoked!\n");
 	if (compose->batch)
-		return FALSE;	/* do not check while queuing */
+		return FALSE; /* do not check while queuing */
 
 	if (keepto == NULL || *keepto == '\0') {
 		g_warning("addressbook folder not configured");
@@ -193,8 +195,7 @@ static gboolean addrk_before_send_hook(gpointer source, gpointer data)
 	cc_hdr = prefs_common_translated_header_name("Cc:");
 	bcc_hdr = prefs_common_translated_header_name("Bcc:");
 
-	if (addkeeperprefs.block_matching_addrs != NULL
-			&& addkeeperprefs.block_matching_addrs[0] != '\0') {
+	if (addkeeperprefs.block_matching_addrs != NULL && addkeeperprefs.block_matching_addrs[0] != '\0') {
 		blocked = matcherlist_new_from_lines(addkeeperprefs.block_matching_addrs, FALSE, FALSE);
 		if (blocked == NULL)
 			g_warning("couldn't allocate matcher");
@@ -202,34 +203,31 @@ static gboolean addrk_before_send_hook(gpointer source, gpointer data)
 	for (cur = compose->header_list; cur != NULL; cur = cur->next) {
 		gchar *header;
 		gchar *entry;
-		header = gtk_editable_get_chars(GTK_EDITABLE(
-				gtk_bin_get_child(GTK_BIN(
-					(((ComposeHeaderEntry *)cur->data)->combo)))), 0, -1);
-		entry = gtk_editable_get_chars(GTK_EDITABLE(
-				((ComposeHeaderEntry *)cur->data)->entry), 0, -1);
+		header = gtk_editable_get_chars(GTK_EDITABLE(gtk_bin_get_child(GTK_BIN((((ComposeHeaderEntry *)cur->data)->combo)))), 0, -1);
+		entry = gtk_editable_get_chars(GTK_EDITABLE(((ComposeHeaderEntry *)cur->data)->entry), 0, -1);
 		g_strstrip(entry);
 		g_strstrip(header);
 		if (*entry != '\0') {
 			if (!g_ascii_strcasecmp(header, to_hdr)
-				&& addkeeperprefs.keep_to_addrs == TRUE) {
+			    && addkeeperprefs.keep_to_addrs == TRUE) {
 				keep_if_unknown(abf, folder, entry, blocked);
 			}
 			if (!g_ascii_strcasecmp(header, cc_hdr)
-				&& addkeeperprefs.keep_cc_addrs == TRUE) {
+			    && addkeeperprefs.keep_cc_addrs == TRUE) {
 				keep_if_unknown(abf, folder, entry, blocked);
 			}
 			if (!g_ascii_strcasecmp(header, bcc_hdr)
-				&& addkeeperprefs.keep_bcc_addrs == TRUE) {
+			    && addkeeperprefs.keep_bcc_addrs == TRUE) {
 				keep_if_unknown(abf, folder, entry, blocked);
 			}
 		}
 		g_free(header);
 		g_free(entry);
 	}
-	if (blocked != NULL)	
+	if (blocked != NULL)
 		matcherlist_free(blocked);
 
-	return FALSE;	/* continue sending */
+	return FALSE; /* continue sending */
 }
 
 /**
@@ -241,13 +239,11 @@ static gboolean addrk_before_send_hook(gpointer source, gpointer data)
  */
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2,9,2,72),
-				  VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(2, 9, 2, 72), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
-	hook_id = hooks_register_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST, 
-				      addrk_before_send_hook, NULL);
-	
+	hook_id = hooks_register_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST, addrk_before_send_hook, NULL);
+
 	if (hook_id == HOOK_NONE) {
 		*error = g_strdup(_("Failed to register check before send hook"));
 		return -1;
@@ -265,7 +261,7 @@ gint plugin_init(gchar **error)
  * Unregister the callback function and frees matcher.
  */
 gboolean plugin_done(void)
-{	
+{
 	hooks_unregister_hook(COMPOSE_CHECK_BEFORE_SEND_HOOKLIST, hook_id);
 	address_keeper_prefs_done();
 	debug_print("Address Keeper plugin unloaded\n");
@@ -329,10 +325,13 @@ const gchar *plugin_version(void)
  */
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_OTHER, N_("Address Keeper")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_OTHER, N_("Address Keeper")},
+	{PLUGIN_NOTHING, NULL}
+	};
 
 	return features;
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

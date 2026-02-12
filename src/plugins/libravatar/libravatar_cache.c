@@ -29,9 +29,7 @@ gchar *libravatar_cache_init(const char *dirs[], gint start, gint end)
 	gchar *subdir, *rootdir;
 	int i;
 
-	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
-				NULL);
+	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S, NULL);
 	if (!is_dir_exist(rootdir)) {
 		if (make_dir(rootdir) < 0) {
 			g_warning("cannot create root directory '%s'", rootdir);
@@ -57,23 +55,20 @@ gchar *libravatar_cache_init(const char *dirs[], gint start, gint end)
 
 static void cache_stat_item(gpointer filename, gpointer data)
 {
-	GStatBuf		s;
-	const gchar		*fname = (const gchar *) filename;
-	AvatarCacheStats	*stats = (AvatarCacheStats *) data;
+	GStatBuf s;
+	const gchar *fname = (const gchar *)filename;
+	AvatarCacheStats *stats = (AvatarCacheStats *)data;
 
 	if (0 == g_stat(fname, &s)) {
 		if (S_ISDIR(s.st_mode) != 0) {
 			stats->dirs++;
-		}
-		else if (S_ISREG(s.st_mode) != 0) {
+		} else if (S_ISREG(s.st_mode) != 0) {
 			stats->files++;
 			stats->bytes += s.st_size;
-		}
-		else {
+		} else {
 			stats->others++;
 		}
-	}
-	else {
+	} else {
 		g_warning("cannot stat '%s'", fname);
 		stats->errors++;
 	}
@@ -81,15 +76,14 @@ static void cache_stat_item(gpointer filename, gpointer data)
 
 static void cache_items_deep_first(const gchar *dir, GSList **items, guint *failed)
 {
-	const gchar	*d;
-	GDir		*dp;
-	GError		*error = NULL;
+	const gchar *d;
+	GDir *dp;
+	GError *error = NULL;
 
 	cm_return_if_fail(dir != NULL);
 
 	if ((dp = g_dir_open(dir, 0, &error)) == NULL) {
-		g_warning("cannot open directory '%s': %s (%d)",
-				dir, error->message, error->code);
+		g_warning("cannot open directory '%s': %s (%d)", dir, error->message, error->code);
 		g_error_free(error);
 		(*failed)++;
 		return;
@@ -97,12 +91,11 @@ static void cache_items_deep_first(const gchar *dir, GSList **items, guint *fail
 	while ((d = g_dir_read_name(dp)) != NULL) {
 		if (strcmp(d, ".") == 0 || strcmp(d, "..") == 0) {
 			continue;
-		}
-		else {
+		} else {
 			const gchar *fname = g_strconcat(dir, G_DIR_SEPARATOR_S, d, NULL);
 			if (is_dir_exist(fname))
 				cache_items_deep_first(fname, items, failed);
-			*items = g_slist_append(*items, (gpointer) fname);
+			*items = g_slist_append(*items, (gpointer)fname);
 		}
 	}
 	g_dir_close(dp);
@@ -118,12 +111,10 @@ AvatarCacheStats *libravatar_cache_stats()
 	stats = g_new0(AvatarCacheStats, 1);
 	cm_return_val_if_fail(stats != NULL, NULL);
 
-	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
-				NULL);
+	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S, NULL);
 	cache_items_deep_first(rootdir, &items, &errors);
 	stats->errors += errors;
-	g_slist_foreach(items, (GFunc) cache_stat_item, (gpointer) stats);
+	g_slist_foreach(items, (GFunc) cache_stat_item, (gpointer)stats);
 	slist_free_strings_full(items);
 	g_free(rootdir);
 
@@ -132,15 +123,14 @@ AvatarCacheStats *libravatar_cache_stats()
 
 static void cache_delete_item(gpointer filename, gpointer errors)
 {
-	const gchar *fname = (const gchar *) filename;
+	const gchar *fname = (const gchar *)filename;
 	AvatarCleanupResult *acr = (AvatarCleanupResult *) errors;
 
 	if (!is_dir_exist(fname)) {
 		if (claws_unlink(fname) < 0) {
 			g_warning("couldn't delete file '%s'", fname);
 			(acr->e_unlink)++;
-		}
-		else {
+		} else {
 			(acr->removed)++;
 		}
 	}
@@ -156,16 +146,18 @@ AvatarCleanupResult *libravatar_cache_clean()
 	acr = g_new0(AvatarCleanupResult, 1);
 	cm_return_val_if_fail(acr != NULL, NULL);
 
-	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S,
-				NULL);
+	rootdir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, LIBRAVATAR_CACHE_DIR, G_DIR_SEPARATOR_S, NULL);
 	cache_items_deep_first(rootdir, &items, &errors);
-	acr->e_stat = (gint) errors;
+	acr->e_stat = (gint)errors;
 
-	g_slist_foreach(items, (GFunc) cache_delete_item, (gpointer) acr);
+	g_slist_foreach(items, (GFunc) cache_delete_item, (gpointer)acr);
 
 	slist_free_strings_full(items);
 	g_free(rootdir);
 
 	return acr;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

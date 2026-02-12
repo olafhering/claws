@@ -45,11 +45,11 @@
 SieveConfig sieve_config;
 
 static PrefParam prefs[] = {
-        {"manager_win_width", "-1", &sieve_config.manager_win_width,
-		P_INT, NULL, NULL, NULL},
-        {"manager_win_height", "-1", &sieve_config.manager_win_height,
-		P_INT, NULL, NULL, NULL},
-        {0,0,0,0,0,0,0}
+	{"manager_win_width", "-1", &sieve_config.manager_win_width,
+	 P_INT, NULL, NULL, NULL},
+	{"manager_win_height", "-1", &sieve_config.manager_win_height,
+	 P_INT, NULL, NULL, NULL},
+	{0, 0, 0, 0, 0, 0, 0}
 };
 
 #define PACK_HBOX(hbox, vbox) \
@@ -69,8 +69,7 @@ static PrefParam prefs[] = {
 	gtk_box_pack_start(GTK_BOX(hbox), radio, FALSE, FALSE, 0); \
 }
 
-struct SieveAccountPage
-{
+struct SieveAccountPage {
 	PrefsPage page;
 
 	GtkWidget *enable_checkbtn;
@@ -101,19 +100,16 @@ static void update_auth_sensitive(struct SieveAccountPage *page)
 	gtk_widget_set_sensitive(GTK_WIDGET(page->auth_method_hbox), use_auth);
 }
 
-static void auth_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data)
+static void auth_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
-	struct SieveAccountPage *page = (struct SieveAccountPage *) user_data;
+	struct SieveAccountPage *page = (struct SieveAccountPage *)user_data;
 	update_auth_sensitive(page);
 }
 
-static void sieve_prefs_account_create_widget_func(PrefsPage *_page,
-						 GtkWindow *window,
-						 gpointer data)
+static void sieve_prefs_account_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct SieveAccountPage *page = (struct SieveAccountPage *) _page;
-	PrefsAccount *account = (PrefsAccount *) data;
+	struct SieveAccountPage *page = (struct SieveAccountPage *)_page;
+	PrefsAccount *account = (PrefsAccount *)data;
 	SieveAccountConfig *config;
 	gchar *pass;
 
@@ -140,139 +136,127 @@ static void sieve_prefs_account_create_widget_func(PrefsPage *_page,
 	GtkListStore *menu;
 	GtkTreeIter iter;
 
-	page_vbox = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (page_vbox);
-	gtk_container_set_border_width (GTK_CONTAINER (page_vbox), VBOX_BORDER);
+	page_vbox = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(page_vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(page_vbox), VBOX_BORDER);
 
 	/* Enable/disable */
-	PACK_CHECK_BUTTON (page_vbox, enable_checkbtn,
-			   _("Enable Sieve"));
+	PACK_CHECK_BUTTON(page_vbox, enable_checkbtn, _("Enable Sieve"));
 
-	sieve_vbox = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (sieve_vbox);
-	gtk_box_pack_start (GTK_BOX (page_vbox), sieve_vbox, FALSE, FALSE, 0);
+	sieve_vbox = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(sieve_vbox);
+	gtk_box_pack_start(GTK_BOX(page_vbox), sieve_vbox, FALSE, FALSE, 0);
 
 	/* Server info */
 	serv_vbox = gtkut_get_options_frame(sieve_vbox, &serv_frame, _("Server information"));
 
-	SET_TOGGLE_SENSITIVITY (enable_checkbtn, sieve_vbox);
+	SET_TOGGLE_SENSITIVITY(enable_checkbtn, sieve_vbox);
 	size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 
 	/* Server name */
-	PACK_HBOX (hbox, serv_vbox);
-	PACK_CHECK_BUTTON (hbox, host_checkbtn, _("Server name"));
+	PACK_HBOX(hbox, serv_vbox);
+	PACK_CHECK_BUTTON(hbox, host_checkbtn, _("Server name"));
 	gtk_size_group_add_widget(size_group, host_checkbtn);
 
 	host_entry = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(host_entry), 255);
-	gtk_widget_show (host_entry);
-	gtk_box_pack_start (GTK_BOX (hbox), host_entry, TRUE, TRUE, 0);
-	SET_TOGGLE_SENSITIVITY (host_checkbtn, host_entry);
-	CLAWS_SET_TIP(hbox,
-		_("Connect to this host instead of the host used for receiving mail"));
+	gtk_widget_show(host_entry);
+	gtk_box_pack_start(GTK_BOX(hbox), host_entry, TRUE, TRUE, 0);
+	SET_TOGGLE_SENSITIVITY(host_checkbtn, host_entry);
+	CLAWS_SET_TIP(hbox, _("Connect to this host instead of the host used for receiving mail"));
 
 	/* Port */
-	PACK_HBOX (hbox, serv_vbox);
-	PACK_CHECK_BUTTON (hbox, port_checkbtn, _("Server port"));
+	PACK_HBOX(hbox, serv_vbox);
+	PACK_CHECK_BUTTON(hbox, port_checkbtn, _("Server port"));
 	port_spinbtn = gtk_spin_button_new_with_range(1, 65535, 1);
-	gtk_widget_show (port_spinbtn);
-	gtk_box_pack_start (GTK_BOX (hbox), port_spinbtn, FALSE, FALSE, 0);
-	SET_TOGGLE_SENSITIVITY (port_checkbtn, port_spinbtn);
+	gtk_widget_show(port_spinbtn);
+	gtk_box_pack_start(GTK_BOX(hbox), port_spinbtn, FALSE, FALSE, 0);
+	SET_TOGGLE_SENSITIVITY(port_checkbtn, port_spinbtn);
 	gtk_size_group_add_widget(size_group, port_checkbtn);
-	CLAWS_SET_TIP(hbox,
-		_("Connect to this port instead of the default"));
+	CLAWS_SET_TIP(hbox, _("Connect to this port instead of the default"));
 
 	/* Encryption */
 
 	tls_vbox = gtkut_get_options_frame(sieve_vbox, &tls_frame, _("Encryption"));
 
-	RADIO_ADD(tls_radio_no, tls_group, hbox, tls_vbox,
-			_("No encryption"));
-	RADIO_ADD(tls_radio_maybe, tls_group, hbox, tls_vbox,
-			_("Use STARTTLS when available"));
-	RADIO_ADD(tls_radio_yes, tls_group, hbox, tls_vbox,
-			_("Require STARTTLS"));
+	RADIO_ADD(tls_radio_no, tls_group, hbox, tls_vbox, _("No encryption"));
+	RADIO_ADD(tls_radio_maybe, tls_group, hbox, tls_vbox, _("Use STARTTLS when available"));
+	RADIO_ADD(tls_radio_yes, tls_group, hbox, tls_vbox, _("Require STARTTLS"));
 
 	/* Authentication */
 
-	auth_vbox = gtkut_get_options_frame(sieve_vbox, &auth_frame,
-			_("Authentication"));
+	auth_vbox = gtkut_get_options_frame(sieve_vbox, &auth_frame, _("Authentication"));
 
-	RADIO_ADD(auth_radio_noauth, auth_group, hbox, auth_vbox,
-		_("No authentication"));
-	RADIO_ADD(auth_radio_reuse, auth_group, hbox, auth_vbox,
-		_("Use same authentication as for receiving mail"));
-	RADIO_ADD(auth_radio_custom, auth_group, hbox, auth_vbox,
-		_("Specify authentication"));
+	RADIO_ADD(auth_radio_noauth, auth_group, hbox, auth_vbox, _("No authentication"));
+	RADIO_ADD(auth_radio_reuse, auth_group, hbox, auth_vbox, _("Use same authentication as for receiving mail"));
+	RADIO_ADD(auth_radio_custom, auth_group, hbox, auth_vbox, _("Specify authentication"));
 
-	g_signal_connect(G_OBJECT(auth_radio_custom), "toggled",
-			G_CALLBACK(auth_toggled), page);
-	g_signal_connect(G_OBJECT(auth_radio_reuse), "toggled",
-			G_CALLBACK(auth_toggled), page);
+	g_signal_connect(G_OBJECT(auth_radio_custom), "toggled", G_CALLBACK(auth_toggled), page);
+	g_signal_connect(G_OBJECT(auth_radio_reuse), "toggled", G_CALLBACK(auth_toggled), page);
 
 	/* Custom Auth Settings */
 
-	hbox = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (auth_vbox), hbox, FALSE, FALSE, 0);
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(auth_vbox), hbox, FALSE, FALSE, 0);
 
-	hbox_spc = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox_spc);
-	gtk_box_pack_start (GTK_BOX (hbox), hbox_spc, FALSE, FALSE, 0);
-	gtk_widget_set_size_request (hbox_spc, 12, -1);
+	hbox_spc = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox_spc);
+	gtk_box_pack_start(GTK_BOX(hbox), hbox_spc, FALSE, FALSE, 0);
+	gtk_widget_set_size_request(hbox_spc, 12, -1);
 
-	auth_custom_vbox = gtk_vbox_new (FALSE, VSPACING/2);
-	gtk_widget_show (auth_custom_vbox);
-	gtk_container_set_border_width (GTK_CONTAINER (auth_custom_vbox), 0);
-	gtk_box_pack_start (GTK_BOX (hbox), auth_custom_vbox, TRUE, TRUE, 0);
+	auth_custom_vbox = gtk_vbox_new(FALSE, VSPACING / 2);
+	gtk_widget_show(auth_custom_vbox);
+	gtk_container_set_border_width(GTK_CONTAINER(auth_custom_vbox), 0);
+	gtk_box_pack_start(GTK_BOX(hbox), auth_custom_vbox, TRUE, TRUE, 0);
 
 	/* User ID + Password */
 
-	hbox = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (auth_custom_vbox), hbox, FALSE, FALSE, 0);
+	hbox = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(auth_custom_vbox), hbox, FALSE, FALSE, 0);
 
-	/* User ID*/
-	label = gtk_label_new (_("User ID"));
-	gtk_widget_show (label);
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	/* User ID */
+	label = gtk_label_new(_("User ID"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
-	uid_entry = gtk_entry_new ();
-	gtk_widget_show (uid_entry);
-	gtk_widget_set_size_request (uid_entry, DEFAULT_ENTRY_WIDTH, -1);
-	gtk_box_pack_start (GTK_BOX (hbox), uid_entry, TRUE, TRUE, 0);
+	uid_entry = gtk_entry_new();
+	gtk_widget_show(uid_entry);
+	gtk_widget_set_size_request(uid_entry, DEFAULT_ENTRY_WIDTH, -1);
+	gtk_box_pack_start(GTK_BOX(hbox), uid_entry, TRUE, TRUE, 0);
 
 	/* Password */
-	label = gtk_label_new (_("Password"));
-	gtk_widget_show (label);
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	label = gtk_label_new(_("Password"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
-	pass_entry = gtk_entry_new ();
-	gtk_widget_show (pass_entry);
-	gtk_widget_set_size_request (pass_entry, DEFAULT_ENTRY_WIDTH, -1);
-	gtk_entry_set_visibility (GTK_ENTRY (pass_entry), FALSE);
-	gtk_box_pack_start (GTK_BOX (hbox), pass_entry, TRUE, TRUE, 0);
+	pass_entry = gtk_entry_new();
+	gtk_widget_show(pass_entry);
+	gtk_widget_set_size_request(pass_entry, DEFAULT_ENTRY_WIDTH, -1);
+	gtk_entry_set_visibility(GTK_ENTRY(pass_entry), FALSE);
+	gtk_box_pack_start(GTK_BOX(hbox), pass_entry, TRUE, TRUE, 0);
 
 	/* Authentication method */
 
-	auth_method_hbox = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (auth_method_hbox);
-	gtk_box_pack_start (GTK_BOX (auth_vbox), auth_method_hbox, FALSE, FALSE, 0);
+	auth_method_hbox = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(auth_method_hbox);
+	gtk_box_pack_start(GTK_BOX(auth_vbox), auth_method_hbox, FALSE, FALSE, 0);
 
-	label = gtk_label_new (_("Authentication method"));
-	gtk_widget_show (label);
-	gtk_box_pack_start (GTK_BOX (auth_method_hbox), label, FALSE, FALSE, 0);
+	label = gtk_label_new(_("Authentication method"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(auth_method_hbox), label, FALSE, FALSE, 0);
 
 	auth_menu = gtkut_sc_combobox_create(NULL, FALSE);
 	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(auth_menu)));
-	gtk_widget_show (auth_menu);
-	gtk_box_pack_start (GTK_BOX (auth_method_hbox), auth_menu, FALSE, FALSE, 0);
+	gtk_widget_show(auth_menu);
+	gtk_box_pack_start(GTK_BOX(auth_method_hbox), auth_menu, FALSE, FALSE, 0);
 
-	COMBOBOX_ADD (menu, _("Automatic"), SIEVEAUTH_AUTO);
-	COMBOBOX_ADD (menu, NULL, 0);
-	COMBOBOX_ADD (menu, "PLAIN", SIEVEAUTH_PLAIN);
-	COMBOBOX_ADD (menu, "LOGIN", SIEVEAUTH_LOGIN);
-	COMBOBOX_ADD (menu, "CRAM-MD5", SIEVEAUTH_CRAM_MD5);
+	COMBOBOX_ADD(menu, _("Automatic"), SIEVEAUTH_AUTO);
+	COMBOBOX_ADD(menu, NULL, 0);
+	COMBOBOX_ADD(menu, "PLAIN", SIEVEAUTH_PLAIN);
+	COMBOBOX_ADD(menu, "LOGIN", SIEVEAUTH_LOGIN);
+	COMBOBOX_ADD(menu, "CRAM-MD5", SIEVEAUTH_CRAM_MD5);
 
 	/* Populate config */
 
@@ -281,14 +265,13 @@ static void sieve_prefs_account_create_widget_func(PrefsPage *_page,
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(enable_checkbtn), config->enable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(host_checkbtn), config->use_host);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(port_checkbtn), config->use_port);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(port_spinbtn), (float) config->port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(port_spinbtn), (float)config->port);
 
 	if (config->host != NULL)
 		gtk_entry_set_text(GTK_ENTRY(host_entry), config->host);
 	if (config->userid != NULL)
 		gtk_entry_set_text(GTK_ENTRY(uid_entry), config->userid);
-	if ((pass = passwd_store_get_account(account->account_id,
-				     "sieve")) != NULL) {
+	if ((pass = passwd_store_get_account(account->account_id, "sieve")) != NULL) {
 		gtk_entry_set_text(GTK_ENTRY(pass_entry), pass);
 		memset(pass, 0, strlen(pass));
 		g_free(pass);
@@ -320,15 +303,9 @@ static void sieve_prefs_account_create_widget_func(PrefsPage *_page,
 
 	/* Update things */
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-				config->tls_type == SIEVE_TLS_NO ? tls_radio_no :
-				config->tls_type == SIEVE_TLS_MAYBE ? tls_radio_maybe :
-				tls_radio_yes), TRUE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(config->tls_type == SIEVE_TLS_NO ? tls_radio_no : config->tls_type == SIEVE_TLS_MAYBE ? tls_radio_maybe : tls_radio_yes), TRUE);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-				config->auth == SIEVEAUTH_REUSE ? auth_radio_reuse :
-				config->auth == SIEVEAUTH_CUSTOM ? auth_radio_custom :
-				auth_radio_noauth), TRUE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(config->auth == SIEVEAUTH_REUSE ? auth_radio_reuse : config->auth == SIEVEAUTH_CUSTOM ? auth_radio_custom : auth_radio_noauth), TRUE);
 
 	update_auth_sensitive(page);
 
@@ -351,8 +328,7 @@ static gint sieve_prefs_account_apply(struct SieveAccountPage *page)
 	config->enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->enable_checkbtn));
 	config->use_port = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->port_checkbtn));
 	config->use_host = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->host_checkbtn));
-	config->port = (gushort)gtk_spin_button_get_value_as_int
-			(GTK_SPIN_BUTTON(page->port_spinbtn));
+	config->port = (gushort) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->port_spinbtn));
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->auth_radio_noauth)))
 		config->auth = SIEVEAUTH_NONE;
@@ -361,12 +337,7 @@ static gint sieve_prefs_account_apply(struct SieveAccountPage *page)
 	else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->auth_radio_custom)))
 		config->auth = SIEVEAUTH_CUSTOM;
 
-	config->tls_type =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->tls_radio_no)) ?
-			SIEVE_TLS_NO :
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->tls_radio_maybe)) ?
-			SIEVE_TLS_MAYBE :
-			SIEVE_TLS_YES;
+	config->tls_type = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->tls_radio_no)) ? SIEVE_TLS_NO : gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->tls_radio_maybe)) ? SIEVE_TLS_MAYBE : SIEVE_TLS_YES;
 
 	g_free(config->host);
 	g_free(config->userid);
@@ -391,8 +362,7 @@ static gboolean sieve_prefs_account_check(struct SieveAccountPage *page)
 		return FALSE;
 	}
 
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->host_checkbtn)) &&
-			*gtk_entry_get_text(GTK_ENTRY(page->host_entry)) == '\0') {
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->host_checkbtn)) && *gtk_entry_get_text(GTK_ENTRY(page->host_entry)) == '\0') {
 		alertpanel_error(_("Sieve server is not entered."));
 		return FALSE;
 	}
@@ -402,7 +372,7 @@ static gboolean sieve_prefs_account_check(struct SieveAccountPage *page)
 
 static void sieve_prefs_account_save_func(PrefsPage *_page)
 {
-	struct SieveAccountPage *page = (struct SieveAccountPage *) _page;
+	struct SieveAccountPage *page = (struct SieveAccountPage *)_page;
 	if (sieve_prefs_account_check(page)) {
 		sieve_prefs_account_apply(page);
 	}
@@ -410,7 +380,7 @@ static void sieve_prefs_account_save_func(PrefsPage *_page)
 
 static gboolean sieve_prefs_account_can_close(PrefsPage *_page)
 {
-	struct SieveAccountPage *page = (struct SieveAccountPage *) _page;
+	struct SieveAccountPage *page = (struct SieveAccountPage *)_page;
 	return sieve_prefs_account_check(page);
 }
 
@@ -430,7 +400,7 @@ void sieve_prefs_init()
 	account_page.page.save_page = sieve_prefs_account_save_func;
 	account_page.page.can_close = sieve_prefs_account_can_close;
 	account_page.page.weight = 30.0;
-	prefs_account_register_page((PrefsPage *) &account_page);
+	prefs_account_register_page((PrefsPage *)&account_page);
 
 	/* Common prefs */
 	prefs_set_default(prefs);
@@ -444,10 +414,9 @@ void sieve_prefs_done(void)
 	PrefFile *pref_file;
 	gchar *rc_file_path;
 
-	prefs_account_unregister_page((PrefsPage *) &account_page);
+	prefs_account_unregister_page((PrefsPage *)&account_page);
 
-	rc_file_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				   COMMON_RC, NULL);
+	rc_file_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, COMMON_RC, NULL);
 	pref_file = prefs_write_open(rc_file_path);
 	g_free(rc_file_path);
 
@@ -467,8 +436,7 @@ void sieve_prefs_done(void)
 		prefs_file_close(pref_file);
 }
 
-struct SieveAccountConfig *sieve_prefs_account_get_config(
-		PrefsAccount *account)
+struct SieveAccountConfig *sieve_prefs_account_get_config(PrefsAccount *account)
 {
 	SieveAccountConfig *config;
 	const gchar *confstr;
@@ -508,26 +476,21 @@ struct SieveAccountConfig *sieve_prefs_account_get_config(
 #else
 	if ((num = sscanf(confstr, "%c%c %ms %c%hu %hhu %hhu %hhu %255s %255s",
 #endif
-			&enable, &use_host,
+			  &enable, &use_host,
 #if defined(G_OS_WIN32) || defined(__DragonFly__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__FreeBSD__)
-			tmphost,
+			  tmphost,
 #else
-			&config->host,
+			  &config->host,
 #endif
-			&use_port, &config->port,
-			&tls_type,
-			&auth,
-			&auth_type,
-			enc_userid,
-			enc_passwd)) != 10) {
-			/* This (10th element missing) will happen on any recent
-			 * configuration, where the password is already in
-			 * passwordstore, and not in this config string. We have
-			 * to read the 10th element in order not to break older
-			 * configurations, and to move the password to password
-			 * store.
-			 * The userid may be missing if it is unset.
-			 * If there are not 10, 9 or 8 elements, something is wrong. */
+			  &use_port, &config->port, &tls_type, &auth, &auth_type, enc_userid, enc_passwd)) != 10) {
+		/* This (10th element missing) will happen on any recent
+		 * configuration, where the password is already in
+		 * passwordstore, and not in this config string. We have
+		 * to read the 10th element in order not to break older
+		 * configurations, and to move the password to password
+		 * store.
+		 * The userid may be missing if it is unset.
+		 * If there are not 10, 9 or 8 elements, something is wrong. */
 		if (num != 9 && num != 8) {
 			g_warning("failed reading Sieve config elements");
 		}
@@ -556,20 +519,17 @@ struct SieveAccountConfig *sieve_prefs_account_get_config(
 
 	/* migrate password from passcrypt to passwordstore, if
 	 * it's not there yet */
-	if (enc_passwd[0] != '\0' &&
-			!passwd_store_has_password_account(account->account_id, "sieve")) {
+	if (enc_passwd[0] != '\0' && !passwd_store_has_password_account(account->account_id, "sieve")) {
 		gchar *pass = g_base64_decode(enc_passwd, &len);
 		passcrypt_decrypt(pass, len);
-		passwd_store_set_account(account->account_id, "sieve",
-				pass, FALSE);
+		passwd_store_set_account(account->account_id, "sieve", pass, FALSE);
 		g_free(pass);
 	}
 
 	return config;
 }
 
-void sieve_prefs_account_set_config(
-		PrefsAccount *account, SieveAccountConfig *config)
+void sieve_prefs_account_set_config(PrefsAccount *account, SieveAccountConfig *config)
 {
 	gchar *confstr = NULL;
 	gchar *enc_userid = NULL;
@@ -580,16 +540,7 @@ void sieve_prefs_account_set_config(
 		enc_userid = g_base64_encode(config->userid, len);
 	}
 
-	confstr = g_strdup_printf("%c%c %s %c%hu %hu %hu %hu %s",
-			config->enable ? 'y' : 'n',
-			config->use_host ? 'y' : 'n',
-			config->host && config->host[0] ? config->host : "!",
-			config->use_port ? 'y' : 'n',
-			config->port,
-			(unsigned short)config->tls_type,
-			(unsigned short)config->auth,
-			(unsigned short)config->auth_type,
-			enc_userid ? enc_userid : "");
+	confstr = g_strdup_printf("%c%c %s %c%hu %hu %hu %hu %s", config->enable ? 'y' : 'n', config->use_host ? 'y' : 'n', config->host && config->host[0] ? config->host : "!", config->use_port ? 'y' : 'n', config->port, (unsigned short)config->tls_type, (unsigned short)config->auth, (unsigned short)config->auth_type, enc_userid ? enc_userid : "");
 
 	if (enc_userid)
 		g_free(enc_userid);
@@ -608,3 +559,6 @@ void sieve_prefs_account_free_config(SieveAccountConfig *config)
 	g_free(config);
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

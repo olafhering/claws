@@ -23,6 +23,6 @@
 
 gboolean autocompletion_done(void);
 
-gint autocompletion_init(gchar ** error);
+gint autocompletion_init(gchar **error);
 
 #endif /* AUTOCOMPLETION_H */

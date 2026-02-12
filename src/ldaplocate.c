@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -33,8 +33,8 @@
 #include "ldapserver.h"
 #include "ldapquery.h"
 
-void ldapsvr_add_query( LdapServer *server, LdapQuery *qry );
-void ldapsvr_execute_query( LdapServer *server, LdapQuery *qry );
+void ldapsvr_add_query(LdapServer *server, LdapQuery *qry);
+void ldapsvr_execute_query(LdapServer *server, LdapQuery *qry);
 /**
  * Setup the search that will be performed and registered with the query
  * manager.
@@ -45,9 +45,7 @@ void ldapsvr_execute_query( LdapServer *server, LdapQuery *qry );
  * \param  callBackEnd   Function to call when search is complete.
  * \return Query ID allocated to query that will be executed.
  */
-gint ldaplocate_search_setup(
-	LdapServer *server, const gchar *searchTerm, void *callBackEntry,
-	void *callBackEnd )
+gint ldaplocate_search_setup(LdapServer *server, const gchar *searchTerm, void *callBackEntry, void *callBackEnd)
 {
 	QueryRequest *req;
 	LdapQuery *qry;
@@ -55,29 +53,29 @@ gint ldaplocate_search_setup(
 	gchar *name;
 
 	/* Name the query */
-	name = g_strdup_printf( "Locate '%s'", searchTerm );
+	name = g_strdup_printf("Locate '%s'", searchTerm);
 
 	/* Set up a generic address query */
-	req = qrymgr_add_request( searchTerm, callBackEnd, callBackEntry );
-	qryreq_set_search_type( req, ADDRSEARCH_LOCATE );
+	req = qrymgr_add_request(searchTerm, callBackEnd, callBackEntry);
+	qryreq_set_search_type(req, ADDRSEARCH_LOCATE);
 	queryID = req->queryID;
 
 	/* Construct a query */
 	qry = ldapqry_create();
-	ldapqry_set_query_id( qry, queryID );
-	ldapqry_set_name( qry, name );
-	ldapqry_set_search_value( qry, searchTerm );
-	ldapqry_set_search_type( qry, ADDRSEARCH_LOCATE );
-	ldapqry_set_callback_end( qry, callBackEnd );
-	ldapqry_set_callback_entry( qry, callBackEntry );
+	ldapqry_set_query_id(qry, queryID);
+	ldapqry_set_name(qry, name);
+	ldapqry_set_search_value(qry, searchTerm);
+	ldapqry_set_search_type(qry, ADDRSEARCH_LOCATE);
+	ldapqry_set_callback_end(qry, callBackEnd);
+	ldapqry_set_callback_entry(qry, callBackEntry);
 
 	/* Setup server */
-	ldapsvr_add_query( server, qry );
+	ldapsvr_add_query(server, qry);
 
 	/* Set up query request */
-	qryreq_add_query( req, ADDRQUERY_OBJECT(qry) );
+	qryreq_add_query(req, ADDRQUERY_OBJECT(qry));
 
-	g_free( name );
+	g_free(name);
 
 	return queryID;
 }
@@ -88,7 +86,8 @@ gint ldaplocate_search_setup(
  * \return <i>TRUE</i> if search started successfully, or <i>FALSE</i> if
  *         failed.
  */
-gboolean ldaplocate_search_start( const gint queryID ) {
+gboolean ldaplocate_search_start(const gint queryID)
+{
 	gboolean retVal;
 	LdapServer *server;
 	LdapQuery *qry;
@@ -96,23 +95,23 @@ gboolean ldaplocate_search_start( const gint queryID ) {
 	AddrQueryObject *aqo;
 
 	retVal = FALSE;
-	req = qrymgr_find_request( queryID );
-	if( req == NULL ) {
+	req = qrymgr_find_request(queryID);
+	if (req == NULL) {
 		return retVal;
 	}
 
 	/* Note: there should only be one query in the list */
 	aqo = req->queryList->data;
-	if( aqo->queryType == ADDRQUERY_LDAP ) {
-		qry = ( LdapQuery * ) aqo;
+	if (aqo->queryType == ADDRQUERY_LDAP) {
+		qry = (LdapQuery *)aqo;
 		server = qry->server;
 
 		/* Retire any aged queries */
-		ldapsvr_retire_query( server );
+		ldapsvr_retire_query(server);
 
 		/* Start the search */
 		retVal = TRUE;
-		ldapsvr_execute_query( server, qry );
+		ldapsvr_execute_query(server, qry);
 	}
 	return retVal;
 }
@@ -121,32 +120,35 @@ gboolean ldaplocate_search_start( const gint queryID ) {
  * Notify search to stop execution.
  * \param queryID Query to terminate.
  */
-void ldaplocate_search_stop( const gint queryID ) {
+void ldaplocate_search_stop(const gint queryID)
+{
 	QueryRequest *req;
 	AddrQueryObject *aqo;
 	LdapQuery *qry;
 
-	req = qrymgr_find_request( queryID );
-	if( req == NULL ) {
+	req = qrymgr_find_request(queryID);
+	if (req == NULL) {
 		return;
 	}
 
 	aqo = req->queryList->data;
-	if( aqo->queryType == ADDRQUERY_LDAP ) {
+	if (aqo->queryType == ADDRQUERY_LDAP) {
 		/* Notify query to stop */
-		qry = ( LdapQuery * ) aqo;
-		ldapqry_set_stop_flag( qry, TRUE );
+		qry = (LdapQuery *)aqo;
+		ldapqry_set_stop_flag(qry, TRUE);
 	}
 	req->queryList->data = NULL;
 
 	/* Delete query */
-	qrymgr_delete_request( queryID );
+	qrymgr_delete_request(queryID);
 }
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 /*
  * End of Source.
  */
 
-
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

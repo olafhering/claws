@@ -25,11 +25,10 @@
 #define __IMPORT_MUTT_H__
 
 /* Function prototypes */
-AddressBookFile *addressbook_imp_mutt( AddressIndex *addrIndex );
+AddressBookFile *addressbook_imp_mutt(AddressIndex *addrIndex);
 
 #endif /* __IMPORT_MUTT_H__ */
 
 /*
 * End of Source.
 */
-

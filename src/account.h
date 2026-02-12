@@ -26,8 +26,7 @@
 #include "prefs_account.h"
 #include "folder.h"
 
-typedef gint	(*AccountFunc)	(PrefsAccount	*ac_prefs,
-				 gpointer	 user_data);
+typedef gint (*AccountFunc) (PrefsAccount *ac_prefs, gpointer user_data);
 
 typedef struct {
 	const gchar *user;
@@ -42,48 +41,39 @@ typedef struct {
 
 extern PrefsAccount *cur_account;
 
-PrefsAccount *account_get_cur_account   (void);
-void	      account_read_config_all	(void);
-void	      account_write_config_all	(void);
+PrefsAccount *account_get_cur_account(void);
+void account_read_config_all(void);
+void account_write_config_all(void);
 
-GList        *account_find_all_from_address	(GList		*ac_list,
-						 const gchar	*address);
-GList	     *account_find_all		(void);
-PrefsAccount *account_find_from_smtp_server	(const gchar	*address,
-						 const gchar	*smtp_server);
-PrefsAccount *account_find_from_address		(const gchar	*address, gboolean newsgroups_ok);
-PrefsAccount *account_find_from_id		(gint		 id);
-PrefsAccount *account_find_from_item		(FolderItem	*item);
+GList *account_find_all_from_address(GList *ac_list, const gchar *address);
+GList *account_find_all(void);
+PrefsAccount *account_find_from_smtp_server(const gchar *address, const gchar *smtp_server);
+PrefsAccount *account_find_from_address(const gchar *address, gboolean newsgroups_ok);
+PrefsAccount *account_find_from_id(gint id);
+PrefsAccount *account_find_from_item(FolderItem *item);
 
-void	      account_set_menu_only_toolbar	(void);
+void account_set_menu_only_toolbar(void);
 
-GList	     *account_get_list		(void);
+GList *account_get_list(void);
 
-void	      account_edit_open		(gpointer a, gpointer b);
-void	      account_add		(void);
-void	      account_open		(PrefsAccount	*ac_prefs, gboolean called_from_acc_list);
-void	      account_set_as_recv_at_get_all	(PrefsAccount	*ac_prefs);
-PrefsAccount *account_get_default	(void);
+void account_edit_open(gpointer a, gpointer b);
+void account_add(void);
+void account_open(PrefsAccount *ac_prefs, gboolean called_from_acc_list);
+void account_set_as_recv_at_get_all(PrefsAccount *ac_prefs);
+PrefsAccount *account_get_default(void);
 
-void	      account_set_missing_folder(void);
-FolderItem   *account_get_special_folder(PrefsAccount		*ac_prefs,
-					 SpecialFolderItemType	 type);
+void account_set_missing_folder(void);
+FolderItem *account_get_special_folder(PrefsAccount *ac_prefs, SpecialFolderItemType type);
 
-PrefsAccount *account_get_reply_account	(MsgInfo 	*msginfo, 
-					 gboolean	 reply_autosel);
-void 	      account_rename_path	(const gchar 	*old_id, 
-					 const gchar 	*new_id);
+PrefsAccount *account_get_reply_account(MsgInfo *msginfo, gboolean reply_autosel);
+void account_rename_path(const gchar *old_id, const gchar *new_id);
 gchar *account_get_signature_str(PrefsAccount *account);
 
-gboolean      password_get(const gchar *user,
-			   const gchar *server,
-			   const gchar *protocol,
-			   guint16 port,
-			   gchar **password);
+gboolean password_get(const gchar *user, const gchar *server, const gchar *protocol, guint16 port, gchar **password);
 
-void		  account_sigsep_matchlist_create	  (void);
-void		  account_sigsep_matchlist_delete	  (void);
-gboolean	  account_sigsep_matchlist_str_found  (const gchar *str, const gchar *format);
-gboolean	  account_sigsep_matchlist_nchar_found    (const gchar *str, const gchar *format);
+void account_sigsep_matchlist_create(void);
+void account_sigsep_matchlist_delete(void);
+gboolean account_sigsep_matchlist_str_found(const gchar *str, const gchar *format);
+gboolean account_sigsep_matchlist_nchar_found(const gchar *str, const gchar *format);
 
 #endif /* __ACCOUNT_H__ */

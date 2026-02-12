@@ -43,103 +43,117 @@
 #include <string.h>
 #include "carray.h"
 
-carray * carray_new(unsigned int initsize) {
-  carray * array;
-
-  array = (carray *) malloc(sizeof(carray));
-  if (!array) return NULL;
-
-  array->len = 0;
-  array->max = initsize;
-  array->array = (void **) malloc(sizeof(void *) * initsize);
-  if (!array->array) {
-    free(array);
-    return NULL;
-  }
-  return array;
-}
-
-int carray_add(carray * array, void * data, unsigned int * index) {
-  int r;
-  
-  r = carray_set_size(array, array->len + 1);
-  if (r < 0)
-    return r;
-
-  array->array[array->len - 1] = data;
-  if (index != NULL)
-    * index = array->len - 1;
-
-  return 0;
-}
-
-int carray_set_size(carray * array, unsigned int new_size)
+carray *carray_new(unsigned int initsize)
 {
-  if (new_size > array->max) {
-    unsigned int n = array->max * 2;
-    void * new;
+	carray *array;
 
-    while (n <= new_size)
-      n *= 2;
+	array = (carray *)malloc(sizeof(carray));
+	if (!array)
+		return NULL;
 
-    new = (void **) realloc(array->array, sizeof(void *) * n);
-    if (!new)
-      return -1;
-    array->array = new;
-    array->max = n;
-  }
-  array->len = new_size;
-
-  return 0;
+	array->len = 0;
+	array->max = initsize;
+	array->array = (void **)malloc(sizeof(void *) * initsize);
+	if (!array->array) {
+		free(array);
+		return NULL;
+	}
+	return array;
 }
 
-int carray_delete_fast(carray * array, unsigned int indx) {
-  if (indx >= array->len)
-    return -1;
+int carray_add(carray *array, void *data, unsigned int *index)
+{
+	int r;
 
-  array->array[indx] = NULL;
+	r = carray_set_size(array, array->len + 1);
+	if (r < 0)
+		return r;
 
-  return 0;
+	array->array[array->len - 1] = data;
+	if (index != NULL)
+		*index = array->len - 1;
+
+	return 0;
 }
 
-int carray_delete(carray * array, unsigned int indx) {
-  if (indx >= array->len)
-    return -1;
+int carray_set_size(carray *array, unsigned int new_size)
+{
+	if (new_size > array->max) {
+		unsigned int n = array->max * 2;
+		void *new;
 
-  if (indx != --array->len)
-    array->array[indx] = array->array[array->len];
-  return 0;
+		while (n <= new_size)
+			n *= 2;
+
+		new = (void **)realloc(array->array, sizeof(void *) * n);
+		if (!new)
+			return -1;
+		array->array = new;
+		array->max = n;
+	}
+	array->len = new_size;
+
+	return 0;
 }
 
-int carray_delete_slow(carray * array, unsigned int indx) {
-  if (indx >= array->len)
-    return -1;
+int carray_delete_fast(carray *array, unsigned int indx)
+{
+	if (indx >= array->len)
+		return -1;
 
-  if (indx != --array->len) 
-    memmove(array->array + indx, array->array + indx + 1,
-	    (array->len - indx) * sizeof(void *));
-  return 0;
+	array->array[indx] = NULL;
+
+	return 0;
+}
+
+int carray_delete(carray *array, unsigned int indx)
+{
+	if (indx >= array->len)
+		return -1;
+
+	if (indx != --array->len)
+		array->array[indx] = array->array[array->len];
+	return 0;
+}
+
+int carray_delete_slow(carray *array, unsigned int indx)
+{
+	if (indx >= array->len)
+		return -1;
+
+	if (indx != --array->len)
+		memmove(array->array + indx, array->array + indx + 1, (array->len - indx) * sizeof(void *));
+	return 0;
 }
 
 #ifdef NO_MACROS
-void ** carray_data(carray * array) {
-  return array->array;
+void **carray_data(carray *array)
+{
+	return array->array;
 }
 
-unsigned int carray_count(carray * array) {
-  return array->len;
+unsigned int carray_count(carray *array)
+{
+	return array->len;
 }
 
-void * carray_get(carray * array, unsigned int indx) {
-  return array->array[indx];
+void *carray_get(carray *array, unsigned int indx)
+{
+	return array->array[indx];
 }
 
-void carray_set(carray * array, unsigned int indx, void * value) {
-  array->array[indx] = value;
+void carray_set(carray *array, unsigned int indx, void *value)
+{
+	array->array[indx] = value;
 }
 #endif
 
-void carray_free(carray * array) {
-  free(array->array);
-  free(array);
+void carray_free(carray *array)
+{
+	free(array->array);
+	free(array);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

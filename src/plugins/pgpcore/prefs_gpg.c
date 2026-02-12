@@ -29,7 +29,7 @@
 
 #include "defs.h"
 #include "gtk/gtkutils.h"
-#include "utils.h" 
+#include "utils.h"
 #include "prefs.h"
 #include "prefs_common.h"
 #include "prefs_gtk.h"
@@ -73,22 +73,20 @@ static PrefParam param[] = {
 static gchar *saved_gpg_agent_info = NULL;
 static void gpg_path_browse_cb(GtkWidget *widget, gpointer data);
 
-struct GPGPage
-{
+struct GPGPage {
 	PrefsPage page;
 
 	GtkWidget *checkbtn_auto_check_signatures;
 	GtkWidget *checkbtn_autocompletion;
 	GtkWidget *checkbtn_use_gpg_agent;
-        GtkWidget *checkbtn_store_passphrase;  
-        GtkWidget *spinbtn_store_passphrase;  
-        GtkWidget *checkbtn_passphrase_grab;  
-        GtkWidget *checkbtn_gpg_warning;
+	GtkWidget *checkbtn_store_passphrase;
+	GtkWidget *spinbtn_store_passphrase;
+	GtkWidget *checkbtn_passphrase_grab;
+	GtkWidget *checkbtn_gpg_warning;
 	GtkWidget *gpg_path;
 };
 
-struct GPGAccountPage
-{
+struct GPGAccountPage {
 	PrefsPage page;
 
 	GtkWidget *key_default;
@@ -107,11 +105,9 @@ static struct GPGPage gpg_page;
 static struct GPGAccountPage gpg_account_page;
 static struct GPGAccountPage smime_account_page;
 
-static void prefs_gpg_create_widget_func(PrefsPage *_page,
-					 GtkWindow *window,
-					 gpointer data)
+static void prefs_gpg_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct GPGPage *page = (struct GPGPage *) _page;
+	struct GPGPage *page = (struct GPGPage *)_page;
 	struct GPGConfig *config;
 
 	GtkWidget *checkbtn_use_gpg_agent;
@@ -130,85 +126,71 @@ static void prefs_gpg_create_widget_func(PrefsPage *_page,
 	GtkWidget *frame_passphrase;
 	GtkWidget *gpg_path, *gpg_path_btn;
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, FALSE, FALSE, 0);
+	vbox2 = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(vbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), vbox2, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_auto_check_signatures,
-			_("Automatically check signatures"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_auto_check_signatures, _("Automatically check signatures"));
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_autocompletion,
-			_("Use keyring for address autocompletion"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_autocompletion, _("Use keyring for address autocompletion"));
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame_passphrase, _("Passphrase"));
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_use_gpg_agent,
-			_("Use gpg-agent to manage passwords"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_use_gpg_agent, _("Use gpg-agent to manage passwords"));
 	if (saved_gpg_agent_info == NULL)
 		gtk_widget_set_sensitive(checkbtn_use_gpg_agent, FALSE);
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_store_passphrase,
-			_("Store passphrase in memory"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_store_passphrase, _("Store passphrase in memory"));
 
 	SET_TOGGLE_SENSITIVITY_REVERSE(checkbtn_use_gpg_agent, checkbtn_store_passphrase);
 
-	hbox1 = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
+	hbox1 = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox1, FALSE, FALSE, 0);
 
 	SET_TOGGLE_SENSITIVITY_REVERSE(checkbtn_use_gpg_agent, hbox1);
 
 	label_expire1 = gtk_label_new(_("Expire after"));
-	gtk_widget_show (label_expire1);
-	gtk_box_pack_start (GTK_BOX (hbox1), label_expire1, FALSE, FALSE, 0);
+	gtk_widget_show(label_expire1);
+	gtk_box_pack_start(GTK_BOX(hbox1), label_expire1, FALSE, FALSE, 0);
 
-	spinbtn_store_passphrase_adj =
-	    GTK_ADJUSTMENT(gtk_adjustment_new(1, 0, 1440, 1, 10, 0));
-	spinbtn_store_passphrase =
-	    gtk_spin_button_new(GTK_ADJUSTMENT
-				(spinbtn_store_passphrase_adj), 1, 0);
+	spinbtn_store_passphrase_adj = GTK_ADJUSTMENT(gtk_adjustment_new(1, 0, 1440, 1, 10, 0));
+	spinbtn_store_passphrase = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_store_passphrase_adj), 1, 0);
 	gtk_widget_show(spinbtn_store_passphrase);
-	gtk_box_pack_start(GTK_BOX(hbox1), spinbtn_store_passphrase, FALSE,
-			   FALSE, 0);
-	CLAWS_SET_TIP(spinbtn_store_passphrase,
-		      _("Setting to '0' will store the passphrase for the whole session"));
-	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON
-				    (spinbtn_store_passphrase), TRUE);
+	gtk_box_pack_start(GTK_BOX(hbox1), spinbtn_store_passphrase, FALSE, FALSE, 0);
+	CLAWS_SET_TIP(spinbtn_store_passphrase, _("Setting to '0' will store the passphrase for the whole session"));
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_store_passphrase), TRUE);
 
 	label_expire2 = gtk_label_new(_("minutes"));
 	gtk_widget_show(label_expire2);
 	gtk_box_pack_start(GTK_BOX(hbox1), label_expire2, FALSE, FALSE, 0);
 	gtk_misc_set_alignment(GTK_MISC(label_expire2), 0.0, 0.5);
 
-	SET_TOGGLE_SENSITIVITY (checkbtn_store_passphrase, label_expire1);
-	SET_TOGGLE_SENSITIVITY (checkbtn_store_passphrase, spinbtn_store_passphrase);
-	SET_TOGGLE_SENSITIVITY (checkbtn_store_passphrase, label_expire2);
+	SET_TOGGLE_SENSITIVITY(checkbtn_store_passphrase, label_expire1);
+	SET_TOGGLE_SENSITIVITY(checkbtn_store_passphrase, spinbtn_store_passphrase);
+	SET_TOGGLE_SENSITIVITY(checkbtn_store_passphrase, label_expire2);
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_passphrase_grab,
-			_("Grab input while entering a passphrase"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_passphrase_grab, _("Grab input while entering a passphrase"));
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, FALSE, FALSE, 0);
+	vbox2 = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(vbox2);
+	gtk_box_pack_start(GTK_BOX(vbox1), vbox2, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_gpg_warning,
-			_("Display warning on start-up if GnuPG doesn't work"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_gpg_warning, _("Display warning on start-up if GnuPG doesn't work"));
 
 	hbox2 = gtk_hbox_new(FALSE, 6);
 	label_gpg_path = gtk_label_new(_("Path to GnuPG executable"));
 	gtk_box_pack_start(GTK_BOX(hbox2), label_gpg_path, FALSE, FALSE, 0);
 	gpg_path = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(hbox2), gpg_path, TRUE, TRUE, 0);
-	CLAWS_SET_TIP(gpg_path,
-		      _("If left blank the location of the GnuPG executable will be automatically determined."));
+	CLAWS_SET_TIP(gpg_path, _("If left blank the location of the GnuPG executable will be automatically determined."));
 	gpg_path_btn = gtkut_get_browse_file_btn(_("Bro_wse"));
 	gtk_box_pack_start(GTK_BOX(hbox2), gpg_path_btn, FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(gpg_path_btn), "clicked",
-			 G_CALLBACK(gpg_path_browse_cb), gpg_path);
+	g_signal_connect(G_OBJECT(gpg_path_btn), "clicked", G_CALLBACK(gpg_path_browse_cb), gpg_path);
 	pref_set_entry_from_pref(GTK_ENTRY(gpg_path), prefs_gpg.gpg_path);
 
 	gtk_box_pack_start(GTK_BOX(vbox2), hbox2, FALSE, FALSE, 0);
@@ -224,7 +206,7 @@ static void prefs_gpg_create_widget_func(PrefsPage *_page,
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_use_gpg_agent), config->use_gpg_agent);
 	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbtn_use_gpg_agent)))
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_store_passphrase), config->store_passphrase);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_store_passphrase), (float) config->store_passphrase_timeout);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_store_passphrase), (float)config->store_passphrase_timeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_passphrase_grab), config->passphrase_grab);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_gpg_warning), config->gpg_warning);
 	gtk_entry_set_text(GTK_ENTRY(gpg_path), config->gpg_path);
@@ -240,7 +222,7 @@ static void prefs_gpg_create_widget_func(PrefsPage *_page,
 	page->page.widget = vbox1;
 }
 
-static void gpg_path_browse_cb(GtkWidget* widget, gpointer data)
+static void gpg_path_browse_cb(GtkWidget *widget, gpointer data)
 {
 	gchar *filename;
 	GtkEntry *dest = GTK_ENTRY(data);
@@ -259,23 +241,16 @@ static void prefs_gpg_destroy_widget_func(PrefsPage *_page)
 
 static void prefs_gpg_save_func(PrefsPage *_page)
 {
-	struct GPGPage *page = (struct GPGPage *) _page;
+	struct GPGPage *page = (struct GPGPage *)_page;
 	GPGConfig *config = prefs_gpg_get_config();
 
-	config->auto_check_signatures =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_auto_check_signatures));
-	config->autocompletion =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autocompletion));
-	config->use_gpg_agent = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_use_gpg_agent));
-	config->store_passphrase = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_store_passphrase));
-	config->store_passphrase_timeout = 
-		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_store_passphrase));
-	config->passphrase_grab = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_passphrase_grab));
-	config->gpg_warning = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_gpg_warning));
+	config->auto_check_signatures = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_auto_check_signatures));
+	config->autocompletion = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autocompletion));
+	config->use_gpg_agent = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_use_gpg_agent));
+	config->store_passphrase = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_store_passphrase));
+	config->store_passphrase_timeout = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_store_passphrase));
+	config->passphrase_grab = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_passphrase_grab));
+	config->gpg_warning = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_gpg_warning));
 	g_free(config->gpg_path);
 	config->gpg_path = g_strdup(gtk_entry_get_text(GTK_ENTRY(page->gpg_path)));
 	if (strcmp(config->gpg_path, "") != 0 && access(config->gpg_path, X_OK) != -1) {
@@ -291,7 +266,7 @@ static void prefs_gpg_save_func(PrefsPage *_page)
 
 void key_custom_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
-	struct GPGAccountPage *page = (struct GPGAccountPage *) user_data;
+	struct GPGAccountPage *page = (struct GPGAccountPage *)user_data;
 	gboolean active;
 
 	active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->key_custom));
@@ -322,17 +297,15 @@ static void prefs_gpg_update_sens(struct GPGAccountPage *page)
 
 static void new_key_clicked(GtkWidget *widget, gpointer user_data)
 {
-	struct GPGAccountPage *page = (struct GPGAccountPage *) user_data;
+	struct GPGAccountPage *page = (struct GPGAccountPage *)user_data;
 	sgpgme_create_secret_key(page->account, FALSE);
 	prefs_gpg_update_sens(page);
 }
 
-static void prefs_gpg_account_create_widget_func(PrefsPage *_page,
-						 GtkWindow *window,
-						 gpointer data)
+static void prefs_gpg_account_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct GPGAccountPage *page = (struct GPGAccountPage *) _page;
-	PrefsAccount *account = (PrefsAccount *) data;
+	struct GPGAccountPage *page = (struct GPGAccountPage *)_page;
+	PrefsAccount *account = (PrefsAccount *)data;
 	GPGAccountConfig *config;
 	SignKeyType sign_key;
 
@@ -352,48 +325,45 @@ static void prefs_gpg_account_create_widget_func(PrefsPage *_page,
 	GtkWidget *new_key_box;
 
 	vbox = gtk_vbox_new(FALSE, VSPACING);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), VBOX_BORDER);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), VBOX_BORDER);
 	gtk_widget_show(vbox);
 
 	vbox2 = gtkut_get_options_frame(vbox, &frame1, _("Sign key"));
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
+	hbox = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
 
-	key_default = gtk_radio_button_new_with_label(key_group,
-			_("Use default GnuPG key"));
+	key_default = gtk_radio_button_new_with_label(key_group, _("Use default GnuPG key"));
 	key_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(key_default));
 	gtk_widget_show(key_default);
 	gtk_box_pack_start(GTK_BOX(hbox), key_default, FALSE, FALSE, 0);
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
+	hbox = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
 
-	key_by_from = gtk_radio_button_new_with_label(key_group,
-		_("Select key by your email address"));
+	key_by_from = gtk_radio_button_new_with_label(key_group, _("Select key by your email address"));
 	key_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(key_by_from));
 	gtk_widget_show(key_by_from);
 	gtk_box_pack_start(GTK_BOX(hbox), key_by_from, FALSE, FALSE, 0);
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
+	hbox = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
 
-	key_custom = gtk_radio_button_new_with_label(key_group,
-		_("Specify key manually"));
+	key_custom = gtk_radio_button_new_with_label(key_group, _("Specify key manually"));
 	key_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(key_custom));
 	gtk_widget_show(key_custom);
 	gtk_box_pack_start(GTK_BOX(hbox), key_custom, FALSE, FALSE, 0);
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
+	hbox = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox, FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
 
 	keyid_label = gtk_label_new(_("User or key ID:"));
 	gtk_widget_show(keyid_label);
@@ -406,8 +376,7 @@ static void prefs_gpg_account_create_widget_func(PrefsPage *_page,
 
 	config = prefs_gpg_account_get_config(account);
 
-	sign_key =
-		(page == &smime_account_page ? config->smime_sign_key : config->sign_key);
+	sign_key = (page == &smime_account_page ? config->smime_sign_key : config->sign_key);
 	switch (sign_key) {
 	case SIGN_KEY_DEFAULT:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_default), TRUE);
@@ -426,20 +395,18 @@ static void prefs_gpg_account_create_widget_func(PrefsPage *_page,
 		break;
 	}
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox);
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+	hbox = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
 	new_key_box = gtk_hbox_new(FALSE, 6);
 	gtk_widget_show(new_key_box);
 	gtk_box_pack_start(GTK_BOX(hbox), new_key_box, FALSE, FALSE, 0);
 
-	image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING,
-			GTK_ICON_SIZE_SMALL_TOOLBAR);
+	image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	gtk_box_pack_start(GTK_BOX(new_key_box), image, FALSE, FALSE, 0);
-	new_key_label = gtk_label_new(
-			_("No secret key found."));
+	new_key_label = gtk_label_new(_("No secret key found."));
 	gtk_box_pack_start(GTK_BOX(new_key_box), new_key_label, FALSE, FALSE, 0);
 
 	new_key_btn = gtk_button_new_with_label(_("Generate a new key pair"));
@@ -477,7 +444,7 @@ static void prefs_gpg_account_destroy_widget_func(PrefsPage *_page)
 
 static void prefs_gpg_account_save_func(PrefsPage *_page)
 {
-	struct GPGAccountPage *page = (struct GPGAccountPage *) _page;
+	struct GPGAccountPage *page = (struct GPGAccountPage *)_page;
 	GPGAccountConfig *config;
 
 	config = prefs_gpg_account_get_config(page->account);
@@ -531,11 +498,11 @@ void prefs_gpg_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
 struct GPGAccountConfig *prefs_gpg_account_get_config(PrefsAccount *account)
@@ -655,18 +622,15 @@ void prefs_gpg_enable_agent(gboolean enable)
 {
 	if (enable) {
 		if (saved_gpg_agent_info) {
-			g_setenv("GPG_AGENT_INFO",
-				 saved_gpg_agent_info, TRUE);
-			debug_print("set GPG_AGENT_INFO=%s\n", 
-				saved_gpg_agent_info);
-		} else { 
+			g_setenv("GPG_AGENT_INFO", saved_gpg_agent_info, TRUE);
+			debug_print("set GPG_AGENT_INFO=%s\n", saved_gpg_agent_info);
+		} else {
 			debug_print("Can't enable gpg agent (no GPG_AGENT_INFO)\n");
 		}
 	} else {
 		if (saved_gpg_agent_info) {
 			g_unsetenv("GPG_AGENT_INFO");
-			debug_print("unset GPG_AGENT_INFO=%s\n", 
-				saved_gpg_agent_info);
+			debug_print("unset GPG_AGENT_INFO=%s\n", saved_gpg_agent_info);
 		} else {
 			debug_print("Can't disable gpg agent (no GPG_AGENT_INFO)\n");
 		}
@@ -684,37 +648,37 @@ void prefs_gpg_init()
 	prefs_read_config(param, "GPG", rcpath, NULL);
 	g_free(rcpath);
 
-        path[0] = _("Plugins");
-        path[1] = _("GPG");
-        path[2] = NULL;
+	path[0] = _("Plugins");
+	path[1] = _("GPG");
+	path[2] = NULL;
 
-        gpg_page.page.path = path;
-        gpg_page.page.create_widget = prefs_gpg_create_widget_func;
-        gpg_page.page.destroy_widget = prefs_gpg_destroy_widget_func;
-        gpg_page.page.save_page = prefs_gpg_save_func;
-        gpg_page.page.weight = 30.0;
+	gpg_page.page.path = path;
+	gpg_page.page.create_widget = prefs_gpg_create_widget_func;
+	gpg_page.page.destroy_widget = prefs_gpg_destroy_widget_func;
+	gpg_page.page.save_page = prefs_gpg_save_func;
+	gpg_page.page.weight = 30.0;
 
-        prefs_gtk_register_page((PrefsPage *) &gpg_page);
+	prefs_gtk_register_page((PrefsPage *)&gpg_page);
 
-        gpg_account_page.page.path = path;
-        gpg_account_page.page.create_widget = prefs_gpg_account_create_widget_func;
-        gpg_account_page.page.destroy_widget = prefs_gpg_account_destroy_widget_func;
-        gpg_account_page.page.save_page = prefs_gpg_account_save_func;
-        gpg_account_page.page.weight = 30.0;
+	gpg_account_page.page.path = path;
+	gpg_account_page.page.create_widget = prefs_gpg_account_create_widget_func;
+	gpg_account_page.page.destroy_widget = prefs_gpg_account_destroy_widget_func;
+	gpg_account_page.page.save_page = prefs_gpg_account_save_func;
+	gpg_account_page.page.weight = 30.0;
 
-        prefs_account_register_page((PrefsPage *) &gpg_account_page);
+	prefs_account_register_page((PrefsPage *)&gpg_account_page);
 
-        spath[0] = _("Plugins");
-        spath[1] = _("S/MIME");
-        spath[2] = NULL;
-        smime_account_page.page.path = spath;
-        smime_account_page.page.create_widget = prefs_gpg_account_create_widget_func;
-        smime_account_page.page.destroy_widget = prefs_gpg_account_destroy_widget_func;
-        smime_account_page.page.save_page = prefs_gpg_account_save_func;
-        smime_account_page.page.weight = 30.0;
+	spath[0] = _("Plugins");
+	spath[1] = _("S/MIME");
+	spath[2] = NULL;
+	smime_account_page.page.path = spath;
+	smime_account_page.page.create_widget = prefs_gpg_account_create_widget_func;
+	smime_account_page.page.destroy_widget = prefs_gpg_account_destroy_widget_func;
+	smime_account_page.page.save_page = prefs_gpg_account_save_func;
+	smime_account_page.page.weight = 30.0;
 
-        prefs_account_register_page((PrefsPage *) &smime_account_page);
-	
+	prefs_account_register_page((PrefsPage *)&smime_account_page);
+
 	tmp = g_getenv("GPG_AGENT_INFO");
 	if (tmp)
 		saved_gpg_agent_info = g_strdup(tmp);
@@ -724,8 +688,8 @@ void prefs_gpg_init()
 
 void prefs_gpg_done()
 {
-	prefs_gtk_unregister_page((PrefsPage *) &gpg_page);
-	prefs_account_unregister_page((PrefsPage *) &gpg_account_page);
+	prefs_gtk_unregister_page((PrefsPage *)&gpg_page);
+	prefs_account_unregister_page((PrefsPage *)&gpg_account_page);
 	prefs_gpg_enable_agent(TRUE);
 }
 
@@ -735,11 +699,10 @@ gboolean prefs_gpg_should_skip_encryption_warning(const gchar *systemid)
 	int i = 0;
 	if (prefs_gpg_get_config()->skip_encryption_warning == NULL)
 		return FALSE;
-	systems = g_strsplit(prefs_gpg_get_config()->skip_encryption_warning,
-				",", -1);
+	systems = g_strsplit(prefs_gpg_get_config()->skip_encryption_warning, ",", -1);
 	while (systems && systems[i]) {
 		debug_print(" cmp %s %s\n", systems[i], systemid);
-		if (!strcmp(systems[i],systemid)) {
+		if (!strcmp(systems[i], systemid)) {
 			g_strfreev(systems);
 			return TRUE;
 		}
@@ -753,12 +716,9 @@ void prefs_gpg_add_skip_encryption_warning(const gchar *systemid)
 {
 	gchar *tmp = NULL;
 	if (prefs_gpg_get_config()->skip_encryption_warning == NULL)
-		prefs_gpg_get_config()->skip_encryption_warning =
-			g_strdup_printf("%s,", systemid);
+		prefs_gpg_get_config()->skip_encryption_warning = g_strdup_printf("%s,", systemid);
 	else if (!prefs_gpg_should_skip_encryption_warning(systemid)) {
-		tmp = g_strdup_printf("%s%s,",
-			prefs_gpg_get_config()->skip_encryption_warning,
-			systemid);
+		tmp = g_strdup_printf("%s%s,", prefs_gpg_get_config()->skip_encryption_warning, systemid);
 		g_free(prefs_gpg_get_config()->skip_encryption_warning);
 		prefs_gpg_get_config()->skip_encryption_warning = tmp;
 	}
@@ -773,20 +733,19 @@ void prefs_gpg_remove_skip_encryption_warning(const gchar *systemid)
 		return;
 
 	if (prefs_gpg_should_skip_encryption_warning(systemid)) {
-		systems = g_strsplit(prefs_gpg_get_config()->skip_encryption_warning,
-				",", -1);
+		systems = g_strsplit(prefs_gpg_get_config()->skip_encryption_warning, ",", -1);
 		g_free(prefs_gpg_get_config()->skip_encryption_warning);
 		prefs_gpg_get_config()->skip_encryption_warning = NULL;
 
 		while (systems && systems[i]) {
-			if (!strcmp(systems[i],systemid)) {
+			if (!strcmp(systems[i], systemid)) {
 				i++;
 				continue;
 			}
 			prefs_gpg_add_skip_encryption_warning(systems[i]);
 			i++;
 		}
-		
+
 		g_strfreev(systems);
 	}
 	prefs_gpg_save_config();
@@ -796,3 +755,7 @@ gboolean prefs_gpg_auto_check_signatures(void)
 {
 	return prefs_gpg_get_config()->auto_check_signatures;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

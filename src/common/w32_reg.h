@@ -22,19 +22,11 @@
 #include <windows.h>
 #include <glib.h>
 
-gboolean write_w32_registry_string(HKEY root,
-	const gchar *subkey,
-	const gchar *value,
-	const gchar *data);
+gboolean write_w32_registry_string(HKEY root, const gchar *subkey, const gchar *value, const gchar *data);
 
-gboolean write_w32_registry_dword(HKEY root,
-	const gchar *subkey,
-	const gchar *value,
-	DWORD data);
+gboolean write_w32_registry_dword(HKEY root, const gchar *subkey, const gchar *value, DWORD data);
 
 // Caller should deallocate the return value with g_free()
-gchar *read_w32_registry_string(HKEY root,
-	const gchar *subkey,
-	const gchar *value);
+gchar *read_w32_registry_string(HKEY root, const gchar *subkey, const gchar *value);
 
 #endif

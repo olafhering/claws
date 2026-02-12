@@ -41,14 +41,13 @@ typedef enum {
 
 #include "socket.h"
 
-void ssl_init				(void);
-void ssl_done				(void);
-gboolean ssl_init_socket		(SockInfo	*sockinfo);
-void ssl_done_socket			(SockInfo	*sockinfo);
+void ssl_init(void);
+void ssl_done(void);
+gboolean ssl_init_socket(SockInfo *sockinfo);
+void ssl_done_socket(SockInfo *sockinfo);
 
 typedef struct _SSLClientCertHookData SSLClientCertHookData;
-struct _SSLClientCertHookData
-{
+struct _SSLClientCertHookData {
 	const void *account;
 	const gchar *cert_path;
 	gchar *password;

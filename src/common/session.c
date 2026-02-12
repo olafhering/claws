@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -38,28 +38,18 @@
 #include "utils.h"
 #include "log.h"
 
-static gint session_connect_cb		(SockInfo	*sock,
-					 gpointer	 data);
-static gint session_close		(Session	*session);
+static gint session_connect_cb(SockInfo *sock, gpointer data);
+static gint session_close(Session *session);
 
-static gboolean session_timeout_cb	(gpointer	 data);
+static gboolean session_timeout_cb(gpointer data);
 
-static gboolean session_recv_msg_idle_cb	(gpointer	 data);
-static gboolean session_recv_data_idle_cb	(gpointer	 data);
+static gboolean session_recv_msg_idle_cb(gpointer data);
+static gboolean session_recv_data_idle_cb(gpointer data);
 
-static gboolean session_read_msg_cb	(SockInfo	*source,
-					 GIOCondition	 condition,
-					 gpointer	 data);
-static gboolean session_read_data_cb	(SockInfo	*source,
-					 GIOCondition	 condition,
-					 gpointer	 data);
-static gboolean session_write_msg_cb	(SockInfo	*source,
-					 GIOCondition	 condition,
-					 gpointer	 data);
-static gboolean session_write_data_cb	(SockInfo	*source,
-					 GIOCondition	 condition,
-					 gpointer	 data);
-
+static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition, gpointer data);
+static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition, gpointer data);
+static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition, gpointer data);
+static gboolean session_write_data_cb(SockInfo *source, GIOCondition condition, gpointer data);
 
 void session_init(Session *session, const void *prefs_account, gboolean is_smtp)
 {
@@ -129,10 +119,8 @@ gint session_connect(Session *session, const gchar *server, gushort port)
 		server = session->proxy_info->proxy_host;
 		port = session->proxy_info->proxy_port;
 	}
-
 #ifdef G_OS_UNIX
-	session->conn_id = sock_connect_async(server, port, session_connect_cb,
-					      session);
+	session->conn_id = sock_connect_async(server, port, session_connect_cb, session);
 	if (session->conn_id < 0) {
 		g_warning("can't connect to server");
 		session_close(session);
@@ -181,14 +169,12 @@ static gint session_connect_cb(SockInfo *sock, gpointer data)
 	if (session->proxy_info) {
 		debug_print("connecting through socks\n");
 		sock_set_nonblocking_mode(sock, FALSE);
-		if (proxy_connect(sock, session->server, session->port,
-					session->proxy_info) < 0) {
+		if (proxy_connect(sock, session->server, session->port, session->proxy_info) < 0) {
 			g_warning("can't establish SOCKS connection");
 			session->state = SESSION_ERROR;
 			return -1;
 		}
 	}
-
 
 #ifdef USE_GNUTLS
 	sock->gnutls_priority = session->gnutls_priority;
@@ -220,9 +206,7 @@ static gint session_connect_cb(SockInfo *sock, gpointer data)
 	debug_print("session (%p): connected\n", session);
 
 	session->state = SESSION_RECV;
-	session->io_tag = sock_add_watch(session->sock, G_IO_IN,
-					 session_read_msg_cb,
-					 session);
+	session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	if (session->connect_finished)
 		session->connect_finished(session, TRUE);
@@ -272,15 +256,12 @@ void session_destroy(Session *session)
 
 gboolean session_is_running(Session *session)
 {
-	return (session->state == SESSION_READY ||
-		session->state == SESSION_SEND ||
-		session->state == SESSION_RECV);
+	return (session->state == SESSION_READY || session->state == SESSION_SEND || session->state == SESSION_RECV);
 }
 
 gboolean session_is_connected(Session *session)
 {
-	return (session->state == SESSION_SEND ||
-		session->state == SESSION_RECV);
+	return (session->state == SESSION_SEND || session->state == SESSION_RECV);
 }
 
 void session_set_access_time(Session *session)
@@ -296,11 +277,9 @@ void session_set_timeout(Session *session, guint interval)
 	session->timeout_interval = interval;
 	if (interval > 0) {
 		if (interval % 1000 == 0)
-			session->timeout_tag =
-				g_timeout_add_seconds(interval/1000, session_timeout_cb, session);
+			session->timeout_tag = g_timeout_add_seconds(interval / 1000, session_timeout_cb, session);
 		else
-			session->timeout_tag =
-				g_timeout_add(interval, session_timeout_cb, session);
+			session->timeout_tag = g_timeout_add(interval, session_timeout_cb, session);
 	} else
 		session->timeout_tag = 0;
 }
@@ -322,40 +301,28 @@ static gboolean session_timeout_cb(gpointer data)
 	return FALSE;
 }
 
-void session_set_recv_message_notify(Session *session,
-				     RecvMsgNotify notify_func, gpointer data)
+void session_set_recv_message_notify(Session *session, RecvMsgNotify notify_func, gpointer data)
 {
 	session->recv_msg_notify = notify_func;
 	session->recv_msg_notify_data = data;
 }
 
-void session_set_recv_data_progressive_notify
-					(Session *session,
-					 RecvDataProgressiveNotify notify_func,
-					 gpointer data)
-{
-	session->recv_data_progressive_notify = notify_func,
-	session->recv_data_progressive_notify_data = data;
+void session_set_recv_data_progressive_notify(Session *session, RecvDataProgressiveNotify notify_func, gpointer data) {
+	session->recv_data_progressive_notify = notify_func, session->recv_data_progressive_notify_data = data;
 }
 
-void session_set_recv_data_notify(Session *session, RecvDataNotify notify_func,
-				  gpointer data)
+void session_set_recv_data_notify(Session *session, RecvDataNotify notify_func, gpointer data)
 {
 	session->recv_data_notify = notify_func;
 	session->recv_data_notify_data = data;
 }
 
-void session_set_send_data_progressive_notify
-					(Session *session,
-					 SendDataProgressiveNotify notify_func,
-					 gpointer data)
-{
+void session_set_send_data_progressive_notify(Session *session, SendDataProgressiveNotify notify_func, gpointer data) {
 	session->send_data_progressive_notify = notify_func;
 	session->send_data_progressive_notify_data = data;
 }
 
-void session_set_send_data_notify(Session *session, SendDataNotify notify_func,
-				  gpointer data)
+void session_set_send_data_notify(Session *session, SendDataNotify notify_func, gpointer data)
 {
 	session->send_data_notify = notify_func;
 	session->send_data_notify_data = data;
@@ -447,8 +414,7 @@ gint session_send_msg(Session *session, const gchar *msg)
 	ret = session_write_msg_cb(session->sock, G_IO_OUT, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_OUT,
-						 session_write_msg_cb, session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_OUT, session_write_msg_cb, session);
 	else if (session->state == SESSION_ERROR)
 		return -1;
 
@@ -464,8 +430,7 @@ gint session_recv_msg(Session *session)
 	if (session->read_buf_len > 0)
 		g_idle_add(session_recv_msg_idle_cb, session);
 	else
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN,
-						 session_read_msg_cb, session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	return 0;
 }
@@ -478,8 +443,7 @@ static gboolean session_recv_msg_idle_cb(gpointer data)
 	ret = session_read_msg_cb(session->sock, G_IO_IN, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN,
-						 session_read_msg_cb, session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_msg_cb, session);
 
 	return FALSE;
 }
@@ -508,14 +472,12 @@ gint session_send_data(Session *session, const guchar *data, guint size)
 	session->write_data_p = session->write_data;
 	session->write_data_len = size;
 	g_date_time_unref(session->tv_prev);
-        session->tv_prev = g_date_time_new_now_local();
+	session->tv_prev = g_date_time_new_now_local();
 
 	ret = session_write_data_cb(session->sock, G_IO_OUT, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_OUT,
-						 session_write_data_cb,
-						 session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_OUT, session_write_data_cb, session);
 	else if (session->state == SESSION_ERROR)
 		return -1;
 
@@ -531,13 +493,12 @@ gint session_recv_data(Session *session, guint size, const gchar *terminator)
 	g_free(session->read_data_terminator);
 	session->read_data_terminator = g_strdup(terminator);
 	g_date_time_unref(session->tv_prev);
-        session->tv_prev = g_date_time_new_now_local();
+	session->tv_prev = g_date_time_new_now_local();
 
 	if (session->read_buf_len > 0)
 		g_idle_add(session_recv_data_idle_cb, session);
 	else
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN,
-						 session_read_data_cb, session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
 
 	return 0;
 }
@@ -550,14 +511,12 @@ static gboolean session_recv_data_idle_cb(gpointer data)
 	ret = session_read_data_cb(session->sock, G_IO_IN, session);
 
 	if (ret == TRUE)
-		session->io_tag = sock_add_watch(session->sock, G_IO_IN,
-						 session_read_data_cb, session);
+		session->io_tag = sock_add_watch(session->sock, G_IO_IN, session_read_data_cb, session);
 
 	return FALSE;
 }
 
-static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition,
-				    gpointer data)
+static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition, gpointer data)
 {
 	Session *session = SESSION(data);
 	gchar buf[SESSION_BUFFSIZE];
@@ -574,8 +533,7 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition,
 		gint read_len = -1;
 
 		if (session->sock)
-			read_len = sock_read(session->sock, session->read_buf,
-				     SESSION_BUFFSIZE - 1);
+			read_len = sock_read(session->sock, session->read_buf, SESSION_BUFFSIZE - 1);
 
 		if (read_len == -1 && session->state == SESSION_DISCONNECTED) {
 			g_warning("sock_read: session disconnected");
@@ -585,7 +543,7 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition,
 			}
 			return FALSE;
 		}
-		
+
 		if (read_len == 0) {
 			g_warning("sock_read: received EOF");
 			session->state = SESSION_EOF;
@@ -607,7 +565,7 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition,
 	}
 
 	if ((newline = memchr(session->read_buf_p, '\n', session->read_buf_len))
-		!= NULL)
+	    != NULL)
 		line_len = newline - session->read_buf_p + 1;
 	else
 		line_len = session->read_buf_len;
@@ -652,8 +610,7 @@ static gboolean session_read_msg_cb(SockInfo *source, GIOCondition condition,
 	return FALSE;
 }
 
-static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition,
-				     gpointer data)
+static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition, gpointer data)
 {
 	Session *session = SESSION(data);
 	GByteArray *data_buf;
@@ -669,8 +626,7 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition,
 	if (session->read_buf_len == 0) {
 		gint read_len;
 
-		read_len = sock_read(session->sock, session->read_buf,
-				     SESSION_BUFFSIZE);
+		read_len = sock_read(session->sock, session->read_buf, SESSION_BUFFSIZE);
 
 		if (read_len == 0) {
 			g_warning("sock_read: received EOF");
@@ -698,23 +654,16 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition,
 	if (session->read_buf_len == 0)
 		return TRUE;
 
-	g_byte_array_append(data_buf, session->read_buf_p,
-			    session->read_buf_len);
+	g_byte_array_append(data_buf, session->read_buf_p, session->read_buf_len);
 
 	session->read_buf_len = 0;
 	session->read_buf_p = session->read_buf;
 
 	/* check if data is terminated */
 	if (data_buf->len >= terminator_len) {
-		if (memcmp(data_buf->data, session->read_data_terminator,
-			   terminator_len) == 0)
+		if (memcmp(data_buf->data, session->read_data_terminator, terminator_len) == 0)
 			complete = TRUE;
-		else if (data_buf->len >= terminator_len + 2 &&
-			 memcmp(data_buf->data + data_buf->len -
-				(terminator_len + 2), "\r\n", 2) == 0 &&
-			 memcmp(data_buf->data + data_buf->len -
-				terminator_len, session->read_data_terminator,
-				terminator_len) == 0)
+		else if (data_buf->len >= terminator_len + 2 && memcmp(data_buf->data + data_buf->len - (terminator_len + 2), "\r\n", 2) == 0 && memcmp(data_buf->data + data_buf->len - terminator_len, session->read_data_terminator, terminator_len) == 0)
 			complete = TRUE;
 	}
 
@@ -723,13 +672,11 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition,
 		GDateTime *tv_cur = g_date_time_new_now_local();
 
 		GTimeSpan ts = g_date_time_difference(tv_cur, session->tv_prev);
-                if (1000 - ts < 0 || ts > UI_REFRESH_INTERVAL) {
-                        session->recv_data_progressive_notify
-                                (session, data_buf->len, 0,
-                                 session->recv_data_progressive_notify_data);
+		if (1000 - ts < 0 || ts > UI_REFRESH_INTERVAL) {
+			session->recv_data_progressive_notify(session, data_buf->len, 0, session->recv_data_progressive_notify_data);
 			g_date_time_unref(session->tv_prev);
-                        session->tv_prev = g_date_time_new_now_local();
-                }
+			session->tv_prev = g_date_time_new_now_local();
+		}
 		g_date_time_unref(tv_cur);
 		return TRUE;
 	}
@@ -743,13 +690,11 @@ static gboolean session_read_data_cb(SockInfo *source, GIOCondition condition,
 	data_len = data_buf->len - terminator_len;
 
 	/* callback */
-	ret = session->recv_data_finished(session, (gchar *)data_buf->data,
-					  data_len);
+	ret = session->recv_data_finished(session, (gchar *)data_buf->data, data_len);
 
 	g_byte_array_set_size(data_buf, 0);
 
-	session->recv_data_notify(session, data_len,
-				  session->recv_data_notify_data);
+	session->recv_data_notify(session, data_len, session->recv_data_notify_data);
 
 	if (ret < 0)
 		session->state = SESSION_ERROR;
@@ -766,12 +711,10 @@ static gint session_write_buf(Session *session)
 	cm_return_val_if_fail(session->write_buf_p != NULL, -1);
 	cm_return_val_if_fail(session->write_buf_len > 0, -1);
 
-	to_write_len = session->write_buf_len -
-		(session->write_buf_p - session->write_buf);
+	to_write_len = session->write_buf_len - (session->write_buf_p - session->write_buf);
 	to_write_len = MIN(to_write_len, SESSION_BUFFSIZE);
 
-	write_len = sock_write(session->sock, session->write_buf_p,
-			       to_write_len);
+	write_len = sock_write(session->sock, session->write_buf_p, to_write_len);
 
 	if (write_len < 0) {
 		switch (errno) {
@@ -786,8 +729,7 @@ static gint session_write_buf(Session *session)
 	}
 
 	/* incomplete write */
-	if (session->write_buf_p - session->write_buf + write_len <
-	    session->write_buf_len) {
+	if (session->write_buf_p - session->write_buf + write_len < session->write_buf_len) {
 		session->write_buf_p += write_len;
 		return 1;
 	}
@@ -809,12 +751,10 @@ static gint session_write_data(Session *session)
 	cm_return_val_if_fail(session->write_data_p != NULL, -1);
 	cm_return_val_if_fail(session->write_data_len > 0, -1);
 
-	to_write_len = session->write_data_len -
-		(session->write_data_p - session->write_data);
+	to_write_len = session->write_data_len - (session->write_data_p - session->write_data);
 	to_write_len = MIN(to_write_len, SESSION_BUFFSIZE);
 
-	write_len = sock_write(session->sock, session->write_data_p,
-			       to_write_len);
+	write_len = sock_write(session->sock, session->write_data_p, to_write_len);
 
 	if (write_len < 0) {
 		switch (errno) {
@@ -829,8 +769,7 @@ static gint session_write_data(Session *session)
 	}
 
 	/* incomplete write */
-	if (session->write_data_p - session->write_data + write_len <
-	    session->write_data_len) {
+	if (session->write_data_p - session->write_data + write_len < session->write_data_len) {
 		session->write_data_p += write_len;
 		return 1;
 	}
@@ -842,8 +781,7 @@ static gint session_write_data(Session *session)
 	return 0;
 }
 
-static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition,
-				     gpointer data)
+static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition, gpointer data)
 {
 	Session *session = SESSION(data);
 	gint ret;
@@ -871,8 +809,7 @@ static gboolean session_write_msg_cb(SockInfo *source, GIOCondition condition,
 	return FALSE;
 }
 
-static gboolean session_write_data_cb(SockInfo *source,
-				      GIOCondition condition, gpointer data)
+static gboolean session_write_data_cb(SockInfo *source, GIOCondition condition, gpointer data)
 {
 	Session *session = SESSION(data);
 	guint write_data_len;
@@ -891,20 +828,16 @@ static gboolean session_write_data_cb(SockInfo *source,
 		session->state = SESSION_ERROR;
 		return FALSE;
 	} else if (ret > 0) {
-                GDateTime *tv_cur = g_date_time_new_now_local();
+		GDateTime *tv_cur = g_date_time_new_now_local();
 
-                GTimeSpan ts = g_date_time_difference(tv_cur, session->tv_prev);
-                if (1000 - ts < 0 || ts > UI_REFRESH_INTERVAL) {
-                        session_set_timeout(session, session->timeout_interval);
-                        session->send_data_progressive_notify
-                                (session,
-                                 session->write_data_p - session->write_data,
-                                 write_data_len,
-                                 session->send_data_progressive_notify_data);
+		GTimeSpan ts = g_date_time_difference(tv_cur, session->tv_prev);
+		if (1000 - ts < 0 || ts > UI_REFRESH_INTERVAL) {
+			session_set_timeout(session, session->timeout_interval);
+			session->send_data_progressive_notify(session, session->write_data_p - session->write_data, write_data_len, session->send_data_progressive_notify_data);
 			g_date_time_unref(session->tv_prev);
-                        session->tv_prev = g_date_time_new_now_local();
-                }
-                g_date_time_unref(tv_cur);
+			session->tv_prev = g_date_time_new_now_local();
+		}
+		g_date_time_unref(tv_cur);
 		return TRUE;
 	}
 
@@ -915,15 +848,14 @@ static gboolean session_write_data_cb(SockInfo *source,
 
 	/* callback */
 	ret = session->send_data_finished(session, write_data_len);
-	session->send_data_notify(session, write_data_len,
-				  session->send_data_notify_data);
+	session->send_data_notify(session, write_data_len, session->send_data_notify_data);
 
 	return FALSE;
 }
 
 void session_register_ping(Session *session, gboolean (*ping_cb)(gpointer data))
 {
-	if (!session)
+	if(!session)
 		return;
 	if (session->ping_tag > -1)
 		g_source_remove(session->ping_tag);
@@ -933,3 +865,7 @@ void session_register_ping(Session *session, gboolean (*ping_cb)(gpointer data))
 	if (ping_cb != NULL)
 		session->ping_tag = g_timeout_add_seconds(60, ping_cb, session);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

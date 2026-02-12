@@ -22,19 +22,17 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-typedef enum
-{
+typedef enum {
 	G_ALERTDEFAULT,
 	G_ALERTALTERNATE,
 	G_ALERTOTHER,
 	G_ALERTCANCEL,
 	G_ALERTWAIT,
 
-	G_ALERTDISABLE	= 1 << 16
+	G_ALERTDISABLE = 1 << 16
 } AlertValue;
 
-typedef enum
-{
+typedef enum {
 	ALERT_NOTICE,
 	ALERT_QUESTION,
 	ALERT_WARNING,
@@ -42,8 +40,7 @@ typedef enum
 } AlertType;
 #define G_ALERT_VALUE_MASK	0x0000ffff
 
-typedef enum
-{
+typedef enum {
 	ALERTFOCUS_FIRST,
 	ALERTFOCUS_SECOND,
 	ALERTFOCUS_THIRD
@@ -51,38 +48,15 @@ typedef enum
 
 #define ALERTPANEL_OPENED_HOOKLIST "alertpanel_opened_hooklist"
 
-AlertValue alertpanel_full(const gchar *title, const gchar *message,
-			   const gchar *button1_label,
-			   const gchar *button2_label,
-			   const gchar *button3_label,
-				 AlertFocus   focus,
-			   gboolean     can_disable,
-			   GtkWidget   *widget,
-			   AlertType    alert_type);
+AlertValue alertpanel_full(const gchar *title, const gchar *message, const gchar *button1_label, const gchar *button2_label, const gchar *button3_label, AlertFocus focus, gboolean can_disable, GtkWidget *widget, AlertType alert_type);
 
-AlertValue alertpanel	(const gchar	*title,
-			 const gchar	*message,
-			 const gchar	*button1_label,
-			 const gchar	*button2_label,
-			 const gchar	*button3_label,
-			 AlertFocus    focus);
+AlertValue alertpanel(const gchar *title, const gchar *message, const gchar *button1_label, const gchar *button2_label, const gchar *button3_label, AlertFocus focus);
 
-AlertValue alertpanel_with_widget	(const gchar *title,
-				  	 const gchar *message,
-				  	 const gchar *button1_label,
-				  	 const gchar *button2_label,
-				  	 const gchar *button3_label,
-					 AlertFocus   focus,
-					 gboolean     can_disable,
-					 GtkWidget   *widget);
+AlertValue alertpanel_with_widget(const gchar *title, const gchar *message, const gchar *button1_label, const gchar *button2_label, const gchar *button3_label, AlertFocus focus, gboolean can_disable, GtkWidget *widget);
 
-void alertpanel_notice	(const gchar	*format,
-			 ...) G_GNUC_PRINTF(1, 2);
-void alertpanel_warning	(const gchar	*format,
-			 ...) G_GNUC_PRINTF(1, 2);
-void alertpanel_error	(const gchar	*format,
-			 ...) G_GNUC_PRINTF(1, 2);
-void alertpanel_error_log(const gchar	*format,
-			  ...) G_GNUC_PRINTF(1, 2);
+void alertpanel_notice(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
+void alertpanel_warning(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
+void alertpanel_error(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
+void alertpanel_error_log(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
 
 #endif /* __ALERTPANEL_H__ */

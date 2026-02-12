@@ -26,8 +26,7 @@
 // temporary
 #include "matcher.h"
 
-typedef enum
-{
+typedef enum {
 	ADVANCED_SEARCH_SUBJECT,
 	ADVANCED_SEARCH_FROM,
 	ADVANCED_SEARCH_TO,
@@ -36,12 +35,10 @@ typedef enum
 	ADVANCED_SEARCH_TAG,
 } AdvancedSearchType;
 
-
 typedef struct _AdvancedSearch AdvancedSearch;
 
-void advsearch_set_on_progress_cb(AdvancedSearch* search,
-		gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data);
-void advsearch_set_on_error_cb(AdvancedSearch* search, void (*cb)(gpointer data), gpointer data);
+void advsearch_set_on_progress_cb(AdvancedSearch *search, gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data);
+void advsearch_set_on_error_cb(AdvancedSearch *search, void (*cb)(gpointer data), gpointer data);
 
 AdvancedSearch *advsearch_new();
 void advsearch_free(AdvancedSearch *search);
@@ -50,8 +47,7 @@ void advsearch_set(AdvancedSearch *search, AdvancedSearchType type, const gchar 
 gboolean advsearch_is_fast(AdvancedSearch *search);
 gboolean advsearch_has_proper_predicate(AdvancedSearch *search);
 
-gboolean advsearch_search_msgs_in_folders(AdvancedSearch* search, MsgInfoList **messages,
-				          FolderItem* folderItem, gboolean recursive);
+gboolean advsearch_search_msgs_in_folders(AdvancedSearch *search, MsgInfoList **messages, FolderItem *folderItem, gboolean recursive);
 
 void advsearch_abort(AdvancedSearch *search);
 

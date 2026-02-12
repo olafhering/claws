@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -28,18 +28,16 @@
 #include <string.h>
 
 #if HAVE_LOCALE_H
-#  include <locale.h>
+#include <locale.h>
 #endif
 
 #if !defined(LC_MESSAGES) && defined(G_OS_WIN32)
 #include <libintl.h>
 #endif
 
-
 #include "prefs_common.h"
 #include "manual.h"
 #include "utils.h"
-
 
 static gchar *get_language()
 {
@@ -54,9 +52,9 @@ static gchar *get_language()
 	if (!language)
 		return g_strdup("en");
 
-	if((c = strchr(language, ',')) != NULL)
+	if ((c = strchr(language, ',')) != NULL)
 		*c = '\0';
-	if((c = strchr(language, '_')) != NULL)
+	if ((c = strchr(language, '_')) != NULL)
 		*c = '\0';
 
 	return language;
@@ -67,14 +65,12 @@ static gchar *get_local_path_with_locale(gchar *rootpath)
 	gchar *lang_str, *dir;
 
 	lang_str = get_language();
-	dir = g_strconcat(rootpath, G_DIR_SEPARATOR_S, 
-			  lang_str, NULL);
+	dir = g_strconcat(rootpath, G_DIR_SEPARATOR_S, lang_str, NULL);
 	g_free(lang_str);
-	if(!is_dir_exist(dir)) {
+	if (!is_dir_exist(dir)) {
 		g_free(dir);
-		dir = g_strconcat(rootpath, G_DIR_SEPARATOR_S,
-				  "en", NULL);
-		if(!is_dir_exist(dir)) {
+		dir = g_strconcat(rootpath, G_DIR_SEPARATOR_S, "en", NULL);
+		if (!is_dir_exist(dir)) {
 			g_free(dir);
 			dir = NULL;
 		}
@@ -86,23 +82,23 @@ static gchar *get_local_path_with_locale(gchar *rootpath)
 gboolean manual_available(ManualType type)
 {
 	gboolean ret = FALSE;
-    	gchar *dir = NULL, *uri = NULL;
-	
+	gchar *dir = NULL, *uri = NULL;
+
 	switch (type) {
-		case MANUAL_MANUAL_CLAWS:
-			dir = get_local_path_with_locale(MANUALDIR);
-			if (dir != NULL) {
-				uri = g_strconcat(dir, G_DIR_SEPARATOR_S, MANUAL_HTML_INDEX, NULL);
-				g_free(dir);
-				if (is_file_exist(uri))
-					ret = TRUE;
-				else
-					ret = FALSE;
-				g_free(uri);
-			}
-			break;
-		default:
-			ret = FALSE;
+	case MANUAL_MANUAL_CLAWS:
+		dir = get_local_path_with_locale(MANUALDIR);
+		if (dir != NULL) {
+			uri = g_strconcat(dir, G_DIR_SEPARATOR_S, MANUAL_HTML_INDEX, NULL);
+			g_free(dir);
+			if (is_file_exist(uri))
+				ret = TRUE;
+			else
+				ret = FALSE;
+			g_free(uri);
+		}
+		break;
+	default:
+		ret = FALSE;
 	}
 
 	return ret;
@@ -114,28 +110,25 @@ void manual_open(ManualType type, gchar *url_anchor)
 	gchar *dir;
 
 	switch (type) {
-		case MANUAL_MANUAL_CLAWS:
-			dir = get_local_path_with_locale(MANUALDIR);
-			if (dir != NULL) {
-				gchar *tmp_anchor = NULL;
-				if (url_anchor && *url_anchor != '\0')
-					tmp_anchor = g_strconcat("#", url_anchor, NULL);
-				uri = g_strconcat("file://",
-						dir, G_DIR_SEPARATOR_S, MANUAL_HTML_INDEX,
-						tmp_anchor,
-						NULL);
-				g_free(tmp_anchor);
-				g_free(dir);
-			} else {
-				uri = g_strconcat(MANUAL_URI, NULL);
-			}
-			break;
-		case MANUAL_FAQ_CLAWS:
-			uri = g_strconcat(FAQ_URI, NULL);
-			break;
+	case MANUAL_MANUAL_CLAWS:
+		dir = get_local_path_with_locale(MANUALDIR);
+		if (dir != NULL) {
+			gchar *tmp_anchor = NULL;
+			if (url_anchor && *url_anchor != '\0')
+				tmp_anchor = g_strconcat("#", url_anchor, NULL);
+			uri = g_strconcat("file://", dir, G_DIR_SEPARATOR_S, MANUAL_HTML_INDEX, tmp_anchor, NULL);
+			g_free(tmp_anchor);
+			g_free(dir);
+		} else {
+			uri = g_strconcat(MANUAL_URI, NULL);
+		}
+		break;
+	case MANUAL_FAQ_CLAWS:
+		uri = g_strconcat(FAQ_URI, NULL);
+		break;
 
-		default:
-			break;
+	default:
+		break;
 	}
 	open_uri(uri, prefs_common_get_uri_cmd());
 	g_free(uri);
@@ -145,3 +138,7 @@ void manual_open_with_anchor_cb(GtkWidget *widget, gchar *url_anchor)
 {
 	manual_open(MANUAL_MANUAL_CLAWS, url_anchor);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

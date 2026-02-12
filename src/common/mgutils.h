@@ -41,20 +41,18 @@
 #define MGU_NO_PATH        -17
 
 /* Function prototypes */
-void mgu_print_list		( GSList *list, FILE *stream );
-void mgu_print_dlist		( GList *list, FILE *stream );
-gchar *mgu_list_coalesce	( GSList *list );
-gchar *mgu_replace_string	( gchar *str, const gchar *value );
-gchar *mgu_email_check_empty	( gchar *address );
-GList *mgu_parse_string		( gchar *line, const gint maxTokens,
-				  gint *tokenCnt );
-void mgu_str_unescape		( gchar *str );
-void mgu_str_ltc2space		( gchar *str, gchar chlead, gchar chtail );
-gchar *mgu_slist_longest_entry	( GSList *list );
+void mgu_print_list(GSList *list, FILE *stream);
+void mgu_print_dlist(GList *list, FILE *stream);
+gchar *mgu_list_coalesce(GSList *list);
+gchar *mgu_replace_string(gchar *str, const gchar *value);
+gchar *mgu_email_check_empty(gchar *address);
+GList *mgu_parse_string(gchar *line, const gint maxTokens, gint *tokenCnt);
+void mgu_str_unescape(gchar *str);
+void mgu_str_ltc2space(gchar *str, gchar chlead, gchar chtail);
+gchar *mgu_slist_longest_entry(GSList *list);
 
 #endif /* __MGUTILS_H__ */
 
 /*
 * End of Source.
 */
-

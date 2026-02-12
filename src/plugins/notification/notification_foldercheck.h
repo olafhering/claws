@@ -21,14 +21,14 @@
 #include <gtk/gtk.h>
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
-void     notification_foldercheck_sel_folders_cb(GtkButton*, gpointer);
-guint    notification_register_folder_specific_list(gchar*);
-GSList*  notification_foldercheck_get_list(guint);
-void     notification_free_folder_specific_array(void);
-void     notification_foldercheck_write_array(void);
+void notification_foldercheck_sel_folders_cb(GtkButton *, gpointer);
+guint notification_register_folder_specific_list(gchar *);
+GSList *notification_foldercheck_get_list(guint);
+void notification_free_folder_specific_array(void);
+void notification_foldercheck_write_array(void);
 gboolean notification_foldercheck_read_array(void);
 
 #endif /* NOTIFICATION_FOLDERCHECK_H */

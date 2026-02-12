@@ -16,8 +16,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_COMMAND
@@ -31,8 +31,8 @@
 #include "notification_foldercheck.h"
 
 typedef struct {
-  gboolean blocked;
-  guint timeout_id;
+	gboolean blocked;
+	guint timeout_id;
 } NotificationCommand;
 
 static gboolean command_timeout_fun(gpointer data);
@@ -43,77 +43,79 @@ G_LOCK_DEFINE_STATIC(command);
 
 void notification_command_msg(MsgInfo *msginfo)
 {
-  gchar *ret_str, *buf;
-  gsize by_read = 0, by_written = 0;
+	gchar *ret_str, *buf;
+	gsize by_read = 0, by_written = 0;
 
-  if(!msginfo || !notify_config.command_enabled || !MSG_IS_NEW(msginfo->flags))
-    return;
+	if (!msginfo || !notify_config.command_enabled || !MSG_IS_NEW(msginfo->flags))
+		return;
 
-  if(!notify_config.command_enabled || !MSG_IS_NEW(msginfo->flags))
-    return;
+	if (!notify_config.command_enabled || !MSG_IS_NEW(msginfo->flags))
+		return;
 
-  if(notify_config.command_folder_specific) {
-    guint id;
-    GSList *list;
-    gchar *identifier;
-    gboolean found = FALSE;
+	if (notify_config.command_folder_specific) {
+		guint id;
+		GSList *list;
+		gchar *identifier;
+		gboolean found = FALSE;
 
-    if(!(msginfo->folder))
-      return;
+		if (!(msginfo->folder))
+			return;
 
-    identifier = folder_item_get_identifier(msginfo->folder);
+		identifier = folder_item_get_identifier(msginfo->folder);
 
-    id =
-      notification_register_folder_specific_list(COMMAND_SPECIFIC_FOLDER_ID_STR);
-    list = notification_foldercheck_get_list(id);
-    for(; (list != NULL) && !found; list = g_slist_next(list)) {
-      gchar *list_identifier;
-      FolderItem *list_item = (FolderItem*) list->data;
-      
-      list_identifier = folder_item_get_identifier(list_item);
-      if(!g_strcmp0(list_identifier, identifier))
-	found = TRUE;
+		id = notification_register_folder_specific_list(COMMAND_SPECIFIC_FOLDER_ID_STR);
+		list = notification_foldercheck_get_list(id);
+		for (; (list != NULL) && !found; list = g_slist_next(list)) {
+			gchar *list_identifier;
+			FolderItem *list_item = (FolderItem *)list->data;
 
-      g_free(list_identifier);
-    }
-    g_free(identifier);
-    
-    if(!found)
-      return;
-  } /* folder specific */
+			list_identifier = folder_item_get_identifier(list_item);
+			if (!g_strcmp0(list_identifier, identifier))
+				found = TRUE;
 
-  buf = g_strdup(notify_config.command_line);
+			g_free(list_identifier);
+		}
+		g_free(identifier);
 
-  G_LOCK(command);
+		if (!found)
+			return;
+	} /* folder specific */
 
-  if(!command.blocked) {
-    /* execute command */
-    command.blocked = TRUE;
-    ret_str = g_locale_from_utf8(buf,strlen(buf),&by_read,&by_written,NULL);
-    if(ret_str && by_written) {
-      g_free(buf);
-      buf = ret_str;
-    }
-    execute_command_line(buf, TRUE, NULL);
-    g_free(buf);
-  }
+	buf = g_strdup(notify_config.command_line);
 
-  /* block further execution for some time,
-     no matter if it was blocked or not */
-  if(command.timeout_id)
-    g_source_remove(command.timeout_id);
-  command.timeout_id = g_timeout_add(notify_config.command_timeout,
-				     command_timeout_fun, NULL);    
-  G_UNLOCK(command);
+	G_LOCK(command);
+
+	if (!command.blocked) {
+		/* execute command */
+		command.blocked = TRUE;
+		ret_str = g_locale_from_utf8(buf, strlen(buf), &by_read, &by_written, NULL);
+		if (ret_str && by_written) {
+			g_free(buf);
+			buf = ret_str;
+		}
+		execute_command_line(buf, TRUE, NULL);
+		g_free(buf);
+	}
+
+	/* block further execution for some time,
+	   no matter if it was blocked or not */
+	if (command.timeout_id)
+		g_source_remove(command.timeout_id);
+	command.timeout_id = g_timeout_add(notify_config.command_timeout, command_timeout_fun, NULL);
+	G_UNLOCK(command);
 }
 
 static gboolean command_timeout_fun(gpointer data)
 {
-  G_LOCK(command);
-  command.timeout_id = 0;
-  command.blocked = FALSE;
-  G_UNLOCK(command);
-  return FALSE;
+	G_LOCK(command);
+	command.timeout_id = 0;
+	command.blocked = FALSE;
+	G_UNLOCK(command);
+	return FALSE;
 }
 
 #endif /* NOTIFICATION_COMMAND */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -56,10 +56,7 @@
 #define getuid() 0
 #endif
 
-Answer *answer_new(const gchar *attendee, 
-			  const gchar *name,
-			  icalparameter_partstat ans,
-			  icalparameter_cutype cutype)
+Answer *answer_new(const gchar *attendee, const gchar *name, icalparameter_partstat ans, icalparameter_cutype cutype)
 {
 	Answer *answer = g_new0(Answer, 1);
 	answer->attendee = g_strdup(attendee);
@@ -104,9 +101,9 @@ void vcal_manager_copy_attendees(VCalEvent *src, VCalEvent *dest)
 	dest->answers = g_slist_reverse(dest->answers);
 }
 
-gchar *vcal_manager_answer_get_text(icalparameter_partstat ans) 
+gchar *vcal_manager_answer_get_text(icalparameter_partstat ans)
 {
-	static gchar *replies[5]={
+	static gchar *replies[5] = {
 		N_("accepted"),
 		N_("tentatively accepted"),
 		N_("declined"),
@@ -131,16 +128,16 @@ gchar *vcal_manager_answer_get_text(icalparameter_partstat ans)
 	case ICAL_PARTSTAT_X:
 	case ICAL_PARTSTAT_INPROCESS:
 	case ICAL_PARTSTAT_NONE:
-  case ICAL_PARTSTAT_FAILED:
+	case ICAL_PARTSTAT_FAILED:
 		return _(replies[4]);
-		break;			
+		break;
 	}
 	return NULL;
 }
 
-gchar *vcal_manager_cutype_get_text(icalparameter_cutype type) 
+gchar *vcal_manager_cutype_get_text(icalparameter_cutype type)
 {
-	static gchar *replies[5]={
+	static gchar *replies[5] = {
 		N_("individual"),
 		N_("group"),
 		N_("resource"),
@@ -162,7 +159,7 @@ gchar *vcal_manager_cutype_get_text(icalparameter_cutype type)
 		return _(replies[3]);
 	default:
 		return _(replies[4]);
-		break;			
+		break;
 	}
 	return NULL;
 }
@@ -194,7 +191,7 @@ GSList *vcal_manager_get_answers_emails(VCalEvent *event)
 		cur = cur->next;
 	}
 	new = g_slist_reverse(new);
-	return new;	
+	return new;
 }
 
 icalparameter_partstat vcal_manager_get_reply_for_attendee(VCalEvent *event, const gchar *att)
@@ -214,7 +211,7 @@ gchar *vcal_manager_get_cutype_text_for_attendee(VCalEvent *event, const gchar *
 {
 	icalparameter_cutype status = vcal_manager_get_cutype_for_attendee(event, att);
 	gchar *res = NULL;
-	if (status != 0) 
+	if (status != 0)
 		res = g_strdup(vcal_manager_cutype_get_text(status));
 
 	return res;
@@ -237,7 +234,7 @@ gchar *vcal_manager_get_reply_text_for_attendee(VCalEvent *event, const gchar *a
 {
 	icalparameter_partstat status = vcal_manager_get_reply_for_attendee(event, att);
 	gchar *res = NULL;
-	if (status != 0) 
+	if (status != 0)
 		res = g_strdup(vcal_manager_answer_get_text(status));
 
 	return res;
@@ -260,54 +257,22 @@ gchar *vcal_manager_get_attendee_name(VCalEvent *event, const gchar *att)
 void vcal_manager_event_print(VCalEvent *event)
 {
 	GSList *list = event->answers;
-	printf( "event->uid\t\t%s\n"
-		"event->organizer\t\t%s\n"
-		"event->start\t\t%s\n"
-		"event->end\t\t%s\n"
-		"event->location\t\t%s\n"
-		"event->summary\t\t%s\n"
-		"event->description\t%s\n"
-		"event->url\t%s\n"
-		"event->dtstart\t\t%s\n"
-		"event->dtend\t\t%s\n"
-		"event->recur\t\t%s\n"
-		"event->tzid\t\t%s\n"
-		"event->method\t\t%d\n"
-		"event->sequence\t\t%d\n",
-		event->uid,
-		event->organizer,
-		event->start,
-		event->end,
-		event->location,
-		event->summary,
-		event->description,
-		event->url,
-		event->dtstart,
-		event->dtend,
-		event->recur,
-		event->tzid,
-		event->method,
-		event->sequence);
+	printf("event->uid\t\t%s\n" "event->organizer\t\t%s\n" "event->start\t\t%s\n" "event->end\t\t%s\n" "event->location\t\t%s\n" "event->summary\t\t%s\n" "event->description\t%s\n" "event->url\t%s\n" "event->dtstart\t\t%s\n" "event->dtend\t\t%s\n" "event->recur\t\t%s\n" "event->tzid\t\t%s\n" "event->method\t\t%d\n" "event->sequence\t\t%d\n", event->uid, event->organizer, event->start, event->end, event->location, event->summary, event->description, event->url, event->dtstart, event->dtend, event->recur, event->tzid, event->method, event->sequence);
 	while (list && list->data) {
 		Answer *a = (Answer *)list->data;
 		printf(" ans: %s %s, %s\n", a->name, a->attendee, vcal_manager_answer_get_text(a->answer));
 		list = list->next;
 	}
-	
+
 }
 
-static gchar *write_headers(PrefsAccount 	*account, 
-			    VCalEvent 		*event,
-			    gboolean		 short_headers,
-			    gboolean 		 is_reply, 
-			    gboolean 		 is_pseudo_event);
+static gchar *write_headers(PrefsAccount *account, VCalEvent *event, gboolean short_headers, gboolean is_reply, gboolean is_pseudo_event);
 
-gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_pseudo_event,
-				icalcomponent *use_calendar, gboolean modif)
+gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_pseudo_event, icalcomponent *use_calendar, gboolean modif)
 {
 	gchar *organizer = g_strdup_printf("MAILTO:%s", event->organizer);
 	PrefsAccount *account = vcal_manager_get_account_from_event(event);
-	gchar *attendee  = NULL;
+	gchar *attendee = NULL;
 	gchar *body, *headers;
 	gchar *tmpfile = NULL;
 	icalcomponent *calendar, *ievent, *timezone, *tzc;
@@ -315,11 +280,10 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 	icalproperty *orgprop;
 	icalparameter_partstat status = ICAL_PARTSTAT_NEEDSACTION;
 	gchar *sanitized_uid = g_strdup(event->uid);
-	
+
 	subst_for_filename(sanitized_uid);
 
-	tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(),
-				      G_DIR_SEPARATOR, getuid(), sanitized_uid);
+	tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(), G_DIR_SEPARATOR, getuid(), sanitized_uid);
 	g_free(sanitized_uid);
 
 	if (!account) {
@@ -330,27 +294,18 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 	}
 
 	attendee = g_strdup_printf("MAILTO:%s", account->address);
-	
+
 	if (vcal_manager_get_reply_for_attendee(event, account->address) != 0)
 		status = vcal_manager_get_reply_for_attendee(event, account->address);
-	
+
 	tzset();
-	
+
 	if (use_calendar != NULL) {
 		calendar = use_calendar;
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		calendar = 
-        		icalcomponent_vanew(
-        		    ICAL_VCALENDAR_COMPONENT,
-	        	    icalproperty_new_version("2.0"),
-        		    icalproperty_new_prodid(
-                		 "-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
-			    icalproperty_new_calscale("GREGORIAN"),
-			    icalproperty_new_method(is_reply ? ICAL_METHOD_REPLY:event->method),
-        		    (void*)0
-	        	    ); 	
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(is_reply ? ICAL_METHOD_REPLY : event->method), (void *)0);
 
 	if (!calendar) {
 		g_warning("can't generate calendar");
@@ -361,28 +316,20 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 	}
 
 	orgprop = icalproperty_new_organizer(organizer);
-	
+
 	timezone = icalcomponent_new(ICAL_VTIMEZONE_COMPONENT);
-	
-	icalcomponent_add_property(timezone,
-		icalproperty_new_tzid("UTC")); /* free */
-	
+
+	icalcomponent_add_property(timezone, icalproperty_new_tzid("UTC")); /* free */
+
 	tzc = icalcomponent_new(ICAL_XSTANDARD_COMPONENT);
-	icalcomponent_add_property(tzc,
-		icalproperty_new_dtstart(
-			icaltime_from_string("19700101T000000")));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzoffsetfrom(0.0));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzoffsetto(0.0));
-	icalcomponent_add_property(tzc,
-		icalproperty_new_tzname("Greenwich meridian time"));
+	icalcomponent_add_property(tzc, icalproperty_new_dtstart(icaltime_from_string("19700101T000000")));
+	icalcomponent_add_property(tzc, icalproperty_new_tzoffsetfrom(0.0));
+	icalcomponent_add_property(tzc, icalproperty_new_tzoffsetto(0.0));
+	icalcomponent_add_property(tzc, icalproperty_new_tzname("Greenwich meridian time"));
 
-        icalcomponent_add_component(timezone, tzc);
+	icalcomponent_add_component(timezone, tzc);
 
-	ievent = 
-	    icalcomponent_vanew(
-                ICAL_VEVENT_COMPONENT, (void*)0);
+	ievent = icalcomponent_vanew(ICAL_VEVENT_COMPONENT, (void *)0);
 
 	if (!ievent) {
 		g_warning("can't generate event");
@@ -391,68 +338,44 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 		g_free(attendee);
 		return NULL;
 	}
-	
-	icalcomponent_add_property(ievent,
-                icalproperty_new_uid(event->uid));
-	icalcomponent_add_property(ievent,
-		icalproperty_vanew_dtstamp(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void*)0));
-	icalcomponent_add_property(ievent,
-		icalproperty_vanew_dtstart((icaltime_from_string(event->dtstart)), (void*)0));
-	icalcomponent_add_property(ievent,
-		icalproperty_vanew_dtend((icaltime_from_string(event->dtend)), (void*)0));
+
+	icalcomponent_add_property(ievent, icalproperty_new_uid(event->uid));
+	icalcomponent_add_property(ievent, icalproperty_vanew_dtstamp(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void *)0));
+	icalcomponent_add_property(ievent, icalproperty_vanew_dtstart((icaltime_from_string(event->dtstart)), (void *)0));
+	icalcomponent_add_property(ievent, icalproperty_vanew_dtend((icaltime_from_string(event->dtend)), (void *)0));
 	if (event->recur && *(event->recur)) {
-		icalcomponent_add_property(ievent,
-			icalproperty_vanew_rrule((icalrecurrencetype_from_string(event->recur)), (void*)0));
+		icalcomponent_add_property(ievent, icalproperty_vanew_rrule((icalrecurrencetype_from_string(event->recur)), (void *)0));
 	}
-	icalcomponent_add_property(ievent,
-		icalproperty_new_description(event->description));
-	icalcomponent_add_property(ievent,
-		icalproperty_new_summary(event->summary));
-	icalcomponent_add_property(ievent,
-		icalproperty_new_sequence(modif && !is_reply ? event->sequence + 1 : event->sequence));
-	icalcomponent_add_property(ievent,
-		icalproperty_new_class(ICAL_CLASS_PUBLIC));
-	icalcomponent_add_property(ievent,
-		icalproperty_new_transp(ICAL_TRANSP_OPAQUE));
+	icalcomponent_add_property(ievent, icalproperty_new_description(event->description));
+	icalcomponent_add_property(ievent, icalproperty_new_summary(event->summary));
+	icalcomponent_add_property(ievent, icalproperty_new_sequence(modif && !is_reply ? event->sequence + 1 : event->sequence));
+	icalcomponent_add_property(ievent, icalproperty_new_class(ICAL_CLASS_PUBLIC));
+	icalcomponent_add_property(ievent, icalproperty_new_transp(ICAL_TRANSP_OPAQUE));
 	if (event->location && *event->location)
-		icalcomponent_add_property(ievent,
-			icalproperty_new_location(event->location));
+		icalcomponent_add_property(ievent, icalproperty_new_location(event->location));
 	else
-		icalcomponent_add_property(ievent,
-			icalproperty_new_location(""));
-	icalcomponent_add_property(ievent,
-		icalproperty_new_status(ICAL_STATUS_CONFIRMED));
-	icalcomponent_add_property(ievent,
-		icalproperty_vanew_created(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void*)0));
-	icalcomponent_add_property(ievent,
-		icalproperty_vanew_lastmodified(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void*)0));
-	icalcomponent_add_property(ievent,		
-                orgprop);
+		icalcomponent_add_property(ievent, icalproperty_new_location(""));
+	icalcomponent_add_property(ievent, icalproperty_new_status(ICAL_STATUS_CONFIRMED));
+	icalcomponent_add_property(ievent, icalproperty_vanew_created(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void *)0));
+	icalcomponent_add_property(ievent, icalproperty_vanew_lastmodified(icaltime_from_timet_with_zone(time(NULL), TRUE, NULL), (void *)0));
+	icalcomponent_add_property(ievent, orgprop);
 
 	if (!icalcomponent_get_first_component(calendar, ICAL_VTIMEZONE_COMPONENT))
-	        icalcomponent_add_component(calendar, timezone);
-	else 
+		icalcomponent_add_component(calendar, timezone);
+	else
 		icalcomponent_free(timezone);
 
-        icalcomponent_add_component(calendar, ievent);
+	icalcomponent_add_component(calendar, ievent);
 
 	if (event->url && *(event->url)) {
 		attprop = icalproperty_new_url(event->url);
-        	icalcomponent_add_property(ievent, attprop);
+		icalcomponent_add_property(ievent, attprop);
 	}
 
 	if (is_reply) {
 		/* dump only this attendee */
-		attprop =
-	                icalproperty_vanew_attendee(
-                	    attendee,
-                	    icalparameter_new_role(
-                        	ICAL_ROLE_REQPARTICIPANT),
-                	    icalparameter_new_rsvp(ICAL_RSVP_TRUE),
-			    icalparameter_new_partstat(status),
-                	    (void*)0
-                	    );
-        	icalcomponent_add_property(ievent, attprop);
+		attprop = icalproperty_vanew_attendee(attendee, icalparameter_new_role(ICAL_ROLE_REQPARTICIPANT), icalparameter_new_rsvp(ICAL_RSVP_TRUE), icalparameter_new_partstat(status), (void *)0);
+		icalcomponent_add_property(ievent, attprop);
 	} else {
 		/* dump all attendees */
 		GSList *cur = event->answers;
@@ -464,16 +387,7 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 			if (a->answer == 0)
 				a->answer = ICAL_PARTSTAT_NEEDSACTION;
 
-			attprop =
-	                	icalproperty_vanew_attendee(
-                		    a->attendee,
-                		    icalparameter_new_role(
-                        		ICAL_ROLE_REQPARTICIPANT),
-                		    icalparameter_new_rsvp(ICAL_RSVP_TRUE),
-                		    icalparameter_new_cutype(a->cutype),
-				    icalparameter_new_partstat(a->answer),
-                		    (void*)0
-                		    );
+			attprop = icalproperty_vanew_attendee(a->attendee, icalparameter_new_role(ICAL_ROLE_REQPARTICIPANT), icalparameter_new_rsvp(ICAL_RSVP_TRUE), icalparameter_new_cutype(a->cutype), icalparameter_new_partstat(a->answer), (void *)0);
 
 			icalcomponent_add_property(ievent, attprop);
 			cur = cur->next;
@@ -497,26 +411,24 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 		return NULL;
 	}
 
-	body = g_strdup_printf("%s"
-			       "\n"
-			       "%s", headers, icalcomponent_as_ical_string(calendar));
-	
+	body = g_strdup_printf("%s" "\n" "%s", headers, icalcomponent_as_ical_string(calendar));
+
 	if (str_write_to_file(body, tmpfile, FALSE) < 0) {
 		g_free(tmpfile);
 		tmpfile = NULL;
 	}
 
-	chmod(tmpfile, S_IRUSR|S_IWUSR);
+	chmod(tmpfile, S_IRUSR | S_IWUSR);
 
 	g_free(body);
 	g_free(headers);
 	icalcomponent_free(calendar);
 	g_free(attendee);
 	g_free(organizer);
-	
+
 	tzset();
 
-	return tmpfile;	
+	return tmpfile;
 }
 
 static void get_rfc822_date_from_time_t(gchar *buf, gint len, time_t t)
@@ -529,11 +441,9 @@ static void get_rfc822_date_from_time_t(gchar *buf, gint len, time_t t)
 	struct tm buft2;
 
 	lt = localtime_r(&t, &buft2);
-	if (sscanf(asctime_r(lt, buft1), "%3s %3s %d %d:%d:%d %d\n",
-	       day, mon, &dd, &hh, &mm, &ss, &yyyy) != 7)
+	if (sscanf(asctime_r(lt, buft1), "%3s %3s %d %d:%d:%d %d\n", day, mon, &dd, &hh, &mm, &ss, &yyyy) != 7)
 		g_warning("failed reading date/time");
-	g_snprintf(buf, len, "%s, %d %s %d %02d:%02d:%02d %s",
-		   day, dd, mon, yyyy, hh, mm, ss, tzoffset(&t));
+	g_snprintf(buf, len, "%s, %d %s %d %02d:%02d:%02d %s", day, dd, mon, yyyy, hh, mm, ss, tzoffset(&t));
 #else
 	GDateTime *dt = g_date_time_new_from_unix_local(t);
 	if (dt == NULL) {
@@ -566,27 +476,27 @@ static gchar *write_headers_date(const gchar *uid)
 
 	memset(subject, 0, sizeof(subject));
 	memset(date, 0, sizeof(date));
-	
+
 	if (!strcmp(uid, EVENT_PAST_ID)) {
 		t = 1;
 		t_subject = _("Past");
 	} else if (!strcmp(uid, EVENT_TODAY_ID)) {
 		t = time(NULL);
 		t_subject = _("Today");
-	}  else if (!strcmp(uid, EVENT_TOMORROW_ID)) {
+	} else if (!strcmp(uid, EVENT_TOMORROW_ID)) {
 		t = time(NULL) + 86400;
 		t_subject = _("Tomorrow");
-	}  else if (!strcmp(uid, EVENT_THISWEEK_ID)) {
-		t = time(NULL) + (86400*2);
+	} else if (!strcmp(uid, EVENT_THISWEEK_ID)) {
+		t = time(NULL) + (86400 * 2);
 		t_subject = _("This week");
-	}  else if (!strcmp(uid, EVENT_LATER_ID)) {
-		t = time(NULL) + (86400*7);
+	} else if (!strcmp(uid, EVENT_LATER_ID)) {
+		t = time(NULL) + (86400 * 7);
 		t_subject = _("Later");
-	}  else {
+	} else {
 		g_warning("unknown spec date");
 		return NULL;
-	} 
-	
+	}
+
 #ifndef G_OS_WIN32
 	struct tm buft;
 	lt = *localtime_r(&t, &buft);
@@ -599,18 +509,8 @@ static gchar *write_headers_date(const gchar *uid)
 	t = mktime(&lt);
 	get_rfc822_date_from_time_t(date, sizeof(date), t);
 	conv_encode_header(subject, 511, t_subject, strlen("Subject: "), FALSE);
-				
-	return g_strdup_printf("From: -\n"
-				"To: -\n"
-				"Subject: %s\n"
-				"Date: %s\n"
-				"MIME-Version: 1.0\n"
-				"Content-Type: text/plain; charset=\"UTF-8\";\n"
-				"Content-Transfer-Encoding: quoted-printable\n"
-				"Message-ID: <%s>\n",
-				subject,
-				date,
-				uid);
+
+	return g_strdup_printf("From: -\n" "To: -\n" "Subject: %s\n" "Date: %s\n" "MIME-Version: 1.0\n" "Content-Type: text/plain; charset=\"UTF-8\";\n" "Content-Transfer-Encoding: quoted-printable\n" "Message-ID: <%s>\n", subject, date, uid);
 }
 
 gchar *vcal_manager_dateevent_dump(const gchar *uid, FolderItem *item)
@@ -621,9 +521,8 @@ gchar *vcal_manager_dateevent_dump(const gchar *uid, FolderItem *item)
 	EventTime date;
 	sanitized_uid = g_strdup(uid);
 	subst_for_filename(sanitized_uid);
-	
-	tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(),
-				   G_DIR_SEPARATOR, getuid(), sanitized_uid);
+
+	tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(), G_DIR_SEPARATOR, getuid(), sanitized_uid);
 	g_free(sanitized_uid);
 
 	headers = write_headers_date(uid);
@@ -648,25 +547,21 @@ gchar *vcal_manager_dateevent_dump(const gchar *uid, FolderItem *item)
 		date = EVENT_PAST;
 
 	lines = get_item_event_list_for_date(item, date);
-	body = g_strdup_printf("%s"
-			       "\n"
-			       "%s", headers, lines);
+	body = g_strdup_printf("%s" "\n" "%s", headers, lines);
 	g_free(lines);
 	if (str_write_to_file(body, tmpfile, FALSE) < 0) {
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		chmod(tmpfile, S_IRUSR|S_IWUSR);
+		chmod(tmpfile, S_IRUSR | S_IWUSR);
 
 	g_free(body);
 	g_free(headers);
-	
-	return tmpfile;	
+
+	return tmpfile;
 }
 
-static gchar *write_headers_ical(PrefsAccount 	*account, 
-			    icalcomponent	*ievent,
-			    gchar		*orga);
+static gchar *write_headers_ical(PrefsAccount *account, icalcomponent *ievent, gchar *orga);
 
 gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcomponent *use_calendar)
 {
@@ -687,13 +582,11 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 
 		subst_for_filename(sanitized_uid);
 
-		tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(),
-					      G_DIR_SEPARATOR, getuid(), sanitized_uid);
+		tmpfile = g_strdup_printf("%s%cevt-%d-%s", get_tmp_dir(), G_DIR_SEPARATOR, getuid(), sanitized_uid);
 		g_free(sanitized_uid);
 		icalproperty_free(prop);
 	} else {
-		tmpfile = g_strdup_printf("%s%cevt-%d-%p", get_tmp_dir(),
-				      G_DIR_SEPARATOR, getuid(), ievent);
+		tmpfile = g_strdup_printf("%s%cevt-%d-%p", get_tmp_dir(), G_DIR_SEPARATOR, getuid(), ievent);
 	}
 
 	if (!account) {
@@ -703,22 +596,13 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 	}
 
 	tzset();
-	
+
 	if (use_calendar != NULL) {
 		calendar = use_calendar;
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		calendar = 
-        		icalcomponent_vanew(
-        		    ICAL_VCALENDAR_COMPONENT,
-	        	    icalproperty_new_version("2.0"),
-        		    icalproperty_new_prodid(
-                		 "-//Claws Mail//NONSGML Claws Mail Calendar//EN"),
-			    icalproperty_new_calscale("GREGORIAN"),
-			    icalproperty_new_method(ICAL_METHOD_PUBLISH),
-        		    (void*)0
-	        	    ); 	
+		calendar = icalcomponent_vanew(ICAL_VCALENDAR_COMPONENT, icalproperty_new_version("2.0"), icalproperty_new_prodid("-//Claws Mail//NONSGML Claws Mail Calendar//EN"), icalproperty_new_calscale("GREGORIAN"), icalproperty_new_method(ICAL_METHOD_PUBLISH), (void *)0);
 
 	if (!calendar) {
 		g_warning("can't generate calendar");
@@ -726,8 +610,8 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 		icalcomponent_free(ievent);
 		return NULL;
 	}
-	
-        icalcomponent_add_component(calendar, ievent);
+
+	icalcomponent_add_component(calendar, ievent);
 
 	if (use_calendar)
 		return NULL;
@@ -743,64 +627,49 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 
 	lines = g_strsplit(icalcomponent_as_ical_string(calendar), "\n", 0);
 	qpbody = g_strdup("");
-	
+
 	/* encode to quoted-printable */
 	while (lines[i]) {
 		gint e_len = strlen(qpbody), n_len = 0;
 		gchar *outline = conv_codeset_strdup(lines[i], CS_UTF_8, conv_get_outgoing_charset_str());
-		gchar *qpoutline = g_malloc(strlen(outline)*8 + 1);
-		
+		gchar *qpoutline = g_malloc(strlen(outline) * 8 + 1);
+
 		qp_encode_line(qpoutline, (guchar *)outline);
 		n_len = strlen(qpoutline);
-		
+
 		qpbody = g_realloc(qpbody, e_len + n_len + 1);
-		strcpy(qpbody+e_len, qpoutline);
-		*(qpbody+n_len+e_len) = '\0';
-		
+		strcpy(qpbody + e_len, qpoutline);
+		*(qpbody + n_len + e_len) = '\0';
+
 		g_free(outline);
 		g_free(qpoutline);
 		i++;
 	}
-	
-	body = g_strdup_printf("%s"
-			       "\n"
-			       "%s", headers, qpbody);
-	
+
+	body = g_strdup_printf("%s" "\n" "%s", headers, qpbody);
+
 	if (str_write_to_file(body, tmpfile, FALSE) < 0) {
 		g_free(tmpfile);
 		tmpfile = NULL;
 	} else
-		chmod(tmpfile, S_IRUSR|S_IWUSR);
+		chmod(tmpfile, S_IRUSR | S_IWUSR);
 
 	g_strfreev(lines);
 	g_free(body);
 	g_free(qpbody);
 	g_free(headers);
 	icalcomponent_free(calendar);
-	
-	return tmpfile;	
+
+	return tmpfile;
 }
 
-VCalEvent * vcal_manager_new_event	(const gchar 	*uid, 
-					 const gchar	*organizer,
-					 const gchar	*orgname,
-					 const gchar	*location,
-					 const gchar	*summary,
-					 const gchar	*description,
-					 const gchar	*dtstart,
-					 const gchar	*dtend,
-					 const gchar	*recur,
-					 const gchar	*tzid,
-					 const gchar	*url,
-					 icalproperty_method method,
-					 gint 		 sequence,
-					 icalcomponent_kind type)
+VCalEvent *vcal_manager_new_event(const gchar *uid, const gchar *organizer, const gchar *orgname, const gchar *location, const gchar *summary, const gchar *description, const gchar *dtstart, const gchar *dtend, const gchar *recur, const gchar *tzid, const gchar *url, icalproperty_method method, gint sequence, icalcomponent_kind type)
 {
 	VCalEvent *event = g_new0(VCalEvent, 1);
 
-	event->uid 		= g_strdup(uid?uid:"");
-	event->organizer 	= g_strdup(organizer?organizer:"");
-	event->orgname	 	= g_strdup(orgname?orgname:"");
+	event->uid = g_strdup(uid ? uid : "");
+	event->organizer = g_strdup(organizer ? organizer : "");
+	event->orgname = g_strdup(orgname ? orgname : "");
 
 	if (dtend && *(dtend)) {
 		time_t tmp = icaltime_as_timet((icaltime_from_string(dtend)));
@@ -808,32 +677,32 @@ VCalEvent * vcal_manager_new_event	(const gchar 	*uid,
 		event->end = g_date_time_format(dt, "%a, %e %b %Y %H:%M:%S %Z");
 		g_date_time_unref(dt);
 	}
-	
+
 	if (dtstart && *(dtstart)) {
 		time_t tmp = icaltime_as_timet((icaltime_from_string(dtstart)));
 		GDateTime *dt = g_date_time_new_from_unix_local(tmp);
 		event->start = g_date_time_format(dt, "%a, %e %b %Y %H:%M:%S %Z");
 		g_date_time_unref(dt);
 	}
-	event->dtstart		= g_strdup(dtstart?dtstart:"");
-	event->dtend		= g_strdup(dtend?dtend:"");
-	event->recur		= g_strdup(recur?recur:"");
-	event->location 	= g_strdup(location?location:"");
-	event->summary		= g_strdup(summary?summary:"");
-	event->description	= g_strdup(description?description:"");
-	event->url		= g_strdup(url?url:"");
-	event->tzid		= g_strdup(tzid?tzid:"");
-	event->method		= method;
-	event->sequence		= sequence;
-	event->type		= type;
-	event->rec_occurrence		= FALSE;
+	event->dtstart = g_strdup(dtstart ? dtstart : "");
+	event->dtend = g_strdup(dtend ? dtend : "");
+	event->recur = g_strdup(recur ? recur : "");
+	event->location = g_strdup(location ? location : "");
+	event->summary = g_strdup(summary ? summary : "");
+	event->description = g_strdup(description ? description : "");
+	event->url = g_strdup(url ? url : "");
+	event->tzid = g_strdup(tzid ? tzid : "");
+	event->method = method;
+	event->sequence = sequence;
+	event->type = type;
+	event->rec_occurrence = FALSE;
 	while (strchr(event->summary, '\n'))
 		*(strchr(event->summary, '\n')) = ' ';
 
 	return event;
 }
-					 
-void vcal_manager_free_event (VCalEvent *event)
+
+void vcal_manager_free_event(VCalEvent *event)
 {
 	GSList *cur;
 	if (!event)
@@ -863,9 +732,8 @@ gchar *vcal_manager_get_event_path(void)
 {
 	static gchar *event_path = NULL;
 	if (!event_path)
-		event_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					"vcalendar", NULL);
-	
+		event_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "vcalendar", NULL);
+
 	return event_path;
 }
 
@@ -875,8 +743,7 @@ gchar *vcal_manager_get_event_file(const gchar *uid)
 	gchar *res = NULL;
 
 	subst_for_filename(tmp);
-	res = g_strconcat(vcal_manager_get_event_path(), G_DIR_SEPARATOR_S,
-			   tmp, NULL);
+	res = g_strconcat(vcal_manager_get_event_path(), G_DIR_SEPARATOR_S, tmp, NULL);
 	g_free(tmp);
 	return res;
 }
@@ -885,7 +752,7 @@ PrefsAccount *vcal_manager_get_account_from_event(VCalEvent *event)
 {
 	GSList *list = vcal_manager_get_answers_emails(event);
 	GSList *cur = list;
-	
+
 	/* find an attendee corresponding to one of our accounts */
 	while (cur && cur->data) {
 		gchar *email = (gchar *)cur->data;
@@ -899,7 +766,7 @@ PrefsAccount *vcal_manager_get_account_from_event(VCalEvent *event)
 	return NULL;
 }
 
-void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
+void vcal_manager_save_event(VCalEvent *event, gboolean export_after)
 {
 	XMLTag *tag = NULL;
 	XMLNode *xmlnode = NULL;
@@ -909,7 +776,7 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 	GSList *answers = event->answers;
 	gchar *tmp = NULL;
 	gint tmp_method = event->method;
-	
+
 	tag = xml_tag_new("event");
 	xml_tag_add_attr(tag, xml_attr_new("organizer", event->organizer));
 	xml_tag_add_attr(tag, xml_attr_new("orgname", event->orgname));
@@ -921,11 +788,11 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 	xml_tag_add_attr(tag, xml_attr_new("dtend", event->dtend));
 	xml_tag_add_attr(tag, xml_attr_new("recur", event->recur));
 	xml_tag_add_attr(tag, xml_attr_new("tzid", event->tzid));
-	
+
 	/* updating answers saves events, don't save them with reply type */
 	if (tmp_method == ICAL_METHOD_REPLY)
 		tmp_method = ICAL_METHOD_REQUEST;
-	
+
 	tmp = g_strdup_printf("%d", tmp_method);
 	xml_tag_add_attr(tag, xml_attr_new("method", tmp));
 	g_free(tmp);
@@ -933,29 +800,29 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 	tmp = g_strdup_printf("%d", event->sequence);
 	xml_tag_add_attr(tag, xml_attr_new("sequence", tmp));
 	g_free(tmp);
-	
+
 	tmp = g_strdup_printf("%d", event->type);
 	xml_tag_add_attr(tag, xml_attr_new("type", tmp));
 	g_free(tmp);
-	
-	tmp = g_strdup_printf("%"CM_TIME_FORMAT, event->postponed);
+
+	tmp = g_strdup_printf("%" CM_TIME_FORMAT, event->postponed);
 	xml_tag_add_attr(tag, xml_attr_new("postponed", tmp));
 	g_free(tmp);
-	
+
 	tmp = g_strdup_printf("%d", event->rec_occurrence);
 	xml_tag_add_attr(tag, xml_attr_new("rec_occurrence", tmp));
 	g_free(tmp);
-	
+
 	xmlnode = xml_node_new(tag, NULL);
 	rootnode = g_node_new(xmlnode);
-	
+
 	while (answers && answers->data) {
 		XMLNode *ansxmlnode = NULL;
 		GNode *ansnode = NULL;
 		XMLTag *anstag = xml_tag_new("answer");
 		Answer *a = (Answer *)answers->data;
 		xml_tag_add_attr(anstag, xml_attr_new("attendee", a->attendee));
-		xml_tag_add_attr(anstag, xml_attr_new("name", a->name?a->name:""));
+		xml_tag_add_attr(anstag, xml_attr_new("name", a->name ? a->name : ""));
 		tmp = g_strdup_printf("%d", a->answer);
 		xml_tag_add_attr(anstag, xml_attr_new("answer", tmp));
 		g_free(tmp);
@@ -967,9 +834,9 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 		g_node_append(rootnode, ansnode);
 		answers = answers->next;
 	}
-	
+
 	path = vcal_manager_get_event_file(event->uid);
-					
+
 	if ((pfile = prefs_write_open(path)) == NULL) {
 		gchar *dir_path = vcal_manager_get_event_path();
 		if (!is_dir_exist(dir_path) && make_dir(vcal_manager_get_event_path()) != 0) {
@@ -983,7 +850,7 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 			return;
 		}
 	}
-	
+
 	g_free(path);
 	xml_file_put_xml_decl(pfile->fp);
 	xml_write_tree(rootnode, pfile->fp);
@@ -993,12 +860,12 @@ void vcal_manager_save_event (VCalEvent *event, gboolean export_after)
 		g_warning("failed to write event");
 		return;
 	}
- 
- 	if (export_after)
+
+	if (export_after)
 		vcal_folder_export(NULL);
 }
 
-static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
+static VCalEvent *event_get_from_xml(const gchar *uid, GNode *node)
 {
 	XMLNode *xmlnode;
 	GList *list;
@@ -1010,7 +877,7 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 	icalcomponent_kind type = ICAL_VEVENT_COMPONENT;
 	gint sequence = 0, rec_occurrence = 0;
 	time_t postponed = (time_t)0;
-	
+
 	g_return_val_if_fail(node->data != NULL, NULL);
 
 	xmlnode = node->data;
@@ -1018,12 +885,13 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 		g_warning("tag name != \"event\"");
 		return NULL;
 	}
-	
+
 	list = xmlnode->tag->attr;
 	for (; list != NULL; list = list->next) {
 		XMLAttr *attr = list->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "organizer"))
 			org = g_strdup(attr->value);
 		if (!strcmp(attr->name, "orgname"))
@@ -1056,20 +924,18 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 			rec_occurrence = atoi(attr->value);
 	}
 
-	event = vcal_manager_new_event(uid, org, orgname, location, summary, description, 
-					dtstart, dtend, recur, tzid, url, method, 
-					sequence, type);
+	event = vcal_manager_new_event(uid, org, orgname, location, summary, description, dtstart, dtend, recur, tzid, url, method, sequence, type);
 
 	event->postponed = postponed;
 	event->rec_occurrence = rec_occurrence;
 
-	g_free(org); 
-	g_free(orgname); 
+	g_free(org);
+	g_free(orgname);
 	g_free(location);
-	g_free(summary); 
-	g_free(description); 
-	g_free(url); 
-	g_free(dtstart); 
+	g_free(summary);
+	g_free(description);
+	g_free(url);
+	g_free(dtstart);
 	g_free(dtend);
 	g_free(recur);
 	g_free(tzid);
@@ -1079,8 +945,8 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 		gchar *attendee = NULL;
 		gchar *name = NULL;
 		icalparameter_partstat answer = ICAL_PARTSTAT_NEEDSACTION;
-		icalparameter_cutype cutype   = ICAL_CUTYPE_INDIVIDUAL;
-		
+		icalparameter_cutype cutype = ICAL_CUTYPE_INDIVIDUAL;
+
 		xmlnode = node->data;
 		if (g_strcmp0(xmlnode->tag->tag, "answer") != 0) {
 			g_warning("tag name != \"answer\"");
@@ -1090,7 +956,8 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 		for (; list != NULL; list = list->next) {
 			XMLAttr *attr = list->data;
 
-			if (!attr || !attr->name || !attr->value) continue;
+			if (!attr || !attr->name || !attr->value)
+				continue;
 			if (!strcmp(attr->name, "attendee"))
 				attendee = g_strdup(attr->value);
 			if (!strcmp(attr->name, "name"))
@@ -1107,32 +974,32 @@ static VCalEvent *event_get_from_xml (const gchar *uid, GNode *node)
 		node = node->next;
 	}
 	event->answers = g_slist_reverse(event->answers);
-	
+
 	return event;
 }
 
-VCalEvent *vcal_manager_load_event (const gchar *uid)
+VCalEvent *vcal_manager_load_event(const gchar *uid)
 {
 	GNode *node;
 	gchar *path = NULL;
 	VCalEvent *event = NULL;
 
 	path = vcal_manager_get_event_file(uid);
-	
+
 	if (!is_file_exist(path)) {
 		g_free(path);
 		return NULL;
 	}
-	
+
 	node = xml_parse_file(path);
-	
+
 	g_free(path);
-	
+
 	if (!node) {
 		g_warning("no node");
 		return NULL;
 	}
-	
+
 	event = event_get_from_xml(uid, node);
 	/* vcal_manager_event_print(event); */
 	xml_free_tree(node);
@@ -1144,28 +1011,24 @@ VCalEvent *vcal_manager_load_event (const gchar *uid)
 		*(strchr(event->summary, '\n')) = ' ';
 
 	return event;
-	
+
 }
 
-void vcal_manager_update_answer (VCalEvent 	*event, 
-				 const gchar 	*attendee,
-				 const gchar	*name,
-				 icalparameter_partstat ans,
-				 icalparameter_cutype cutype)
+void vcal_manager_update_answer(VCalEvent *event, const gchar *attendee, const gchar *name, icalparameter_partstat ans, icalparameter_cutype cutype)
 {
 	Answer *answer = NULL;
 	GSList *existing = NULL;
 	Answer *existing_a = NULL;
-	
+
 	if (!ans)
 		return;
-		
+
 	answer = answer_new(attendee, name, ans, cutype);
 	existing = answer_find(event, answer);
-		
+
 	if (existing) {
 		existing_a = (Answer *)existing->data;
-	
+
 		if (!answer->name && existing_a->name)
 			answer->name = g_strdup(existing_a->name);
 		if (!answer->cutype && existing_a->cutype)
@@ -1175,15 +1038,11 @@ void vcal_manager_update_answer (VCalEvent 	*event,
 	}
 
 	answer_add(event, answer);
-	
+
 	vcal_manager_save_event(event, FALSE);
 }
 
-static gchar *write_headers(PrefsAccount 	*account, 
-			    VCalEvent 		*event,
-			    gboolean		 short_headers,
-			    gboolean 		 is_reply, 
-			    gboolean 		 is_pseudo_display)
+static gchar *write_headers(PrefsAccount *account, VCalEvent *event, gboolean short_headers, gboolean is_reply, gboolean is_pseudo_display)
 {
 	gchar *subject = NULL;
 	gchar date[RFC822_DATE_BUFFSIZE];
@@ -1201,7 +1060,7 @@ static gchar *write_headers(PrefsAccount 	*account,
 	cm_return_val_if_fail(account != NULL, NULL);
 
 	memset(date, 0, sizeof(date));
-	
+
 	if (is_pseudo_display) {
 		struct icaltimetype itt = (icaltime_from_string(event->dtstart));
 		time_t t = icaltime_as_timet(itt);
@@ -1209,18 +1068,17 @@ static gchar *write_headers(PrefsAccount 	*account,
 	} else {
 		get_rfc822_date(date, sizeof(date));
 	}
-	
+
 	if (account_get_special_folder(account, F_OUTBOX)) {
-		save_folder = folder_item_get_identifier(account_get_special_folder
-				  (account, F_OUTBOX));
+		save_folder = folder_item_get_identifier(account_get_special_folder(account, F_OUTBOX));
 	}
-	
+
 	if (!is_reply) {
 		GSList *cur = event->answers;
 		while (cur && cur->data) {
 			gchar *tmp = NULL;
 			Answer *a = (Answer *)cur->data;
-			
+
 			if (strcasecmp(a->attendee, event->organizer)) {
 				if (attendees) {
 					tmp = g_strdup_printf("%s>,\n <%s", attendees, a->attendee);
@@ -1233,25 +1091,13 @@ static gchar *write_headers(PrefsAccount 	*account,
 			cur = cur->next;
 		}
 	}
-	
+
 	if (!short_headers) {
-		queue_headers = g_strdup_printf("S:%s\n"
-				"SSV:%s\n"
-				"R:<%s>\n"
-				"MAID:%d\n"
-				"%s%s%s"
-				"X-Claws-End-Special-Headers: 1\n",
-				account->address,
-				account->smtp_server,
-				is_reply ? event->organizer:attendees,
-				account->account_id,
-				save_folder?"SCF:":"",
-				save_folder?save_folder:"",
-				save_folder?"\n":"");
+		queue_headers = g_strdup_printf("S:%s\n" "SSV:%s\n" "R:<%s>\n" "MAID:%d\n" "%s%s%s" "X-Claws-End-Special-Headers: 1\n", account->address, account->smtp_server, is_reply ? event->organizer : attendees, account->account_id, save_folder ? "SCF:" : "", save_folder ? save_folder : "", save_folder ? "\n" : "");
 	} else {
 		queue_headers = g_strdup("");
 	}
-	
+
 	prefix = "";
 	if (is_reply) {
 		method_str = "REPLY";
@@ -1262,8 +1108,8 @@ static gchar *write_headers(PrefsAccount 	*account,
 			prefix = _("Declined: ");
 		else if (status == ICAL_PARTSTAT_TENTATIVE)
 			prefix = _("Tentatively Accepted: ");
-		else 
-			prefix = "Re: "; 
+		else
+			prefix = "Re: ";
 	} else if (event->method == ICAL_METHOD_PUBLISH) {
 		method_str = "PUBLISH";
 	} else if (event->method == ICAL_METHOD_CANCEL) {
@@ -1271,60 +1117,33 @@ static gchar *write_headers(PrefsAccount 	*account,
 	} else {
 		method_str = "REQUEST";
 	}
-	
+
 	subject = g_strdup_printf("%s%s", prefix, event->summary);
 
-	conv_encode_header_full(enc_subject, sizeof(enc_subject), subject, strlen("Subject: "), 
-			FALSE, conv_get_outgoing_charset_str());
-	from = is_reply?account->name:(event->orgname?event->orgname:"");
-	conv_encode_header_full(enc_from, sizeof(enc_from), from, strlen("From: "), 
-			TRUE, conv_get_outgoing_charset_str());
+	conv_encode_header_full(enc_subject, sizeof(enc_subject), subject, strlen("Subject: "), FALSE, conv_get_outgoing_charset_str());
+	from = is_reply ? account->name : (event->orgname ? event->orgname : "");
+	conv_encode_header_full(enc_from, sizeof(enc_from), from, strlen("From: "), TRUE, conv_get_outgoing_charset_str());
 
 	if (is_pseudo_display && event->uid) {
-		calmsgid = g_strdup_printf("Message-ID: <%s>\n",event->uid);
+		calmsgid = g_strdup_printf("Message-ID: <%s>\n", event->uid);
 	} else {
 		calmsgid = g_strdup("");
 	}
 
 	msgid = prefs_account_generate_msgid(account);
 
-	result = g_strdup_printf("%s"
-				"From: %s <%s>\n"
-				"To: <%s>\n"
-				"Subject: %s\n"
-				"Date: %s\n"
-				"MIME-Version: 1.0\n"
-				"Content-Type: text/calendar; method=%s; charset=\"%s\"\n"
-				"Content-Transfer-Encoding: 8bit\n"
-				"%s"
-				"%s: <%s>\n",
-				queue_headers,
-				enc_from,
-				is_reply ? account->address:event->organizer,
-				is_reply ? event->organizer:(attendees?attendees:event->organizer),
-				enc_subject,
-				date,
-				method_str,
-				CS_UTF_8,
-				calmsgid,
-				is_pseudo_display?
-					"In-Reply-To":"Message-ID",
-				is_pseudo_display?
-					event_to_today_str(event, 0):msgid);
+	result = g_strdup_printf("%s" "From: %s <%s>\n" "To: <%s>\n" "Subject: %s\n" "Date: %s\n" "MIME-Version: 1.0\n" "Content-Type: text/calendar; method=%s; charset=\"%s\"\n" "Content-Transfer-Encoding: 8bit\n" "%s" "%s: <%s>\n", queue_headers, enc_from, is_reply ? account->address : event->organizer, is_reply ? event->organizer : (attendees ? attendees : event->organizer), enc_subject, date, method_str, CS_UTF_8, calmsgid, is_pseudo_display ? "In-Reply-To" : "Message-ID", is_pseudo_display ? event_to_today_str(event, 0) : msgid);
 	g_free(calmsgid);
 	g_free(subject);
 	g_free(save_folder);
 	g_free(queue_headers);
 	g_free(attendees);
 	g_free(msgid);
-	return result;			
-                                                                               
+	return result;
 
 }
 
-static gchar *write_headers_ical(PrefsAccount 	*account, 
-			    icalcomponent	*ievent,
-			    gchar 		*orga)
+static gchar *write_headers_ical(PrefsAccount *account, icalcomponent *ievent, gchar *orga)
 {
 	gchar subject[512];
 	gchar date[RFC822_DATE_BUFFSIZE];
@@ -1340,13 +1159,13 @@ static gchar *write_headers_ical(PrefsAccount 	*account,
 
 	memset(subject, 0, sizeof(subject));
 	memset(date, 0, sizeof(date));
-	
+
 	prop = icalcomponent_get_first_property(ievent, ICAL_SUMMARY_PROPERTY);
 	summary = g_strdup(icalproperty_get_summary(prop));
 	icalproperty_free(prop);
 	if (!summary)
 		summary = g_strdup(_("[no summary]"));
-	
+
 	while (strchr(summary, '\n'))
 		*(strchr(summary, '\n')) = ' ';
 
@@ -1358,7 +1177,7 @@ static gchar *write_headers_ical(PrefsAccount 	*account,
 
 		icalproperty_free(prop);
 	} else {
-		organizer = orga? g_strdup(orga):g_strdup("");
+		organizer = orga ? g_strdup(orga) : g_strdup("");
 	}
 
 	prop = icalcomponent_get_first_property(ievent, ICAL_DTSTART_PROPERTY);
@@ -1370,58 +1189,36 @@ static gchar *write_headers_ical(PrefsAccount 	*account,
 	}
 
 	conv_encode_header(subject, 511, summary, strlen("Subject: "), FALSE);
-			
+
 	method_str = "PUBLISH";
 
 	prop = icalcomponent_get_first_property(ievent, ICAL_UID_PROPERTY);
 	if (prop) {
-		calmsgid = g_strdup_printf("Message-ID: <%s>\n",icalproperty_get_uid(prop));
+		calmsgid = g_strdup_printf("Message-ID: <%s>\n", icalproperty_get_uid(prop));
 		icalproperty_free(prop);
 	} else {
 		calmsgid = g_strdup("");
 	}
-	
 
-	result = g_strdup_printf("From: %s <%s>\n"
-				"To: <%s>\n"
-				"Subject: %s%s\n"
-				"Date: %s\n"
-				"MIME-Version: 1.0\n"
-				"Content-Type: text/calendar; method=%s; charset=\"%s\"; vcalsave=\"no\"\n"
-				"Content-Transfer-Encoding: quoted-printable\n"
-				"%s"
-				"In-Reply-To: <%s>\n",
-				orgname?orgname:"",
-				!strncmp(organizer, "MAILTO:", 7) ? organizer+7 : organizer,
-				account->address,
-				"",
-				subject,
-				date,
-				method_str,
-				conv_get_outgoing_charset_str(),
-				calmsgid,
-				event_to_today_str(NULL, t));
-	
+	result = g_strdup_printf("From: %s <%s>\n" "To: <%s>\n" "Subject: %s%s\n" "Date: %s\n" "MIME-Version: 1.0\n" "Content-Type: text/calendar; method=%s; charset=\"%s\"; vcalsave=\"no\"\n" "Content-Transfer-Encoding: quoted-printable\n" "%s" "In-Reply-To: <%s>\n", orgname ? orgname : "", !strncmp(organizer, "MAILTO:", 7) ? organizer + 7 : organizer, account->address, "", subject, date, method_str, conv_get_outgoing_charset_str(), calmsgid, event_to_today_str(NULL, t));
+
 	g_free(calmsgid);
 	g_free(orgname);
 	g_free(organizer);
 	g_free(summary);
 
-	return result;			
-                                                                               
+	return result;
 
 }
 
-static gboolean vcal_manager_send (PrefsAccount 	*account, 
-				     VCalEvent 		*event,
-				     gboolean		 is_reply)
+static gboolean vcal_manager_send(PrefsAccount *account, VCalEvent *event, gboolean is_reply)
 {
 	gchar *tmpfile = NULL;
 	gint msgnum;
 	FolderItem *folderitem;
 	gchar *msgpath = NULL;
 	Folder *folder = NULL;
-	
+
 	tmpfile = vcal_manager_event_dump(event, is_reply, FALSE, NULL, TRUE);
 
 	if (!tmpfile)
@@ -1435,7 +1232,7 @@ static gboolean vcal_manager_send (PrefsAccount 	*account,
 		return FALSE;
 	}
 	folder_item_scan(folderitem);
-	
+
 	if ((msgnum = folder_item_add_msg(folderitem, tmpfile, NULL, TRUE)) < 0) {
 		g_warning("can't queue the message");
 		g_unlink(tmpfile);
@@ -1444,7 +1241,7 @@ static gboolean vcal_manager_send (PrefsAccount 	*account,
 	}
 
 	msgpath = folder_item_fetch_msg(folderitem, msgnum);
-	
+
 	if (!prefs_common_get_prefs()->work_offline) {
 		gchar *err = NULL;
 		gboolean queued_removed = FALSE;
@@ -1462,7 +1259,7 @@ static gboolean vcal_manager_send (PrefsAccount 	*account,
 	g_free(tmpfile);
 	g_free(msgpath);
 
-	folder = folder_find_from_name ("vCalendar", vcal_folder_get_class());
+	folder = folder_find_from_name("vCalendar", vcal_folder_get_class());
 	if (folder) {
 		folder_item_scan(folder->inbox);
 		vcalviewer_reload(folder->inbox);
@@ -1471,14 +1268,12 @@ static gboolean vcal_manager_send (PrefsAccount 	*account,
 	return TRUE;
 }
 
-gboolean vcal_manager_reply (PrefsAccount 	*account, 
-			     VCalEvent 		*event)
+gboolean vcal_manager_reply(PrefsAccount *account, VCalEvent *event)
 {
 	return vcal_manager_send(account, event, TRUE);
 }
 
-gboolean vcal_manager_request (PrefsAccount 	*account, 
-			       VCalEvent 	*event)
+gboolean vcal_manager_request(PrefsAccount *account, VCalEvent *event)
 {
 	return vcal_manager_send(account, event, FALSE);
 }
@@ -1490,7 +1285,7 @@ EventTime event_to_today(VCalEvent *event, time_t t)
 	struct icaltimetype itt;
 
 	tzset();
-	
+
 	today_t = time(NULL);
 	if (event) {
 		itt = icaltime_from_string(event->dtstart);
@@ -1498,7 +1293,7 @@ EventTime event_to_today(VCalEvent *event, time_t t)
 	} else {
 		evtstart_t = t;
 	}
-	
+
 #ifndef G_OS_WIN32
 	struct tm buft;
 	today = *localtime_r(&today_t, &buft);
@@ -1511,7 +1306,7 @@ EventTime event_to_today(VCalEvent *event, time_t t)
 	today = *localtime(&today_t);
 	evtstart = *localtime(&evtstart_t);
 #endif
-	
+
 	if (today.tm_year == evtstart.tm_year) {
 		int days = evtstart.tm_yday - today.tm_yday;
 		if (days < 0) {
@@ -1538,14 +1333,14 @@ EventTime event_to_today(VCalEvent *event, time_t t)
 		} else {
 			return EVENT_LATER;
 		}
-	} else 
+	} else
 		return EVENT_LATER;
 }
 
 const gchar *event_to_today_str(VCalEvent *event, time_t t)
 {
 	EventTime days = event_to_today(event, t);
-	switch(days) {
+	switch (days) {
 	case EVENT_PAST:
 		return EVENT_PAST_ID;
 	case EVENT_TODAY:
@@ -1559,3 +1354,7 @@ const gchar *event_to_today_str(VCalEvent *event, time_t t)
 	}
 	return NULL;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

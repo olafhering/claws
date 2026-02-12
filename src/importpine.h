@@ -25,11 +25,10 @@
 #define __IMPORT_PINE_H__
 
 /* Function prototypes */
-AddressBookFile *addressbook_imp_pine( AddressIndex *addrIndex );
+AddressBookFile *addressbook_imp_pine(AddressIndex *addrIndex);
 
 #endif /* __IMPORT_PINE_H__ */
 
 /*
 * End of Source.
 */
-

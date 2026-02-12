@@ -19,7 +19,7 @@
 #define NOTIFICATION_TRAYICON_H NOTIFICATION_TRAYICON_H
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_TRAYICON
@@ -30,7 +30,7 @@
 
 #define TRAYICON_SPECIFIC_FOLDER_ID_STR "trayicon"
 
-void notification_trayicon_msg(MsgInfo*);
+void notification_trayicon_msg(MsgInfo *);
 
 void notification_trayicon_destroy(void);
 
@@ -42,7 +42,7 @@ gboolean notification_trayicon_main_window_got_iconified(gpointer, gpointer);
 gboolean notification_trayicon_account_list_changed(gpointer, gpointer);
 
 gboolean notification_trayicon_is_available(void);
-void notification_trayicon_on_activate(GtkStatusIcon*,gpointer);
+void notification_trayicon_on_activate(GtkStatusIcon *, gpointer);
 
 #endif /* NOTIFICATION_TRAYICON */
 

@@ -38,98 +38,97 @@
  * #endif*/
 
 #define ZOOM_FACTOR 0.25
-#define ROTATION 90 
+#define ROTATION 90
 #define ALPHA_CHANNEL 60
 #define SELECTION_COLOR 0xFF00FF
 
 static gchar *msg = NULL;
 
-struct _PageResult
-{
+struct _PageResult {
 	GList *results;
 	gint page_num;
 };
 
 typedef struct _PageResult PageResult;
 
-struct _PdfViewer
-{
-	MimeViewer			mimeviewer;
-	GtkWidget			*widgets_table;
-	GtkWidget			*vbox;
-	GtkWidget			*hbox;
-	GtkWidget			*frame_index;
-	GtkWidget			*pdf_view;
-	GtkWidget			*scrollwin;
-	GtkWidget			*scrollwin_index;
-	GtkWidget			*pdf_view_ebox;
-	GtkWidget			*icon_type_ebox;
-	GtkWidget			*icon_type;
-	GdkPixbuf			*icon_pixbuf;
-	GtkWidget			*doc_label;
-	GtkWidget			*cur_page;
-	GtkWidget			*doc_index_pane;
-	GtkWidget			*index_list;
+struct _PdfViewer {
+	MimeViewer mimeviewer;
+	GtkWidget *widgets_table;
+	GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *frame_index;
+	GtkWidget *pdf_view;
+	GtkWidget *scrollwin;
+	GtkWidget *scrollwin_index;
+	GtkWidget *pdf_view_ebox;
+	GtkWidget *icon_type_ebox;
+	GtkWidget *icon_type;
+	GdkPixbuf *icon_pixbuf;
+	GtkWidget *doc_label;
+	GtkWidget *cur_page;
+	GtkWidget *doc_index_pane;
+	GtkWidget *index_list;
 	/* begin GtkButtons */
-	GtkWidget			*first_page;
-	GtkWidget			*last_page;
-	GtkWidget			*prev_page;
-	GtkWidget			*next_page;
-	GtkWidget			*zoom_in;
-	GtkWidget			*zoom_out;
-	GtkWidget			*zoom_scroll;
-	GtkWidget			*zoom_fit;
-	GtkWidget			*zoom_width;
-	GtkWidget			*rotate_left;
-	GtkWidget			*rotate_right;
-	GtkWidget			*print;
-	GtkWidget			*doc_info;
-	GtkWidget			*doc_index;
+	GtkWidget *first_page;
+	GtkWidget *last_page;
+	GtkWidget *prev_page;
+	GtkWidget *next_page;
+	GtkWidget *zoom_in;
+	GtkWidget *zoom_out;
+	GtkWidget *zoom_scroll;
+	GtkWidget *zoom_fit;
+	GtkWidget *zoom_width;
+	GtkWidget *rotate_left;
+	GtkWidget *rotate_right;
+	GtkWidget *print;
+	GtkWidget *doc_info;
+	GtkWidget *doc_index;
 	/* end GtkButtons */
-	GtkTable			*table_doc_info;
+	GtkTable *table_doc_info;
 
-	PopplerDocument		*pdf_doc;
-	PopplerPage			*pdf_page;
-	PopplerIndexIter	*pdf_index;
-	PopplerRectangle	*last_rect;
-	PopplerAction		*link_action;
-	PageResult			*last_page_result;
-	GtkAdjustment		*pdf_view_vadj;
-	GtkAdjustment		*pdf_view_hadj;
-	GtkTreeModel		*index_model;
+	PopplerDocument *pdf_doc;
+	PopplerPage *pdf_page;
+	PopplerIndexIter *pdf_index;
+	PopplerRectangle *last_rect;
+	PopplerAction *link_action;
+	PageResult *last_page_result;
+	GtkAdjustment *pdf_view_vadj;
+	GtkAdjustment *pdf_view_hadj;
+	GtkTreeModel *index_model;
 
-	GList				*link_map;
-	GList				*page_results;
-	GList				*text_found; /* GList of PageResults */
-	gchar				*last_search;
-	gint				 last_match;
-	gint				 num_matches;
+	GList *link_map;
+	GList *page_results;
+	GList *text_found; /* GList of PageResults */
+	gchar *last_search;
+	gint last_match;
+	gint num_matches;
 
-	gchar				*target_filename;
-	gchar				*filename;
-	gchar				*fsname;
-	gchar				*doc_info_text;
+	gchar *target_filename;
+	gchar *filename;
+	gchar *fsname;
+	gchar *doc_info_text;
 
-	gint				res_cnt;
-	gint				rotate;
-	gint				num_pages;
-	gdouble				zoom;
-	gdouble				width;
-	gdouble				height;
-	gdouble				last_x;
-	gdouble				last_y;
-	gint				last_dir_x;
-	gint				last_dir_y;
-	gboolean			pdf_view_scroll;
-	gboolean			in_link;
-	MimeInfo			*mimeinfo;
-	MimeInfo			*to_load;
-	
+	gint res_cnt;
+	gint rotate;
+	gint num_pages;
+	gdouble zoom;
+	gdouble width;
+	gdouble height;
+	gdouble last_x;
+	gdouble last_y;
+	gint last_dir_x;
+	gint last_dir_y;
+	gboolean pdf_view_scroll;
+	gboolean in_link;
+	MimeInfo *mimeinfo;
+	MimeInfo *to_load;
+
 };
-static gchar *content_types[] =
-	{"application/pdf", 
-	 "application/postscript", 
-	 NULL};
+static gchar *content_types[] = { "application/pdf",
+	"application/postscript",
+	NULL
+};
+
 typedef enum {
 	TYPE_UNKNOWN,
 	TYPE_PDF,

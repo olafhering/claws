@@ -25,11 +25,10 @@
 #define __EXPORT_LDIF_H__
 
 /* Function prototypes */
-void addressbook_exp_ldif( AddressCache *cache );
+void addressbook_exp_ldif(AddressCache *cache);
 
 #endif /* __EXPORT_LDIF_H__ */
 
 /*
 * End of Source.
 */
-

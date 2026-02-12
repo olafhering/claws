@@ -34,14 +34,13 @@
 #define MIN_PNG_SIZE 67L
 #define MAX_URL_LENGTH 1024
 
-gint 		plugin_init	  	  (gchar **error);
-gboolean	plugin_done		  (void);
-const gchar *	plugin_name		  (void);
-const gchar *	plugin_desc		  (void);
-const gchar *	plugin_type		  (void);
-const gchar *	plugin_licence		  (void);
-const gchar *	plugin_version		  (void);
-struct PluginFeature *plugin_provides	  (void);
+gint plugin_init(gchar **error);
+gboolean plugin_done(void);
+const gchar *plugin_name(void);
+const gchar *plugin_desc(void);
+const gchar *plugin_type(void);
+const gchar *plugin_licence(void);
+const gchar *plugin_version(void);
+struct PluginFeature *plugin_provides(void);
 
 #endif
-

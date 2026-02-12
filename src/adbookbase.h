@@ -43,9 +43,7 @@ typedef enum {
 typedef struct _AddrBook_Base AddrBookBase;
 struct _AddrBook_Base {
 	AddressBookType type;
-	AddressCache    *addressCache;
+	AddressCache *addressCache;
 };
 
 #endif /* __ADBOOKBASE_H__ */
-
-

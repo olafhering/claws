@@ -38,19 +38,17 @@
 #define LDAP_ADMINLIMIT_EXCEEDED LDAP_ADMIN_LIMIT_EXCEEDED
 #define timeval l_timeval
 #ifndef LDAP_OPT_SUCCESS
-# define LDAP_OPT_SUCCESS 0
+#define LDAP_OPT_SUCCESS 0
 #endif
 #endif
 /* Function Prototypes */
-GList *ldaputil_read_basedn	( const gchar *host, const gint port,
-				  const gchar *bindDN, const gchar *bindPW,
-				  const gint tov, int ssl, int tls );
-gboolean ldaputil_test_connect	( const gchar *host, const gint port, int ssl, int tls, int secs);
-gboolean ldaputil_test_ldap_lib	( void );
-int claws_ldap_simple_bind_s( LDAP *ld, LDAP_CONST char *dn, LDAP_CONST char *passwd );
+GList *ldaputil_read_basedn(const gchar *host, const gint port, const gchar *bindDN, const gchar *bindPW, const gint tov, int ssl, int tls);
+gboolean ldaputil_test_connect(const gchar *host, const gint port, int ssl, int tls, int secs);
+gboolean ldaputil_test_ldap_lib(void);
+int claws_ldap_simple_bind_s(LDAP *ld, LDAP_CONST char *dn, LDAP_CONST char *passwd);
 const gchar *ldaputil_get_error(LDAP *ld);
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 #endif /* __LDAPUTIL_H__ */
 

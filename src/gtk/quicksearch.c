@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -45,76 +45,73 @@
 #include "advsearch.h"
 #include "alertpanel.h"
 
-struct _QuickSearchRequest
-{
-	AdvancedSearchType		 type;
-	gchar				*matchstring;
+struct _QuickSearchRequest {
+	AdvancedSearchType type;
+	gchar *matchstring;
 };
 typedef struct _QuickSearchRequest QuickSearchRequest;
 
-struct _QuickSearch
-{
-	GtkWidget			*hbox_search;
-	GtkWidget			*search_type;
-	GtkWidget			*search_type_opt;
-	GtkWidget			*search_string_entry;
-	GtkWidget			*search_condition_expression;
-	GtkWidget			*search_description;
-	GtkWidget			*clear_search;
+struct _QuickSearch {
+	GtkWidget *hbox_search;
+	GtkWidget *search_type;
+	GtkWidget *search_type_opt;
+	GtkWidget *search_string_entry;
+	GtkWidget *search_condition_expression;
+	GtkWidget *search_description;
+	GtkWidget *clear_search;
 
-	gboolean			 active;
-	gchar				*search_string;
+	gboolean active;
+	gchar *search_string;
 
-	QuickSearchRequest		 request;
-	QuickSearchExecuteCallback	 callback;
-	gpointer			 callback_data;
-	gboolean			 running;
-	gboolean			 has_focus;
-	gboolean			 in_typing;
-	guint				 press_timeout_id;
+	QuickSearchRequest request;
+	QuickSearchExecuteCallback callback;
+	gpointer callback_data;
+	gboolean running;
+	gboolean has_focus;
+	gboolean in_typing;
+	guint press_timeout_id;
 
-	GList				*normal_search_strings;
-	GList				*extended_search_strings;
-	
-	/* dynamic and autorun qs settings are exclusive*/
-	GtkWidget 			 *dynamic_menuitem;
-	GtkWidget 			 *autorun_menuitem;
+	GList *normal_search_strings;
+	GList *extended_search_strings;
 
-	AdvancedSearch			*asearch;
-	gboolean			 want_reexec;
-	gboolean			 want_history;
+	/* dynamic and autorun qs settings are exclusive */
+	GtkWidget *dynamic_menuitem;
+	GtkWidget *autorun_menuitem;
+
+	AdvancedSearch *asearch;
+	gboolean want_reexec;
+	gboolean want_history;
 };
 
 static GdkColor qs_active_bgcolor = {
-	(gulong)0,
-	(gushort)0,
-	(gushort)0,
-	(gushort)0
+	(gulong) 0,
+	(gushort) 0,
+	(gushort) 0,
+	(gushort) 0
 };
 
 static GdkColor qs_active_color = {
-	(gulong)0,
-	(gushort)0,
-	(gushort)0,
-	(gushort)0
+	(gulong) 0,
+	(gushort) 0,
+	(gushort) 0,
+	(gushort) 0
 };
 
 static GdkColor qs_error_bgcolor = {
-	(gulong)0,
-	(gushort)0,
-	(gushort)0,
-	(gushort)0
+	(gulong) 0,
+	(gushort) 0,
+	(gushort) 0,
+	(gushort) 0
 };
 
 static GdkColor qs_error_color = {
-	(gulong)0,
-	(gushort)0,
-	(gushort)0,
-	(gushort)0
+	(gulong) 0,
+	(gushort) 0,
+	(gushort) 0,
+	(gushort) 0
 };
 
-void quicksearch_set_on_progress_cb(QuickSearch* search,
-		gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data)
+void quicksearch_set_on_progress_cb(QuickSearch *search, gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data)
 {
 	advsearch_set_on_progress_cb(search->asearch, cb, data);
 }
@@ -124,31 +121,23 @@ static void quicksearch_set_matchstring(QuickSearch *quicksearch, const gchar *m
 static void quicksearch_set_active(QuickSearch *quicksearch, gboolean active);
 static void quicksearch_set_popdown_strings(QuickSearch *quicksearch);
 
-static void quicksearch_add_to_history(QuickSearch* quicksearch)
+static void quicksearch_add_to_history(QuickSearch *quicksearch)
 {
-	gchar* search_string = quicksearch->request.matchstring;
+	gchar *search_string = quicksearch->request.matchstring;
 
 	/* add to history, for extended search add only correct matching rules */
 	if (quicksearch->want_history && !quicksearch->in_typing && search_string && strlen(search_string) != 0) {
 		switch (prefs_common.summary_quicksearch_type) {
-			case ADVANCED_SEARCH_EXTENDED:
-				if (advsearch_has_proper_predicate(quicksearch->asearch)) {
-					quicksearch->extended_search_strings =
-						add_history(quicksearch->extended_search_strings,
-								search_string);
-					prefs_common.summary_quicksearch_history =
-						add_history(prefs_common.summary_quicksearch_history,
-								search_string);
-				}
-				break;
-			default:
-				quicksearch->normal_search_strings =
-					add_history(quicksearch->normal_search_strings,
-							search_string);
-				prefs_common.summary_quicksearch_history =
-					add_history(prefs_common.summary_quicksearch_history,
-							search_string);
-				break;
+		case ADVANCED_SEARCH_EXTENDED:
+			if (advsearch_has_proper_predicate(quicksearch->asearch)) {
+				quicksearch->extended_search_strings = add_history(quicksearch->extended_search_strings, search_string);
+				prefs_common.summary_quicksearch_history = add_history(prefs_common.summary_quicksearch_history, search_string);
+			}
+			break;
+		default:
+			quicksearch->normal_search_strings = add_history(quicksearch->normal_search_strings, search_string);
+			prefs_common.summary_quicksearch_history = add_history(prefs_common.summary_quicksearch_history, search_string);
+			break;
 		}
 
 		quicksearch_set_popdown_strings(quicksearch);
@@ -166,10 +155,8 @@ static void quicksearch_invoke_execute(QuickSearch *quicksearch, gboolean run_on
 	}
 
 	do {
-		gboolean active = quicksearch->request.matchstring != NULL 
-				   && g_strcmp0(quicksearch->request.matchstring, "");
-		advsearch_set(quicksearch->asearch, quicksearch->request.type,
-				quicksearch->request.matchstring);
+		gboolean active = quicksearch->request.matchstring != NULL && g_strcmp0(quicksearch->request.matchstring, "");
+		advsearch_set(quicksearch->asearch, quicksearch->request.type, quicksearch->request.matchstring);
 
 		if (run_only_if_fast && !advsearch_is_fast(quicksearch->asearch))
 			return;
@@ -186,7 +173,7 @@ static void quicksearch_invoke_execute(QuickSearch *quicksearch, gboolean run_on
 	} while (quicksearch->want_reexec);
 }
 
-gboolean quicksearch_run_on_folder(QuickSearch* quicksearch, FolderItem *folderItem, MsgInfoList **result)
+gboolean quicksearch_run_on_folder(QuickSearch *quicksearch, FolderItem *folderItem, MsgInfoList **result)
 {
 	if (quicksearch_has_sat_predicate(quicksearch)) {
 		gboolean was_running = quicksearch_is_running(quicksearch);
@@ -219,13 +206,11 @@ static void quicksearch_set_type(QuickSearch *quicksearch, gint type)
 {
 	gint index;
 	quicksearch->request.type = type;
-	index = menu_find_option_menu_index(GTK_CMOPTION_MENU(quicksearch->search_type_opt), 
-					GINT_TO_POINTER(type),
-					NULL);
-	gtk_cmoption_menu_set_history(GTK_CMOPTION_MENU(quicksearch->search_type_opt), index);	
+	index = menu_find_option_menu_index(GTK_CMOPTION_MENU(quicksearch->search_type_opt), GINT_TO_POINTER(type), NULL);
+	gtk_cmoption_menu_set_history(GTK_CMOPTION_MENU(quicksearch->search_type_opt), index);
 }
 
-static gchar *quicksearch_get_text(QuickSearch * quicksearch)
+static gchar *quicksearch_get_text(QuickSearch *quicksearch)
 {
 	gchar *search_string = gtk_editable_get_chars(GTK_EDITABLE(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))), 0, -1);
 
@@ -236,16 +221,14 @@ static void quicksearch_set_popdown_strings(QuickSearch *quicksearch)
 {
 	GtkWidget *search_string_entry = quicksearch->search_string_entry;
 
-	combobox_unset_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry));	
+	combobox_unset_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry));
 	if (prefs_common.summary_quicksearch_type == ADVANCED_SEARCH_EXTENDED)
-		combobox_set_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry),
-			quicksearch->extended_search_strings);	
+		combobox_set_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry), quicksearch->extended_search_strings);
 	else
-		combobox_set_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry),
-			quicksearch->normal_search_strings);
+		combobox_set_popdown_strings(GTK_COMBO_BOX_TEXT(search_string_entry), quicksearch->normal_search_strings);
 }
 
-static void update_extended_buttons (QuickSearch *quicksearch)
+static void update_extended_buttons(QuickSearch *quicksearch)
 {
 	GtkWidget *expr_btn = quicksearch->search_condition_expression;
 	GtkWidget *ext_btn = quicksearch->search_description;
@@ -262,15 +245,13 @@ static void update_extended_buttons (QuickSearch *quicksearch)
 	}
 }
 
-static gboolean searchbar_focus_evt_in(GtkWidget *widget, GdkEventFocus *event,
-			      	  QuickSearch *qs)
+static gboolean searchbar_focus_evt_in(GtkWidget *widget, GdkEventFocus *event, QuickSearch *qs)
 {
 	qs->has_focus = TRUE;
 	return FALSE;
 }
 
-static gboolean searchbar_focus_evt_out(GtkWidget *widget, GdkEventFocus *event,
-			      	  QuickSearch *qs)
+static gboolean searchbar_focus_evt_out(GtkWidget *widget, GdkEventFocus *event, QuickSearch *qs)
 {
 	qs->has_focus = FALSE;
 	qs->in_typing = FALSE;
@@ -315,16 +296,14 @@ static void searchbar_changed_cb(GtkWidget *widget, QuickSearch *qs)
 		if (qs->press_timeout_id != 0) {
 			g_source_remove(qs->press_timeout_id);
 		}
-		qs->press_timeout_id = g_timeout_add(prefs_common.qs_press_timeout,
-				searchbar_changed_timeout, qs);
+		qs->press_timeout_id = g_timeout_add(prefs_common.qs_press_timeout, searchbar_changed_timeout, qs);
 	}
 
 	if (!qs->has_focus)
 		gtk_widget_grab_focus(qs->search_string_entry);
 }
 
-static gboolean searchbar_pressed(GtkWidget *widget, GdkEventKey *event,
-			      	  QuickSearch *quicksearch)
+static gboolean searchbar_pressed(GtkWidget *widget, GdkEventKey *event, QuickSearch *quicksearch)
 {
 	if (event != NULL && (event->keyval == GDK_KEY_ISO_Left_Tab)) {
 		/* Shift+Tab moves focus "back" */
@@ -347,13 +326,10 @@ static gboolean searchbar_pressed(GtkWidget *widget, GdkEventKey *event,
 
 		/* If the string entry is empty -> hide quicksearch bar. If not -> empty it */
 		if (!*str) {
-			summaryview_activate_quicksearch(
-				mainwindow_get_mainwindow()->summaryview, 
-				FALSE);
+			summaryview_activate_quicksearch(mainwindow_get_mainwindow()->summaryview, FALSE);
 		} else {
 			quicksearch_set(quicksearch, prefs_common.summary_quicksearch_type, "");
-			gtk_widget_grab_focus(
-					mainwindow_get_mainwindow()->summaryview->ctree);
+			gtk_widget_grab_focus(mainwindow_get_mainwindow()->summaryview->ctree);
 		}
 		g_free(str);
 		return TRUE;
@@ -373,9 +349,7 @@ static gboolean searchbar_pressed(GtkWidget *widget, GdkEventKey *event,
 	}
 
 	if (event && (event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Up)) {
-		combobox_set_value_from_arrow_key(
-				GTK_COMBO_BOX(quicksearch->search_string_entry),
-				event->keyval);
+		combobox_set_value_from_arrow_key(GTK_COMBO_BOX(quicksearch->search_string_entry), event->keyval);
 		return TRUE;
 	}
 
@@ -386,9 +360,7 @@ static gboolean searchtype_changed(GtkMenuItem *widget, gpointer data)
 {
 	QuickSearch *quicksearch = (QuickSearch *)data;
 
-	prefs_common.summary_quicksearch_type = GPOINTER_TO_INT(g_object_get_data(
-				   G_OBJECT(GTK_MENU_ITEM(gtk_menu_get_active(
-				   GTK_MENU(quicksearch->search_type)))), MENU_VAL_ID));
+	prefs_common.summary_quicksearch_type = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(GTK_MENU_ITEM(gtk_menu_get_active(GTK_MENU(quicksearch->search_type)))), MENU_VAL_ID));
 	quicksearch->request.type = prefs_common.summary_quicksearch_type;
 
 	/* Show extended search description button, only when Extended is selected */
@@ -436,9 +408,7 @@ static gboolean searchtype_dynamic_changed(GtkMenuItem *widget, gpointer data)
 
 	prefs_common.summary_quicksearch_dynamic = checked;
 	if (checked)
-		gtk_check_menu_item_set_active(
-				GTK_CHECK_MENU_ITEM(quicksearch->autorun_menuitem),
-				FALSE);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(quicksearch->autorun_menuitem), FALSE);
 
 	/* reselect the search type */
 	quicksearch_set_type(quicksearch, prefs_common.summary_quicksearch_type);
@@ -453,9 +423,7 @@ static gboolean searchtype_autorun_changed(GtkMenuItem *widget, gpointer data)
 
 	prefs_common.summary_quicksearch_autorun = checked;
 	if (checked)
-		gtk_check_menu_item_set_active(
-				GTK_CHECK_MENU_ITEM(quicksearch->dynamic_menuitem),
-				FALSE);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(quicksearch->dynamic_menuitem), FALSE);
 
 	/* reselect the search type */
 	quicksearch_set_type(quicksearch, prefs_common.summary_quicksearch_type);
@@ -469,62 +437,59 @@ static gboolean searchtype_autorun_changed(GtkMenuItem *widget, gpointer data)
  * When adding new lines, remember to put 2 strings for each line
  */
 static gchar *search_descr_strings[] = {
-	"a",	 N_("all messages"),
-	"ag #",  N_("messages whose age is greater than # days"),
-	"al #",  N_("messages whose age is less than # days"),
-	"agh #",  N_("messages whose age is greater than # hours"),
-	"alh #",  N_("messages whose age is less than # hours"),
-	"b S",	 N_("messages which contain S in the message body"),
-	"B S",	 N_("messages which contain S in the whole message"),
-	"c S",	 N_("messages carbon-copied to S"),
-	"C S",	 N_("message is either To: or Cc: to S"),
-	"D",	 N_("deleted messages"), /** how I can filter deleted messages **/
-	"da \"YYYY-MM-dd HH:mm:ss\"",  N_("messages whose date is after requested date "
-					  "(time is optional)"),
-	"db \"YYYY-MM-dd HH:mm:ss\"",  N_("messages whose date is before requested date "
-					  "(time is optional)"),
-	"e S",	 N_("messages which contain S in the Sender field"),
-	"E S",	 N_("true if execute \"S\" succeeds"),
-	"f S",	 N_("messages originating from user S"),
-	"F",	 N_("forwarded messages"),
-	"h S",	 N_("messages which contain S in any header name or value"),
-	"H S",	 N_("messages which contain S in the value of any header"),
-	"ha",	 N_("messages which have attachments"),
-	"i S",	 N_("messages which contain S in Message-ID header"),
-	"I S",	 N_("messages which contain S in In-Reply-To header"),
-	"k #",	 N_("messages which are marked with color #"),
-	"L",	 N_("locked messages"),
-	"n S",	 N_("messages which are in newsgroup S"),
-	"N",	 N_("new messages"),
-	"O",	 N_("old messages"),
-	"p",	 N_("incomplete messages (not entirely downloaded)"),
-	"r",	 N_("messages which you have replied to"),
-	"R",	 N_("read messages"),
-	"s S",	 N_("messages which contain S in subject"),
-	"se #",  N_("messages whose score is equal to # points"),
-	"sg #",  N_("messages whose score is greater than # points"),
-	"sl #",  N_("messages whose score is lower than # points"),
-	"Se #",  N_("messages whose size is equal to # bytes"),
-	"Sg #",  N_("messages whose size is greater than # bytes"),
-	"Ss #",  N_("messages whose size is smaller than # bytes"),
-	"t S",	 N_("messages which have been sent to S"),
-	"tg S",  N_("messages which tags contain S"),
-	"tagged",N_("messages which have tag(s)"),
-	"T",	 N_("marked messages"),
-	"U",	 N_("unread messages"),
+	"a", N_("all messages"),
+	"ag #", N_("messages whose age is greater than # days"),
+	"al #", N_("messages whose age is less than # days"),
+	"agh #", N_("messages whose age is greater than # hours"),
+	"alh #", N_("messages whose age is less than # hours"),
+	"b S", N_("messages which contain S in the message body"),
+	"B S", N_("messages which contain S in the whole message"),
+	"c S", N_("messages carbon-copied to S"),
+	"C S", N_("message is either To: or Cc: to S"),
+	"D", N_("deleted messages"),	 /** how I can filter deleted messages **/
+	"da \"YYYY-MM-dd HH:mm:ss\"", N_("messages whose date is after requested date " "(time is optional)"),
+	"db \"YYYY-MM-dd HH:mm:ss\"", N_("messages whose date is before requested date " "(time is optional)"),
+	"e S", N_("messages which contain S in the Sender field"),
+	"E S", N_("true if execute \"S\" succeeds"),
+	"f S", N_("messages originating from user S"),
+	"F", N_("forwarded messages"),
+	"h S", N_("messages which contain S in any header name or value"),
+	"H S", N_("messages which contain S in the value of any header"),
+	"ha", N_("messages which have attachments"),
+	"i S", N_("messages which contain S in Message-ID header"),
+	"I S", N_("messages which contain S in In-Reply-To header"),
+	"k #", N_("messages which are marked with color #"),
+	"L", N_("locked messages"),
+	"n S", N_("messages which are in newsgroup S"),
+	"N", N_("new messages"),
+	"O", N_("old messages"),
+	"p", N_("incomplete messages (not entirely downloaded)"),
+	"r", N_("messages which you have replied to"),
+	"R", N_("read messages"),
+	"s S", N_("messages which contain S in subject"),
+	"se #", N_("messages whose score is equal to # points"),
+	"sg #", N_("messages whose score is greater than # points"),
+	"sl #", N_("messages whose score is lower than # points"),
+	"Se #", N_("messages whose size is equal to # bytes"),
+	"Sg #", N_("messages whose size is greater than # bytes"),
+	"Ss #", N_("messages whose size is smaller than # bytes"),
+	"t S", N_("messages which have been sent to S"),
+	"tg S", N_("messages which tags contain S"),
+	"tagged", N_("messages which have tag(s)"),
+	"T", N_("marked messages"),
+	"U", N_("unread messages"),
 	"v H V", N_("messages which contain V in header H"),
-	"x S",	 N_("messages which contain S in References header"),
+	"x S", N_("messages which contain S in References header"),
 	"X \"cmd args\"", N_("messages returning 0 when passed to command - %F is message file"),
-	"",	 "" ,
-	"&amp;",	 N_("logical AND operator"),
-	"|",	 N_("logical OR operator"),
-	"! or ~",	N_("logical NOT operator"),
-	"%",	 N_("case sensitive search"),
+	"", "",
+	"&amp;", N_("logical AND operator"),
+	"|", N_("logical OR operator"),
+	"! or ~", N_("logical NOT operator"),
+	"%", N_("case sensitive search"),
 	"&#x00023;", N_("match using regular expressions instead of substring search"),
-	"",	 "" ,
-	" ",	 N_("all filtering expressions are allowed, but cannot be mixed "
-	            "through logical operators with the expressions above"),
-	NULL,	 NULL
+	"", "",
+	" ", N_("all filtering expressions are allowed, but cannot be mixed " "through logical operators with the expressions above"),
+	NULL, NULL
 };
 
 static DescriptionWindow search_descr = {
@@ -533,9 +498,7 @@ static DescriptionWindow search_descr = {
 	FALSE,
 	2,
 	N_("Extended Search"),
-	N_("Extended Search allows the user to define criteria that messages must "
-           "have in order to match and be displayed in the message list.\n"
-	   "The following symbols can be used:"),
+	N_("Extended Search allows the user to define criteria that messages must " "have in order to match and be displayed in the message list.\n" "The following symbols can be used:"),
 	search_descr_strings
 };
 
@@ -554,12 +517,11 @@ static gboolean clear_search_cb(GtkMenuItem *widget, gpointer data)
 	return TRUE;
 };
 
-static void search_condition_expr_done(MatcherList * matchers)
+static void search_condition_expr_done(MatcherList *matchers)
 {
 	gchar *str;
 
-	cm_return_if_fail(
-			mainwindow_get_mainwindow()->summaryview->quicksearch != NULL);
+	cm_return_if_fail(mainwindow_get_mainwindow()->summaryview->quicksearch != NULL);
 
 	if (matchers == NULL)
 		return;
@@ -567,8 +529,7 @@ static void search_condition_expr_done(MatcherList * matchers)
 	str = matcherlist_to_string(matchers);
 
 	if (str != NULL) {
-		quicksearch_set(mainwindow_get_mainwindow()->summaryview->quicksearch,
-				prefs_common.summary_quicksearch_type, str);
+		quicksearch_set(mainwindow_get_mainwindow()->summaryview->quicksearch, prefs_common.summary_quicksearch_type, str);
 		g_free(str);
 
 		/* add expression to history list and exec quicksearch */
@@ -578,12 +539,10 @@ static void search_condition_expr_done(MatcherList * matchers)
 
 static gboolean search_condition_expr(GtkMenuItem *widget, gpointer data)
 {
-	gchar * cond_str;
-	MatcherList * matchers = NULL;
-	
-	cm_return_val_if_fail(
-			mainwindow_get_mainwindow()->summaryview->quicksearch != NULL,
-			FALSE);
+	gchar *cond_str;
+	MatcherList *matchers = NULL;
+
+	cm_return_val_if_fail(mainwindow_get_mainwindow()->summaryview->quicksearch != NULL, FALSE);
 
 	/* re-use the current quicksearch value, expanding it so it also works
 	 * with extended symbols */
@@ -614,20 +573,17 @@ static void quicksearch_set_button(GtkButton *button, const gchar *icon, const g
 	GtkWidget *box;
 	gboolean icon_visible;
 
-	g_object_get(gtk_settings_get_default(), 
-					 "gtk-button-images", &icon_visible, 
-					 NULL);
+	g_object_get(gtk_settings_get_default(), "gtk-button-images", &icon_visible, NULL);
 
 	for (cur = children; cur; cur = cur->next)
 		gtk_container_remove(GTK_CONTAINER(button), GTK_WIDGET(cur->data));
-	
+
 	g_list_free(children);
 	box = gtk_hbox_new(FALSE, 0);
-	
+
 	gtk_container_add(GTK_CONTAINER(button), box);
 	if (icon_visible || !text || !*text)
-		gtk_box_pack_start(GTK_BOX(box), gtk_image_new_from_stock(icon, 
-			GTK_ICON_SIZE_BUTTON), FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(box), gtk_image_new_from_stock(icon, GTK_ICON_SIZE_BUTTON), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(box), gtk_label_new_with_mnemonic(text), FALSE, FALSE, 0);
 	gtk_widget_show_all(box);
 }
@@ -675,80 +631,51 @@ QuickSearch *quicksearch_new()
 	gtk_box_pack_start(GTK_BOX(hbox_search), search_type_opt, FALSE, FALSE, 0);
 
 	search_type = gtk_menu_new();
-	MENUITEM_ADD (search_type, menuitem,
-			prefs_common_translated_header_name("Subject"), ADVANCED_SEARCH_SUBJECT);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_changed),
-			 quicksearch);
-	MENUITEM_ADD (search_type, menuitem,
-			prefs_common_translated_header_name("From"), ADVANCED_SEARCH_FROM);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_changed),
-			 quicksearch);
-	MENUITEM_ADD (search_type, menuitem,
-			prefs_common_translated_header_name("To"), ADVANCED_SEARCH_TO);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_changed),
-			 quicksearch);
-	MENUITEM_ADD (search_type, menuitem,
-			prefs_common_translated_header_name("Tag"), ADVANCED_SEARCH_TAG);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_changed),
-			 quicksearch);
-	MENUITEM_ADD (search_type, menuitem,
-			_("From/To/Cc/Subject/Tag"), ADVANCED_SEARCH_MIXED);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-	                 G_CALLBACK(searchtype_changed),
-			 quicksearch);
-	MENUITEM_ADD (search_type, menuitem, _("Extended"), ADVANCED_SEARCH_EXTENDED);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_changed),
-			 quicksearch);
+	MENUITEM_ADD(search_type, menuitem, prefs_common_translated_header_name("Subject"), ADVANCED_SEARCH_SUBJECT);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
+	MENUITEM_ADD(search_type, menuitem, prefs_common_translated_header_name("From"), ADVANCED_SEARCH_FROM);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
+	MENUITEM_ADD(search_type, menuitem, prefs_common_translated_header_name("To"), ADVANCED_SEARCH_TO);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
+	MENUITEM_ADD(search_type, menuitem, prefs_common_translated_header_name("Tag"), ADVANCED_SEARCH_TAG);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
+	MENUITEM_ADD(search_type, menuitem, _("From/To/Cc/Subject/Tag"), ADVANCED_SEARCH_MIXED);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
+	MENUITEM_ADD(search_type, menuitem, _("Extended"), ADVANCED_SEARCH_EXTENDED);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_changed), quicksearch);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(search_type), gtk_separator_menu_item_new());
 
 	menuitem = gtk_check_menu_item_new_with_label(_("Recursive"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(search_type), menuitem);
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem),
-					prefs_common.summary_quicksearch_recurse);
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_recursive_changed),
-			 quicksearch);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), prefs_common.summary_quicksearch_recurse);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_recursive_changed), quicksearch);
 
 	menuitem = gtk_check_menu_item_new_with_label(_("Sticky"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(search_type), menuitem);
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem),
-					prefs_common.summary_quicksearch_sticky);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), prefs_common.summary_quicksearch_sticky);
 
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_sticky_changed),
-			 quicksearch);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_sticky_changed), quicksearch);
 
 	menuitem = gtk_check_menu_item_new_with_label(_("Type-ahead"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(search_type), menuitem);
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem),
-					prefs_common.summary_quicksearch_dynamic);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), prefs_common.summary_quicksearch_dynamic);
 
 	quicksearch->dynamic_menuitem = menuitem;
 
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_dynamic_changed),
-			 quicksearch);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_dynamic_changed), quicksearch);
 
 	menuitem = gtk_check_menu_item_new_with_label(_("Run on select"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(search_type), menuitem);
 
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem),
-					prefs_common.summary_quicksearch_autorun);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), prefs_common.summary_quicksearch_autorun);
 
 	quicksearch->autorun_menuitem = menuitem;
 
-	g_signal_connect(G_OBJECT(menuitem), "activate",
-			 G_CALLBACK(searchtype_autorun_changed),
-			 quicksearch);
+	g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(searchtype_autorun_changed), quicksearch);
 
 	gtk_cmoption_menu_set_menu(GTK_CMOPTION_MENU(search_type_opt), search_type);
 
@@ -757,7 +684,7 @@ QuickSearch *quicksearch_new()
 
 	gtk_widget_show(search_type);
 
-	search_string_entry = gtk_combo_box_text_new_with_entry ();
+	search_string_entry = gtk_combo_box_text_new_with_entry();
 	gtk_combo_box_set_active(GTK_COMBO_BOX(search_string_entry), -1);
 
 	vbox = gtk_vbox_new(TRUE, 0);
@@ -769,54 +696,32 @@ QuickSearch *quicksearch_new()
 
 	search_hbox = gtk_hbox_new(FALSE, 5);
 	clear_search = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
-	gtk_box_pack_start(GTK_BOX(search_hbox), clear_search,
-			   FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(clear_search), "clicked",
-			 G_CALLBACK(clear_search_cb), quicksearch);
-	CLAWS_SET_TIP(clear_search,
-			     _("Clear the current search"));
+	gtk_box_pack_start(GTK_BOX(search_hbox), clear_search, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(clear_search), "clicked", G_CALLBACK(clear_search_cb), quicksearch);
+	CLAWS_SET_TIP(clear_search, _("Clear the current search"));
 	gtk_widget_show(clear_search);
 
 	search_condition_expression = gtk_button_new_from_stock(GTK_STOCK_EDIT);
-	gtk_box_pack_start(GTK_BOX(search_hbox), search_condition_expression,
-			   FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT (search_condition_expression), "clicked",
-			 G_CALLBACK(search_condition_expr),
-			 quicksearch);
-	CLAWS_SET_TIP(search_condition_expression,
-			     _("Edit search criteria"));
+	gtk_box_pack_start(GTK_BOX(search_hbox), search_condition_expression, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(search_condition_expression), "clicked", G_CALLBACK(search_condition_expr), quicksearch);
+	CLAWS_SET_TIP(search_condition_expression, _("Edit search criteria"));
 	gtk_widget_show(search_condition_expression);
 
 	search_description = gtk_button_new_from_stock(GTK_STOCK_INFO);
-	gtk_box_pack_start(GTK_BOX(search_hbox), search_description,
-			   FALSE, FALSE, 0);
-	g_signal_connect(G_OBJECT(search_description), "clicked",
-			 G_CALLBACK(search_description_cb), NULL);
-	CLAWS_SET_TIP(search_description,
-			     _("Information about extended symbols"));
+	gtk_box_pack_start(GTK_BOX(search_hbox), search_description, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(search_description), "clicked", G_CALLBACK(search_description_cb), NULL);
+	CLAWS_SET_TIP(search_description, _("Information about extended symbols"));
 	gtk_widget_show(search_description);
 
 	gtk_box_pack_start(GTK_BOX(hbox_search), search_hbox, FALSE, FALSE, 2);
 	gtk_widget_show(search_hbox);
 
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))),
-			   "key_press_event",
-			   G_CALLBACK(searchbar_pressed),
-			   quicksearch);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))), "key_press_event", G_CALLBACK(searchbar_pressed), quicksearch);
 
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))),
-			 "changed",
-			 G_CALLBACK(searchbar_changed_cb),
-			 quicksearch);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))), "changed", G_CALLBACK(searchbar_changed_cb), quicksearch);
 
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))),
-			 "focus_in_event",
-			 G_CALLBACK(searchbar_focus_evt_in),
-			 quicksearch);
-	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))),
-			 "focus_out_event",
-			 G_CALLBACK(searchbar_focus_evt_out),
-			 quicksearch);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))), "focus_in_event", G_CALLBACK(searchbar_focus_evt_in), quicksearch);
+	g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN((search_string_entry)))), "focus_out_event", G_CALLBACK(searchbar_focus_evt_out), quicksearch);
 
 	quicksearch->hbox_search = hbox_search;
 	quicksearch->search_type = search_type;
@@ -834,17 +739,13 @@ QuickSearch *quicksearch_new()
 	quicksearch_set_button(GTK_BUTTON(quicksearch->search_description), GTK_STOCK_INFO, _("_Information"));
 	quicksearch_set_button(GTK_BUTTON(quicksearch->search_condition_expression), GTK_STOCK_EDIT, _("E_dit"));
 	quicksearch_set_button(GTK_BUTTON(quicksearch->clear_search), GTK_STOCK_CLEAR, _("C_lear"));
-	
+
 	update_extended_buttons(quicksearch);
 
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ACTIVE_BG],
-					   &qs_active_bgcolor);
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ACTIVE],
-					   &qs_active_color);
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ERROR_BG],
-					   &qs_error_bgcolor);
-	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ERROR],
-					   &qs_error_color);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ACTIVE_BG], &qs_active_bgcolor);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ACTIVE], &qs_active_color);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ERROR_BG], &qs_error_bgcolor);
+	gtkut_convert_int_to_gdk_color(prefs_common.color[COL_QS_ERROR], &qs_error_color);
 
 	return quicksearch;
 }
@@ -888,7 +789,7 @@ void quicksearch_show(QuickSearch *quicksearch)
 	if (!mainwin || !mainwin->summaryview) {
 		return;
 	}
-	
+
 }
 
 void quicksearch_hide(QuickSearch *quicksearch)
@@ -906,8 +807,7 @@ void quicksearch_hide(QuickSearch *quicksearch)
  *\param	quicksearch quicksearch to set
  *\param	matchstring the match string; it is duplicated, not stored
  */
-static void quicksearch_set_matchstring(QuickSearch *quicksearch,
-					const gchar *matchstring)
+static void quicksearch_set_matchstring(QuickSearch *quicksearch, const gchar *matchstring)
 {
 	g_free(quicksearch->request.matchstring);
 	quicksearch->request.matchstring = g_strdup(matchstring);
@@ -921,13 +821,10 @@ void quicksearch_set(QuickSearch *quicksearch, AdvancedSearchType type, const gc
 		quicksearch->in_typing = FALSE;
 
 	quicksearch_set_matchstring(quicksearch, matchstring);
-		
-	g_signal_handlers_block_by_func(G_OBJECT(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))),
-					G_CALLBACK(searchbar_changed_cb), quicksearch);
-	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))),
-			   matchstring);
-	g_signal_handlers_unblock_by_func(G_OBJECT(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))),
-					  G_CALLBACK(searchbar_changed_cb), quicksearch);
+
+	g_signal_handlers_block_by_func(G_OBJECT(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))), G_CALLBACK(searchbar_changed_cb), quicksearch);
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))), matchstring);
+	g_signal_handlers_unblock_by_func(G_OBJECT(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry)))), G_CALLBACK(searchbar_changed_cb), quicksearch);
 
 	prefs_common.summary_quicksearch_type = type;
 
@@ -945,25 +842,15 @@ static void quicksearch_set_active(QuickSearch *quicksearch, gboolean active)
 
 	quicksearch->active = active;
 
-	if (active && 
-		(prefs_common.summary_quicksearch_type == ADVANCED_SEARCH_EXTENDED
-		 && !advsearch_has_proper_predicate(quicksearch->asearch)))
+	if (active && (prefs_common.summary_quicksearch_type == ADVANCED_SEARCH_EXTENDED && !advsearch_has_proper_predicate(quicksearch->asearch)))
 		error = TRUE;
 
 	if (active) {
-		gtk_widget_modify_base(
-			gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))),
-			GTK_STATE_NORMAL, error ? &qs_error_bgcolor : &qs_active_bgcolor);
-		gtk_widget_modify_text(
-			gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))),
-			GTK_STATE_NORMAL, error ? &qs_error_color : &qs_active_color);
+		gtk_widget_modify_base(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))), GTK_STATE_NORMAL, error ? &qs_error_bgcolor : &qs_active_bgcolor);
+		gtk_widget_modify_text(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))), GTK_STATE_NORMAL, error ? &qs_error_color : &qs_active_color);
 	} else {
-		gtk_widget_modify_base(
-			gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))),
-			GTK_STATE_NORMAL, NULL);
-		gtk_widget_modify_text(
-			gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))),
-			GTK_STATE_NORMAL, NULL);
+		gtk_widget_modify_base(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))), GTK_STATE_NORMAL, NULL);
+		gtk_widget_modify_text(gtk_bin_get_child(GTK_BIN((quicksearch->search_string_entry))), GTK_STATE_NORMAL, NULL);
 	}
 
 	if (!active) {
@@ -971,9 +858,7 @@ static void quicksearch_set_active(QuickSearch *quicksearch, gboolean active)
 	}
 }
 
-void quicksearch_set_execute_callback(QuickSearch *quicksearch,
-				      QuickSearchExecuteCallback callback,
-				      gpointer data)
+void quicksearch_set_execute_callback(QuickSearch *quicksearch, QuickSearchExecuteCallback callback, gpointer data)
 {
 	quicksearch->callback = callback;
 	quicksearch->callback_data = data;
@@ -1004,36 +889,27 @@ void quicksearch_set_search_strings(QuickSearch *quicksearch)
 		return;
 
 	matcher_parser_disable_warnings(TRUE);
-	
+
 	do {
-		newstr = advsearch_expand_search_string((gchar *) strings->data);
+		newstr = advsearch_expand_search_string((gchar *)strings->data);
 		if (newstr && newstr[0] != '\0') {
 			if (!strchr(newstr, ' ')) {
-				quicksearch->normal_search_strings =
-					g_list_append(
-						quicksearch->normal_search_strings,
-						g_strdup(strings->data));
+				quicksearch->normal_search_strings = g_list_append(quicksearch->normal_search_strings, g_strdup(strings->data));
 			} else {
 				matcher_list = matcher_parser_get_cond(newstr, FALSE);
-			
+
 				if (matcher_list) {
-					quicksearch->extended_search_strings =
-						g_list_prepend(
-							quicksearch->extended_search_strings,
-							g_strdup(strings->data));
+					quicksearch->extended_search_strings = g_list_prepend(quicksearch->extended_search_strings, g_strdup(strings->data));
 					matcherlist_free(matcher_list);
 				} else
-					quicksearch->normal_search_strings =
-						g_list_prepend(
-							quicksearch->normal_search_strings,
-							g_strdup(strings->data));
+					quicksearch->normal_search_strings = g_list_prepend(quicksearch->normal_search_strings, g_strdup(strings->data));
 			}
 		}
 		g_free(newstr);
-	
+
 	} while ((strings = g_list_next(strings)) != NULL);
 
-	matcher_parser_disable_warnings(FALSE);	
+	matcher_parser_disable_warnings(FALSE);
 
 	quicksearch->normal_search_strings = g_list_reverse(quicksearch->normal_search_strings);
 	quicksearch->extended_search_strings = g_list_reverse(quicksearch->extended_search_strings);
@@ -1041,3 +917,6 @@ void quicksearch_set_search_strings(QuickSearch *quicksearch)
 	quicksearch_set_popdown_strings(quicksearch);
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

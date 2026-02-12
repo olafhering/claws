@@ -46,9 +46,9 @@ struct _FeedItem {
 	time_t date_published;
 	time_t date_modified;
 
-	Feed *feed;		/* feed we belong to */
+	Feed *feed; /* feed we belong to */
 
-	gpointer data;		/* application-specific data */
+	gpointer data; /* application-specific data */
 };
 
 #define FEED_ITEM_TITLE_TEXT 0

@@ -19,14 +19,14 @@
 #define NOTIFICATION_BANNER_H NOTIFICATION_BANNER_H
 
 #ifdef HAVE_CONFIG_H
-#  include "claws-features.h"
+#include "claws-features.h"
 #endif
 
 #ifdef NOTIFICATION_BANNER
 
 #define BANNER_SPECIFIC_FOLDER_ID_STR "banner"
 
-void notification_banner_show(GSList*);
+void notification_banner_show(GSList *);
 void notification_banner_destroy(void);
 
 #endif /* NOTIFICATION_BANNER */

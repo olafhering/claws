@@ -21,7 +21,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -48,10 +48,11 @@
  * Create new LDAP server interface object with no control object.
  * \return Initialized LDAP server object.
  */
-LdapServer *ldapsvr_create_noctl( void ) {
+LdapServer *ldapsvr_create_noctl(void)
+{
 	LdapServer *server;
 
-	server = g_new0( LdapServer, 1 );
+	server = g_new0(LdapServer, 1);
 	server->type = ADBOOKTYPE_LDAP;
 	server->addressCache = addrcache_create();
 	server->retVal = MGU_SUCCESS;
@@ -65,7 +66,8 @@ LdapServer *ldapsvr_create_noctl( void ) {
  * Create new LDAP server interface object.
  * \return Initialized LDAP server object.
  */
-LdapServer *ldapsvr_create( void ) {
+LdapServer *ldapsvr_create(void)
+{
 	LdapServer *server;
 	server = ldapsvr_create_noctl();
 	server->control = ldapctl_create();
@@ -77,9 +79,10 @@ LdapServer *ldapsvr_create( void ) {
  * \param  server Server object.
  * \return Name for server.
  */
-gchar *ldapsvr_get_name( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, NULL );
-	return addrcache_get_name( server->addressCache );
+gchar *ldapsvr_get_name(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, NULL);
+	return addrcache_get_name(server->addressCache);
 }
 
 /**
@@ -87,19 +90,21 @@ gchar *ldapsvr_get_name( LdapServer *server ) {
  * \param server Server object.
  * \param value      Name for server.
  */
-void ldapsvr_set_name( LdapServer* server, const gchar *value ) {
-	cm_return_if_fail( server != NULL );
-	addrcache_set_name( server->addressCache, value );
-	debug_print("setting name: %s\n", value?value:"null");
+void ldapsvr_set_name(LdapServer *server, const gchar *value)
+{
+	cm_return_if_fail(server != NULL);
+	addrcache_set_name(server->addressCache, value);
+	debug_print("setting name: %s\n", value ? value : "null");
 }
 
 /**
  * Refresh internal variables to force a file read.
  * \param server Server object.
  */
-void ldapsvr_force_refresh( LdapServer *server ) {
-	cm_return_if_fail( server != NULL );
-	addrcache_refresh( server->addressCache );
+void ldapsvr_force_refresh(LdapServer *server)
+{
+	cm_return_if_fail(server != NULL);
+	addrcache_refresh(server->addressCache);
 }
 
 /**
@@ -107,8 +112,9 @@ void ldapsvr_force_refresh( LdapServer *server ) {
  * \param  server Server object.
  * \return Status/error code.
  */
-gint ldapsvr_get_status( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, -1 );
+gint ldapsvr_get_status(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, -1);
 	return server->retVal;
 }
 
@@ -117,14 +123,15 @@ gint ldapsvr_get_status( LdapServer *server ) {
  * \param  server Server object.
  * \return Root level folder.
  */
-ItemFolder *ldapsvr_get_root_folder( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, NULL );
+ItemFolder *ldapsvr_get_root_folder(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, NULL);
 #ifdef DEBUG_LDAP
-	debug_print( "ldapsvr_get_root_folder/start\n" );
-	ldapsvr_print_data( server, stdout );
-	debug_print( "ldapsvr_get_root_folder/done\n" );
+	debug_print("ldapsvr_get_root_folder/start\n");
+	ldapsvr_print_data(server, stdout);
+	debug_print("ldapsvr_get_root_folder/done\n");
 #endif
-	return addrcache_get_root_folder( server->addressCache );
+	return addrcache_get_root_folder(server->addressCache);
 }
 
 /**
@@ -132,8 +139,9 @@ ItemFolder *ldapsvr_get_root_folder( LdapServer *server ) {
  * \param  server Server object.
  * \return <i>TRUE</i> if data was accessed.
  */
-gboolean ldapsvr_get_accessed( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, FALSE );
+gboolean ldapsvr_get_accessed(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, FALSE);
 	return server->addressCache->accessFlag;
 }
 
@@ -142,8 +150,9 @@ gboolean ldapsvr_get_accessed( LdapServer *server ) {
  * \param server Server object.
  * \param value      Value for flag.
  */
-void ldapsvr_set_accessed( LdapServer *server, const gboolean value ) {
-	cm_return_if_fail( server != NULL );
+void ldapsvr_set_accessed(LdapServer *server, const gboolean value)
+{
+	cm_return_if_fail(server != NULL);
 	server->addressCache->accessFlag = value;
 	debug_print("setting accessFlag: %d\n", value);
 }
@@ -153,8 +162,9 @@ void ldapsvr_set_accessed( LdapServer *server, const gboolean value ) {
  * \param  server Server object.
  * \return <i>TRUE</i> if data was modified.
  */
-gboolean ldapsvr_get_modified( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, FALSE );
+gboolean ldapsvr_get_modified(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, FALSE);
 	return server->addressCache->modified;
 }
 
@@ -163,8 +173,9 @@ gboolean ldapsvr_get_modified( LdapServer *server ) {
  * \param server Server object.
  * \param value      Value for flag.
  */
-void ldapsvr_set_modified( LdapServer *server, const gboolean value ) {
-	cm_return_if_fail( server != NULL );
+void ldapsvr_set_modified(LdapServer *server, const gboolean value)
+{
+	cm_return_if_fail(server != NULL);
 	server->addressCache->modified = value;
 	debug_print("setting modified: %d\n", value);
 }
@@ -174,8 +185,9 @@ void ldapsvr_set_modified( LdapServer *server, const gboolean value ) {
  * \param server Server object.
  * \return <i>TRUE</i> if data was read.
  */
-gboolean ldapsvr_get_read_flag( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, FALSE );
+gboolean ldapsvr_get_read_flag(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, FALSE);
 	return server->addressCache->dataRead;
 }
 
@@ -184,8 +196,9 @@ gboolean ldapsvr_get_read_flag( LdapServer *server ) {
  * \param server Server object.
  * \return <i>TRUE</i> if server is used for dynamic searches.
  */
-gboolean ldapsvr_get_search_flag( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, FALSE );
+gboolean ldapsvr_get_search_flag(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, FALSE);
 	return server->searchFlag;
 }
 
@@ -194,8 +207,9 @@ gboolean ldapsvr_get_search_flag( LdapServer *server ) {
  * \param server Server object.
  * \param value      Name for server.
  */
-void ldapsvr_set_search_flag( LdapServer *server, const gboolean value ) {
-	cm_return_if_fail( server != NULL );
+void ldapsvr_set_search_flag(LdapServer *server, const gboolean value)
+{
+	cm_return_if_fail(server != NULL);
 	server->searchFlag = value;
 	debug_print("setting searchFlag: %d\n", value);
 }
@@ -206,9 +220,10 @@ void ldapsvr_set_search_flag( LdapServer *server, const gboolean value ) {
  * \param server Server object.
  * \param ctl    Control data.
  */
-void ldapsvr_set_control( LdapServer *server, LdapControl *ctl ) {
-	cm_return_if_fail( server != NULL );
-	addrcache_refresh( server->addressCache );
+void ldapsvr_set_control(LdapServer *server, LdapControl *ctl)
+{
+	cm_return_if_fail(server != NULL);
+	addrcache_refresh(server->addressCache);
 	server->control = ctl;
 }
 
@@ -216,18 +231,19 @@ void ldapsvr_set_control( LdapServer *server, LdapControl *ctl ) {
  * Free all queries.
  * \param server Server object.
  */
-void ldapsvr_free_all_query( LdapServer *server ) {
-	GList *node;	
-	cm_return_if_fail( server != NULL );
+void ldapsvr_free_all_query(LdapServer *server)
+{
+	GList *node;
+	cm_return_if_fail(server != NULL);
 
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
-		ldapqry_free( qry );
+		ldapqry_free(qry);
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
-	g_list_free( server->listQuery );
+	g_list_free(server->listQuery);
 	server->listQuery = NULL;
 }
 
@@ -236,11 +252,12 @@ void ldapsvr_free_all_query( LdapServer *server ) {
  * \param server Server object.
  * \param qry    Query object.
  */
-void ldapsvr_add_query( LdapServer *server, LdapQuery *qry ) {
-	cm_return_if_fail( server != NULL );
-	cm_return_if_fail( qry != NULL );
+void ldapsvr_add_query(LdapServer *server, LdapQuery *qry)
+{
+	cm_return_if_fail(server != NULL);
+	cm_return_if_fail(qry != NULL);
 
-	server->listQuery = g_list_append( server->listQuery, qry );
+	server->listQuery = g_list_append(server->listQuery, qry);
 	qry->server = server;
 }
 
@@ -248,23 +265,24 @@ void ldapsvr_add_query( LdapServer *server, LdapQuery *qry ) {
  * Free up LDAP server interface object by releasing internal memory.
  * \param server Server object.
  */
-void ldapsvr_free( LdapServer *server ) {
-	cm_return_if_fail( server != NULL );
+void ldapsvr_free(LdapServer *server)
+{
+	cm_return_if_fail(server != NULL);
 
 	/* Stop and cancel any queries that may be active */
-	ldapsvr_stop_all_query( server );
-	ldapsvr_cancel_all_query( server );
+	ldapsvr_stop_all_query(server);
+	ldapsvr_cancel_all_query(server);
 
 	/* Clear cache */
-	addrcache_clear( server->addressCache );
-	addrcache_free( server->addressCache );
+	addrcache_clear(server->addressCache);
+	addrcache_free(server->addressCache);
 
 	/* Free LDAP control block */
-	ldapctl_free( server->control );
+	ldapctl_free(server->control);
 	server->control = NULL;
 
 	/* Free all queries */
-	ldapsvr_free_all_query( server );
+	ldapsvr_free_all_query(server);
 
 	/* Clear pointers */
 	server->type = ADBOOKTYPE_NONE;
@@ -274,7 +292,7 @@ void ldapsvr_free( LdapServer *server ) {
 	server->searchFlag = FALSE;
 
 	/* Now release LDAP object */
-	g_free( server );
+	g_free(server);
 }
 
 #ifdef DEBUG_LDAP
@@ -283,33 +301,32 @@ void ldapsvr_free( LdapServer *server ) {
  * \param server Server object.
  * \param stream Output stream.
  */
-void ldapsvr_print_data( LdapServer *server, FILE *stream ) {
+void ldapsvr_print_data(LdapServer *server, FILE *stream)
+{
 	GList *node;
-	gint  i;
+	gint i;
 
-	cm_return_if_fail( server != NULL );
+	cm_return_if_fail(server != NULL);
 
-	fprintf( stream, "LdapServer:\n" );
-	fprintf( stream, "  ret val: %d\n", server->retVal );
-	fprintf( stream, "srch flag: %s\n",
-			server->searchFlag ? "yes" : "no" );
-	if( server->control ) {
-		ldapctl_print( server->control, stream );
+	fprintf(stream, "LdapServer:\n");
+	fprintf(stream, "  ret val: %d\n", server->retVal);
+	fprintf(stream, "srch flag: %s\n", server->searchFlag ? "yes" : "no");
+	if (server->control) {
+		ldapctl_print(server->control, stream);
+	} else {
+		fprintf(stream, "  control: NULL\n");
 	}
-	else {
-		fprintf( stream, "  control: NULL\n" );
-	}
-	addrcache_print( server->addressCache, stream );
-	addritem_print_item_folder( server->addressCache->rootFolder, stream );
+	addrcache_print(server->addressCache, stream);
+	addritem_print_item_folder(server->addressCache->rootFolder, stream);
 
 	/* Dump queries */
 	i = 1;
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
-		fprintf( stream, "    query: %2d : %s\n", i, ADDRQUERY_NAME(qry) );
+		fprintf(stream, "    query: %2d : %s\n", i, ADDRQUERY_NAME(qry));
 		i++;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 }
 #endif
@@ -319,9 +336,10 @@ void ldapsvr_print_data( LdapServer *server, FILE *stream ) {
  * \param server Server object.
  * \return List of persons.
  */
-GList *ldapsvr_get_list_person( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, NULL );
-	return addrcache_get_list_person( server->addressCache );
+GList *ldapsvr_get_list_person(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, NULL);
+	return addrcache_get_list_person(server->addressCache);
 }
 
 /**
@@ -330,8 +348,9 @@ GList *ldapsvr_get_list_person( LdapServer *server ) {
  * \param  server Server object.
  * \return List of folders.
  */
-GList *ldapsvr_get_list_folder( LdapServer *server ) {
-	cm_return_val_if_fail( server != NULL, NULL );
+GList *ldapsvr_get_list_folder(LdapServer *server)
+{
+	cm_return_val_if_fail(server != NULL, NULL);
 	/* return addrcache_get_list_folder( server->addressCache ); */
 	return NULL;
 }
@@ -341,24 +360,25 @@ GList *ldapsvr_get_list_folder( LdapServer *server ) {
  * \param server LDAP server.
  * \param qry    LDAP query.
  */
-void ldapsvr_execute_query( LdapServer *server, LdapQuery *qry ) {
+void ldapsvr_execute_query(LdapServer *server, LdapQuery *qry)
+{
 	LdapControl *ctlCopy;
 
-	cm_return_if_fail( server != NULL );
-	cm_return_if_fail( qry != NULL );
+	cm_return_if_fail(server != NULL);
+	cm_return_if_fail(qry != NULL);
 
 	/* Copy server's control data to the query */
 	ctlCopy = ldapctl_create();
-	ldapctl_copy( server->control, ctlCopy );
-	ldapqry_set_control( qry, ctlCopy );
+	ldapctl_copy(server->control, ctlCopy);
+	ldapqry_set_control(qry, ctlCopy);
 	ldapqry_initialize();
 
-	/* Perform query */	
+	/* Perform query */
 	debug_print("ldapsvr_execute_query::checking query...\n");
-	if( ldapqry_check_search( qry ) ) {
+	if (ldapqry_check_search(qry)) {
 		debug_print("ldapsvr_execute_query::reading with thread...\n");
-		ldapqry_read_data_th( qry );
-		if(qry->server->retVal == LDAPRC_SUCCESS) {
+		ldapqry_read_data_th(qry);
+		if (qry->server->retVal == LDAPRC_SUCCESS) {
 			debug_print("ldapsvr_execute_query::SUCCESS with thread...\n");
 		}
 	}
@@ -370,18 +390,19 @@ void ldapsvr_execute_query( LdapServer *server, LdapQuery *qry ) {
  * \param server Server object.
  * \param queryID    Query ID to stop.
  */
-void ldapsvr_stop_query_id( LdapServer *server, const gint queryID ) {
-	GList *node;	
-	cm_return_if_fail( server != NULL );
+void ldapsvr_stop_query_id(LdapServer *server, const gint queryID)
+{
+	GList *node;
+	cm_return_if_fail(server != NULL);
 
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
-		if( ADDRQUERY_ID(qry) == queryID ) {
+		if (ADDRQUERY_ID(qry) == queryID) {
 			/* Notify thread to stop */
-			ldapqry_set_stop_flag( qry, TRUE );
+			ldapqry_set_stop_flag(qry, TRUE);
 		}
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 }
 
@@ -389,15 +410,16 @@ void ldapsvr_stop_query_id( LdapServer *server, const gint queryID ) {
  * Stop all queries by notifying each thread to stop.
  * \param server Server object.
  */
-void ldapsvr_stop_all_query( LdapServer *server ) {
-	GList *node;	
-	cm_return_if_fail( server != NULL );
+void ldapsvr_stop_all_query(LdapServer *server)
+{
+	GList *node;
+	cm_return_if_fail(server != NULL);
 
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
-		ldapqry_set_stop_flag( qry, TRUE );
-		node = g_list_next( node );
+		ldapqry_set_stop_flag(qry, TRUE);
+		node = g_list_next(node);
 	}
 }
 
@@ -405,18 +427,19 @@ void ldapsvr_stop_all_query( LdapServer *server ) {
  * Cancel all query threads for server.
  * \param server Server object.
  */
-void ldapsvr_cancel_all_query( LdapServer *server ) {
-	GList *node;	
-	cm_return_if_fail( server != NULL );
+void ldapsvr_cancel_all_query(LdapServer *server)
+{
+	GList *node;
+	cm_return_if_fail(server != NULL);
 
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
 		/* Notify thread to stop */
-		ldapqry_set_stop_flag( qry, TRUE );
+		ldapqry_set_stop_flag(qry, TRUE);
 		/* Now cancel thread */
-		ldapqry_cancel( qry );
-		node = g_list_next( node );
+		ldapqry_cancel(qry);
+		node = g_list_next(node);
 	}
 }
 
@@ -428,29 +451,29 @@ void ldapsvr_cancel_all_query( LdapServer *server ) {
  * \param searchTerm Search term to locate.
  * \return Query object, or <i>NULL</i> if none found.
  */
-static LdapQuery *ldapsvr_locate_query(
-	const LdapServer *server, const gchar *searchTerm )
+static LdapQuery *ldapsvr_locate_query(const LdapServer *server, const gchar *searchTerm)
 {
 	LdapQuery *incomplete = NULL;
-	GList *node;	
-	cm_return_val_if_fail( server != NULL, NULL );
+	GList *node;
+	cm_return_val_if_fail(server != NULL, NULL);
 
 	node = server->listQuery;
-	node = g_list_last( node );
+	node = g_list_last(node);
 	/* Search backwards for query */
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
-		if( g_utf8_collate( ADDRQUERY_SEARCHVALUE(qry), searchTerm ) == 0 ) {
-			if( qry->agedFlag ) continue;
-			if( qry->completed ) {
+		if (g_utf8_collate(ADDRQUERY_SEARCHVALUE(qry), searchTerm) == 0) {
+			if (qry->agedFlag)
+				continue;
+			if (qry->completed) {
 				/* Found */
 				return qry;
 			}
-			if( ! incomplete ) {
+			if (!incomplete) {
 				incomplete = qry;
 			}
 		}
-		node = g_list_previous( node );
+		node = g_list_previous(node);
 	}
 	return incomplete;
 }
@@ -464,7 +487,8 @@ static LdapQuery *ldapsvr_locate_query(
  *
  * \param server LdapServer.
  */
-void ldapsvr_retire_query( LdapServer *server ) {
+void ldapsvr_retire_query(LdapServer *server)
+{
 	GList *node;
 	GList *listDelete;
 	GList *listQuery;
@@ -473,49 +497,51 @@ void ldapsvr_retire_query( LdapServer *server ) {
 	ItemFolder *folder;
 
 	debug_print("ldapsvr_retire_query\n");
-	cm_return_if_fail( server != NULL );
+	cm_return_if_fail(server != NULL);
 	ctl = server->control;
 	maxAge = ctl->maxQueryAge;
 
 	/* Identify queries to age and move to deletion list */
 	listDelete = NULL;
 	node = server->listQuery;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
 
-		node = g_list_next( node );
+		node = g_list_next(node);
 		folder = ADDRQUERY_FOLDER(qry);
-		if( folder == NULL ) continue;
-		if( ! folder->isHidden ) {
-			if( ADDRQUERY_SEARCHTYPE(qry) == ADDRSEARCH_EXPLICIT ) continue;
-			if( ADDRQUERY_SEARCHTYPE(qry) == ADDRSEARCH_LOCATE ) continue;
+		if (folder == NULL)
+			continue;
+		if (!folder->isHidden) {
+			if (ADDRQUERY_SEARCHTYPE(qry) == ADDRSEARCH_EXPLICIT)
+				continue;
+			if (ADDRQUERY_SEARCHTYPE(qry) == ADDRSEARCH_LOCATE)
+				continue;
 		}
 
-		ldapqry_age( qry, maxAge );
-		if( qry->agedFlag ) {
+		ldapqry_age(qry, maxAge);
+		if (qry->agedFlag) {
 			/* Delete folder associated with query */
-			debug_print("deleting folder... ::%s::\n",
-					ADDRQUERY_NAME(qry)?ADDRQUERY_NAME(qry):"null");
-			ldapqry_delete_folder( qry );
-			listDelete = g_list_append( listDelete, qry );
+			debug_print("deleting folder... ::%s::\n", ADDRQUERY_NAME(qry) ? ADDRQUERY_NAME(qry) : "null");
+			ldapqry_delete_folder(qry);
+			listDelete = g_list_append(listDelete, qry);
 		}
 	}
 
 	/* Delete queries */
 	listQuery = server->listQuery;
 	node = listDelete;
-	while( node ) {
+	while (node) {
 		LdapQuery *qry = node->data;
 
-		listQuery = g_list_remove( listQuery, qry );
-		ldapqry_free( qry );
+		listQuery = g_list_remove(listQuery, qry);
+		ldapqry_free(qry);
 		node->data = NULL;
-		node = g_list_next( node );
+		node = g_list_next(node);
 	}
 	server->listQuery = listQuery;
 
 	/* Free up deletion list */
-	g_list_free( listDelete );
+	g_list_free(listDelete);
 }
 
 /**
@@ -525,8 +551,7 @@ void ldapsvr_retire_query( LdapServer *server ) {
  * \param folder  Address book folder to process.
  * \param req Address query request object.
  */
-static void ldapsvr_previous_query(
-	const ItemFolder *folder, const QueryRequest *req, AddrQueryObject *aqo )
+static void ldapsvr_previous_query(const ItemFolder *folder, const QueryRequest *req, AddrQueryObject *aqo)
 {
 	AddrSearchCallbackEntry *callBack;
 	GList *listEMail;
@@ -535,25 +560,25 @@ static void ldapsvr_previous_query(
 	gpointer sender;
 
 	sender = aqo;
-	callBack = ( AddrSearchCallbackEntry * ) req->callBackEntry;
-	if( callBack ) {
+	callBack = (AddrSearchCallbackEntry *) req->callBackEntry;
+	if (callBack) {
 		listEMail = NULL;
 		node = folder->listPerson;
-		while( node ) {
+		while (node) {
 			AddrItemObject *aio = node->data;
-			if( aio &&  aio->type == ITEMTYPE_PERSON ) {
+			if (aio && aio->type == ITEMTYPE_PERSON) {
 				ItemPerson *person = node->data;
 				nodeEM = person->listEMail;
-				while( nodeEM ) {
+				while (nodeEM) {
 					ItemEMail *email = nodeEM->data;
 
-					nodeEM = g_list_next( nodeEM );
-					listEMail = g_list_append( listEMail, email );
+					nodeEM = g_list_next(nodeEM);
+					listEMail = g_list_append(listEMail, email);
 				}
 			}
-			node = g_list_next( node );
+			node = g_list_next(node);
 		}
-		( callBack ) ( sender, req->queryID, listEMail, NULL );
+		(callBack) (sender, req->queryID, listEMail, NULL);
 		/* // g_list_free( listEMail ); */
 	}
 }
@@ -567,24 +592,25 @@ static void ldapsvr_previous_query(
  * \param req Address query object.
  * \return <i>TRUE</i> if previous query was used.
  */
-gboolean ldapsvr_reuse_previous( const LdapServer *server, const QueryRequest *req ) {
+gboolean ldapsvr_reuse_previous(const LdapServer *server, const QueryRequest *req)
+{
 	LdapQuery *qry;
 	gchar *searchTerm;
 	ItemFolder *folder;
 
-	cm_return_val_if_fail( server != NULL, FALSE );
-	cm_return_val_if_fail( req != NULL, FALSE );
+	cm_return_val_if_fail(server != NULL, FALSE);
+	cm_return_val_if_fail(req != NULL, FALSE);
 
 	searchTerm = req->searchTerm;
 
 	/* Test whether any queries for the same term exist */
-	qry = ldapsvr_locate_query( server, searchTerm );
-	if( qry ) {
+	qry = ldapsvr_locate_query(server, searchTerm);
+	if (qry) {
 		/* Touch query to ensure it hangs around for a bit longer */
-		ldapqry_touch( qry );
+		ldapqry_touch(qry);
 		folder = ADDRQUERY_FOLDER(qry);
-		if( folder ) {
-			ldapsvr_previous_query( folder, req, ADDRQUERY_OBJECT(qry) );
+		if (folder) {
+			ldapsvr_previous_query(folder, req, ADDRQUERY_OBJECT(qry));
 			return TRUE;
 		}
 	}
@@ -599,53 +625,53 @@ gboolean ldapsvr_reuse_previous( const LdapServer *server, const QueryRequest *r
  * \param req    Query request.
  * \return LdapQuery object, or <i>NULL</i> if none created.
  */
-LdapQuery *ldapsvr_new_dynamic_search( LdapServer *server, QueryRequest *req )
+LdapQuery *ldapsvr_new_dynamic_search(LdapServer *server, QueryRequest *req)
 {
 	LdapQuery *qry;
 	gchar *name;
 	gchar *searchTerm;
 	ItemFolder *folder;
 
-	cm_return_val_if_fail( server != NULL, NULL );
-	cm_return_val_if_fail( req != NULL, NULL );
+	cm_return_val_if_fail(server != NULL, NULL);
+	cm_return_val_if_fail(req != NULL, NULL);
 
 	/* Retire any aged queries */
 	/* // ldapsvr_retire_query( server ); */
 
 	/* Name of folder and query */
 	searchTerm = req->searchTerm;
-	name = g_strdup_printf( "Search '%s'", searchTerm );
+	name = g_strdup_printf("Search '%s'", searchTerm);
 
 	/* Create a folder for the search results */
-	folder = addrcache_add_new_folder( server->addressCache, NULL );
-	addritem_folder_set_name( folder, name );
-	addritem_folder_set_remarks( folder, "" );
+	folder = addrcache_add_new_folder(server->addressCache, NULL);
+	addritem_folder_set_name(folder, name);
+	addritem_folder_set_remarks(folder, "");
 
 	/* Construct a query */
 	qry = ldapqry_create();
-	ldapqry_set_query_id( qry, req->queryID );
-	ldapqry_set_search_value( qry, searchTerm );
-	ldapqry_set_search_type( qry, ADDRSEARCH_DYNAMIC );
-	ldapqry_set_callback_entry( qry, req->callBackEntry );
-	ldapqry_set_callback_end( qry, req->callBackEnd );
+	ldapqry_set_query_id(qry, req->queryID);
+	ldapqry_set_search_value(qry, searchTerm);
+	ldapqry_set_search_type(qry, ADDRSEARCH_DYNAMIC);
+	ldapqry_set_callback_entry(qry, req->callBackEntry);
+	ldapqry_set_callback_end(qry, req->callBackEnd);
 
 	/* Specify folder type and back reference */
 	ADDRQUERY_FOLDER(qry) = folder;
 	folder->folderType = ADDRFOLDER_QUERY_RESULTS;
-	folder->folderData = ( gpointer ) qry;
+	folder->folderData = (gpointer)qry;
 	folder->isHidden = TRUE;
 
 	/* Name the query */
-	ldapqry_set_name( qry, name );
-	g_free( name );
+	ldapqry_set_name(qry, name);
+	g_free(name);
 
 	/* Add query to request */
-	qryreq_add_query( req, ADDRQUERY_OBJECT(qry) );
+	qryreq_add_query(req, ADDRQUERY_OBJECT(qry));
 
 	/* Now start the search */
-	ldapsvr_add_query( server, qry );
+	ldapsvr_add_query(server, qry);
 
-	return qry;	
+	return qry;
 }
 
 /**
@@ -657,60 +683,59 @@ LdapQuery *ldapsvr_new_dynamic_search( LdapServer *server, QueryRequest *req )
  * \param folder Folder that will be used to contain search results.
  * \return LdapQuery object, or <i>NULL</i> if none created.
  */
-LdapQuery *ldapsvr_new_explicit_search(
-		LdapServer *server, QueryRequest *req, ItemFolder *folder )
+LdapQuery *ldapsvr_new_explicit_search(LdapServer *server, QueryRequest *req, ItemFolder *folder)
 {
 	LdapQuery *qry;
 	gchar *searchTerm;
 	gchar *name;
 
-	cm_return_val_if_fail( server != NULL, NULL );
-	cm_return_val_if_fail( req != NULL, NULL );
-	cm_return_val_if_fail( folder != NULL, NULL );
+	cm_return_val_if_fail(server != NULL, NULL);
+	cm_return_val_if_fail(req != NULL, NULL);
+	cm_return_val_if_fail(folder != NULL, NULL);
 
 	/* Retire any aged queries */
 	/* // ldapsvr_retire_query( server ); */
 
 	/* Name the query */
 	searchTerm = req->searchTerm;
-	name = g_strdup_printf( "Explicit search for '%s'", searchTerm );
+	name = g_strdup_printf("Explicit search for '%s'", searchTerm);
 
 	/* Construct a query */
 	qry = ldapqry_create();
-	ldapqry_set_query_id( qry, req->queryID );
-	ldapqry_set_name( qry, name );
-	ldapqry_set_search_value( qry, searchTerm );
-	ldapqry_set_search_type( qry, ADDRSEARCH_EXPLICIT );
-	ldapqry_set_callback_end( qry, req->callBackEnd );
-	ldapqry_set_callback_entry( qry, req->callBackEntry );
+	ldapqry_set_query_id(qry, req->queryID);
+	ldapqry_set_name(qry, name);
+	ldapqry_set_search_value(qry, searchTerm);
+	ldapqry_set_search_type(qry, ADDRSEARCH_EXPLICIT);
+	ldapqry_set_callback_end(qry, req->callBackEnd);
+	ldapqry_set_callback_entry(qry, req->callBackEntry);
 
 	/* Specify folder type and back reference */
 	ADDRQUERY_FOLDER(qry) = folder;
 	folder->folderType = ADDRFOLDER_QUERY_RESULTS;
-	folder->folderData = ( gpointer ) qry;
+	folder->folderData = (gpointer)qry;
 
 	/* Setup server */
-	ldapsvr_add_query( server, qry );
+	ldapsvr_add_query(server, qry);
 
 	/* Set up query request */
-	qryreq_add_query( req, ADDRQUERY_OBJECT(qry) );
+	qryreq_add_query(req, ADDRQUERY_OBJECT(qry));
 
-	g_free( name );
+	g_free(name);
 
 	return qry;
 }
 
-gint ldapsvr_read_data( LdapServer *server )
+gint ldapsvr_read_data(LdapServer *server)
 {
 	gchar *name;
 
-	cm_return_val_if_fail( server != NULL, -1 );
+	cm_return_val_if_fail(server != NULL, -1);
 
 	name = addrcache_get_name(server->addressCache);
-	debug_print("...addrbook_read_data :%s:\n", name?name:"null");
-	
+	debug_print("...addrbook_read_data :%s:\n", name ? name : "null");
+
 	addrcache_clear(server->addressCache);
-	ldapsvr_free_all_query( server );
+	ldapsvr_free_all_query(server);
 	server->listQuery = NULL;
 	server->addressCache->modified = FALSE;
 	server->addressCache->accessFlag = FALSE;
@@ -719,7 +744,7 @@ gint ldapsvr_read_data( LdapServer *server )
 	return 0;
 }
 
-void ldapsrv_set_options (gint secs, LDAP *ld)
+void ldapsrv_set_options(gint secs, LDAP *ld)
 {
 #ifdef G_OS_UNIX
 	static struct timeval timeout;
@@ -744,10 +769,10 @@ void ldapsrv_set_options (gint secs, LDAP *ld)
 #ifdef G_OS_WIN32
 #if LDAP_UNICODE
 #define LDAP_START_TLS_S "ldap_start_tls_sW"
-typedef ULONG (* PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControlW *, PLDAPControlW *);
+typedef ULONG(*PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControlW *, PLDAPControlW *);
 #else
 #define LDAP_START_TLS_S "ldap_start_tls_sA"
-typedef ULONG (* PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControlA *, PLDAPControlA *);
+typedef ULONG(*PFldap_start_tls_s) (LDAP *, PULONG, LDAPMessage **, PLDAPControlA *, PLDAPControlA *);
 #endif /* LDAP_UNICODE */
 PFldap_start_tls_s Win32_ldap_start_tls_s = NULL;
 #endif
@@ -757,7 +782,8 @@ PFldap_start_tls_s Win32_ldap_start_tls_s = NULL;
  * \param  ctl Control object to process.
  * \return LDAP Resource to LDAP.
  */
-LDAP *ldapsvr_connect(LdapControl *ctl) {
+LDAP *ldapsvr_connect(LdapControl *ctl)
+{
 	LDAP *ld = NULL;
 	gint rc;
 #ifndef G_OS_UNIX
@@ -769,7 +795,7 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 
 	cm_return_val_if_fail(ctl != NULL, NULL);
 
-	ldapsrv_set_options (ctl->timeOut, NULL);
+	ldapsrv_set_options(ctl->timeOut, NULL);
 	if (ctl->enableSSL)
 		uri = g_strdup_printf("ldaps://%s:%d", ctl->hostName, ctl->port);
 	else
@@ -786,12 +812,11 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 			ctl->version = LDAP_VERSION3;
 			log_print(LOG_PROTOCOL, "LDAP (options): set version 3\n");
 		} else {
-			log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"),
-					rc, ldaputil_get_error(ld));
+			log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"), rc, ldaputil_get_error(ld));
 			debug_print("Failed: %s\n", ldaputil_get_error(ld));
 		}
 
-		rc = ldap_get_option(ld, LDAP_OPT_SSL, (void*)&op);
+		rc = ldap_get_option(ld, LDAP_OPT_SSL, (void *)&op);
 		if (rc != LDAP_SUCCESS) {
 			log_warning(LOG_PROTOCOL, _("LDAP warning (options): can't get TLS state\n"));
 			debug_print("Can't get TLS state\n");
@@ -801,14 +826,12 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 			debug_print("Enabling TLS\n");
 			rc = ldap_set_option(ld, LDAP_OPT_SSL, LDAP_OPT_ON);
 			if (rc != LDAP_SUCCESS) {
-				log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"),
-						rc, ldaputil_get_error(ld));
+				log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"), rc, ldaputil_get_error(ld));
 				debug_print("Failed: %s\n", ldaputil_get_error(ld));
 			} else {
-				rc = ldap_get_option(ld, LDAP_OPT_SSL, (void*)&op);
+				rc = ldap_get_option(ld, LDAP_OPT_SSL, (void *)&op);
 				if (rc != LDAP_SUCCESS) {
-					log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"),
-							rc, ldaputil_get_error(ld));
+					log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"), rc, ldaputil_get_error(ld));
 				} else {
 					log_print(LOG_PROTOCOL, _("LDAP (options): TLS enabled (%d)\n"), (gint)op);
 				}
@@ -817,8 +840,7 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 		}
 
 		if (!ld || (rc = ldap_connect(ld, NULL)) != LDAP_SUCCESS) {
-			log_error(LOG_PROTOCOL, _("LDAP error (connect): %d (%s)\n"),
-					rc, ldaputil_get_error(ld));
+			log_error(LOG_PROTOCOL, _("LDAP error (connect): %d (%s)\n"), rc, ldaputil_get_error(ld));
 			debug_print("ldap_connect failed: %d %s\n", rc, ldaputil_get_error(ld));
 		} else {
 			log_print(LOG_PROTOCOL, _("LDAP (connect): completed successfully\n"));
@@ -839,8 +861,7 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 		ctl->version = LDAP_VERSION3;
 		log_print(LOG_PROTOCOL, "LDAP (options): set version 3\n");
 	} else {
-		log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"),
-				rc, ldaputil_get_error(ld));
+		log_error(LOG_PROTOCOL, _("LDAP error (options): %d (%s)\n"), rc, ldaputil_get_error(ld));
 	}
 
 #if (defined USE_LDAP_TLS || defined G_OS_WIN32)
@@ -852,8 +873,7 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 			if (Win32_ldap_start_tls_s == NULL) {
 				void *lib = LoadLibrary("wldap32.dll");
 				if (!lib || (Win32_ldap_start_tls_s = (PFldap_start_tls_s) GetProcAddress(lib, LDAP_START_TLS_S)) == NULL) {
-					log_error(LOG_PROTOCOL, _("LDAP error (TLS): "
-							"ldap_start_tls_s not supported on this platform\n"));
+					log_error(LOG_PROTOCOL, _("LDAP error (TLS): " "ldap_start_tls_s not supported on this platform\n"));
 					if (lib)
 						FreeLibrary(lib);
 					return NULL;
@@ -861,15 +881,13 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 			}
 			debug_print("Setting STARTTLS\n");
 			rc = Win32_ldap_start_tls_s(ld, &serv_rc, NULL, NULL, NULL);
-			debug_print("ldap_start_tls_s: %d server %ld %s\n",
-					rc, serv_rc, ldaputil_get_error(ld));
+			debug_print("ldap_start_tls_s: %d server %ld %s\n", rc, serv_rc, ldaputil_get_error(ld));
 #else
 			debug_print("Setting STARTTLS\n");
 			rc = ldap_start_tls_s(ld, NULL, NULL);
 #endif
 			if (rc != LDAP_SUCCESS) {
-				log_error(LOG_PROTOCOL, _("LDAP error (TLS): ldap_start_tls_s: %d (%s)\n"),
-						rc, ldaputil_get_error(ld));
+				log_error(LOG_PROTOCOL, _("LDAP error (TLS): ldap_start_tls_s: %d (%s)\n"), rc, ldaputil_get_error(ld));
 				return NULL;
 			} else {
 				log_print(LOG_PROTOCOL, _("LDAP (TLS): started successfully\n"));
@@ -881,19 +899,17 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
 
 	/* Bind to the server, if required */
 	if (ctl->bindDN) {
-		if (* ctl->bindDN != '\0') {
+		if (*ctl->bindDN != '\0') {
 			pwd = passwd_store_get(PWS_CORE, "LDAP", ctl->hostName);
 			rc = claws_ldap_simple_bind_s(ld, ctl->bindDN, pwd);
 			if (pwd != NULL && strlen(pwd) > 0)
 				memset(pwd, 0, strlen(pwd));
 			g_free(pwd);
 			if (rc != LDAP_SUCCESS) {
-				log_error(LOG_PROTOCOL, _("LDAP error (bind): binding DN '%s': %d (%s)\n" ),
-						ctl->bindDN, rc, ldaputil_get_error(ld));
+				log_error(LOG_PROTOCOL, _("LDAP error (bind): binding DN '%s': %d (%s)\n"), ctl->bindDN, rc, ldaputil_get_error(ld));
 				return NULL;
 			}
-			log_print(LOG_PROTOCOL, _("LDAP (bind): successfully for DN '%s'\n"),
-					ctl->bindDN);
+			log_print(LOG_PROTOCOL, _("LDAP (bind): successfully for DN '%s'\n"), ctl->bindDN);
 		}
 	}
 	return ld;
@@ -903,22 +919,25 @@ LDAP *ldapsvr_connect(LdapControl *ctl) {
  * Disconnect to LDAP server.
  * \param ld Resource to LDAP.
  */
-void ldapsvr_disconnect(LDAP *ld) {
+void ldapsvr_disconnect(LDAP *ld)
+{
 	gint rc;
 	/* Disconnect */
 	cm_return_if_fail(ld != NULL);
 	rc = ldap_unbind_ext(ld, NULL, NULL);
 	if (rc != LDAP_SUCCESS) {
-		log_error(LOG_PROTOCOL, _("LDAP error (unbind): %d (%s)\n"),
-				rc, ldaputil_get_error(ld));
+		log_error(LOG_PROTOCOL, _("LDAP error (unbind): %d (%s)\n"), rc, ldaputil_get_error(ld));
 	} else {
 		log_print(LOG_PROTOCOL, _("LDAP (unbind): successful\n"));
 	}
 }
 
-#endif	/* USE_LDAP */
+#endif /* USE_LDAP */
 
 /*
  * End of Source.
  */
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

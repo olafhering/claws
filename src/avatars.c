@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -77,14 +77,14 @@ gboolean avatars_internal_rendering_hook(gpointer source, gpointer data)
 	aface = procmsg_msginfo_get_avatar(avatarr->full_msginfo, AVATAR_FACE);
 	if (aface) {
 		avatarr->image = face_get_from_header(aface);
-		avatarr->type  = AVATAR_FACE;
+		avatarr->type = AVATAR_FACE;
 	}
 #if HAVE_LIBCOMPFACE
 	else {
 		aface = procmsg_msginfo_get_avatar(avatarr->full_msginfo, AVATAR_XFACE);
 		if (aface) {
 			avatarr->image = xface_get_from_header(aface);
-			avatarr->type  = AVATAR_XFACE;
+			avatarr->type = AVATAR_XFACE;
 		}
 	}
 #endif
@@ -110,3 +110,7 @@ void avatars_done(void)
 		avatar_render_hook_id = HOOK_NONE;
 	}
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -42,101 +42,86 @@ extern "C" {
 
 /* The Hurd doesn't have this limit */
 #ifndef PATH_MAX
-  #define PATH_MAX 4196
+#define PATH_MAX 4196
 #endif
 
 #include "mailimf.h"
 #include "carray.h"
 #include "chash.h"
 
-enum {
-  MAILMBOX_NO_ERROR = 0,
-  MAILMBOX_ERROR_PARSE,
-  MAILMBOX_ERROR_INVAL,
-  MAILMBOX_ERROR_FILE_NOT_FOUND,
-  MAILMBOX_ERROR_MEMORY,
-  MAILMBOX_ERROR_TEMPORARY_FILE,
-  MAILMBOX_ERROR_FILE,
-  MAILMBOX_ERROR_MSG_NOT_FOUND,
-  MAILMBOX_ERROR_READONLY,
-};
+	enum {
+		MAILMBOX_NO_ERROR = 0,
+		MAILMBOX_ERROR_PARSE,
+		MAILMBOX_ERROR_INVAL,
+		MAILMBOX_ERROR_FILE_NOT_FOUND,
+		MAILMBOX_ERROR_MEMORY,
+		MAILMBOX_ERROR_TEMPORARY_FILE,
+		MAILMBOX_ERROR_FILE,
+		MAILMBOX_ERROR_MSG_NOT_FOUND,
+		MAILMBOX_ERROR_READONLY,
+	};
 
+	struct claws_mailmbox_folder {
+		char mb_filename[PATH_MAX];
 
-struct claws_mailmbox_folder {
-  char mb_filename[PATH_MAX];
+		time_t mb_mtime;
 
-  time_t mb_mtime;
+		int mb_fd;
+		int mb_read_only;
+		int mb_no_uid;
 
-  int mb_fd;
-  int mb_read_only;
-  int mb_no_uid;
+		int mb_changed;
+		unsigned int mb_deleted_count;
 
-  int mb_changed;
-  unsigned int mb_deleted_count;
-  
-  char * mb_mapping;
-  size_t mb_mapping_size;
+		char *mb_mapping;
+		size_t mb_mapping_size;
 
-  uint32_t mb_written_uid;
-  uint32_t mb_max_uid;
+		uint32_t mb_written_uid;
+		uint32_t mb_max_uid;
 
-  chash * mb_hash;
-  carray * mb_tab;
-};
+		chash *mb_hash;
+		carray *mb_tab;
+	};
 
-struct claws_mailmbox_folder * claws_mailmbox_folder_new(const char * mb_filename);
-void claws_mailmbox_folder_free(struct claws_mailmbox_folder * folder);
+	struct claws_mailmbox_folder *claws_mailmbox_folder_new(const char *mb_filename);
+	void claws_mailmbox_folder_free(struct claws_mailmbox_folder *folder);
 
+	struct claws_mailmbox_msg_info {
+		unsigned int msg_index;
+		uint32_t msg_uid;
+		int msg_written_uid;
+		int msg_deleted;
 
-struct claws_mailmbox_msg_info {
-  unsigned int msg_index;
-  uint32_t msg_uid;
-  int msg_written_uid;
-  int msg_deleted;
+		size_t msg_start;
+		size_t msg_start_len;
 
-  size_t msg_start;
-  size_t msg_start_len;
+		size_t msg_headers;
+		size_t msg_headers_len;
 
-  size_t msg_headers;
-  size_t msg_headers_len;
+		size_t msg_body;
+		size_t msg_body_len;
 
-  size_t msg_body;
-  size_t msg_body_len;
+		size_t msg_size;
 
-  size_t msg_size;
+		size_t msg_padding;
+	};
 
-  size_t msg_padding;
-};
+	int claws_mailmbox_msg_info_update(struct claws_mailmbox_folder *folder, size_t msg_start, size_t msg_start_len, size_t msg_headers, size_t msg_headers_len, size_t msg_body, size_t msg_body_len, size_t msg_size, size_t msg_padding, uint32_t msg_uid);
 
+	struct claws_mailmbox_msg_info *claws_mailmbox_msg_info_new(size_t msg_start, size_t msg_start_len, size_t msg_headers, size_t msg_headers_len, size_t msg_body, size_t msg_body_len, size_t msg_size, size_t msg_padding, uint32_t msg_uid);
 
-int claws_mailmbox_msg_info_update(struct claws_mailmbox_folder * folder,
-			     size_t msg_start, size_t msg_start_len,
-			     size_t msg_headers, size_t msg_headers_len,
-			     size_t msg_body, size_t msg_body_len,
-			     size_t msg_size, size_t msg_padding,
-			     uint32_t msg_uid);
+	void claws_mailmbox_msg_info_free(struct claws_mailmbox_msg_info *info);
 
-struct claws_mailmbox_msg_info *
-claws_mailmbox_msg_info_new(size_t msg_start, size_t msg_start_len,
-		      size_t msg_headers, size_t msg_headers_len,
-		      size_t msg_body, size_t msg_body_len,
-		      size_t msg_size, size_t msg_padding,
-		      uint32_t msg_uid);
+	struct claws_mailmbox_append_info {
+		const char *ai_message;
+		size_t ai_size;
+	};
 
-void claws_mailmbox_msg_info_free(struct claws_mailmbox_msg_info * info);
+	struct claws_mailmbox_append_info *claws_mailmbox_append_info_new(const char *ai_message, size_t ai_size);
 
-struct claws_mailmbox_append_info {
-  const char * ai_message;
-  size_t ai_size;
-};
-
-struct claws_mailmbox_append_info *
-claws_mailmbox_append_info_new(const char * ai_message, size_t ai_size);
-
-void claws_mailmbox_append_info_free(struct claws_mailmbox_append_info * info);
+	void claws_mailmbox_append_info_free(struct claws_mailmbox_append_info *info);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

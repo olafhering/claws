@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -36,13 +36,12 @@
 
 gint plugin_init(gchar **error)
 {
-	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3,18,0,277),
-				VERSION_NUMERIC, PLUGIN_NAME, error))
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 18, 0, 277), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	smime_init();
 
-	return 0;	
+	return 0;
 }
 
 gboolean plugin_done(void)
@@ -58,23 +57,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin handles S/MIME signed and/or encrypted "
-		 "mails. You can decrypt mails, verify signatures or "
-                 "sign and encrypt your own mails.\n"
-		 "\n"
-		 "It can be selected as the Default Privacy System in "
-		 "/Configuration/[Account Preferences]/Privacy and when "
-		 "composing a message from /Options/Privacy System\n"
-		 "\n"
-		 "This plugin uses the GPGME library as a wrapper for GnuPG.\n"
-		 "This plugin also needs gpgsm, gnupg-agent and dirmngr "
-		 "installed and configured.\n"
-		 "\n"
-		 "Information about how to get S/MIME certificates working "
-		 "with GPGSM can be found at:\n"
-		 "http://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
-		 "\n"
-		 "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>");
+	return _("This plugin handles S/MIME signed and/or encrypted " "mails. You can decrypt mails, verify signatures or " "sign and encrypt your own mails.\n" "\n" "It can be selected as the Default Privacy System in " "/Configuration/[Account Preferences]/Privacy and when " "composing a message from /Options/Privacy System\n" "\n" "This plugin uses the GPGME library as a wrapper for GnuPG.\n" "This plugin also needs gpgsm, gnupg-agent and dirmngr " "installed and configured.\n" "\n" "Information about how to get S/MIME certificates working " "with GPGSM can be found at:\n" "http://www.claws-mail.org/faq/index.php/S/MIME_howto\n" "\n" "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>");
 }
 
 const gchar *plugin_type(void)
@@ -91,3 +74,7 @@ const gchar *plugin_version(void)
 {
 	return VERSION;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -18,7 +18,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -46,8 +46,7 @@
 #include "alertpanel.h"
 #include "combobox.h"
 
-typedef struct _WritingPage
-{
+typedef struct _WritingPage {
 	PrefsPage page;
 
 	GtkWidget *window;
@@ -69,11 +68,10 @@ typedef struct _WritingPage
 	GtkWidget *optmenu_dnd_insert_or_attach;
 } WritingPage;
 
-static void prefs_compose_writing_create_widget(PrefsPage *_page, GtkWindow *window, 
-			       	  gpointer data)
+static void prefs_compose_writing_create_widget(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
 	WritingPage *prefs_writing = (WritingPage *) _page;
-	
+
 	GtkWidget *vbox1;
 	GtkWidget *vbox2;
 
@@ -118,202 +116,164 @@ static void prefs_compose_writing_create_widget(PrefsPage *_page, GtkWindow *win
 	GtkTreeIter iter;
 	gchar *text;
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), VBOX_BORDER);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), VBOX_BORDER);
 
 	/* Account autoselection */
 	PACK_FRAME(vbox1, frame, _("Automatic account selection"));
 
-	hbox_autosel = gtk_hbox_new (TRUE, VSPACING_NARROW);
-	gtk_widget_show (hbox_autosel);
-	gtk_container_add (GTK_CONTAINER (frame), hbox_autosel);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox_autosel), 8);
+	hbox_autosel = gtk_hbox_new(TRUE, VSPACING_NARROW);
+	gtk_widget_show(hbox_autosel);
+	gtk_container_add(GTK_CONTAINER(frame), hbox_autosel);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox_autosel), 8);
 
-	PACK_CHECK_BUTTON (hbox_autosel, checkbtn_reply_account_autosel,
-			   _("when replying"));
-	PACK_CHECK_BUTTON (hbox_autosel, checkbtn_forward_account_autosel,
-			   _("when forwarding"));
-	PACK_CHECK_BUTTON (hbox_autosel, checkbtn_reedit_account_autosel,
-			   _("when re-editing"));
+	PACK_CHECK_BUTTON(hbox_autosel, checkbtn_reply_account_autosel, _("when replying"));
+	PACK_CHECK_BUTTON(hbox_autosel, checkbtn_forward_account_autosel, _("when forwarding"));
+	PACK_CHECK_BUTTON(hbox_autosel, checkbtn_reedit_account_autosel, _("when re-editing"));
 
 	/* Editing */
 	vbox2 = gtkut_get_options_frame(vbox1, &frame, _("Editing"));
 
 	/* Editing: automatically start the text editor */
-	PACK_CHECK_BUTTON (vbox2, checkbtn_autoextedit,
-			   _("Automatically launch the external editor"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_autoextedit, _("Automatically launch the external editor"));
 
 	/* Editing: automatically save draft */
-	hbox_autosave = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox_autosave);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_autosave, FALSE, FALSE, 0);
+	hbox_autosave = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox_autosave);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_autosave, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (hbox_autosave, checkbtn_autosave,
-			   _("Automatically save message to Drafts folder every"));
+	PACK_CHECK_BUTTON(hbox_autosave, checkbtn_autosave, _("Automatically save message to Drafts folder every"));
 
-	spinbtn_autosave_adj = GTK_ADJUSTMENT(gtk_adjustment_new (50, 0, 1000, 1, 10, 0));
-	spinbtn_autosave_length = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_autosave_adj), 1, 0);
-	gtk_widget_show (spinbtn_autosave_length);
-	gtk_box_pack_start (GTK_BOX (hbox_autosave), spinbtn_autosave_length, FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_autosave_length), TRUE);
+	spinbtn_autosave_adj = GTK_ADJUSTMENT(gtk_adjustment_new(50, 0, 1000, 1, 10, 0));
+	spinbtn_autosave_length = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_autosave_adj), 1, 0);
+	gtk_widget_show(spinbtn_autosave_length);
+	gtk_box_pack_start(GTK_BOX(hbox_autosave), spinbtn_autosave_length, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_autosave_length), TRUE);
 
 	label_autosave_length = gtk_label_new(_("characters"));
-	gtk_widget_show (label_autosave_length);
-	gtk_box_pack_start (GTK_BOX (hbox_autosave), label_autosave_length, FALSE, FALSE, 0);
+	gtk_widget_show(label_autosave_length);
+	gtk_box_pack_start(GTK_BOX(hbox_autosave), label_autosave_length, FALSE, FALSE, 0);
 
 	/* Editing: automatically save draft when encrypted */
-	hbox_autosave_encrypted = gtk_hbox_new (FALSE, 8);
+	hbox_autosave_encrypted = gtk_hbox_new(FALSE, 8);
 	gtk_box_pack_start(GTK_BOX(hbox_autosave_encrypted), gtk_label_new("   "), FALSE, FALSE, 0);
-	gtk_widget_show_all (hbox_autosave_encrypted);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_autosave_encrypted, FALSE, FALSE, 0);
+	gtk_widget_show_all(hbox_autosave_encrypted);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_autosave_encrypted, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (hbox_autosave_encrypted, checkbtn_autosave_encrypted,
-			   _("Even if message is to be encrypted"));
+	PACK_CHECK_BUTTON(hbox_autosave_encrypted, checkbtn_autosave_encrypted, _("Even if message is to be encrypted"));
 
 	/* Editing: undo level */
-	hbox_undolevel = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox_undolevel);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_undolevel, FALSE, FALSE, 0);
+	hbox_undolevel = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox_undolevel);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_undolevel, FALSE, FALSE, 0);
 
-	label_undolevel = gtk_label_new (_("Undo level"));
-	gtk_widget_show (label_undolevel);
-	gtk_box_pack_start (GTK_BOX (hbox_undolevel), label_undolevel, FALSE, FALSE, 0);
+	label_undolevel = gtk_label_new(_("Undo level"));
+	gtk_widget_show(label_undolevel);
+	gtk_box_pack_start(GTK_BOX(hbox_undolevel), label_undolevel, FALSE, FALSE, 0);
 
-	spinbtn_undolevel_adj = GTK_ADJUSTMENT(gtk_adjustment_new (50, 0, 100, 1, 10, 0));
-	spinbtn_undolevel = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_undolevel_adj), 1, 0);
-	gtk_widget_show (spinbtn_undolevel);
-	gtk_box_pack_start (GTK_BOX (hbox_undolevel), spinbtn_undolevel, FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_undolevel), TRUE);
+	spinbtn_undolevel_adj = GTK_ADJUSTMENT(gtk_adjustment_new(50, 0, 100, 1, 10, 0));
+	spinbtn_undolevel = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_undolevel_adj), 1, 0);
+	gtk_widget_show(spinbtn_undolevel);
+	gtk_box_pack_start(GTK_BOX(hbox_undolevel), spinbtn_undolevel, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_undolevel), TRUE);
 
 	/* Editing: warn when inserting large files in message body */
-	hbox_warn_large_insert = gtk_hbox_new (FALSE, 8);
-	gtk_widget_show (hbox_warn_large_insert);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox_warn_large_insert, FALSE, FALSE, 0);
+	hbox_warn_large_insert = gtk_hbox_new(FALSE, 8);
+	gtk_widget_show(hbox_warn_large_insert);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox_warn_large_insert, FALSE, FALSE, 0);
 
-	PACK_CHECK_BUTTON (hbox_warn_large_insert, checkbtn_warn_large_insert,
-			_("Warn when inserting a file into the message body which is larger than"));
+	PACK_CHECK_BUTTON(hbox_warn_large_insert, checkbtn_warn_large_insert, _("Warn when inserting a file into the message body which is larger than"));
 
-	spinbtn_warn_large_insert_adj = GTK_ADJUSTMENT(gtk_adjustment_new (50, 0, 10000, 1, 10, 0));
-	spinbtn_warn_large_insert_size = gtk_spin_button_new
-		(GTK_ADJUSTMENT (spinbtn_warn_large_insert_adj), 1, 0);
-	gtk_widget_show (spinbtn_warn_large_insert_size);
-	gtk_box_pack_start (GTK_BOX (hbox_warn_large_insert),
-			spinbtn_warn_large_insert_size, FALSE, FALSE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbtn_warn_large_insert_size),
-			TRUE);
+	spinbtn_warn_large_insert_adj = GTK_ADJUSTMENT(gtk_adjustment_new(50, 0, 10000, 1, 10, 0));
+	spinbtn_warn_large_insert_size = gtk_spin_button_new(GTK_ADJUSTMENT(spinbtn_warn_large_insert_adj), 1, 0);
+	gtk_widget_show(spinbtn_warn_large_insert_size);
+	gtk_box_pack_start(GTK_BOX(hbox_warn_large_insert), spinbtn_warn_large_insert_size, FALSE, FALSE, 0);
+	gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(spinbtn_warn_large_insert_size), TRUE);
 
 	label_warn_large_insert_size = gtk_label_new(_("KiB"));
-	gtk_widget_show (label_warn_large_insert_size);
-	gtk_box_pack_start (GTK_BOX (hbox_warn_large_insert),
-			label_warn_large_insert_size, FALSE, FALSE, 0);
+	gtk_widget_show(label_warn_large_insert_size);
+	gtk_box_pack_start(GTK_BOX(hbox_warn_large_insert), label_warn_large_insert_size, FALSE, FALSE, 0);
 
 	/* Replying */
 	vbox2 = gtkut_get_options_frame(vbox1, &frame, _("Replying"));
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_reply_with_quote,
-			   _("Reply will quote by default"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_reply_with_quote, _("Reply will quote by default"));
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_default_reply_list,
-			   _("Reply button invokes mailing list reply"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_default_reply_list, _("Reply button invokes mailing list reply"));
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame, _("Forwarding"));
 
-	PACK_CHECK_BUTTON (vbox2, checkbtn_forward_as_attachment,
-			   _("Forward as attachment"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_forward_as_attachment, _("Forward as attachment"));
 
-	text = g_strdup_printf(_("Keep the original '%s' header when redirecting"),
-			prefs_common_translated_header_name("From"));
-	PACK_CHECK_BUTTON (vbox2, checkbtn_redirect_keep_from, text);
+	text = g_strdup_printf(_("Keep the original '%s' header when redirecting"), prefs_common_translated_header_name("From"));
+	PACK_CHECK_BUTTON(vbox2, checkbtn_redirect_keep_from, text);
 	g_free(text);
 
 	/* dnd insert or attach */
-	label_dnd_insert_or_attach = gtk_label_new (_("When dropping files into the Compose window"));
+	label_dnd_insert_or_attach = gtk_label_new(_("When dropping files into the Compose window"));
 	gtk_misc_set_alignment(GTK_MISC(label_dnd_insert_or_attach), 0, 0.5);
-	gtk_widget_show (label_dnd_insert_or_attach);
+	gtk_widget_show(label_dnd_insert_or_attach);
 
 	optmenu_dnd_insert_or_attach = gtkut_sc_combobox_create(NULL, FALSE);
-	gtk_widget_show (optmenu_dnd_insert_or_attach);
+	gtk_widget_show(optmenu_dnd_insert_or_attach);
 
-	menu = GTK_LIST_STORE(gtk_combo_box_get_model(
-				GTK_COMBO_BOX(optmenu_dnd_insert_or_attach)));
-	COMBOBOX_ADD (menu, _("Ask"), COMPOSE_DND_ASK);
-	COMBOBOX_ADD (menu, _("Insert"), COMPOSE_DND_INSERT);
-	COMBOBOX_ADD (menu, _("Attach"), COMPOSE_DND_ATTACH);
+	menu = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(optmenu_dnd_insert_or_attach)));
+	COMBOBOX_ADD(menu, _("Ask"), COMPOSE_DND_ASK);
+	COMBOBOX_ADD(menu, _("Insert"), COMPOSE_DND_INSERT);
+	COMBOBOX_ADD(menu, _("Attach"), COMPOSE_DND_ATTACH);
 
 	hbox_dnd_insert_or_attach = gtk_hbox_new(FALSE, 20);
 	gtk_widget_show(hbox_dnd_insert_or_attach);
 	gtk_box_pack_start(GTK_BOX(vbox1), hbox_dnd_insert_or_attach, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox_dnd_insert_or_attach),
-			label_dnd_insert_or_attach, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox_dnd_insert_or_attach),
-			optmenu_dnd_insert_or_attach, FALSE, FALSE, 0);
-	
-	SET_TOGGLE_SENSITIVITY (checkbtn_autosave, spinbtn_autosave_length);
-	SET_TOGGLE_SENSITIVITY (checkbtn_autosave, label_autosave_length);
-	SET_TOGGLE_SENSITIVITY (checkbtn_autosave, checkbtn_autosave_encrypted);
+	gtk_box_pack_start(GTK_BOX(hbox_dnd_insert_or_attach), label_dnd_insert_or_attach, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_dnd_insert_or_attach), optmenu_dnd_insert_or_attach, FALSE, FALSE, 0);
 
-	SET_TOGGLE_SENSITIVITY (checkbtn_warn_large_insert, spinbtn_warn_large_insert_size);
-	SET_TOGGLE_SENSITIVITY (checkbtn_warn_large_insert, label_warn_large_insert_size);
+	SET_TOGGLE_SENSITIVITY(checkbtn_autosave, spinbtn_autosave_length);
+	SET_TOGGLE_SENSITIVITY(checkbtn_autosave, label_autosave_length);
+	SET_TOGGLE_SENSITIVITY(checkbtn_autosave, checkbtn_autosave_encrypted);
 
+	SET_TOGGLE_SENSITIVITY(checkbtn_warn_large_insert, spinbtn_warn_large_insert_size);
+	SET_TOGGLE_SENSITIVITY(checkbtn_warn_large_insert, label_warn_large_insert_size);
 
 	prefs_writing->checkbtn_autoextedit = checkbtn_autoextedit;
 
-	prefs_writing->checkbtn_reply_account_autosel   = checkbtn_reply_account_autosel;
+	prefs_writing->checkbtn_reply_account_autosel = checkbtn_reply_account_autosel;
 	prefs_writing->checkbtn_forward_account_autosel = checkbtn_forward_account_autosel;
-	prefs_writing->checkbtn_reedit_account_autosel  = checkbtn_reedit_account_autosel;
+	prefs_writing->checkbtn_reedit_account_autosel = checkbtn_reedit_account_autosel;
 
-	prefs_writing->spinbtn_undolevel     = spinbtn_undolevel;
+	prefs_writing->spinbtn_undolevel = spinbtn_undolevel;
 
-	prefs_writing->checkbtn_autosave     = checkbtn_autosave;
+	prefs_writing->checkbtn_autosave = checkbtn_autosave;
 	prefs_writing->spinbtn_autosave_length = spinbtn_autosave_length;
 
-	prefs_writing->checkbtn_autosave_encrypted     = checkbtn_autosave_encrypted;
+	prefs_writing->checkbtn_autosave_encrypted = checkbtn_autosave_encrypted;
 
 	prefs_writing->checkbtn_warn_large_insert = checkbtn_warn_large_insert;
 	prefs_writing->spinbtn_warn_large_insert_size = spinbtn_warn_large_insert_size;
-	
-	prefs_writing->checkbtn_forward_as_attachment =
-		checkbtn_forward_as_attachment;
+
+	prefs_writing->checkbtn_forward_as_attachment = checkbtn_forward_as_attachment;
 	prefs_writing->checkbtn_redirect_keep_from = checkbtn_redirect_keep_from;
-	prefs_writing->checkbtn_reply_with_quote     = checkbtn_reply_with_quote;
+	prefs_writing->checkbtn_reply_with_quote = checkbtn_reply_with_quote;
 	prefs_writing->checkbtn_default_reply_list = checkbtn_default_reply_list;
 
 	prefs_writing->optmenu_dnd_insert_or_attach = optmenu_dnd_insert_or_attach;
 
-
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autoextedit),
-		prefs_common.auto_exteditor);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_forward_as_attachment),
-		prefs_common.forward_as_attachment);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_redirect_keep_from),
-		prefs_common.redirect_keep_from);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autosave),
-		prefs_common.autosave);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autosave_encrypted),
-		prefs_common.autosave_encrypted);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_autosave_length),
-		prefs_common.autosave_length);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_undolevel),
-		prefs_common.undolevels);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_warn_large_insert),
-		prefs_common.warn_large_insert);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_warn_large_insert_size),
-		prefs_common.warn_large_insert_size);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reply_account_autosel),
-		prefs_common.reply_account_autosel);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_forward_account_autosel),
-		prefs_common.forward_account_autosel);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reedit_account_autosel),
-		prefs_common.reedit_account_autosel);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reply_with_quote),
-			prefs_common.reply_with_quote);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_default_reply_list),
-		prefs_common.default_reply_list);
-	combobox_select_by_data(GTK_COMBO_BOX(optmenu_dnd_insert_or_attach),
-		prefs_common.compose_dnd_mode);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autoextedit), prefs_common.auto_exteditor);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_forward_as_attachment), prefs_common.forward_as_attachment);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_redirect_keep_from), prefs_common.redirect_keep_from);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autosave), prefs_common.autosave);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_autosave_encrypted), prefs_common.autosave_encrypted);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_autosave_length), prefs_common.autosave_length);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_undolevel), prefs_common.undolevels);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_warn_large_insert), prefs_common.warn_large_insert);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(prefs_writing->spinbtn_warn_large_insert_size), prefs_common.warn_large_insert_size);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reply_account_autosel), prefs_common.reply_account_autosel);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_forward_account_autosel), prefs_common.forward_account_autosel);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reedit_account_autosel), prefs_common.reedit_account_autosel);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_reply_with_quote), prefs_common.reply_with_quote);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prefs_writing->checkbtn_default_reply_list), prefs_common.default_reply_list);
+	combobox_select_by_data(GTK_COMBO_BOX(optmenu_dnd_insert_or_attach), prefs_common.compose_dnd_mode);
 
 	prefs_writing->page.widget = vbox1;
 }
@@ -322,38 +282,23 @@ static void prefs_compose_writing_save(PrefsPage *_page)
 {
 	WritingPage *page = (WritingPage *) _page;
 
-	prefs_common.auto_exteditor = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autoextedit));
-	prefs_common.forward_as_attachment =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_forward_as_attachment));
-	prefs_common.redirect_keep_from =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_redirect_keep_from));
-	prefs_common.autosave = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autosave));
-	prefs_common.autosave_encrypted = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autosave_encrypted));
-	prefs_common.autosave_length =
-		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_autosave_length));
-	prefs_common.undolevels = 
-		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_undolevel));
-	prefs_common.warn_large_insert = 
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_warn_large_insert));
-	prefs_common.warn_large_insert_size =
-		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_warn_large_insert_size));
-		
-	prefs_common.reply_account_autosel =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reply_account_autosel));
-	prefs_common.forward_account_autosel =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_forward_account_autosel));
-	prefs_common.reedit_account_autosel =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reedit_account_autosel));
-	prefs_common.reply_with_quote = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(page->checkbtn_reply_with_quote));
-	prefs_common.default_reply_list =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_default_reply_list));
-	
-	prefs_common.compose_dnd_mode = combobox_get_active_data(
-			GTK_COMBO_BOX(page->optmenu_dnd_insert_or_attach));
+	prefs_common.auto_exteditor = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autoextedit));
+	prefs_common.forward_as_attachment = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_forward_as_attachment));
+	prefs_common.redirect_keep_from = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_redirect_keep_from));
+	prefs_common.autosave = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autosave));
+	prefs_common.autosave_encrypted = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_autosave_encrypted));
+	prefs_common.autosave_length = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_autosave_length));
+	prefs_common.undolevels = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_undolevel));
+	prefs_common.warn_large_insert = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_warn_large_insert));
+	prefs_common.warn_large_insert_size = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->spinbtn_warn_large_insert_size));
+
+	prefs_common.reply_account_autosel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reply_account_autosel));
+	prefs_common.forward_account_autosel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_forward_account_autosel));
+	prefs_common.reedit_account_autosel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reedit_account_autosel));
+	prefs_common.reply_with_quote = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_reply_with_quote));
+	prefs_common.default_reply_list = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_default_reply_list));
+
+	prefs_common.compose_dnd_mode = combobox_get_active_data(GTK_COMBO_BOX(page->optmenu_dnd_insert_or_attach));
 }
 
 static void prefs_compose_writing_destroy_widget(PrefsPage *_page)
@@ -377,12 +322,16 @@ void prefs_compose_writing_init(void)
 	page->page.destroy_widget = prefs_compose_writing_destroy_widget;
 	page->page.save_page = prefs_compose_writing_save;
 	page->page.weight = 190.0;
-	prefs_gtk_register_page((PrefsPage *) page);
+	prefs_gtk_register_page((PrefsPage *)page);
 	prefs_writing = page;
 }
 
 void prefs_compose_writing_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) prefs_writing);
+	prefs_gtk_unregister_page((PrefsPage *)prefs_writing);
 	g_free(prefs_writing);
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -29,19 +29,18 @@
 #include "session.h"
 #include "prefs_account.h"
 
-typedef struct _Pop3MsgInfo	Pop3MsgInfo;
-typedef struct _Pop3Session	Pop3Session;
+typedef struct _Pop3MsgInfo Pop3MsgInfo;
+typedef struct _Pop3Session Pop3Session;
 
 #define POP3_SESSION(obj)	((Pop3Session *)obj)
 
 #define MAIL_RECEIVE_HOOKLIST	"mail_receive_hooklist"
-struct _MailReceiveData
-{
+struct _MailReceiveData {
 	Pop3Session *session;
 	char *data;
 	guint data_len;
 };
-typedef struct _MailReceiveData	MailReceiveData;
+typedef struct _MailReceiveData MailReceiveData;
 
 typedef enum {
 	POP3_READY,
@@ -73,46 +72,44 @@ typedef enum {
 } Pop3State;
 
 typedef enum {
-	PS_SUCCESS	= 0,	/* command successful */
-	PS_NOMAIL	= 1,	/* no mail available */
-	PS_SOCKET	= 2,	/* socket I/O woes */
-	PS_AUTHFAIL	= 3,	/* user authorization failed */
-	PS_PROTOCOL	= 4,	/* protocol violation */
-	PS_SYNTAX	= 5,	/* command-line syntax error */
-	PS_IOERR	= 6,	/* file I/O error */
-	PS_ERROR	= 7,	/* protocol error */
-	PS_EXCLUDE	= 8,	/* client-side exclusion error */
-	PS_LOCKBUSY	= 9,	/* server responded lock busy */
-	PS_SMTP		= 10,	/* SMTP error */
-	PS_DNS		= 11,	/* fatal DNS error */
-	PS_BSMTP	= 12,	/* output batch could not be opened */
-	PS_MAXFETCH	= 13,	/* poll ended by fetch limit */
+	PS_SUCCESS = 0,	/* command successful */
+	PS_NOMAIL = 1, /* no mail available */
+	PS_SOCKET = 2, /* socket I/O woes */
+	PS_AUTHFAIL = 3, /* user authorization failed */
+	PS_PROTOCOL = 4, /* protocol violation */
+	PS_SYNTAX = 5, /* command-line syntax error */
+	PS_IOERR = 6, /* file I/O error */
+	PS_ERROR = 7, /* protocol error */
+	PS_EXCLUDE = 8,	/* client-side exclusion error */
+	PS_LOCKBUSY = 9, /* server responded lock busy */
+	PS_SMTP = 10, /* SMTP error */
+	PS_DNS = 11, /* fatal DNS error */
+	PS_BSMTP = 12, /* output batch could not be opened */
+	PS_MAXFETCH = 13, /* poll ended by fetch limit */
 
-	PS_NOTSUPPORTED	= 14,	/* command not supported */
+	PS_NOTSUPPORTED = 14, /* command not supported */
 
 	/* leave space for more codes */
 
-	PS_CONTINUE	= 128	/* more responses may follow */
+	PS_CONTINUE = 128 /* more responses may follow */
 } Pop3ErrorValue;
 
 typedef enum {
-	RECV_TIME_NONE     = 0,
+	RECV_TIME_NONE = 0,
 	RECV_TIME_RECEIVED = 1,
-	RECV_TIME_KEEP     = 2
+	RECV_TIME_KEEP = 2
 } RecvTime;
 
-struct _Pop3MsgInfo
-{
+struct _Pop3MsgInfo {
 	gint size;
 	gchar *uidl;
 	time_t recv_time;
-	guint received     : 1;
-	guint deleted      : 1;
-	guint partial_recv : 2;
+	guint received:1;
+	guint deleted:1;
+	guint partial_recv:2;
 };
 
-struct _Pop3Session
-{
+struct _Pop3Session {
 	Session session;
 
 	Pop3State state;
@@ -147,15 +144,14 @@ struct _Pop3Session
 	gpointer data;
 
 	/* virtual method to drop message */
-	gint (*drop_message)	(Pop3Session	*session,
-				 const gchar	*file);
+	gint (*drop_message) (Pop3Session *session, const gchar *file);
 };
 
 #define POPBUFSIZE	8192
 /* #define IDLEN	128 */
 #define IDLEN		POPBUFSIZE
 
-Session *pop3_session_new	(PrefsAccount	*account);
-gint pop3_write_uidl_list	(Pop3Session	*session);
+Session *pop3_session_new(PrefsAccount *account);
+gint pop3_write_uidl_list(Pop3Session *session);
 
 #endif /* __POP_H__ */

@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 #include "defs.h"
@@ -32,8 +32,8 @@
 #include <string.h>
 #include <ctype.h>
 #if (HAVE_WCTYPE_H && HAVE_WCHAR_H)
-#  include <wchar.h>
-#  include <wctype.h>
+#include <wchar.h>
+#include <wctype.h>
 #endif
 
 #include "addr_compl.h"
@@ -47,9 +47,9 @@
 #include <pthread.h>
 
 #ifndef USE_ALT_ADDRBOOK
-	#include "addrindex.h"
+#include "addrindex.h"
 #else
-	#include "addressbook-dbus.h"
+#include "addressbook-dbus.h"
 #endif
 
 /*!
@@ -85,18 +85,17 @@ enum {
  * completion_entry - structure used to complete addresses, with a reference
  * the the real address information.
  */
-typedef struct
-{
-	gchar		*string; /* string to complete */
-	address_entry	*ref;	 /* address the string belongs to  */
+typedef struct {
+	gchar *string; /* string to complete */
+	address_entry *ref; /* address the string belongs to  */
 } completion_entry;
 
 /*******************************************************************************/
 
-static gint	    g_ref_count;	/* list ref count */
-static GList 	   *g_completion_list = NULL;	/* list of strings to be checked */
-static GList 	   *g_address_list = NULL;	/* address storage */
-static GCompletion *g_completion;	/* completion object */
+static gint g_ref_count; /* list ref count */
+static GList *g_completion_list = NULL;	/* list of strings to be checked */
+static GList *g_address_list = NULL; /* address storage */
+static GCompletion *g_completion; /* completion object */
 
 static GHashTable *_groupAddresses_ = NULL;
 static gboolean _allowCommas_ = TRUE;
@@ -104,13 +103,13 @@ static gboolean _allowCommas_ = TRUE;
 /* To allow for continuing completion we have to keep track of the state
  * using the following variables. No need to create a context object. */
 
-static gint	    g_completion_count;		/* nr of addresses incl. the prefix */
-static gint	    g_completion_next;		/* next prev address */
-static GSList	   *g_completion_addresses;	/* unique addresses found in the
-						   completion cache. */
-static gchar	   *g_completion_prefix;	/* last prefix. (this is cached here
-						 * because the prefix passed to g_completion
-						 * is g_utf8_strdown()'ed */
+static gint g_completion_count;	/* nr of addresses incl. the prefix */
+static gint g_completion_next; /* next prev address */
+static GSList *g_completion_addresses; /* unique addresses found in the
+				          completion cache. */
+static gchar *g_completion_prefix; /* last prefix. (this is cached here
+				    * because the prefix passed to g_completion
+				    * is g_utf8_strdown()'ed */
 
 static gchar *completion_folder_path = NULL;
 
@@ -121,36 +120,28 @@ static gchar *completion_folder_path = NULL;
  */
 typedef struct _CompletionWindow CompletionWindow;
 struct _CompletionWindow {
-	gint      listCount;
-	gchar     *searchTerm;
+	gint listCount;
+	gchar *searchTerm;
 	GtkWidget *window;
 	GtkWidget *entry;
 	GtkWidget *list_view;
 
-	gboolean   in_mouse;	/*!< mouse press pending... */
-	gboolean   destroying;  /*!< destruction in progress */
+	gboolean in_mouse; /*!< mouse press pending... */
+	gboolean destroying; /*!< destruction in progress */
 };
 
-static GtkListStore *addr_compl_create_store	(void);
+static GtkListStore *addr_compl_create_store(void);
 
-static GtkWidget *addr_compl_list_view_create	(CompletionWindow *window);
+static GtkWidget *addr_compl_list_view_create(CompletionWindow *window);
 
-static void addr_compl_create_list_view_columns	(GtkWidget *list_view);
+static void addr_compl_create_list_view_columns(GtkWidget *list_view);
 
-static gboolean list_view_button_press		(GtkWidget *widget, 
-						 GdkEventButton *event,
-						 CompletionWindow *window);
+static gboolean list_view_button_press(GtkWidget *widget, GdkEventButton *event, CompletionWindow *window);
 
-static gboolean list_view_button_release	(GtkWidget *widget, 
-						 GdkEventButton *event,
-						 CompletionWindow *window);
+static gboolean list_view_button_release(GtkWidget *widget, GdkEventButton *event, CompletionWindow *window);
 
-static gboolean addr_compl_selected		(GtkTreeSelection *selector,
-						 GtkTreeModel *model, 
-						 GtkTreePath *path,
-						 gboolean currently_selected,
-						 gpointer data);
-						 
+static gboolean addr_compl_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data);
+
 static gboolean addr_compl_defer_select_destruct(CompletionWindow *window);
 
 /**
@@ -161,11 +152,10 @@ static gchar *completion_func(gpointer data)
 {
 	cm_return_val_if_fail(data != NULL, NULL);
 
-	return ((completion_entry *)data)->string;
-} 
+	return ((completion_entry *) data)->string;
+}
 
-static gint addr_completion_func(const gchar *needle, const gchar *haystack,
-		gsize n)
+static gint addr_completion_func(const gchar *needle, const gchar *haystack, gsize n)
 {
 	if (needle == NULL || haystack == NULL)
 		return 1;
@@ -181,11 +171,11 @@ static gint addr_completion_func(const gchar *needle, const gchar *haystack,
  * \param a first element in comparsion
  * \param b second element in comparison
  */
-static gint weight_addr_match(const address_entry* addr)
+static gint weight_addr_match(const address_entry *addr)
 {
-	gint	n_weight = addr->name ? strlen(addr->name): 0;
-	gint	a_weight = addr->address ? strlen(addr->address) : n_weight;
-	gchar* 	match = NULL;
+	gint n_weight = addr->name ? strlen(addr->name) : 0;
+	gint a_weight = addr->address ? strlen(addr->address) : n_weight;
+	gchar *match = NULL;
 
 	if (addr->name)
 		match = strcasestr(addr->name, g_completion_prefix);
@@ -208,7 +198,7 @@ static gint weight_addr_match(const address_entry* addr)
 				a_weight = match - addr->address;
 
 			if (strlen(match) > strlen(g_completion_prefix)
-			 && *(match + strlen(g_completion_prefix)) == '@')
+			    && *(match + strlen(g_completion_prefix)) == '@')
 				a_weight--;
 		}
 	}
@@ -221,29 +211,28 @@ static gint weight_addr_match(const address_entry* addr)
 
 static gint addr_comparison_func(gconstpointer a, gconstpointer b)
 {
-	const address_entry*	a_ref = (const address_entry*)a;
-	const address_entry*	b_ref = (const address_entry*)b;
-	gint			a_weight = weight_addr_match(a_ref);
-	gint			b_weight = weight_addr_match(b_ref);
-	gint			cmp;
+	const address_entry *a_ref = (const address_entry *)a;
+	const address_entry *b_ref = (const address_entry *)b;
+	gint a_weight = weight_addr_match(a_ref);
+	gint b_weight = weight_addr_match(b_ref);
+	gint cmp;
 
 	if (a_weight < b_weight)
 		return -1;
 	else if (a_weight > b_weight)
 		return 1;
 	else {
-                if (!a_ref->name || !b_ref->name)
-                  cmp = !!a_ref->name - !!b_ref->name;
-                else
-                  cmp = strcmp(a_ref->name, b_ref->name);
-                if (!cmp)
-                  {
-                    if (!a_ref->address || !b_ref->address)
-                      cmp = !!a_ref->address - !!b_ref->address;
-                    else
-                      cmp = g_strcmp0(a_ref->address, b_ref->address);
-                  }
-                return cmp;
+		if (!a_ref->name || !b_ref->name)
+			cmp = !!a_ref->name - !!b_ref->name;
+		else
+			cmp = strcmp(a_ref->name, b_ref->name);
+		if (!cmp) {
+			if (!a_ref->address || !b_ref->address)
+				cmp = !!a_ref->address - !!b_ref->address;
+			else
+				cmp = g_strcmp0(a_ref->address, b_ref->address);
+		}
+		return cmp;
 	}
 }
 
@@ -274,7 +263,7 @@ static void free_all_addresses(void)
 		return;
 	walk = g_address_list;
 	for (; walk != NULL; walk = g_list_next(walk)) {
-		address_entry *ae = (address_entry *) walk->data;
+		address_entry *ae = (address_entry *)walk->data;
 		g_free(ae->name);
 		g_free(ae->address);
 		g_list_free(ae->grp_emails);
@@ -293,7 +282,7 @@ static void free_completion_list(void)
 	GList *walk;
 	if (!g_completion_list)
 		return;
-	
+
 	clear_completion_cache();
 	if (g_completion)
 		g_completion_clear_items(g_completion);
@@ -307,13 +296,14 @@ static void free_completion_list(void)
 	g_list_free(g_completion_list);
 	g_completion_list = NULL;
 }
+
 /**
  * Free up all completion index data.
  */
 static void free_all(void)
 {
-	free_completion_list();	
-	free_all_addresses();	
+	free_completion_list();
+	free_all_addresses();
 	g_completion_free(g_completion);
 	g_completion = NULL;
 }
@@ -327,8 +317,8 @@ void addr_compl_add_address1(const char *str, address_entry *ae)
 {
 	completion_entry *ce1;
 	ce1 = g_new0(completion_entry, 1),
-	/* GCompletion list is case sensitive */
-	ce1->string = g_utf8_strdown(str, -1);
+	    /* GCompletion list is case sensitive */
+	    ce1->string = g_utf8_strdown(str, -1);
 	ce1->ref = ae;
 
 	g_completion_list = g_list_prepend(g_completion_list, ce1);
@@ -345,8 +335,7 @@ void addr_compl_add_address1(const char *str, address_entry *ae)
  * \return <code>0</code> if entry appended successfully, or <code>-1</code>
  *         if failure.
  */
-static gint add_address(const gchar *name, const gchar *address, 
-			const gchar *nick, const gchar *alias, GList *grp_emails)
+static gint add_address(const gchar *name, const gchar *address, const gchar *nick, const gchar *alias, GList *grp_emails)
 {
 	address_entry *ae;
 
@@ -380,25 +369,26 @@ static gint add_address(const gchar *name, const gchar *address,
 
 /**
  * Read address book, creating all entries in the completion index.
- */ 
-static void read_address_book(gchar *folderpath) {
+ */
+static void read_address_book(gchar *folderpath)
+{
 	free_all_addresses();
 	free_completion_list();
 
 #ifndef USE_ALT_ADDRBOOK
-	addrindex_load_completion( add_address, folderpath );
+	addrindex_load_completion(add_address, folderpath);
 #else
-	GError* error = NULL;
-	
+	GError *error = NULL;
+
 	addrcompl_initialize();
-	if (! addrindex_dbus_load_completion(add_address, &error)) {
+	if (!addrindex_dbus_load_completion(add_address, &error)) {
 		g_warning("failed to populate address completion list");
-        g_error_free(error);
+		g_error_free(error);
 		return;
 	}
 #endif
 	/* plugins may hook in here to modify/extend the completion list */
-	if(!folderpath) {
+	if (!folderpath) {
 		hooks_invoke(ADDDRESS_COMPLETION_BUILD_ADDRESS_LIST_HOOKLIST, &g_address_list);
 	}
 
@@ -408,9 +398,7 @@ static void read_address_book(gchar *folderpath) {
 	if (g_completion_list) {
 		g_completion_add_items(g_completion, g_completion_list);
 		if (debug_get_mode())
-			debug_print("read %d items in %s\n",
-				g_list_length(g_completion_list),
-				folderpath?folderpath:"(null)");
+			debug_print("read %d items in %s\n", g_list_length(g_completion_list), folderpath ? folderpath : "(null)");
 	}
 }
 
@@ -422,7 +410,7 @@ static gboolean is_completion_pending(void)
 {
 	/* check if completion pending, i.e. we might satisfy a request for the next
 	 * or previous address */
-	 return g_completion_count;
+	return g_completion_count;
 }
 
 /**
@@ -452,7 +440,7 @@ guint start_address_completion(gchar *folderpath)
 	gboolean different_book = FALSE;
 	clear_completion_cache();
 
-	if (g_strcmp0(completion_folder_path,folderpath))
+	if (g_strcmp0(completion_folder_path, folderpath))
 		different_book = TRUE;
 
 	g_free(completion_folder_path);
@@ -469,8 +457,7 @@ guint start_address_completion(gchar *folderpath)
 		read_address_book(folderpath);
 
 	g_ref_count++;
-	debug_print("start_address_completion(%s) ref count %d\n",
-				folderpath?folderpath:"(null)", g_ref_count);
+	debug_print("start_address_completion(%s) ref count %d\n", folderpath ? folderpath : "(null)", g_ref_count);
 
 	return g_list_length(g_completion_list);
 }
@@ -493,14 +480,13 @@ static gchar *get_address_from_edit(GtkEntry *entry, gint *start_pos)
 	gchar *str;
 
 	edit_text = gtk_entry_get_text(entry);
-	if (edit_text == NULL) return NULL;
+	if (edit_text == NULL)
+		return NULL;
 
 	cur_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
 
 	/* scan for a separator. doesn't matter if walk points at null byte. */
-	for (p = g_utf8_offset_to_pointer(edit_text, cur_pos);
-	     p > edit_text;
-	     p = g_utf8_prev_char(p)) {
+	for (p = g_utf8_offset_to_pointer(edit_text, cur_pos); p > edit_text; p = g_utf8_prev_char(p)) {
 		if (*p == '"') {
 			in_quote = TRUE;
 		} else if (!in_quote) {
@@ -521,20 +507,20 @@ static gchar *get_address_from_edit(GtkEntry *entry, gint *start_pos)
 	(g_ascii_isalnum(x) || (x) == '"' || (x) == '<' || (((unsigned char)(x)) > 0x7f))
 
 	/* now scan back until we hit a valid character */
-	for (; *p && !IS_VALID_CHAR(*p); p = g_utf8_next_char(p))
-		;
+	for (; *p && !IS_VALID_CHAR(*p); p = g_utf8_next_char(p)) ;
 
 #undef IS_VALID_CHAR
 
 	if (g_utf8_strlen(p, -1) == 0)
 		return NULL;
 
-	if (start_pos) *start_pos = g_utf8_pointer_to_offset(edit_text, p);
+	if (start_pos)
+		*start_pos = g_utf8_pointer_to_offset(edit_text, p);
 
 	str = g_strdup(p);
 
 	return str;
-} 
+}
 
 static gchar *get_complete_address_from_name_email(const gchar *name, const gchar *email)
 {
@@ -542,11 +528,9 @@ static gchar *get_complete_address_from_name_email(const gchar *name, const gcha
 	if (!name || name[0] == '\0')
 		address = g_strdup_printf("<%s>", email);
 	else if (strchr_with_skip_quote(name, '"', ','))
-		address = g_strdup_printf
-			("\"%s\" <%s>", name, email);
+		address = g_strdup_printf("\"%s\" <%s>", name, email);
 	else
-		address = g_strdup_printf
-			("%s <%s>", name, email);
+		address = g_strdup_printf("%s <%s>", name, email);
 	return address;
 }
 
@@ -556,24 +540,22 @@ static gchar *get_complete_address_from_name_email(const gchar *name, const gcha
  * \param newtext   New text.
  * \param start_pos Insertion point in entry field.
  */
-static void replace_address_in_edit(GtkEntry *entry, const gchar *newtext,
-			     gint start_pos, gboolean is_group, GList *grp_emails)
+static void replace_address_in_edit(GtkEntry *entry, const gchar *newtext, gint start_pos, gboolean is_group, GList *grp_emails)
 {
-	if (!newtext) return;
+	if (!newtext)
+		return;
 	gtk_editable_delete_text(GTK_EDITABLE(entry), start_pos, -1);
 	if (!is_group) {
-		gtk_editable_insert_text(GTK_EDITABLE(entry), newtext, strlen(newtext),
-				 &start_pos);
+		gtk_editable_insert_text(GTK_EDITABLE(entry), newtext, strlen(newtext), &start_pos);
 	} else {
 		gchar *addresses = NULL;
 		GList *cur = grp_emails;
 		for (; cur; cur = cur->next) {
 			gchar *tmp;
 			ItemEMail *email = (ItemEMail *)cur->data;
-			ItemPerson *person = ( ItemPerson * ) ADDRITEM_PARENT(email);
-			
-			gchar *addr = get_complete_address_from_name_email(
-				ADDRITEM_NAME(person), email->address);
+			ItemPerson *person = (ItemPerson *)ADDRITEM_PARENT(email);
+
+			gchar *addr = get_complete_address_from_name_email(ADDRITEM_NAME(person), email->address);
 			if (addresses)
 				tmp = g_strdup_printf("%s, %s", addresses, addr);
 			else
@@ -582,8 +564,7 @@ static void replace_address_in_edit(GtkEntry *entry, const gchar *newtext,
 			g_free(addresses);
 			addresses = tmp;
 		}
-		gtk_editable_insert_text(GTK_EDITABLE(entry), addresses, strlen(addresses),
-				 &start_pos);
+		gtk_editable_insert_text(GTK_EDITABLE(entry), addresses, strlen(addresses), &start_pos);
 		g_free(addresses);
 	}
 	gtk_editable_set_position(GTK_EDITABLE(entry), -1);
@@ -601,8 +582,8 @@ guint complete_address(const gchar *str)
 {
 	GList *result = NULL;
 	gchar *d = NULL;
-	guint  count = 0;
-	guint  cpl = 0;
+	guint count = 0;
+	guint cpl = 0;
 	completion_entry *ce = NULL;
 
 	cm_return_val_if_fail(str != NULL, 0);
@@ -618,23 +599,17 @@ guint complete_address(const gchar *str)
 	count = g_list_length(result);
 	if (count) {
 		/* create list with unique addresses  */
-		for (cpl = 0, result = g_list_first(result);
-		     result != NULL;
-		     result = g_list_next(result)) {
-			ce = (completion_entry *)(result->data);
-			if (NULL == g_slist_find(g_completion_addresses,
-						 ce->ref)) {
+		for (cpl = 0, result = g_list_first(result); result != NULL; result = g_list_next(result)) {
+			ce = (completion_entry *) (result->data);
+			if (NULL == g_slist_find(g_completion_addresses, ce->ref)) {
 				cpl++;
-				g_completion_addresses =
-					g_slist_append(g_completion_addresses,
-						       ce->ref);
+				g_completion_addresses = g_slist_append(g_completion_addresses, ce->ref);
 			}
 		}
-		count = cpl + 1;	/* index 0 is the original prefix */
-		g_completion_next = 1;	/* we start at the first completed one */
+		count = cpl + 1; /* index 0 is the original prefix */
+		g_completion_next = 1; /* we start at the first completed one */
 		if (prefs_common.address_search_wildcard)
-		    g_completion_addresses = g_slist_sort(g_completion_addresses,
-							  addr_comparison_func);
+			g_completion_addresses = g_slist_sort(g_completion_addresses, addr_comparison_func);
 	} else {
 		g_free(g_completion_prefix);
 		g_completion_prefix = NULL;
@@ -690,8 +665,7 @@ gchar *get_complete_address(gint index)
 			address = g_strdup(g_completion_prefix);
 		else {
 			/* get something from the unique addresses */
-			p = (address_entry *)g_slist_nth_data
-				(g_completion_addresses, index - 1);
+			p = (address_entry *)g_slist_nth_data(g_completion_addresses, index - 1);
 			if (p != NULL && p->address != NULL) {
 				address = get_complete_address_from_name_email(p->name, p->address);
 			} else if (p != NULL && p->address == NULL && p->name != NULL) {
@@ -785,7 +759,7 @@ gint end_address_completion(void)
 		invalidate_address_completion();
 	}
 
-	return g_ref_count; 
+	return g_ref_count;
 }
 
 /**
@@ -817,39 +791,28 @@ static guint _completionIdleID_ = 0;
  * auto completion list). remaining things powered by claws's completion engine.
  */
 
-#define ENTRY_DATA_TAB_HOOK	"tab_hook"	/* used to lookup entry */
-#define ENTRY_DATA_ALLOW_COMMAS	"allowcommas"	/* used to know whether to present groups */
+#define ENTRY_DATA_TAB_HOOK	"tab_hook" /* used to lookup entry */
+#define ENTRY_DATA_ALLOW_COMMAS	"allowcommas" /* used to know whether to present groups */
 
-static void address_completion_mainwindow_set_focus	(GtkWindow   *window,
-							 GtkWidget   *widget,
-							 gpointer     data);
-static gboolean address_completion_entry_key_pressed	(GtkEntry    *entry,
-							 GdkEventKey *ev,
-							 gpointer     data);
-static gboolean address_completion_complete_address_in_entry
-							(GtkEntry    *entry,
-							 gboolean     next);
-static void address_completion_create_completion_window	(GtkEntry    *entry);
+static void address_completion_mainwindow_set_focus(GtkWindow *window, GtkWidget *widget, gpointer data);
+static gboolean address_completion_entry_key_pressed(GtkEntry *entry, GdkEventKey *ev, gpointer data);
+static gboolean address_completion_complete_address_in_entry(GtkEntry *entry, gboolean next);
+static void address_completion_create_completion_window(GtkEntry *entry);
 
-static gboolean completion_window_button_press
-					(GtkWidget	 *widget,
-					 GdkEventButton  *event,
-					 CompletionWindow *compWin );
+static gboolean completion_window_button_press(GtkWidget *widget, GdkEventButton *event, CompletionWindow *compWin);
 
-static gboolean completion_window_key_press
-					(GtkWidget	 *widget,
-					 GdkEventKey	 *event,
-					 CompletionWindow *compWin );
-static void address_completion_create_completion_window( GtkEntry *entry_ );
+static gboolean completion_window_key_press(GtkWidget *widget, GdkEventKey *event, CompletionWindow *compWin);
+static void address_completion_create_completion_window(GtkEntry *entry_);
 
 /**
  * Create a completion window object.
  * \return Initialized completion window.
  */
-static CompletionWindow *addrcompl_create_window( void ) {
+static CompletionWindow *addrcompl_create_window(void)
+{
 	CompletionWindow *cw;
 
-	cw = g_new0( CompletionWindow, 1 );
+	cw = g_new0(CompletionWindow, 1);
 	cw->listCount = 0;
 	cw->searchTerm = NULL;
 	cw->window = NULL;
@@ -858,40 +821,41 @@ static CompletionWindow *addrcompl_create_window( void ) {
 	cw->in_mouse = FALSE;
 	cw->destroying = FALSE;
 
-	return cw;	
+	return cw;
 }
 
 /**
  * Destroy completion window.
  * \param cw Window to destroy.
  */
-static void addrcompl_destroy_window( CompletionWindow *cw ) {
+static void addrcompl_destroy_window(CompletionWindow *cw)
+{
 	/* Stop all searches currently in progress */
 #ifndef USE_ALT_ADDRBOOK
-	addrindex_stop_search( _queryID_ );
+	addrindex_stop_search(_queryID_);
 #endif
 	/* Remove idler function... or application may not terminate */
-	if( _completionIdleID_ != 0 ) {
-		g_source_remove( _completionIdleID_ );
+	if (_completionIdleID_ != 0) {
+		g_source_remove(_completionIdleID_);
 		_completionIdleID_ = 0;
 	}
 
-	/* Now destroy window */	
-	if( cw ) {
+	/* Now destroy window */
+	if (cw) {
 		/* Clear references to widgets */
 		cw->entry = NULL;
 		cw->list_view = NULL;
 
 		/* Free objects */
-		if( cw->window ) {
-			gtk_widget_hide( cw->window );
-			gtk_widget_destroy( cw->window );
+		if (cw->window) {
+			gtk_widget_hide(cw->window);
+			gtk_widget_destroy(cw->window);
 		}
 		cw->window = NULL;
 		cw->destroying = FALSE;
 		cw->in_mouse = FALSE;
 	}
-	
+
 	/* Re-enable keyboard, required at least for Gtk3/Win32 */
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 }
@@ -900,18 +864,19 @@ static void addrcompl_destroy_window( CompletionWindow *cw ) {
  * Free up completion window.
  * \param cw Window to free.
  */
-static void addrcompl_free_window( CompletionWindow *cw ) {
-	if( cw ) {
-		addrcompl_destroy_window( cw );
+static void addrcompl_free_window(CompletionWindow *cw)
+{
+	if (cw) {
+		addrcompl_destroy_window(cw);
 
-		g_free( cw->searchTerm );
+		g_free(cw->searchTerm);
 		cw->searchTerm = NULL;
 
-		/* Clear references */		
+		/* Clear references */
 		cw->listCount = 0;
 
-		/* Free object */		
-		g_free( cw );
+		/* Free object */
+		g_free(cw);
 	}
 }
 
@@ -933,20 +898,20 @@ static void completion_window_advance_selection(GtkTreeView *list_view, gboolean
 	if (!gtk_tree_selection_get_selected(selection, &model, &iter))
 		return;
 
-	if (forward) { 
+	if (forward) {
 		forward = gtk_tree_model_iter_next(model, &iter);
-		if (forward) 
+		if (forward)
 			gtk_tree_selection_select_iter(selection, &iter);
 	} else {
 		GtkTreePath *prev;
 
 		prev = gtk_tree_model_get_path(model, &iter);
-		if (!prev) 
+		if (!prev)
 			return;
 
 		if (gtk_tree_path_prev(prev))
 			gtk_tree_selection_select_path(selection, prev);
-		
+
 		gtk_tree_path_free(prev);
 	}
 }
@@ -955,27 +920,25 @@ static void completion_window_advance_selection(GtkTreeView *list_view, gboolean
  * Resize window to accommodate maximum number of address entries.
  * \param cw Completion window.
  */
-static void addrcompl_resize_window( CompletionWindow *cw ) {
+static void addrcompl_resize_window(CompletionWindow *cw)
+{
 	GtkRequisition r;
 	GdkGrabStatus status;
 	gint x, y, width, height, depth;
 
 	/* Get current geometry of window */
-	gdk_window_get_geometry( gtk_widget_get_window( cw->window ), &x, &y, &width, &height, &depth );
+	gdk_window_get_geometry(gtk_widget_get_window(cw->window), &x, &y, &width, &height, &depth);
 
 	gtk_widget_queue_resize_no_redraw(cw->list_view);
-	gtk_widget_size_request( cw->list_view, &r );
+	gtk_widget_size_request(cw->list_view, &r);
 
 	/* Adjust window height to available screen space */
-	if( y + r.height > gdk_screen_height())
+	if (y + r.height > gdk_screen_height())
 		r.height = gdk_screen_height() - y;
 
 	gtk_widget_set_size_request(cw->window, width, r.height);
 
-	gdk_pointer_grab(gtk_widget_get_window(cw->window), TRUE,
-			 GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK |
-			 GDK_BUTTON_RELEASE_MASK,
-			 NULL, NULL, GDK_CURRENT_TIME);
+	gdk_pointer_grab(gtk_widget_get_window(cw->window), TRUE, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK, NULL, NULL, GDK_CURRENT_TIME);
 	status = gdk_keyboard_grab(gtk_widget_get_window(cw->window), FALSE, GDK_CURRENT_TIME);
 	if (status != GDK_GRAB_SUCCESS)
 		g_warning("gdk_keyboard_grab failed with status %d", status);
@@ -991,7 +954,8 @@ static GdkPixbuf *email_pixbuf = NULL;
  * \param cw      Completion window.
  * \param address Address to add.
  */
-static void addrcompl_add_entry( CompletionWindow *cw, gchar *address ) {
+static void addrcompl_add_entry(CompletionWindow *cw, gchar *address)
+{
 	GtkListStore *store;
 	GtkTreeIter iter;
 	GtkTreeSelection *selection;
@@ -999,7 +963,7 @@ static void addrcompl_add_entry( CompletionWindow *cw, gchar *address ) {
 	GList *grp_emails = NULL;
 	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(cw->list_view)));
 	GdkPixbuf *pixbuf;
-	
+
 	if (!group_pixbuf) {
 		stock_pixbuf_gdk(STOCK_PIXMAP_ADDR_TWO, &group_pixbuf);
 		g_object_ref(G_OBJECT(group_pixbuf));
@@ -1015,26 +979,20 @@ static void addrcompl_add_entry( CompletionWindow *cw, gchar *address ) {
 			grp_emails = g_hash_table_lookup(_groupAddresses_, GINT_TO_POINTER(g_str_hash(address)));
 		*(strstr(address, " <!--___group___-->")) = '\0';
 		pixbuf = group_pixbuf;
-	} else if (strchr(address, '@') && strchr(address, '<') &&
-		   strchr(address, '>')) {
+	} else if (strchr(address, '@') && strchr(address, '<') && strchr(address, '>')) {
 		pixbuf = email_pixbuf;
 	} else
 		pixbuf = NULL;
-	
+
 	if (is_group && !_allowCommas_)
 		return;
 	gtk_list_store_append(store, &iter);
-	gtk_list_store_set(store, &iter, 
-				ADDR_COMPL_ICON, pixbuf,
-				ADDR_COMPL_ADDRESS, address, 
-				ADDR_COMPL_ISGROUP, is_group, 
-				ADDR_COMPL_GROUPLIST, grp_emails,
-				-1);
+	gtk_list_store_set(store, &iter, ADDR_COMPL_ICON, pixbuf, ADDR_COMPL_ADDRESS, address, ADDR_COMPL_ISGROUP, is_group, ADDR_COMPL_GROUPLIST, grp_emails, -1);
 	cw->listCount++;
 
 	/* Resize window */
-	addrcompl_resize_window( cw );
-	gtk_grab_add( cw->window );
+	addrcompl_resize_window(cw);
+	gtk_grab_add(cw->window);
 
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cw->list_view));
 	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
@@ -1054,7 +1012,8 @@ static void addrcompl_add_entry( CompletionWindow *cw, gchar *address ) {
 #endif
 }
 
-void addrcompl_reflect_prefs_pixmap_theme(void) {
+void addrcompl_reflect_prefs_pixmap_theme(void)
+{
 	if (group_pixbuf) {
 		g_object_unref(G_OBJECT(group_pixbuf));
 		group_pixbuf = NULL;
@@ -1073,25 +1032,26 @@ void addrcompl_reflect_prefs_pixmap_theme(void) {
  * \param data Target completion window to receive email addresses.
  * \return <i>TRUE</i> to ensure that idle event do not get ignored.
  */
-static gboolean addrcompl_idle( gpointer data ) {
+static gboolean addrcompl_idle(gpointer data)
+{
 	GList *node;
 	gchar *address;
 
 	/* Process all entries in display queue */
-	pthread_mutex_lock( & _completionMutex_ );
-	if( _displayQueue_ ) {
+	pthread_mutex_lock(&_completionMutex_);
+	if (_displayQueue_) {
 		node = _displayQueue_;
-		while( node ) {
+		while (node) {
 			address = node->data;
 			/* g_print( "address ::: %s :::\n", address ); */
-			addrcompl_add_entry( _compWindow_, address );
-			g_free( address );
-			node = g_list_next( node );
+			addrcompl_add_entry(_compWindow_, address);
+			g_free(address);
+			node = g_list_next(node);
 		}
-		g_list_free( _displayQueue_ );
+		g_list_free(_displayQueue_);
 		_displayQueue_ = NULL;
 	}
-	pthread_mutex_unlock( & _completionMutex_ );
+	pthread_mutex_unlock(&_completionMutex_);
 	claws_do_idle();
 
 	return TRUE;
@@ -1107,28 +1067,27 @@ static gboolean addrcompl_idle( gpointer data ) {
  * \param data       Query data.
  */
 #ifndef USE_ALT_ADDRBOOK
-static gint addrcompl_callback_entry(
-	gpointer sender, gint queryID, GList *listEMail, gpointer data )
+static gint addrcompl_callback_entry(gpointer sender, gint queryID, GList *listEMail, gpointer data)
 {
 	GList *node;
 	gchar *address;
 
 	/* g_print( "addrcompl_callback_entry::queryID=%d\n", queryID ); */
-	pthread_mutex_lock( & _completionMutex_ );
-	if( queryID == _queryID_ ) {
+	pthread_mutex_lock(&_completionMutex_);
+	if (queryID == _queryID_) {
 		/* Append contents to end of display queue */
 		node = listEMail;
-		while( node ) {
+		while (node) {
 			ItemEMail *email = node->data;
 
-			address = addritem_format_email( email );
+			address = addritem_format_email(email);
 			/* g_print( "\temail/address ::%s::\n", address ); */
-			_displayQueue_ = g_list_append( _displayQueue_, address );
-			node = g_list_next( node );
+			_displayQueue_ = g_list_append(_displayQueue_, address);
+			node = g_list_next(node);
 		}
 	}
-	g_list_free( listEMail );
-	pthread_mutex_unlock( & _completionMutex_ );
+	g_list_free(listEMail);
+	pthread_mutex_unlock(&_completionMutex_);
 
 	return 0;
 }
@@ -1137,56 +1096,59 @@ static gint addrcompl_callback_entry(
 /**
  * Clear the display queue.
  */
-static void addrcompl_clear_queue( void ) {
+static void addrcompl_clear_queue(void)
+{
 	/* Clear out display queue */
-	pthread_mutex_lock( & _completionMutex_ );
+	pthread_mutex_lock(&_completionMutex_);
 
-	g_list_free_full( _displayQueue_, g_free );
+	g_list_free_full(_displayQueue_, g_free);
 	_displayQueue_ = NULL;
 
-	pthread_mutex_unlock( & _completionMutex_ );
+	pthread_mutex_unlock(&_completionMutex_);
 }
 
 /**
  * Add a single address entry into the display queue.
  * \param address Address to append.
  */
-static void addrcompl_add_queue( gchar *address ) {
-	pthread_mutex_lock( & _completionMutex_ );
-	_displayQueue_ = g_list_append( _displayQueue_, address );
-	pthread_mutex_unlock( & _completionMutex_ );
+static void addrcompl_add_queue(gchar *address)
+{
+	pthread_mutex_lock(&_completionMutex_);
+	_displayQueue_ = g_list_append(_displayQueue_, address);
+	pthread_mutex_unlock(&_completionMutex_);
 }
 
 /**
  * Load list with entries from local completion index.
  */
-static void addrcompl_load_local( void ) {
+static void addrcompl_load_local(void)
+{
 	guint count = 0;
 
 	for (count = 0; count < get_completion_count(); count++) {
 		gchar *address;
 
-		address = get_complete_address( count );
+		address = get_complete_address(count);
 		/* g_print( "\taddress ::%s::\n", address ); */
 
 		/* Append contents to end of display queue */
-		addrcompl_add_queue( address );
+		addrcompl_add_queue(address);
 	}
 }
 
 /**
  * Start the search.
  */
-static void addrcompl_start_search( void ) {
+static void addrcompl_start_search(void)
+{
 #ifndef USE_ALT_ADDRBOOK
 	gchar *searchTerm;
 
-	searchTerm = g_strdup( _compWindow_->searchTerm );
+	searchTerm = g_strdup(_compWindow_->searchTerm);
 
 	/* Setup the search */
-	_queryID_ = addrindex_setup_search(
-		searchTerm, NULL, addrcompl_callback_entry );
-	g_free( searchTerm );
+	_queryID_ = addrindex_setup_search(searchTerm, NULL, addrcompl_callback_entry);
+	g_free(searchTerm);
 #endif
 	/* g_print( "addrcompl_start_search::queryID=%d\n", _queryID_ ); */
 
@@ -1194,14 +1156,13 @@ static void addrcompl_start_search( void ) {
 	addrcompl_load_local();
 
 	/* Sit back and wait until something happens */
-	_completionIdleID_ =
-		g_idle_add( (GSourceFunc) addrcompl_idle, NULL );
+	_completionIdleID_ = g_idle_add((GSourceFunc) addrcompl_idle, NULL);
 	/* g_print( "addrindex_start_search::queryID=%d\n", _queryID_ ); */
 
 #ifndef USE_ALT_ADDRBOOK
-	addrindex_start_search( _queryID_ );
+	addrindex_start_search(_queryID_);
 #else
-	
+
 #endif
 }
 
@@ -1212,12 +1173,10 @@ static void addrcompl_start_search( void ) {
  * \param entry Address entry field.
  * \param move_focus Move focus to the next widget ?
  */
-static void completion_window_apply_selection(GtkTreeView *list_view,
-						GtkEntry *entry,
-						gboolean move_focus)
+static void completion_window_apply_selection(GtkTreeView *list_view, GtkEntry *entry, gboolean move_focus)
 {
 	gchar *address = NULL, *text = NULL;
-	gint   cursor_pos;
+	gint cursor_pos;
 	GtkWidget *parent;
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
@@ -1232,16 +1191,13 @@ static void completion_window_apply_selection(GtkTreeView *list_view,
 		return;
 
 	/* First remove the idler */
-	if( _completionIdleID_ != 0 ) {
-		g_source_remove( _completionIdleID_ );
+	if (_completionIdleID_ != 0) {
+		g_source_remove(_completionIdleID_);
 		_completionIdleID_ = 0;
 	}
 
 	/* Process selected item */
-	gtk_tree_model_get(model, &iter, ADDR_COMPL_ADDRESS, &text, 
-				ADDR_COMPL_ISGROUP, &is_group, 
-				ADDR_COMPL_GROUPLIST, &grp_emails,
-				-1);
+	gtk_tree_model_get(model, &iter, ADDR_COMPL_ADDRESS, &text, ADDR_COMPL_ISGROUP, &is_group, ADDR_COMPL_GROUPLIST, &grp_emails, -1);
 
 	address = get_address_from_edit(entry, &cursor_pos);
 	g_free(address);
@@ -1250,8 +1206,8 @@ static void completion_window_apply_selection(GtkTreeView *list_view,
 
 	/* Move focus to next widget */
 	parent = gtk_widget_get_parent(GTK_WIDGET(entry));
-	if( parent && move_focus) {
-		gtk_widget_child_focus( parent, GTK_DIR_TAB_FORWARD );
+	if (parent && move_focus) {
+		gtk_widget_child_focus(parent, GTK_DIR_TAB_FORWARD);
 	}
 }
 
@@ -1266,9 +1222,7 @@ void address_completion_start(GtkWidget *mainwindow)
 	set_match_any_part(TRUE);
 
 	/* register focus change hook */
-	g_signal_connect(G_OBJECT(mainwindow), "set_focus",
-			 G_CALLBACK(address_completion_mainwindow_set_focus),
-			 mainwindow);
+	g_signal_connect(G_OBJECT(mainwindow), "set_focus", G_CALLBACK(address_completion_mainwindow_set_focus), mainwindow);
 }
 
 /**
@@ -1291,12 +1245,7 @@ void address_completion_register_entry(GtkEntry *entry, gboolean allow_commas)
 	g_object_set_data(G_OBJECT(entry), ENTRY_DATA_ALLOW_COMMAS, GINT_TO_POINTER(allow_commas));
 
 	/* add keypress event */
-	g_signal_connect_closure
-		(G_OBJECT(entry), "key_press_event",
-		 g_cclosure_new(G_CALLBACK(address_completion_entry_key_pressed),
-				COMPLETION_UNIQUE_DATA,
-				NULL),
-		 FALSE); /* magic */
+	g_signal_connect_closure(G_OBJECT(entry), "key_press_event", g_cclosure_new(G_CALLBACK(address_completion_entry_key_pressed), COMPLETION_UNIQUE_DATA, NULL), FALSE); /* magic */
 }
 
 /**
@@ -1318,9 +1267,7 @@ void address_completion_unregister_entry(GtkEntry *entry)
 	g_object_set_data(G_OBJECT(entry), ENTRY_DATA_TAB_HOOK, NULL);
 
 	/* remove the hook */
-	g_signal_handlers_disconnect_by_func(G_OBJECT(entry), 
-			G_CALLBACK(address_completion_entry_key_pressed),
-			COMPLETION_UNIQUE_DATA);
+	g_signal_handlers_disconnect_by_func(G_OBJECT(entry), G_CALLBACK(address_completion_entry_key_pressed), COMPLETION_UNIQUE_DATA);
 }
 
 /**
@@ -1337,13 +1284,10 @@ void address_completion_end(GtkWidget *mainwindow)
 }
 
 /* if focus changes to another entry, then clear completion cache */
-static void address_completion_mainwindow_set_focus(GtkWindow *window,
-						    GtkWidget *widget,
-						    gpointer   data)
+static void address_completion_mainwindow_set_focus(GtkWindow *window, GtkWidget *widget, gpointer data)
 {
-	
-	if (widget && GTK_IS_ENTRY(widget) &&
-	    g_object_get_data(G_OBJECT(widget), ENTRY_DATA_TAB_HOOK)) {
+
+	if (widget && GTK_IS_ENTRY(widget) && g_object_get_data(G_OBJECT(widget), ENTRY_DATA_TAB_HOOK)) {
 		_allowCommas_ = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), ENTRY_DATA_ALLOW_COMMAS));
 		clear_completion_cache();
 	}
@@ -1356,95 +1300,85 @@ static void address_completion_mainwindow_set_focus(GtkWindow *window,
  * \param data  User data.
  * \return <i>TRUE</i>.
  */
-static gboolean address_completion_entry_key_pressed(GtkEntry    *entry,
-						     GdkEventKey *ev,
-						     gpointer     data)
+static gboolean address_completion_entry_key_pressed(GtkEntry *entry, GdkEventKey *ev, gpointer data)
 {
 	if (ev->keyval == GDK_KEY_Tab) {
 		addrcompl_clear_queue();
 		_allowCommas_ = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(entry), ENTRY_DATA_ALLOW_COMMAS));
-		if( address_completion_complete_address_in_entry( entry, TRUE ) ) {
+		if (address_completion_complete_address_in_entry(entry, TRUE)) {
 			/* route a void character to the default handler */
 			/* this is a dirty hack; we're actually changing a key
 			 * reported by the system. */
 			ev->keyval = GDK_KEY_AudibleBell_Enable;
 			ev->state &= ~GDK_SHIFT_MASK;
 
-			/* Create window */			
+			/* Create window */
 			address_completion_create_completion_window(entry);
 
 			/* Start remote queries */
 			addrcompl_start_search();
 
 			return TRUE;
-		}
-		else {
+		} else {
 			/* old behaviour */
 		}
-	} else if (ev->keyval == GDK_KEY_Shift_L
-		|| ev->keyval == GDK_KEY_Shift_R
-		|| ev->keyval == GDK_KEY_Control_L
-		|| ev->keyval == GDK_KEY_Control_R
-		|| ev->keyval == GDK_KEY_Caps_Lock
-		|| ev->keyval == GDK_KEY_Shift_Lock
-		|| ev->keyval == GDK_KEY_Meta_L
-		|| ev->keyval == GDK_KEY_Meta_R
-		|| ev->keyval == GDK_KEY_Alt_L
-		|| ev->keyval == GDK_KEY_Alt_R) {
+	} else if (ev->keyval == GDK_KEY_Shift_L || ev->keyval == GDK_KEY_Shift_R || ev->keyval == GDK_KEY_Control_L || ev->keyval == GDK_KEY_Control_R || ev->keyval == GDK_KEY_Caps_Lock || ev->keyval == GDK_KEY_Shift_Lock || ev->keyval == GDK_KEY_Meta_L || ev->keyval == GDK_KEY_Meta_R || ev->keyval == GDK_KEY_Alt_L || ev->keyval == GDK_KEY_Alt_R) {
 		/* these buttons should not clear the cache... */
 	} else
 		clear_completion_cache();
 
 	return FALSE;
 }
+
 /**
  * Initialize search term for address completion.
  * \param entry Address entry field.
  */
-static gboolean address_completion_complete_address_in_entry(GtkEntry *entry,
-							     gboolean  next)
+static gboolean address_completion_complete_address_in_entry(GtkEntry *entry, gboolean next)
 {
 	gint ncount, cursor_pos;
 	gchar *searchTerm, *new = NULL;
 
 	cm_return_val_if_fail(entry != NULL, FALSE);
 
-	if (!gtk_widget_has_focus(GTK_WIDGET(entry))) return FALSE;
+	if (!gtk_widget_has_focus(GTK_WIDGET(entry)))
+		return FALSE;
 
 	/* get an address component from the cursor */
-	searchTerm = get_address_from_edit( entry, &cursor_pos );
-	if( ! searchTerm ) return FALSE;
+	searchTerm = get_address_from_edit(entry, &cursor_pos);
+	if (!searchTerm)
+		return FALSE;
 	/* g_print( "search for :::%s:::\n", searchTerm ); */
 
 	/* Clear any existing search */
-	g_free( _compWindow_->searchTerm );
-	_compWindow_->searchTerm = g_strdup( searchTerm );
+	g_free(_compWindow_->searchTerm);
+	_compWindow_->searchTerm = g_strdup(searchTerm);
 
 	/* Perform search on local completion index */
-	ncount = complete_address( searchTerm );
-	if( 0 < ncount ) {
+	ncount = complete_address(searchTerm);
+	if (0 < ncount) {
 		new = get_next_complete_address();
-		g_free( new );
+		g_free(new);
 	}
 #if (!defined(USE_LDAP) && !defined(GENERIC_UMPC))
 	/* Select the address if there is only one match */
 	if (ncount == 2) {
-		/* Display selected address in entry field */		
+		/* Display selected address in entry field */
 		gchar *addr = get_complete_address(1);
 		if (addr && !strstr(addr, " <!--___group___-->")) {
 			replace_address_in_edit(entry, addr, cursor_pos, FALSE, NULL);
 			/* Discard the window */
 			clear_completion_cache();
-		} 
+		}
 		g_free(addr);
 	}
 	/* Make sure that drop-down appears uniform! */
-	else 
+	else
 #endif
-	if( ncount == 0 ) {
-		addrcompl_add_queue( searchTerm );
+	if (ncount == 0) {
+		addrcompl_add_queue(searchTerm);
 	} else {
-		g_free( searchTerm );
+		g_free(searchTerm);
 	}
 
 	return TRUE;
@@ -1454,7 +1388,7 @@ static gboolean address_completion_complete_address_in_entry(GtkEntry *entry,
  * Create new address completion window for specified entry.
  * \param entry_ Entry widget to associate with window.
  */
-static void address_completion_create_completion_window( GtkEntry *entry_ )
+static void address_completion_create_completion_window(GtkEntry *entry_)
 {
 	gint x, y, height, width, depth;
 	GtkWidget *scroll, *list_view;
@@ -1466,63 +1400,47 @@ static void address_completion_create_completion_window( GtkEntry *entry_ )
 
 	/* Create new window and list */
 	window = gtk_window_new(GTK_WINDOW_POPUP);
-	list_view  = addr_compl_list_view_create(_compWindow_);
+	list_view = addr_compl_list_view_create(_compWindow_);
 
 	/* Destroy any existing window */
-	addrcompl_destroy_window( _compWindow_ );
+	addrcompl_destroy_window(_compWindow_);
 
 	/* Create new object */
-	_compWindow_->window    = window;
-	_compWindow_->entry     = entry;
+	_compWindow_->window = window;
+	_compWindow_->entry = entry;
 	_compWindow_->list_view = list_view;
 	_compWindow_->listCount = 0;
-	_compWindow_->in_mouse  = FALSE;
+	_compWindow_->in_mouse = FALSE;
 
 	scroll = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-				       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(window), scroll);
 	gtk_container_add(GTK_CONTAINER(scroll), list_view);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll),
-		GTK_SHADOW_OUT);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_OUT);
 	/* Use entry widget to create initial window */
-	gdkwin = gtk_widget_get_window(entry),
-	gdk_window_get_geometry(gdkwin, &x, &y, &width, &height, &depth);
-	gdk_window_get_origin (gdkwin, &x, &y);
+	gdkwin = gtk_widget_get_window(entry), gdk_window_get_geometry(gdkwin, &x, &y, &width, &height, &depth);
+	gdk_window_get_origin(gdkwin, &x, &y);
 	y += height;
 	gtk_window_move(GTK_WINDOW(window), x, y);
 
 	/* Resize window to fit initial (empty) address list */
-	gtk_widget_size_request( list_view, &r );
-	gtk_widget_set_size_request( window, width, r.height );
-	gtk_widget_show_all( window );
-	gtk_widget_size_request( list_view, &r );
+	gtk_widget_size_request(list_view, &r);
+	gtk_widget_set_size_request(window, width, r.height);
+	gtk_widget_show_all(window);
+	gtk_widget_size_request(list_view, &r);
 
 	/* Setup handlers */
-	g_signal_connect(G_OBJECT(list_view), "button_press_event",
-			 G_CALLBACK(list_view_button_press),
-			 _compWindow_);
-			 
-	g_signal_connect(G_OBJECT(list_view), "button_release_event",
-			 G_CALLBACK(list_view_button_release),
-			 _compWindow_);
-	
-	g_signal_connect(G_OBJECT(window),
-			 "button-press-event",
-			 G_CALLBACK(completion_window_button_press),
-			 _compWindow_ );
-	g_signal_connect(G_OBJECT(window),
-			 "key-press-event",
-			 G_CALLBACK(completion_window_key_press),
-			 _compWindow_ );
-	gdk_pointer_grab(gtk_widget_get_window(window), TRUE,
-			 GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK |
-			 GDK_BUTTON_RELEASE_MASK,
-			 NULL, NULL, GDK_CURRENT_TIME);
+	g_signal_connect(G_OBJECT(list_view), "button_press_event", G_CALLBACK(list_view_button_press), _compWindow_);
+
+	g_signal_connect(G_OBJECT(list_view), "button_release_event", G_CALLBACK(list_view_button_release), _compWindow_);
+
+	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(completion_window_button_press), _compWindow_);
+	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(completion_window_key_press), _compWindow_);
+	gdk_pointer_grab(gtk_widget_get_window(window), TRUE, GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK, NULL, NULL, GDK_CURRENT_TIME);
 	status = gdk_keyboard_grab(gtk_widget_get_window(window), FALSE, GDK_CURRENT_TIME);
 	if (status != GDK_GRAB_SUCCESS)
 		g_warning("gdk_keyboard_grab failed with status %d", status);
-	gtk_grab_add( window );
+	gtk_grab_add(window);
 }
 
 /**
@@ -1534,9 +1452,7 @@ static void address_completion_create_completion_window( GtkEntry *entry_ )
  * \param event    Event.
  * \param compWin  Reference to completion window.
  */
-static gboolean completion_window_button_press(GtkWidget *widget,
-					       GdkEventButton *event,
-					       CompletionWindow *compWin )
+static gboolean completion_window_button_press(GtkWidget *widget, GdkEventButton *event, CompletionWindow *compWin)
 {
 	GtkWidget *event_widget, *entry;
 	gchar *searchTerm;
@@ -1570,7 +1486,7 @@ static gboolean completion_window_button_press(GtkWidget *widget,
 	}
 
 	clear_completion_cache();
-	addrcompl_destroy_window( _compWindow_ );
+	addrcompl_destroy_window(_compWindow_);
 
 	return TRUE;
 }
@@ -1581,9 +1497,7 @@ static gboolean completion_window_button_press(GtkWidget *widget,
  * \param event    Event.
  * \param compWind Reference to completion window.
  */
-static gboolean completion_window_key_press(GtkWidget *widget,
-					    GdkEventKey *event,
-					    CompletionWindow *compWin )
+static gboolean completion_window_key_press(GtkWidget *widget, GdkEventKey *event, CompletionWindow *compWin)
 {
 	GdkEventKey tmp_event;
 	GtkWidget *entry;
@@ -1598,58 +1512,50 @@ static gboolean completion_window_key_press(GtkWidget *widget,
 	cm_return_val_if_fail(entry != NULL, FALSE);
 
 	/* allow keyboard navigation in the alternatives tree view */
-	if (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down ||
-	    event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down) {
-		completion_window_advance_selection
-			(GTK_TREE_VIEW(list_view),
-			 event->keyval == GDK_KEY_Down ||
-			 event->keyval == GDK_KEY_Page_Down ? TRUE : FALSE);
+	if (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Up || event->keyval == GDK_KEY_Page_Down) {
+		completion_window_advance_selection(GTK_TREE_VIEW(list_view), event->keyval == GDK_KEY_Down || event->keyval == GDK_KEY_Page_Down ? TRUE : FALSE);
 		return TRUE;
-	}		
+	}
 
 	/* make tab move to next field */
-	if( event->keyval == GDK_KEY_Tab ) {
+	if (event->keyval == GDK_KEY_Tab) {
 		/* Reference to parent */
 		parent = gtk_widget_get_parent(GTK_WIDGET(entry));
 
 		/* Discard the window */
 		clear_completion_cache();
-		addrcompl_destroy_window( _compWindow_ );
+		addrcompl_destroy_window(_compWindow_);
 
 		/* Move focus to next widget */
-		if( parent ) {
-			gtk_widget_child_focus( parent, GTK_DIR_TAB_FORWARD );
+		if (parent) {
+			gtk_widget_child_focus(parent, GTK_DIR_TAB_FORWARD);
 		}
 		return FALSE;
 	}
 
 	/* make backtab move to previous field */
-	if( event->keyval == GDK_KEY_ISO_Left_Tab ) {
+	if (event->keyval == GDK_KEY_ISO_Left_Tab) {
 		/* Reference to parent */
 		parent = gtk_widget_get_parent(GTK_WIDGET(entry));
 
 		/* Discard the window */
 		clear_completion_cache();
-		addrcompl_destroy_window( _compWindow_ );
+		addrcompl_destroy_window(_compWindow_);
 
 		/* Move focus to previous widget */
-		if( parent ) {
-			gtk_widget_child_focus( parent, GTK_DIR_TAB_BACKWARD );
+		if (parent) {
+			gtk_widget_child_focus(parent, GTK_DIR_TAB_BACKWARD);
 		}
 		return FALSE;
 	}
 	_allowCommas_ = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(entry), ENTRY_DATA_ALLOW_COMMAS));
 
 	/* look for presses that accept the selection */
-	if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_space ||
-			event->keyval == GDK_KEY_KP_Enter ||
-			(_allowCommas_ && event->keyval == GDK_KEY_comma)) {
+	if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_space || event->keyval == GDK_KEY_KP_Enter || (_allowCommas_ && event->keyval == GDK_KEY_comma)) {
 		/* User selected address with a key press */
 
-		/* Display selected address in entry field */		
-		completion_window_apply_selection(
-			GTK_TREE_VIEW(list_view), GTK_ENTRY(entry),
-			event->keyval != GDK_KEY_comma);
+		/* Display selected address in entry field */
+		completion_window_apply_selection(GTK_TREE_VIEW(list_view), GTK_ENTRY(entry), event->keyval != GDK_KEY_comma);
 
 		if (event->keyval == GDK_KEY_comma) {
 			gint pos = gtk_editable_get_position(GTK_EDITABLE(entry));
@@ -1659,21 +1565,12 @@ static gboolean completion_window_key_press(GtkWidget *widget,
 
 		/* Discard the window */
 		clear_completion_cache();
-		addrcompl_destroy_window( _compWindow_ );
+		addrcompl_destroy_window(_compWindow_);
 		return FALSE;
 	}
 
 	/* key state keys should never be handled */
-	if (event->keyval == GDK_KEY_Shift_L
-		 || event->keyval == GDK_KEY_Shift_R
-		 || event->keyval == GDK_KEY_Control_L
-		 || event->keyval == GDK_KEY_Control_R
-		 || event->keyval == GDK_KEY_Caps_Lock
-		 || event->keyval == GDK_KEY_Shift_Lock
-		 || event->keyval == GDK_KEY_Meta_L
-		 || event->keyval == GDK_KEY_Meta_R
-		 || event->keyval == GDK_KEY_Alt_L
-		 || event->keyval == GDK_KEY_Alt_R) {
+	if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R || event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R || event->keyval == GDK_KEY_Caps_Lock || event->keyval == GDK_KEY_Shift_Lock || event->keyval == GDK_KEY_Meta_L || event->keyval == GDK_KEY_Meta_R || event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) {
 		return FALSE;
 	}
 
@@ -1683,19 +1580,19 @@ static gboolean completion_window_key_press(GtkWidget *widget,
 	replace_address_in_edit(GTK_ENTRY(entry), searchTerm, cursor_pos, FALSE, NULL);
 
 	/* make sure anything we typed comes in the edit box */
-	tmp_event.type       = event->type;
-	tmp_event.window     = gtk_widget_get_window(GTK_WIDGET(entry));
+	tmp_event.type = event->type;
+	tmp_event.window = gtk_widget_get_window(GTK_WIDGET(entry));
 	tmp_event.send_event = TRUE;
-	tmp_event.time       = event->time;
-	tmp_event.state      = event->state;
-	tmp_event.keyval     = event->keyval;
-	tmp_event.length     = event->length;
-	tmp_event.string     = event->string;
+	tmp_event.time = event->time;
+	tmp_event.state = event->state;
+	tmp_event.keyval = event->keyval;
+	tmp_event.length = event->length;
+	tmp_event.string = event->string;
 	gtk_widget_event(entry, (GdkEvent *)&tmp_event);
 
 	/* and close the completion window */
 	clear_completion_cache();
-	addrcompl_destroy_window( _compWindow_ );
+	addrcompl_destroy_window(_compWindow_);
 
 	return TRUE;
 }
@@ -1709,9 +1606,10 @@ static gboolean completion_window_key_press(GtkWidget *widget,
 /**
  * Setup completion object.
  */
-void addrcompl_initialize( void ) {
+void addrcompl_initialize(void)
+{
 	/* g_print( "addrcompl_initialize...\n" ); */
-	if( ! _compWindow_ ) {
+	if (!_compWindow_) {
 		_compWindow_ = addrcompl_create_window();
 	}
 	_queryID_ = 0;
@@ -1722,9 +1620,10 @@ void addrcompl_initialize( void ) {
 /**
  * Teardown completion object.
  */
-void addrcompl_teardown( void ) {
+void addrcompl_teardown(void)
+{
 	/* g_print( "addrcompl_teardown...\n" ); */
-	addrcompl_free_window( _compWindow_ );
+	addrcompl_free_window(_compWindow_);
 	_compWindow_ = NULL;
 
 	addrcompl_clear_queue();
@@ -1739,14 +1638,9 @@ void addrcompl_teardown( void ) {
 
 static GtkListStore *addr_compl_create_store(void)
 {
-	return gtk_list_store_new(N_ADDR_COMPL_COLUMNS,
-				  GDK_TYPE_PIXBUF,
-				  G_TYPE_STRING,
-				  G_TYPE_BOOLEAN,
-				  G_TYPE_POINTER,
-				  -1);
+	return gtk_list_store_new(N_ADDR_COMPL_COLUMNS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, -1);
 }
-					     
+
 static GtkWidget *addr_compl_list_view_create(CompletionWindow *window)
 {
 	GtkTreeView *list_view;
@@ -1755,15 +1649,14 @@ static GtkWidget *addr_compl_list_view_create(CompletionWindow *window)
 
 	model = GTK_TREE_MODEL(addr_compl_create_store());
 	list_view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(model));
-	g_object_unref(model);	
-	
+	g_object_unref(model);
+
 	gtk_tree_view_set_rules_hint(list_view, prefs_common.use_stripes_everywhere);
 	gtk_tree_view_set_headers_visible(list_view, FALSE);
-	
+
 	selector = gtk_tree_view_get_selection(list_view);
 	gtk_tree_selection_set_mode(selector, GTK_SELECTION_BROWSE);
-	gtk_tree_selection_set_select_function(selector, addr_compl_selected,
-					       window, NULL);
+	gtk_tree_selection_set_select_function(selector, addr_compl_selected, window, NULL);
 
 	/* create the columns */
 	addr_compl_create_list_view_columns(GTK_WIDGET(list_view));
@@ -1777,18 +1670,14 @@ static void addr_compl_create_list_view_columns(GtkWidget *list_view)
 	GtkCellRenderer *renderer;
 
 	renderer = gtk_cell_renderer_pixbuf_new();
-	column = gtk_tree_view_column_new_with_attributes
-		("", renderer,
-	         "pixbuf", ADDR_COMPL_ICON, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);		
+	column = gtk_tree_view_column_new_with_attributes("", renderer, "pixbuf", ADDR_COMPL_ICON, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
 	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes
-		("", renderer, "text", ADDR_COMPL_ADDRESS, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);		
+	column = gtk_tree_view_column_new_with_attributes("", renderer, "text", ADDR_COMPL_ADDRESS, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_view), column);
 }
 
-static gboolean list_view_button_press(GtkWidget *widget, GdkEventButton *event,
-				       CompletionWindow *window)
+static gboolean list_view_button_press(GtkWidget *widget, GdkEventButton *event, CompletionWindow *window)
 {
 	if (window && event && event->type == GDK_BUTTON_PRESS) {
 		window->in_mouse = TRUE;
@@ -1796,8 +1685,7 @@ static gboolean list_view_button_press(GtkWidget *widget, GdkEventButton *event,
 	return FALSE;
 }
 
-static gboolean list_view_button_release(GtkWidget *widget, GdkEventButton *event,
-				         CompletionWindow *window)
+static gboolean list_view_button_release(GtkWidget *widget, GdkEventButton *event, CompletionWindow *window)
 {
 	if (window && event && event->type == GDK_BUTTON_RELEASE) {
 		window->in_mouse = FALSE;
@@ -1805,17 +1693,13 @@ static gboolean list_view_button_release(GtkWidget *widget, GdkEventButton *even
 	return FALSE;
 }
 
-static gboolean addr_compl_selected(GtkTreeSelection *selector,
-			            GtkTreeModel *model, 
-				    GtkTreePath *path,
-				    gboolean currently_selected,
-				    gpointer data)
+static gboolean addr_compl_selected(GtkTreeSelection *selector, GtkTreeModel *model, GtkTreePath *path, gboolean currently_selected, gpointer data)
 {
 	CompletionWindow *window = data;
 
 	if (currently_selected)
 		return TRUE;
-	
+
 	if (!window->in_mouse)
 		return TRUE;
 
@@ -1836,8 +1720,7 @@ static gboolean addr_compl_defer_select_destruct(CompletionWindow *window)
 {
 	GtkEntry *entry = GTK_ENTRY(window->entry);
 
-	completion_window_apply_selection(GTK_TREE_VIEW(window->list_view), 
-					  entry, TRUE);
+	completion_window_apply_selection(GTK_TREE_VIEW(window->list_view), entry, TRUE);
 
 	clear_completion_cache();
 
@@ -1874,4 +1757,8 @@ gboolean found_in_addressbook(const gchar *address)
 
 /*
  * End of Source.
+ */
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
  */

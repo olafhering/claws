@@ -20,7 +20,7 @@
 #ifndef PREFS_PROXY_H
 #define PREFS_PROXY_H
 
-void prefs_proxy_init	(void);
-void prefs_proxy_done	(void);
+void prefs_proxy_init(void);
+void prefs_proxy_done(void);
 
 #endif /* PREFS_PROXY_H */

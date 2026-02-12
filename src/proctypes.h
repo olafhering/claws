@@ -23,54 +23,48 @@
 #include <glib.h>
 
 struct _MsgInfo;
-typedef struct _MsgInfo			MsgInfo;
+typedef struct _MsgInfo MsgInfo;
 
 struct _MsgFlags;
-typedef struct _MsgFlags		MsgFlags;
+typedef struct _MsgFlags MsgFlags;
 
 typedef guint32 MsgPermFlags;
 typedef guint32 MsgTmpFlags;
 
 struct _MsgFileInfo;
-typedef struct _MsgFileInfo     	MsgFileInfo;
+typedef struct _MsgFileInfo MsgFileInfo;
 
 struct _MsgInfoUpdate;
-typedef struct _MsgInfoUpdate 		MsgInfoUpdate;
+typedef struct _MsgInfoUpdate MsgInfoUpdate;
 
 struct _MailFilteringData;
-typedef struct _MailFilteringData	MailFilteringData;
+typedef struct _MailFilteringData MailFilteringData;
 
 struct _AvatarCaptureData;
-typedef struct _AvatarCaptureData	AvatarCaptureData;
+typedef struct _AvatarCaptureData AvatarCaptureData;
 
 struct _MsgInfoExtraData;
-typedef struct _MsgInfoExtraData	MsgInfoExtraData;
+typedef struct _MsgInfoExtraData MsgInfoExtraData;
 
 struct _MsgInfoAvatar;
-typedef struct _MsgInfoAvatar		MsgInfoAvatar;
+typedef struct _MsgInfoAvatar MsgInfoAvatar;
 
 typedef GSList MsgInfoList;
 typedef GSList MsgNumberList;
 
-
-
 struct _HeaderEntry;
-typedef struct _HeaderEntry	HeaderEntry;
+typedef struct _HeaderEntry HeaderEntry;
 
 struct _Header;
-typedef struct _Header		Header;
-
-
+typedef struct _Header Header;
 
 struct _MimeType;
-typedef struct _MimeType	MimeType;
+typedef struct _MimeType MimeType;
 
 struct _MimeInfo;
-typedef struct _MimeInfo	MimeInfo;
+typedef struct _MimeInfo MimeInfo;
 
 struct _MimeParser;
-typedef struct _MimeParser	MimeParser;
-
-
+typedef struct _MimeParser MimeParser;
 
 #endif

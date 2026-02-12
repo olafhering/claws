@@ -24,21 +24,21 @@ struct _SummaryView;
 typedef struct _SummaryView SummaryView;
 
 struct _FolderView;
-typedef struct _FolderView	FolderView;
+typedef struct _FolderView FolderView;
 
 struct _HeaderView;
-typedef struct _HeaderView	HeaderView;
+typedef struct _HeaderView HeaderView;
 
 struct _MessageView;
-typedef struct _MessageView	MessageView;
+typedef struct _MessageView MessageView;
 
 struct _TextView;
-typedef struct _TextView	TextView;
+typedef struct _TextView TextView;
 
 struct _MimeView;
-typedef struct _MimeView	MimeView;
+typedef struct _MimeView MimeView;
 
 struct _NoticeView;
-typedef struct _NoticeView	NoticeView;
+typedef struct _NoticeView NoticeView;
 
 #endif

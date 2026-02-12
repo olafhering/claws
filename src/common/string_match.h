@@ -18,7 +18,6 @@
  * 
  */
 
-
 #ifndef STRING_MATCH_H__
 #define STRING_MATCH_H__
 
@@ -30,6 +29,6 @@
  * The result is stored in the preallocated buf buffer which maximal length
  * is buflen.
  */
-gchar *string_remove_match(gchar *buf, gint buflen, gchar * txt, regex_t *preg);
+gchar *string_remove_match(gchar *buf, gint buflen, gchar *txt, regex_t * preg);
 
 #endif /* STRING_MATCH_H__ */

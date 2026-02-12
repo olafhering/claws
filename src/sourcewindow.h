@@ -25,21 +25,19 @@
 
 #include "procmsg.h"
 
-typedef struct _SourceWindow	SourceWindow;
+typedef struct _SourceWindow SourceWindow;
 
-struct _SourceWindow
-{
+struct _SourceWindow {
 	GtkWidget *window;
 	GtkWidget *scrolledwin;
 	GtkWidget *text;
-	
+
 	gboolean updating;
 	gboolean deferred_destroy;
 };
 
-SourceWindow *source_window_create	(void);
-void source_window_show			(SourceWindow	*sourcewin);
-void source_window_show_msg		(SourceWindow	*sourcewin,
-					 MsgInfo	*msginfo);
+SourceWindow *source_window_create(void);
+void source_window_show(SourceWindow *sourcewin);
+void source_window_show_msg(SourceWindow *sourcewin, MsgInfo *msginfo);
 
 #endif /* __SOURCEWINDOW_H__ */

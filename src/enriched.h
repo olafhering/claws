@@ -25,8 +25,7 @@
 
 #include "codeconv.h"
 
-typedef enum
-{
+typedef enum {
 	ERTF_NORMAL,
 	ERTF_NOFILL,
 	ERTF_UNKNOWN,
@@ -34,10 +33,9 @@ typedef enum
 	ERTF_EOF
 } ERTFState;
 
-typedef struct _ERTFParser	ERTFParser;
+typedef struct _ERTFParser ERTFParser;
 
-struct _ERTFParser
-{
+struct _ERTFParser {
 	FILE *fp;
 	CodeConverter *conv;
 
@@ -45,7 +43,7 @@ struct _ERTFParser
 
 	GString *str;
 	GString *buf;
-	
+
 	gchar *bufp;
 
 	ERTFState state;
@@ -56,12 +54,8 @@ struct _ERTFParser
 	gboolean pre;
 };
 
-ERTFParser *ertf_parser_new	(FILE		*fp,
-				 CodeConverter	*conv);
-void ertf_parser_destroy	(ERTFParser	*parser);
-gchar *ertf_parse		(ERTFParser	*parser);
+ERTFParser *ertf_parser_new(FILE *fp, CodeConverter *conv);
+void ertf_parser_destroy(ERTFParser *parser);
+gchar *ertf_parse(ERTFParser *parser);
 
 #endif /* __ERTF_H__ */
-				 
-	
-	

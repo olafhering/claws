@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -28,12 +28,9 @@
 #include "customheader.h"
 #include "utils.h"
 
-
 gchar *custom_header_get_str(CustomHeader *ch)
 {
-	return g_strdup_printf("%i:%s: %s",
-			       ch->account_id, ch->name,
-			       ch->value ? ch->value : "");
+	return g_strdup_printf("%i:%s: %s", ch->account_id, ch->name, ch->value ? ch->value : "");
 }
 
 CustomHeader *custom_header_read_str(const gchar *buf)
@@ -57,11 +54,13 @@ CustomHeader *custom_header_read_str(const gchar *buf)
 
 		*name++ = '\0';
 		id = strtol(account_id_str, &endp, 10);
-		if (*endp != '\0') return NULL;
+		if (*endp != '\0')
+			return NULL;
 	}
 
 	value = strchr(name, ':');
-	if (!value) return NULL;
+	if (!value)
+		return NULL;
 
 	*value++ = '\0';
 
@@ -92,7 +91,8 @@ CustomHeader *custom_header_find(GSList *header_list, const gchar *header)
 
 void custom_header_free(CustomHeader *ch)
 {
-	if (!ch) return;
+	if (!ch)
+		return;
 
 	g_free(ch->name);
 	g_free(ch->value);
@@ -103,18 +103,15 @@ gboolean custom_header_is_allowed(const gchar *header)
 {
 	cm_return_val_if_fail(header != NULL, FALSE);
 
-	if (g_ascii_strcasecmp(header, "Date")         != 0 &&
-	    g_ascii_strcasecmp(header, "From")         != 0 &&
-	    g_ascii_strcasecmp(header, "To")           != 0 &&
-	 /* g_ascii_strcasecmp(header, "Sender")       != 0 && */
-	    g_ascii_strcasecmp(header, "Message-ID")   != 0 &&
-	    g_ascii_strcasecmp(header, "In-Reply-To")  != 0 &&
-	    g_ascii_strcasecmp(header, "References")   != 0 &&
-	    g_ascii_strcasecmp(header, "MIME-Version") != 0 &&
-	    g_ascii_strcasecmp(header, "Content-Type") != 0 &&
-	    g_ascii_strcasecmp(header, "Content-Transfer-Encoding")
+	if (g_ascii_strcasecmp(header, "Date") != 0 && g_ascii_strcasecmp(header, "From") != 0 && g_ascii_strcasecmp(header, "To") != 0 &&
+	    /* g_ascii_strcasecmp(header, "Sender")       != 0 && */
+	    g_ascii_strcasecmp(header, "Message-ID") != 0 && g_ascii_strcasecmp(header, "In-Reply-To") != 0 && g_ascii_strcasecmp(header, "References") != 0 && g_ascii_strcasecmp(header, "MIME-Version") != 0 && g_ascii_strcasecmp(header, "Content-Type") != 0 && g_ascii_strcasecmp(header, "Content-Transfer-Encoding")
 	    != 0)
 		return TRUE;
 
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -40,18 +40,18 @@
 #include <sys/types.h>
 #include <time.h>
 #if HAVE_ALLOCA_H
-#  include <alloca.h>
+#include <alloca.h>
 #endif
 #if HAVE_WCHAR_H
-#  include <wchar.h>
+#include <wchar.h>
 #endif
 
 /* The Hurd doesn't have these limits */
 #ifndef PATH_MAX
-  #define PATH_MAX 4196
+#define PATH_MAX 4196
 #endif
 #ifndef HOST_NAME_MAX
-  #define HOST_NAME_MAX 256
+#define HOST_NAME_MAX 256
 #endif
 
 /* Handling Base64 content in procmime and prefs_customheader */
@@ -64,7 +64,7 @@
 #define pipe(phandles)  _pipe (phandles, 4096, _O_BINARY)
 #endif
 /* Wrappers for C library function that take pathname arguments. */
-#  include <glib/gstdio.h>
+#include <glib/gstdio.h>
 
 /* why is this sometimes undefined !? */
 #ifndef G_MAXOFFSET
@@ -74,9 +74,9 @@ typedef gint64 goffset;
 #endif
 
 #ifndef BIG_ENDIAN_HOST
-  #if (G_BYTE_ORDER == G_BIG_ENDIAN)
-    #define BIG_ENDIAN_HOST 1
-  #endif
+#if (G_BYTE_ORDER == G_BIG_ENDIAN)
+#define BIG_ENDIAN_HOST 1
+#endif
 #endif
 
 #define CHDIR_RETURN_IF_FAIL(dir) \
@@ -222,7 +222,6 @@ G_STMT_START								\
 G_STMT_END
 #endif
 
-
 #define cm_return_val_if_fail(expr,val) G_STMT_START {			\
 	if (!(expr)) {							\
 		g_print("%s:%d Condition %s failed\n", __FILE__, __LINE__, #expr);\
@@ -242,21 +241,21 @@ G_STMT_END
 } G_STMT_END
 
 #ifndef MIN
-	#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 #ifndef MAX
-	#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef gpointer (*GNodeMapFunc)	(gpointer nodedata, gpointer data);
+	typedef gpointer (*GNodeMapFunc) (gpointer nodedata, gpointer data);
 
 /* debug functions */
-void debug_set_mode		(gboolean mode);
-gboolean debug_get_mode		(void);
+	void debug_set_mode(gboolean mode);
+	gboolean debug_get_mode(void);
 
 #ifdef HAVE_VA_OPT
 #define debug_print(format, ...) debug_print_real(__FILE__, __LINE__, format __VA_OPT__(,) __VA_ARGS__)
@@ -272,289 +271,210 @@ gboolean debug_get_mode		(void);
 
 /* String utilities.  */
 
-void list_free_strings_full		(GList		*list);
-void slist_free_strings_full	(GSList		*list);
+	void list_free_strings_full(GList *list);
+	void slist_free_strings_full(GSList *list);
 
-void hash_free_strings		(GHashTable	*table);
+	void hash_free_strings(GHashTable *table);
 
-gint str_case_equal		(gconstpointer	 v,
-				 gconstpointer	 v2);
-guint str_case_hash		(gconstpointer	 key);
+	gint str_case_equal(gconstpointer v, gconstpointer v2);
+	guint str_case_hash(gconstpointer key);
 
 /* number-string conversion */
-gint to_number			(const gchar *nstr);
-gchar *itos_buf			(gchar	     *nstr,
-				 gint	      n);
-gchar *itos			(gint	      n);
-gchar *to_human_readable	(goffset      size);
+	gint to_number(const gchar *nstr);
+	gchar *itos_buf(gchar *nstr, gint n);
+	gchar *itos(gint n);
+	gchar *to_human_readable(goffset size);
 
 /* alternative string functions */
-gint path_cmp		(const gchar	*s1,
-			 const gchar	*s2);
-gchar *strretchomp	(gchar		*str);
-gchar *strtailchomp	(gchar		*str,
-			 gchar		 tail_char);
-gchar *strcrchomp	(gchar		*str);
-gchar *strcrlftrunc	(gchar *str);
+	gint path_cmp(const gchar *s1, const gchar *s2);
+	gchar *strretchomp(gchar *str);
+	gchar *strtailchomp(gchar *str, gchar tail_char);
+	gchar *strcrchomp(gchar *str);
+	gchar *strcrlftrunc(gchar *str);
 #ifndef HAVE_STRCASESTR
-gchar *strcasestr	(const gchar	*haystack,
-			 const gchar	*needle);
+	gchar *strcasestr(const gchar *haystack, const gchar *needle);
 #endif /* HAVE_STRCASESTR */
-gchar *strncasestr	(const gchar	*haystack,
-			 gint		 haystack_len,
-			 const gchar	*needle);
-gpointer my_memmem	(gconstpointer	 haystack,
-			 size_t		 haystacklen,
-			 gconstpointer	 needle,
-			 size_t		 needlelen);
-gchar *strncpy2		(gchar		*dest,
-			 const gchar	*src,
-			 size_t		 n);
+	gchar *strncasestr(const gchar *haystack, gint haystack_len, const gchar *needle);
+	gpointer my_memmem(gconstpointer haystack, size_t haystacklen, gconstpointer needle, size_t needlelen);
+	gchar *strncpy2(gchar *dest, const gchar *src, size_t n);
 
-gboolean is_next_nonascii	(const gchar *s);
-gint get_next_word_len		(const gchar *s);
+	gboolean is_next_nonascii(const gchar *s);
+	gint get_next_word_len(const gchar *s);
 
 /* functions for string parsing */
-gint subject_compare			(const gchar	*s1,
-					 const gchar	*s2);
-gint subject_compare_for_sort		(const gchar	*s1,
-					 const gchar	*s2);
-void trim_subject			(gchar		*str);
-void eliminate_parenthesis		(gchar		*str,
-					 gchar		 op,
-					 gchar		 cl);
-void extract_parenthesis		(gchar		*str,
-					 gchar		 op,
-					 gchar		 cl);
+	gint subject_compare(const gchar *s1, const gchar *s2);
+	gint subject_compare_for_sort(const gchar *s1, const gchar *s2);
+	void trim_subject(gchar *str);
+	void eliminate_parenthesis(gchar *str, gchar op, gchar cl);
+	void extract_parenthesis(gchar *str, gchar op, gchar cl);
 
-void extract_quote			(gchar		*str,
-					 gchar		 quote_chr);
-gchar *escape_internal_quotes		(gchar		*str,
-					 gchar		 quote_chr);
-void eliminate_address_comment		(gchar		*str);
-gchar *strchr_with_skip_quote		(const gchar	*str,
-					 gint		 quote_chr,
-					 gint		 c);
-void extract_address			(gchar		*str);
-void extract_list_id_str		(gchar		*str);
+	void extract_quote(gchar *str, gchar quote_chr);
+	gchar *escape_internal_quotes(gchar *str, gchar quote_chr);
+	void eliminate_address_comment(gchar *str);
+	gchar *strchr_with_skip_quote(const gchar *str, gint quote_chr, gint c);
+	void extract_address(gchar *str);
+	void extract_list_id_str(gchar *str);
 
-GSList *address_list_append		(GSList		*addr_list,
-					 const gchar	*str);
-GSList *address_list_append_with_comments(GSList	*addr_list,
-					 const gchar	*str);
-GSList *references_list_prepend		(GSList		*msgid_list,
-					 const gchar	*str);
-GSList *references_list_append		(GSList		*msgid_list,
-					 const gchar	*str);
-GSList *newsgroup_list_append		(GSList		*group_list,
-					 const gchar	*str);
+	GSList *address_list_append(GSList *addr_list, const gchar *str);
+	GSList *address_list_append_with_comments(GSList *addr_list, const gchar *str);
+	GSList *references_list_prepend(GSList *msgid_list, const gchar *str);
+	GSList *references_list_append(GSList *msgid_list, const gchar *str);
+	GSList *newsgroup_list_append(GSList *group_list, const gchar *str);
 
-GList *add_history			(GList		*list,
-					 const gchar	*str);
+	GList *add_history(GList *list, const gchar *str);
 
-void remove_return			(gchar		*str);
-void remove_space			(gchar		*str);
-void unfold_line			(gchar		*str);
-void subst_char				(gchar		*str,
-					 gchar		 orig,
-					 gchar		 subst);
-void subst_chars			(gchar 		*str,
-					 gchar 		*orig,
-					 gchar 		subst);
-void subst_for_filename			(gchar		*str);
-void subst_for_shellsafe_filename	(gchar		*str);
-gboolean is_ascii_str			(const gchar	*str);
-gint get_quote_level			(const gchar	*str,
-					 const gchar	*quote_chars);
-gint check_line_length			(const gchar	*str,
-					 gint		 max_chars,
-					 gint		*line);
+	void remove_return(gchar *str);
+	void remove_space(gchar *str);
+	void unfold_line(gchar *str);
+	void subst_char(gchar *str, gchar orig, gchar subst);
+	void subst_chars(gchar *str, gchar *orig, gchar subst);
+	void subst_for_filename(gchar *str);
+	void subst_for_shellsafe_filename(gchar *str);
+	gboolean is_ascii_str(const gchar *str);
+	gint get_quote_level(const gchar *str, const gchar *quote_chars);
+	gint check_line_length(const gchar *str, gint max_chars, gint *line);
 
-gchar **strsplit_with_quote		(const gchar	*str,
-					 const gchar	*delim,
-					 gint		 max_tokens);
+	gchar **strsplit_with_quote(const gchar *str, const gchar *delim, gint max_tokens);
 
-gchar *get_abbrev_newsgroup_name	(const gchar	*group,
-					 gint		 len);
-gchar *trim_string			(const gchar	*str,
-					 gint		 len);
+	gchar *get_abbrev_newsgroup_name(const gchar *group, gint len);
+	gchar *trim_string(const gchar *str, gint len);
 
-GList *uri_list_extract_filenames	(const gchar	*uri_list);
-gboolean is_uri_string			(const gchar	*str);
-gchar *get_uri_path			(const gchar	*uri);
-gint get_uri_len			(const gchar	*str);
-void decode_uri				(gchar		*decoded_uri,
-					 const gchar	*encoded_uri);
-void decode_uri_with_plus		(gchar 		*decoded_uri,
-					 const gchar 	*encoded_uri,
-					 gboolean 	 with_plus);
-gint scan_mailto_url			(const gchar	*mailto,
-					 gchar	       **from,
-					 gchar	       **to,
-					 gchar	       **cc,
-					 gchar	       **bcc,
-					 gchar	       **subject,
-					 gchar	       **body,
-					 gchar	       ***attach,
-					 gchar	       **inreplyto);
+	GList *uri_list_extract_filenames(const gchar *uri_list);
+	gboolean is_uri_string(const gchar *str);
+	gchar *get_uri_path(const gchar *uri);
+	gint get_uri_len(const gchar *str);
+	void decode_uri(gchar *decoded_uri, const gchar *encoded_uri);
+	void decode_uri_with_plus(gchar *decoded_uri, const gchar *encoded_uri, gboolean with_plus);
+	gint scan_mailto_url(const gchar *mailto, gchar **from, gchar **to, gchar **cc, gchar **bcc, gchar **subject, gchar **body, gchar ***attach, gchar **inreplyto);
 
 /* return static strings */
-const gchar *get_home_dir		(void);
-const gchar *get_rc_dir			(void);
-void  set_rc_dir			(const gchar *dir);
-gboolean rc_dir_is_alt			(void);
-const gchar *get_mail_base_dir		(void);
-const gchar *get_news_cache_dir		(void);
-const gchar *get_imap_cache_dir		(void);
-const gchar *get_mime_tmp_dir		(void);
-const gchar *get_template_dir		(void);
-const gchar *get_plugin_dir             (void);
-const gchar *get_tmp_dir		(void);
-const gchar *get_locale_dir		(void);
-gchar *get_tmp_file			(void);
-const gchar *get_domain_name		(void);
-gboolean is_numeric_host_address	(const gchar *hostaddress);
-const gchar *get_desktop_file(void);
+	const gchar *get_home_dir(void);
+	const gchar *get_rc_dir(void);
+	void set_rc_dir(const gchar *dir);
+	gboolean rc_dir_is_alt(void);
+	const gchar *get_mail_base_dir(void);
+	const gchar *get_news_cache_dir(void);
+	const gchar *get_imap_cache_dir(void);
+	const gchar *get_mime_tmp_dir(void);
+	const gchar *get_template_dir(void);
+	const gchar *get_plugin_dir(void);
+	const gchar *get_tmp_dir(void);
+	const gchar *get_locale_dir(void);
+	gchar *get_tmp_file(void);
+	const gchar *get_domain_name(void);
+	gboolean is_numeric_host_address(const gchar *hostaddress);
+	const gchar *get_desktop_file(void);
 #ifdef G_OS_WIN32
-const gchar *w32_get_themes_dir    (void);
-const gchar *w32_get_cert_file		(void);
+	const gchar *w32_get_themes_dir(void);
+	const gchar *w32_get_cert_file(void);
 #endif
 /* file / directory handling */
-off_t get_file_size		(const gchar	*file);
-time_t get_file_mtime		(const gchar *file);
+	off_t get_file_size(const gchar *file);
+	time_t get_file_mtime(const gchar *file);
 
-gboolean file_exist		(const gchar	*file,
-				 gboolean	 allow_fifo);
-gboolean is_relative_filename   (const gchar *file);
-gboolean is_dir_exist		(const gchar	*dir);
-gboolean is_file_entry_exist	(const gchar	*file);
-gboolean is_file_entry_regular(const gchar *file);
+	gboolean file_exist(const gchar *file, gboolean allow_fifo);
+	gboolean is_relative_filename(const gchar *file);
+	gboolean is_dir_exist(const gchar *dir);
+	gboolean is_file_entry_exist(const gchar *file);
+	gboolean is_file_entry_regular(const gchar *file);
 
 #define is_file_exist(file)		file_exist(file, FALSE)
 #define is_file_or_fifo_exist(file)	file_exist(file, TRUE)
 
-gint change_dir			(const gchar	*dir);
-gint make_dir			(const gchar	*dir);
-gint make_dir_hier		(const gchar	*dir);
-gint remove_all_files		(const gchar	*dir);
-gint remove_numbered_files	(const gchar	*dir,
-				 guint		 first,
-				 guint		 last);
-gint remove_numbered_files_not_in_list(const gchar *dir,
-				       GSList *numberlist);
-gint remove_all_numbered_files	(const gchar	*dir);
-gint remove_dir_recursive	(const gchar	*dir);
-gchar *canonicalize_str		(const gchar	*str);
-gchar *normalize_newlines	(const gchar	*str);
+	gint change_dir(const gchar *dir);
+	gint make_dir(const gchar *dir);
+	gint make_dir_hier(const gchar *dir);
+	gint remove_all_files(const gchar *dir);
+	gint remove_numbered_files(const gchar *dir, guint first, guint last);
+	gint remove_numbered_files_not_in_list(const gchar *dir, GSList *numberlist);
+	gint remove_all_numbered_files(const gchar *dir);
+	gint remove_dir_recursive(const gchar *dir);
+	gchar *canonicalize_str(const gchar *str);
+	gchar *normalize_newlines(const gchar *str);
 
-gchar *get_outgoing_rfc2822_str	(FILE		*fp);
+	gchar *get_outgoing_rfc2822_str(FILE *fp);
 
-char *fgets_crlf(char *buf, int size, FILE *stream);
+	char *fgets_crlf(char *buf, int size, FILE *stream);
 
 /* process execution */
-gint execute_command_line	(const gchar	*cmdline,
-				 gboolean	 async,
-				 const gchar	*working_directory);
-gchar *get_command_output	(const gchar	*cmdline);
-FILE *get_command_output_stream	(const gchar	*cmdline);
+	gint execute_command_line(const gchar *cmdline, gboolean async, const gchar *working_directory);
+	gchar *get_command_output(const gchar *cmdline);
+	FILE *get_command_output_stream(const gchar *cmdline);
 
 /* open URI with external browser */
-gint open_uri(const gchar *uri, const gchar *cmdline);
+	gint open_uri(const gchar *uri, const gchar *cmdline);
 /* open file with text editor */
-gint open_txt_editor(const gchar *filepath, const gchar *cmdline);
+	gint open_txt_editor(const gchar *filepath, const gchar *cmdline);
 
 /* time functions */
-time_t remote_tzoffset_sec	(const gchar	*zone);
-time_t tzoffset_sec		(time_t		*now);
-gchar *tzoffset			(time_t		*now);
-void get_rfc822_date		(gchar		*buf,
-				 gint		 len);
-void get_rfc822_date_hide_tz	(gchar		*buf,
-				 gint		 len);
+	time_t remote_tzoffset_sec(const gchar *zone);
+	time_t tzoffset_sec(time_t *now);
+	gchar *tzoffset(time_t *now);
+	void get_rfc822_date(gchar *buf, gint len);
+	void get_rfc822_date_hide_tz(gchar *buf, gint len);
 
-size_t fast_strftime		(gchar 			*buf,
-				 gint 			 buflen,
-				 const gchar 		*format,
-				 struct tm 		*lt);
+	size_t fast_strftime(gchar *buf, gint buflen, const gchar *format, struct tm *lt);
 
 /* debugging */
 #ifdef HAVE_VA_OPT
-void debug_print_real (const char *file, int line, const gchar *format, ...) G_GNUC_PRINTF(3, 4);
+	void debug_print_real(const char *file, int line, const gchar *format, ...) G_GNUC_PRINTF(3, 4);
 #else
-void debug_print_real (const gchar *format, ...) G_GNUC_PRINTF(1, 2);
+	void debug_print_real(const gchar *format, ...) G_GNUC_PRINTF(1, 2);
 #endif
-const char * debug_srcname (const char *file);
+	const char *debug_srcname(const char *file);
 
 /* subject threading */
-void * subject_table_lookup(GHashTable *subject_table, gchar * subject);
-void subject_table_insert(GHashTable *subject_table, gchar * subject,
-			  void * data);
-void subject_table_remove(GHashTable *subject_table, gchar * subject);
-void utils_free_regex(void);
-gint subject_get_prefix_length (const gchar *subject);
+	void *subject_table_lookup(GHashTable *subject_table, gchar *subject);
+	void subject_table_insert(GHashTable *subject_table, gchar *subject, void *data);
+	void subject_table_remove(GHashTable *subject_table, gchar *subject);
+	void utils_free_regex(void);
+	gint subject_get_prefix_length(const gchar *subject);
 
 /* quoting recognition */
-const gchar * line_has_quote_char	(const gchar *str,
-					 const gchar *quote_chars);
+	const gchar *line_has_quote_char(const gchar *str, const gchar *quote_chars);
 
-gint g_int_compare	(gconstpointer a, gconstpointer b);
+	gint g_int_compare(gconstpointer a, gconstpointer b);
 
-gchar *generate_mime_boundary	(const gchar *prefix);
+	gchar *generate_mime_boundary(const gchar *prefix);
 
-gint quote_cmd_argument(gchar * result, guint size,
-			const gchar * path);
-GNode *g_node_map(GNode *node, GNodeMapFunc func, gpointer data);
+	gint quote_cmd_argument(gchar *result, guint size, const gchar *path);
+	GNode *g_node_map(GNode *node, GNodeMapFunc func, gpointer data);
 
-gboolean get_hex_value(guchar *out, gchar c1, gchar c2);
-void get_hex_str(gchar *out, guchar ch);
+	gboolean get_hex_value(guchar *out, gchar c1, gchar c2);
+	void get_hex_str(gchar *out, guchar ch);
 
 /* auto pointer for containers that support GType system */
 
 #define G_TYPE_AUTO_POINTER	g_auto_pointer_register()
-typedef struct AutoPointer	GAuto;
-GType g_auto_pointer_register		(void);
-GAuto *g_auto_pointer_new		(gpointer pointer);
-GAuto *g_auto_pointer_new_with_free	(gpointer p,
-					 GFreeFunc free);
-gpointer g_auto_pointer_get_ptr		(GAuto *auto_ptr);
-GAuto *g_auto_pointer_copy		(GAuto *auto_ptr);
-void g_auto_pointer_free		(GAuto *auto_ptr);
-gboolean get_uri_part	(const gchar *start,
-		    	 const gchar *scanpos,
-		     	 const gchar **bp,
-		    	 const gchar **ep,
-		   	 gboolean hdr);
-gchar *make_uri_string	(const gchar *bp,
-			 const gchar *ep);
-gboolean get_email_part	(const gchar *start,
-			 const gchar *scanpos,
-			 const gchar **bp,
-			 const gchar **ep,
-			 gboolean hdr);
-gchar *make_email_string(const gchar *bp,
-			 const gchar *ep);
-gchar *make_http_string (const gchar *bp,
-			 const gchar *ep);
+	typedef struct AutoPointer GAuto;
+	GType g_auto_pointer_register(void);
+	GAuto *g_auto_pointer_new(gpointer pointer);
+	GAuto *g_auto_pointer_new_with_free(gpointer p, GFreeFunc free);
+	gpointer g_auto_pointer_get_ptr(GAuto * auto_ptr);
+	GAuto *g_auto_pointer_copy(GAuto * auto_ptr);
+	void g_auto_pointer_free(GAuto * auto_ptr);
+	gboolean get_uri_part(const gchar *start, const gchar *scanpos, const gchar **bp, const gchar **ep, gboolean hdr);
+	gchar *make_uri_string(const gchar *bp, const gchar *ep);
+	gboolean get_email_part(const gchar *start, const gchar *scanpos, const gchar **bp, const gchar **ep, gboolean hdr);
+	gchar *make_email_string(const gchar *bp, const gchar *ep);
+	gchar *make_http_string(const gchar *bp, const gchar *ep);
 
-gchar *mailcap_get_command_for_type(const gchar *type,
-				    const gchar *file_to_open);
-void mailcap_update_default	   (const gchar *type,
-				    const gchar *command);
+	gchar *mailcap_get_command_for_type(const gchar *type, const gchar *file_to_open);
+	void mailcap_update_default(const gchar *type, const gchar *command);
 
-gboolean file_is_email(const gchar *filename);
-gboolean sc_g_list_bigger(GList *list, gint max);
-gboolean sc_g_slist_bigger(GSList *list, gint max);
+	gboolean file_is_email(const gchar *filename);
+	gboolean sc_g_list_bigger(GList *list, gint max);
+	gboolean sc_g_slist_bigger(GSList *list, gint max);
 
-int cm_canonicalize_filename(const gchar *filename, gchar **canonical_name);
+	int cm_canonicalize_filename(const gchar *filename, gchar **canonical_name);
 
-guchar *g_base64_decode_zero(const gchar *text, gsize *out_len);
+	guchar *g_base64_decode_zero(const gchar *text, gsize * out_len);
 
-gboolean get_random_bytes(void *buf, size_t count);
+	gboolean get_random_bytes(void *buf, size_t count);
 
 #ifdef __cplusplus
 }
 #endif
-
 gboolean get_serverportfp_from_filename(const gchar *str, gchar **server, gchar **port, gchar **fp);
 
 #ifdef G_OS_WIN32

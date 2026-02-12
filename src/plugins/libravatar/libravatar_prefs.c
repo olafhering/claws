@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -49,8 +49,7 @@
 LibravatarPrefs libravatarprefs;
 GHashTable *libravatarmisses;
 
-struct LibravatarPrefsPage
-{
+struct LibravatarPrefsPage {
 	PrefsPage page;
 
 	GtkWidget *cache_interval_spin;
@@ -67,41 +66,41 @@ struct LibravatarPrefsPage
 struct LibravatarPrefsPage libravatarprefs_page;
 
 static PrefParam param[] = {
-	{ "base_url", "http://cdn.libravatar.org/avatar",
-	  &libravatarprefs.base_url,
-          P_STRING, NULL, NULL, NULL },
-	{ "cache_interval", "24",
-	  &libravatarprefs.cache_interval,
-          P_INT, NULL, NULL, NULL },
-	{ "cache_icons", "TRUE",
-	  &libravatarprefs.cache_icons,
-          P_BOOL, NULL, NULL, NULL },
-	{ "default_mode", "0",
-	  &libravatarprefs.default_mode,
-          P_INT, NULL, NULL, NULL },
-	{ "default_mode_url", "",
-	  &libravatarprefs.default_mode_url,
-          P_STRING, NULL, NULL, NULL },
-	{ "allow_redirects", "TRUE",
-	  &libravatarprefs.allow_redirects,
-          P_BOOL, NULL, NULL, NULL },
+	{"base_url", "http://cdn.libravatar.org/avatar",
+	 &libravatarprefs.base_url,
+	 P_STRING, NULL, NULL, NULL},
+	{"cache_interval", "24",
+	 &libravatarprefs.cache_interval,
+	 P_INT, NULL, NULL, NULL},
+	{"cache_icons", "TRUE",
+	 &libravatarprefs.cache_icons,
+	 P_BOOL, NULL, NULL, NULL},
+	{"default_mode", "0",
+	 &libravatarprefs.default_mode,
+	 P_INT, NULL, NULL, NULL},
+	{"default_mode_url", "",
+	 &libravatarprefs.default_mode_url,
+	 P_STRING, NULL, NULL, NULL},
+	{"allow_redirects", "TRUE",
+	 &libravatarprefs.allow_redirects,
+	 P_BOOL, NULL, NULL, NULL},
 #if defined USE_GNUTLS
-	{ "allow_federated", "TRUE",
-	  &libravatarprefs.allow_federated,
-          P_BOOL, NULL, NULL, NULL },
+	{"allow_federated", "TRUE",
+	 &libravatarprefs.allow_federated,
+	 P_BOOL, NULL, NULL, NULL},
 #endif
-	{ "timeout", "0",
-	  &libravatarprefs.timeout,
-          P_INT, NULL, NULL, NULL },
-	{ "max_redirects_url", "7",
-	  &libravatarprefs.max_redirects_url,
-          P_INT, NULL, NULL, NULL },
-	{ "max_redirects_mm", "5",
-	  &libravatarprefs.max_redirects_mm,
-          P_INT, NULL, NULL, NULL },
-	{ "max_redirects", "3",
-	  &libravatarprefs.max_redirects,
-          P_INT, NULL, NULL, NULL },
+	{"timeout", "0",
+	 &libravatarprefs.timeout,
+	 P_INT, NULL, NULL, NULL},
+	{"max_redirects_url", "7",
+	 &libravatarprefs.max_redirects_url,
+	 P_INT, NULL, NULL, NULL},
+	{"max_redirects_mm", "5",
+	 &libravatarprefs.max_redirects_mm,
+	 P_INT, NULL, NULL, NULL},
+	{"max_redirects", "3",
+	 &libravatarprefs.max_redirects,
+	 P_INT, NULL, NULL, NULL},
 	{NULL, NULL, NULL, P_OTHER, NULL, NULL, NULL}
 };
 
@@ -116,8 +115,7 @@ static GtkWidget *create_checkbox(gchar *label, gchar *hint)
 
 static void cache_icons_check_toggled_cb(GtkToggleButton *button, gpointer data)
 {
-	gtk_widget_set_sensitive(libravatarprefs_page.cache_interval_spin,
-				 gtk_toggle_button_get_active(button));
+	gtk_widget_set_sensitive(libravatarprefs_page.cache_interval_spin, gtk_toggle_button_get_active(button));
 }
 
 static GtkWidget *labeled_spinner_box(gchar *label, GtkWidget *spinner, gchar *units, gchar *hint)
@@ -142,42 +140,32 @@ static GtkWidget *labeled_spinner_box(gchar *label, GtkWidget *spinner, gchar *u
 static gchar *avatar_stats_label_markup(AvatarCacheStats *stats)
 {
 	if (stats == NULL)
-		return g_markup_printf_escaped("<span color=\"red\">%s</span>",
-			_("Error reading cache stats"));
+		return g_markup_printf_escaped("<span color=\"red\">%s</span>", _("Error reading cache stats"));
 
 	if (stats->errors > 0) {
-		gchar *label_text = g_strdup_printf(_("Using %s in %d files, %d "
-			"directories, %d others and %d errors"),
-			to_human_readable((goffset) stats->bytes),
-			stats->files,
-			stats->dirs,
-			stats->others,
-			stats->errors);
+		gchar *label_text = g_strdup_printf(_("Using %s in %d files, %d " "directories, %d others and %d errors"),
+						    to_human_readable((goffset) stats->bytes),
+						    stats->files,
+						    stats->dirs,
+						    stats->others,
+						    stats->errors);
 		gchar *label = g_markup_printf_escaped("<span color=\"red\">%s</span>",
-			label_text);
+						       label_text);
 		g_free(label_text);
 		return label;
 	}
 
-	return g_strdup_printf(
-		_("Using %s in %d files, %d directories and %d others"),
-		to_human_readable((goffset) stats->bytes),
-		stats->files,
-		stats->dirs,
-		stats->others);
+	return g_strdup_printf(_("Using %s in %d files, %d directories and %d others"), to_human_readable((goffset) stats->bytes), stats->files, stats->dirs, stats->others);
 }
 
 static void cache_clean_button_clicked_cb(GtkButton *button, gpointer data)
 {
-	GtkLabel *label = (GtkLabel *) data;
+	GtkLabel *label = (GtkLabel *)data;
 	gint val = 0;
 	AvatarCleanupResult *acr;
 	guint misses;
 
-	val = alertpanel_full(_("Clear icon cache"),
-			_("Are you sure you want to remove all cached avatar icons?"),
-			GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST, FALSE,
-			NULL, ALERT_WARNING);
+	val = alertpanel_full(_("Clear icon cache"), _("Are you sure you want to remove all cached avatar icons?"), GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING);
 	if (val != G_ALERTALTERNATE)
 		return;
 
@@ -193,22 +181,11 @@ static void cache_clean_button_clicked_cb(GtkButton *button, gpointer data)
 	}
 
 	if (acr->e_stat == 0 && acr->e_unlink == 0) {
-		alertpanel_notice(_("Icon cache successfully cleared:\n"
-			"• %u missing entries removed.\n"
-			"• %u files removed."),
-			misses, acr->removed);
-		gtk_label_set_markup(label, g_strconcat("<span color=\"#006400\">",
-			_("Icon cache successfully cleared!"), "</span>", NULL));
-	}
-	else {
-		alertpanel_warning(_("Errors clearing icon cache:\n"
-			"• %u missing entries removed.\n"
-			"• %u files removed.\n"
-			"• %u files failed to be read.\n"
-			"• %u files couldn't be removed."),
-			misses, acr->removed, acr->e_stat, acr->e_unlink);
-		gtk_label_set_markup(label, g_strconcat("<span color=\"red\">",
-			_("Error clearing icon cache."), "</span>", NULL));
+		alertpanel_notice(_("Icon cache successfully cleared:\n" "• %u missing entries removed.\n" "• %u files removed."), misses, acr->removed);
+		gtk_label_set_markup(label, g_strconcat("<span color=\"#006400\">", _("Icon cache successfully cleared!"), "</span>", NULL));
+	} else {
+		alertpanel_warning(_("Errors clearing icon cache:\n" "• %u missing entries removed.\n" "• %u files removed.\n" "• %u files failed to be read.\n" "• %u files couldn't be removed."), misses, acr->removed, acr->e_stat, acr->e_unlink);
+		gtk_label_set_markup(label, g_strconcat("<span color=\"red\">", _("Error clearing icon cache."), "</span>", NULL));
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
 	g_free(acr);
@@ -221,21 +198,14 @@ static GtkWidget *p_create_frame_cache(struct LibravatarPrefsPage *page)
 	AvatarCacheStats *stats;
 	gchar *markup;
 
-	vbox =  gtk_vbox_new(FALSE, 6);
+	vbox = gtk_vbox_new(FALSE, 6);
 
-	checkbox = create_checkbox(_("_Use cached icons"),
-				   _("Keep icons on disk for reusing instead "
-				     "of making another network request"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox),
-				     libravatarprefs.cache_icons);
-	g_signal_connect(checkbox, "toggled",
-			 G_CALLBACK(cache_icons_check_toggled_cb), NULL);
+	checkbox = create_checkbox(_("_Use cached icons"), _("Keep icons on disk for reusing instead " "of making another network request"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox), libravatarprefs.cache_icons);
+	g_signal_connect(checkbox, "toggled", G_CALLBACK(cache_icons_check_toggled_cb), NULL);
 	page->cache_icons_check = checkbox;
 
-	adj = (GtkAdjustment *) gtk_adjustment_new(
-					libravatarprefs.cache_interval,
-					INTERVAL_MIN_H, INTERVAL_MAX_H, 1.0,
-					0.0, 0.0);
+	adj = (GtkAdjustment *)gtk_adjustment_new(libravatarprefs.cache_interval, INTERVAL_MIN_H, INTERVAL_MAX_H, 1.0, 0.0, 0.0);
 	spinner = gtk_spin_button_new(adj, 1.0, 0);
 	gtk_widget_show(spinner);
 	gtk_widget_set_sensitive(spinner, libravatarprefs.cache_icons);
@@ -255,8 +225,7 @@ static GtkWidget *p_create_frame_cache(struct LibravatarPrefsPage *page)
 
 	button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
 	gtk_widget_show(button);
-	g_signal_connect(button, "clicked",
-		G_CALLBACK(cache_clean_button_clicked_cb), label);
+	g_signal_connect(button, "clicked", G_CALLBACK(cache_clean_button_clicked_cb), label);
 	gtk_widget_set_sensitive(button, (stats != NULL && stats->bytes > 0));
 
 	hbox = gtk_hbox_new(FALSE, 6);
@@ -280,13 +249,11 @@ static void default_mode_radio_button_cb(GtkToggleButton *button, gpointer data)
 		return;
 
 	mode = *((guint *)data);
-	is_url = (mode == DEF_MODE_URL)? TRUE: FALSE;
+	is_url = (mode == DEF_MODE_URL) ? TRUE : FALSE;
 
 	gtk_widget_set_sensitive(libravatarprefs_page.defm_url_text, is_url);
 	if (is_url) /* custom URL requires following redirects */
-		gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(libravatarprefs_page.allow_redirects_check),
-			TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(libravatarprefs_page.allow_redirects_check), TRUE);
 
 	if (mode == DEF_MODE_NONE) {
 		prefs_common_get_prefs()->enable_avatars = AVATARS_ENABLE_BOTH;
@@ -338,39 +305,31 @@ static GtkWidget *p_create_frame_missing(struct LibravatarPrefsPage *page)
 		_("Redirect to a user provided URL")
 	};
 
-	vbox =  gtk_vbox_new(FALSE, 6);
+	vbox = gtk_vbox_new(FALSE, 6);
 
 	for (i = 0; i < NUM_DEF_BUTTONS; ++i) {
-		enable = (libravatarprefs.default_mode == radio_value[i])? TRUE: FALSE;
-		e += enable? 1: 0;
-		radio[i] = gtk_radio_button_new_with_label_from_widget(
-				(i > 0)? GTK_RADIO_BUTTON(radio[i - 1]): NULL, radio_label[i]);
+		enable = (libravatarprefs.default_mode == radio_value[i]) ? TRUE : FALSE;
+		e += enable ? 1 : 0;
+		radio[i] = gtk_radio_button_new_with_label_from_widget((i > 0) ? GTK_RADIO_BUTTON(radio[i - 1]) : NULL, radio_label[i]);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio[i]), enable);
 		if (i == CUSTOM_URL_BUTTON_INDEX) {
 			/* set related entry next to radio button */
 			entry = gtk_entry_new();
-			CLAWS_SET_TIP(entry, _("Enter the URL you want to be "
-				"redirected when no user icon is available. "
-				"Leave an empty URL to use the default "
-				"libravatar orange icon."));
-			gtk_entry_set_text(GTK_ENTRY(entry),
-				libravatarprefs.default_mode_url);
+			CLAWS_SET_TIP(entry, _("Enter the URL you want to be " "redirected when no user icon is available. " "Leave an empty URL to use the default " "libravatar orange icon."));
+			gtk_entry_set_text(GTK_ENTRY(entry), libravatarprefs.default_mode_url);
 			gtk_entry_set_max_length(GTK_ENTRY(entry), MAX_URL_LENGTH);
 			hbox = gtk_hbox_new(FALSE, 6);
 			gtk_box_pack_start(GTK_BOX(hbox), radio[i], FALSE, FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
-			gtk_widget_set_sensitive(entry,
-				(libravatarprefs.default_mode == DEF_MODE_URL)
-				? TRUE: FALSE);
+			gtk_widget_set_sensitive(entry, (libravatarprefs.default_mode == DEF_MODE_URL)
+						 ? TRUE : FALSE);
 			gtk_widget_show(entry);
 			page->defm_url_text = entry;
 			gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 		} else {
 			gtk_box_pack_start(GTK_BOX(vbox), radio[i], FALSE, FALSE, 0);
 		}
-		g_signal_connect(radio[i], "toggled",
-				 G_CALLBACK(default_mode_radio_button_cb),
-				 (gpointer) &(radio_value[i]));
+		g_signal_connect(radio[i], "toggled", G_CALLBACK(default_mode_radio_button_cb), (gpointer)&(radio_value[i]));
 		CLAWS_SET_TIP(radio[i], radio_hint[i]);
 		gtk_widget_show(radio[i]);
 		page->defm_radio[i] = radio[i];
@@ -380,11 +339,8 @@ static GtkWidget *p_create_frame_missing(struct LibravatarPrefsPage *page)
 		libravatarprefs.default_mode = DEF_MODE_NONE;
 	}
 	/* don't waste time with headers that won't be displayed */
-	prefs_common_get_prefs()->enable_avatars =
-		(libravatarprefs.default_mode == DEF_MODE_NONE)
-		? AVATARS_ENABLE_BOTH: AVATARS_DISABLE;
-
-
+	prefs_common_get_prefs()->enable_avatars = (libravatarprefs.default_mode == DEF_MODE_NONE)
+	    ? AVATARS_ENABLE_BOTH : AVATARS_DISABLE;
 
 	return vbox;
 }
@@ -397,40 +353,26 @@ static GtkWidget *p_create_frame_network(struct LibravatarPrefsPage *page)
 	GtkWidget *chk_federated;
 #endif
 
-	vbox =  gtk_vbox_new(FALSE, 6);
+	vbox = gtk_vbox_new(FALSE, 6);
 
-	chk_redirects = create_checkbox(_("_Allow redirects to other sites"),
-				   _("Follow redirect responses received from "
-				     "libravatar server to other avatar "
-				     "services like gravatar.com"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_redirects),
-				     libravatarprefs.allow_redirects);
+	chk_redirects = create_checkbox(_("_Allow redirects to other sites"), _("Follow redirect responses received from " "libravatar server to other avatar " "services like gravatar.com"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_redirects), libravatarprefs.allow_redirects);
 	page->allow_redirects_check = chk_redirects;
 	gtk_box_pack_start(GTK_BOX(vbox), chk_redirects, FALSE, FALSE, 0);
 
 #if defined USE_GNUTLS
-	chk_federated = create_checkbox(_("_Enable federated servers"),
-				_("Try to get avatar from sender's domain "
-				  "libravatar server"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_federated),
-				     libravatarprefs.allow_federated);
+	chk_federated = create_checkbox(_("_Enable federated servers"), _("Try to get avatar from sender's domain " "libravatar server"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_federated), libravatarprefs.allow_federated);
 	page->allow_federated_check = chk_federated;
 	gtk_box_pack_start(GTK_BOX(vbox), chk_federated, FALSE, FALSE, 0);
 #endif
 
-	adj = (GtkAdjustment *) gtk_adjustment_new(
-					libravatarprefs.timeout,
-					TIMEOUT_MIN_S,
-					(prefs_common_get_prefs()->io_timeout_secs > 0)
-					? (prefs_common_get_prefs()->io_timeout_secs - 1)
-					: 0,
-					1.0, 0.0, 0.0);
+	adj = (GtkAdjustment *)gtk_adjustment_new(libravatarprefs.timeout, TIMEOUT_MIN_S, (prefs_common_get_prefs()->io_timeout_secs > 0)
+						  ? (prefs_common_get_prefs()->io_timeout_secs - 1)
+						  : 0, 1.0, 0.0, 0.0);
 	spinner = gtk_spin_button_new(adj, 1.0, 0);
 	gtk_widget_show(spinner);
-	hbox = labeled_spinner_box(_("Request timeout"), spinner, _("second(s)"),
-		_("Set to 0 to use global socket I/O timeout. "
-                  "Maximum value must be also less than global socket "
-                  "I/O timeout."));
+	hbox = labeled_spinner_box(_("Request timeout"), spinner, _("second(s)"), _("Set to 0 to use global socket I/O timeout. " "Maximum value must be also less than global socket " "I/O timeout."));
 	page->timeout = spinner;
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -460,11 +402,9 @@ static GtkWidget *p_create_frame_network(struct LibravatarPrefsPage *page)
   │ Timeout [ 10 |⬘] seconds                             │
   └──────────────────────────────────────────────────────┘
  */
-static void libravatar_prefs_create_widget_func(PrefsPage * _page,
-					        GtkWindow * window,
-					        gpointer data)
+static void libravatar_prefs_create_widget_func(PrefsPage *_page, GtkWindow *window, gpointer data)
 {
-	struct LibravatarPrefsPage *page = (struct LibravatarPrefsPage *) _page;
+	struct LibravatarPrefsPage *page = (struct LibravatarPrefsPage *)_page;
 	GtkWidget *vbox, *vbox1, *vbox2, *vbox3, *frame;
 
 	vbox1 = p_create_frame_cache(page);
@@ -474,15 +414,15 @@ static void libravatar_prefs_create_widget_func(PrefsPage * _page,
 	vbox = gtk_vbox_new(FALSE, 6);
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), VBOX_BORDER);
 
-	PACK_FRAME (vbox, frame, _("Icon cache"));
+	PACK_FRAME(vbox, frame, _("Icon cache"));
 	gtk_container_set_border_width(GTK_CONTAINER(vbox1), 6);
 	gtk_container_add(GTK_CONTAINER(frame), vbox1);
 
-	PACK_FRAME (vbox, frame, _("Default missing icon mode"));
+	PACK_FRAME(vbox, frame, _("Default missing icon mode"));
 	gtk_container_set_border_width(GTK_CONTAINER(vbox2), 6);
 	gtk_container_add(GTK_CONTAINER(frame), vbox2);
 
-	PACK_FRAME (vbox, frame, _("Network"));
+	PACK_FRAME(vbox, frame, _("Network"));
 	gtk_container_set_border_width(GTK_CONTAINER(vbox3), 6);
 	gtk_container_add(GTK_CONTAINER(frame), vbox3);
 
@@ -513,24 +453,22 @@ static void libravatar_save_config(void)
 		prefs_file_close_revert(pfile);
 		return;
 	}
-        if (fprintf(pfile->fp, "\n") < 0) {
+	if (fprintf(pfile->fp, "\n") < 0) {
 		FILE_OP_ERROR(rcpath, "fprintf");
 		prefs_file_close_revert(pfile);
 	} else
-	        prefs_file_close(pfile);
+		prefs_file_close(pfile);
 }
 
-static void libravatar_prefs_save_func(PrefsPage * _page)
+static void libravatar_prefs_save_func(PrefsPage *_page)
 {
-	struct LibravatarPrefsPage *page = (struct LibravatarPrefsPage *) _page;
+	struct LibravatarPrefsPage *page = (struct LibravatarPrefsPage *)_page;
 	int i;
 
 	/* cache */
-	libravatarprefs.cache_icons = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->cache_icons_check));
+	libravatarprefs.cache_icons = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->cache_icons_check));
 	/* cache interval */
-	libravatarprefs.cache_interval = gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(page->cache_interval_spin));
+	libravatarprefs.cache_interval = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->cache_interval_spin));
 	/* default mode */
 	for (i = 0; i < NUM_DEF_BUTTONS; ++i) {
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->defm_radio[i]))) {
@@ -542,19 +480,15 @@ static void libravatar_prefs_save_func(PrefsPage * _page)
 	if (libravatarprefs.default_mode_url != NULL) {
 		g_free(libravatarprefs.default_mode_url);
 	}
-	libravatarprefs.default_mode_url = gtk_editable_get_chars(
-		GTK_EDITABLE(page->defm_url_text), 0, -1);
+	libravatarprefs.default_mode_url = gtk_editable_get_chars(GTK_EDITABLE(page->defm_url_text), 0, -1);
 	/* redirects */
-	libravatarprefs.allow_redirects = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->allow_redirects_check));
+	libravatarprefs.allow_redirects = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->allow_redirects_check));
 	/* federation */
 #if defined USE_GNUTLS
-	libravatarprefs.allow_federated = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(page->allow_federated_check));
+	libravatarprefs.allow_federated = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->allow_federated_check));
 #endif
 	/* timeout */
-	libravatarprefs.timeout = gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(page->timeout));
+	libravatarprefs.timeout = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(page->timeout));
 
 	libravatar_save_config();
 }
@@ -579,11 +513,14 @@ void libravatar_prefs_init(void)
 	libravatarprefs_page.page.save_page = libravatar_prefs_save_func;
 	libravatarprefs_page.page.weight = 40.0;
 
-	prefs_gtk_register_page((PrefsPage *) &libravatarprefs_page);
+	prefs_gtk_register_page((PrefsPage *)&libravatarprefs_page);
 }
 
 void libravatar_prefs_done(void)
 {
-	prefs_gtk_unregister_page((PrefsPage *) &libravatarprefs_page);
+	prefs_gtk_unregister_page((PrefsPage *)&libravatarprefs_page);
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -67,41 +67,37 @@
 
 /* Define possible missing constants for Windows. */
 #ifdef G_OS_WIN32
-# ifndef S_IRGRP
-# define S_IRGRP 0
-# define S_IWGRP 0
-# endif
-# ifndef S_IROTH
-# define S_IROTH 0
-# define S_IWOTH 0
-# endif
+#ifndef S_IRGRP
+#define S_IRGRP 0
+#define S_IWGRP 0
+#endif
+#ifndef S_IROTH
+#define S_IROTH 0
+#define S_IWOTH 0
+#endif
 #endif
 
 static GList *folder_list = NULL;
 static GSList *class_list = NULL;
 static GSList *folder_unloaded_list = NULL;
 
-void folder_init		(Folder		*folder,
-				 const gchar	*name);
+void folder_init(Folder *folder, const gchar *name);
 
-static gchar *folder_item_get_cache_file	(FolderItem	*item);
-static gchar *folder_item_get_mark_file	(FolderItem	*item);
-static gchar *folder_item_get_tags_file	(FolderItem	*item);
-static GNode *folder_get_xml_node	(Folder 	*folder);
-static Folder *folder_get_from_xml	(GNode 		*node);
-static void folder_update_op_count_rec	(GNode		*node);
+static gchar *folder_item_get_cache_file(FolderItem *item);
+static gchar *folder_item_get_mark_file(FolderItem *item);
+static gchar *folder_item_get_tags_file(FolderItem *item);
+static GNode *folder_get_xml_node(Folder *folder);
+static Folder *folder_get_from_xml(GNode *node);
+static void folder_update_op_count_rec(GNode *node);
 
-
-static void folder_get_persist_prefs_recursive
-					(GNode *node, GHashTable *pptable);
-static gboolean persist_prefs_free	(gpointer key, gpointer val, gpointer data);
-static void folder_item_read_cache		(FolderItem *item);
-gint folder_item_scan_full		(FolderItem *item, gboolean filtering);
-static void folder_item_update_with_msg (FolderItem *item, FolderItemUpdateFlags update_flags,
-                                         MsgInfo *msg);
-static GHashTable *folder_persist_prefs_new	(Folder *folder);
-static void folder_persist_prefs_free		(GHashTable *pptable);
-static void folder_item_restore_persist_prefs	(FolderItem *item, GHashTable *pptable);
+static void folder_get_persist_prefs_recursive(GNode *node, GHashTable *pptable);
+static gboolean persist_prefs_free(gpointer key, gpointer val, gpointer data);
+static void folder_item_read_cache(FolderItem *item);
+gint folder_item_scan_full(FolderItem *item, gboolean filtering);
+static void folder_item_update_with_msg(FolderItem *item, FolderItemUpdateFlags update_flags, MsgInfo *msg);
+static GHashTable *folder_persist_prefs_new(Folder *folder);
+static void folder_persist_prefs_free(GHashTable *pptable);
+static void folder_item_restore_persist_prefs(FolderItem *item, GHashTable *pptable);
 
 void folder_system_init(void)
 {
@@ -125,14 +121,15 @@ void folder_register_class(FolderClass *klass)
 
 	xmllist = g_slist_copy(folder_unloaded_list);
 	for (cur = xmllist; cur != NULL; cur = g_slist_next(cur)) {
-		GNode *node = (GNode *) cur->data;
-		XMLNode *xmlnode = (XMLNode *) node->data;
+		GNode *node = (GNode *)cur->data;
+		XMLNode *xmlnode = (XMLNode *)node->data;
 		GList *cur = xmlnode->tag->attr;
 
 		for (; cur != NULL; cur = g_list_next(cur)) {
-			XMLAttr *attr = (XMLAttr *) cur->data;
+			XMLAttr *attr = (XMLAttr *)cur->data;
 
-			if (!attr || !attr->name || !attr->value) continue;
+			if (!attr || !attr->name || !attr->value)
+				continue;
 			if (!strcmp(attr->name, "type") && !strcmp(attr->value, klass->idstr)) {
 				Folder *folder;
 
@@ -160,7 +157,7 @@ void folder_unregister_class(FolderClass *klass)
 
 	folderlist = g_list_copy(folder_get_list());
 	for (cur = folderlist; cur != NULL; cur = g_list_next(cur)) {
-		Folder *folder = (Folder *) cur->data;
+		Folder *folder = (Folder *)cur->data;
 
 		if (folder->klass == klass) {
 			GNode *xmlnode = folder_get_xml_node(folder);
@@ -212,7 +209,8 @@ void folder_init(Folder *folder, const gchar *name)
 	folder->trash = NULL;
 }
 
-static void reset_parent_type(FolderItem *item, gpointer data) {
+static void reset_parent_type(FolderItem *item, gpointer data)
+{
 	item->parent_stype = -1;
 }
 
@@ -226,7 +224,7 @@ void folder_item_change_type(FolderItem *item, SpecialFolderItemType newtype)
 
 	folder = item->folder;
 	/* unset previous root of newtype */
-	switch(newtype) {
+	switch (newtype) {
 	case F_INBOX:
 		folder_item_change_type(folder->inbox, F_NORMAL);
 		folder->inbox = item;
@@ -254,7 +252,7 @@ void folder_item_change_type(FolderItem *item, SpecialFolderItemType newtype)
 	/* set new type for current folder and sons */
 	item->stype = newtype;
 	folder_func_to_all_folders(reset_parent_type, NULL);
-	
+
 	hookdata.folder = folder;
 	hookdata.update_flags = FOLDER_TREE_CHANGED;
 	hookdata.item = NULL;
@@ -283,12 +281,13 @@ void folder_set_xml(Folder *folder, XMLTag *tag)
 	FolderItem *rootitem = NULL;
 
 	if ((folder->node != NULL) && (folder->node->data != NULL))
-		rootitem = (FolderItem *) folder->node->data;
+		rootitem = (FolderItem *)folder->node->data;
 
 	for (cur = tag->attr; cur != NULL; cur = g_list_next(cur)) {
-		XMLAttr *attr = (XMLAttr *) cur->data;
+		XMLAttr *attr = (XMLAttr *)cur->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "name")) {
 			g_free(folder->name);
 			folder->name = g_strdup(attr->value);
@@ -326,7 +325,7 @@ XMLTag *folder_get_xml(Folder *folder)
 	if (folder->account)
 		xml_tag_add_attr(tag, xml_attr_new_int("account_id", folder->account->account_id));
 	if (folder->node && folder->node->data) {
-		FolderItem *rootitem = (FolderItem *) folder->node->data;
+		FolderItem *rootitem = (FolderItem *)folder->node->data;
 
 		xml_tag_add_attr(tag, xml_attr_new("collapsed", rootitem->collapsed ? "1" : "0"));
 	}
@@ -351,9 +350,9 @@ FolderItem *folder_item_new(Folder *folder, const gchar *name, const gchar *path
 
 	item->stype = F_NORMAL;
 
-	if(!g_utf8_validate(name, -1, NULL)) {
-		item->name = g_malloc(strlen(name)*2+1);
-		conv_localetodisp(item->name, strlen(name)*2+1, name);
+	if (!g_utf8_validate(name, -1, NULL)) {
+		item->name = g_malloc(strlen(name) * 2 + 1);
+		conv_localetodisp(item->name, strlen(name) * 2 + 1, name);
 	} else {
 		item->name = g_strdup(name);
 	}
@@ -377,12 +376,12 @@ FolderItem *folder_item_new(Folder *folder, const gchar *name, const gchar *path
 	item->no_select = FALSE;
 	item->collapsed = FALSE;
 	item->thread_collapsed = prefs_common.folder_default_thread_collapsed;
-	item->threaded  = prefs_common.folder_default_thread;
+	item->threaded = prefs_common.folder_default_thread;
 	item->hide_read_threads = prefs_common.folder_default_hide_read_threads;
 	item->hide_read_msgs = prefs_common.folder_default_hide_read_msgs;
 	item->hide_del_msgs = prefs_common.folder_default_hide_del_msgs;
-	item->ret_rcpt  = FALSE;
-	item->opened    = FALSE;
+	item->ret_rcpt = FALSE;
+	item->opened = FALSE;
 	item->node = g_node_new(item);
 	item->folder = NULL;
 	item->account = NULL;
@@ -421,16 +420,16 @@ void folder_item_remove(FolderItem *item)
 	cm_return_if_fail(item->folder->node != NULL);
 
 	start_node = item->node;
-	
+
 	node = item->folder->node;
-	
+
 	node = g_node_find(node, G_PRE_ORDER, G_TRAVERSE_ALL, item);
 	node = node->children;
 
 	/* remove my children */
 	while (node != NULL) {
 		if (node && node->data) {
-			FolderItem *sub_item = (FolderItem*) node->data;
+			FolderItem *sub_item = (FolderItem *)node->data;
 			node = node->next;
 			folder_item_remove(sub_item);
 		}
@@ -515,7 +514,7 @@ void folder_item_destroy(FolderItem *item)
 	g_free(item->path);
 
 	if (item->folder != NULL) {
-		if(item->folder->klass->item_destroy) {
+		if (item->folder->klass->item_destroy) {
 			item->folder->klass->item_destroy(item->folder, item);
 		} else {
 			g_free(item);
@@ -530,7 +529,7 @@ FolderItem *folder_item_parent(FolderItem *item)
 
 	if (item->node->parent == NULL)
 		return NULL;
-	return (FolderItem *) item->node->parent->data;
+	return (FolderItem *)item->node->parent->data;
 }
 
 void folder_item_set_xml(Folder *folder, FolderItem *item, XMLTag *tag)
@@ -538,9 +537,10 @@ void folder_item_set_xml(Folder *folder, FolderItem *item, XMLTag *tag)
 	GList *cur;
 
 	for (cur = tag->attr; cur != NULL; cur = g_list_next(cur)) {
-		XMLAttr *attr = (XMLAttr *) cur->data;
+		XMLAttr *attr = (XMLAttr *)cur->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "type")) {
 			if (!g_ascii_strcasecmp(attr->value, "normal"))
 				item->stype = F_NORMAL;
@@ -591,17 +591,17 @@ void folder_item_set_xml(Folder *folder, FolderItem *item, XMLTag *tag)
 		else if (!strcmp(attr->name, "collapsed"))
 			item->collapsed = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "thread_collapsed"))
-			item->thread_collapsed =  *attr->value == '1' ? TRUE : FALSE;
+			item->thread_collapsed = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "threaded"))
-			item->threaded =  *attr->value == '1' ? TRUE : FALSE;
+			item->threaded = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "hidereadmsgs"))
-			item->hide_read_msgs =  *attr->value == '1' ? TRUE : FALSE;
+			item->hide_read_msgs = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "hidedelmsgs"))
-			item->hide_del_msgs =  *attr->value == '1' ? TRUE : FALSE;
+			item->hide_del_msgs = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "hidereadthreads"))
-			item->hide_read_threads =  *attr->value == '1' ? TRUE : FALSE;
+			item->hide_read_threads = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "reqretrcpt"))
-			item->ret_rcpt =  *attr->value == '1' ? TRUE : FALSE;
+			item->ret_rcpt = *attr->value == '1' ? TRUE : FALSE;
 		else if (!strcmp(attr->name, "sort_key")) {
 			if (!strcmp(attr->value, "none"))
 				item->sort_key = SORT_BY_NONE;
@@ -657,19 +657,19 @@ void folder_item_set_xml(Folder *folder, FolderItem *item, XMLTag *tag)
 	}
 	/* options without meaning in drafts */
 	if (item->stype == F_DRAFT)
-		item->hide_read_msgs =
-			item->hide_del_msgs =
-				item->hide_read_threads = FALSE;
+		item->hide_read_msgs = item->hide_del_msgs = item->hide_read_threads = FALSE;
 }
 
 XMLTag *folder_item_get_xml(Folder *folder, FolderItem *item)
 {
-	static gchar *folder_item_stype_str[] = {"normal", "inbox", "outbox",
-						 "draft", "queue", "trash"};
-	static gchar *sort_key_str[] = {"none", "number", "size", "date",
-					"from", "subject", "score", "label",
-					"mark", "unread", "mime", "to", 
-					"locked", "tags", "thread_date" };
+	static gchar *folder_item_stype_str[] = { "normal", "inbox", "outbox",
+		"draft", "queue", "trash"
+	};
+	static gchar *sort_key_str[] = { "none", "number", "size", "date",
+		"from", "subject", "score", "label",
+		"mark", "unread", "mime", "to",
+		"locked", "tags", "thread_date"
+	};
 	XMLTag *tag;
 	gchar *value;
 
@@ -698,7 +698,7 @@ XMLTag *folder_item_get_xml(Folder *folder, FolderItem *item)
 		xml_tag_add_attr(tag, xml_attr_new("sort_type", item->sort_type == SORT_ASCENDING ? "ascending" : "descending"));
 	}
 
-	value = g_strdup_printf("%ld", (unsigned long int) item->mtime);
+	value = g_strdup_printf("%ld", (unsigned long int)item->mtime);
 	xml_tag_add_attr(tag, xml_attr_new("mtime", value));
 	g_free(value);
 	xml_tag_add_attr(tag, xml_attr_new_int("new", item->new_msgs));
@@ -756,8 +756,9 @@ void folder_set_sort(Folder *folder, guint sort)
 	}
 }
 
-static gboolean folder_tree_destroy_func(GNode *node, gpointer data) {
-	FolderItem *item = (FolderItem *) node->data;
+static gboolean folder_tree_destroy_func(GNode *node, gpointer data)
+{
+	FolderItem *item = (FolderItem *)node->data;
 
 	folder_item_destroy(item);
 	return FALSE;
@@ -770,12 +771,11 @@ void folder_tree_destroy(Folder *folder)
 	cm_return_if_fail(folder != NULL);
 
 	node = folder->node;
-	
+
 	prefs_filtering_clear_folder(folder);
 
 	if (node != NULL) {
-		g_node_traverse(node, G_POST_ORDER, G_TRAVERSE_ALL, -1,
-				folder_tree_destroy_func, NULL);
+		g_node_traverse(node, G_POST_ORDER, G_TRAVERSE_ALL, -1, folder_tree_destroy_func, NULL);
 		g_node_destroy(node);
 		folder->node = NULL;
 	}
@@ -790,9 +790,7 @@ void folder_add(Folder *folder)
 
 	cm_return_if_fail(folder != NULL);
 
-	if ((FOLDER_TYPE(folder) == F_IMAP ||
-	     FOLDER_TYPE(folder) == F_NEWS) &&
-	    folder->account == NULL) {
+	if ((FOLDER_TYPE(folder) == F_IMAP || FOLDER_TYPE(folder) == F_NEWS) && folder->account == NULL) {
 		return;
 	}
 
@@ -840,9 +838,11 @@ gint folder_read_list(void)
 	gint config_version = -1;
 
 	path = folder_get_list_path();
-	if (!is_file_exist(path)) return -1;
+	if (!is_file_exist(path))
+		return -1;
 	node = xml_parse_file(path);
-	if (!node) return -1;
+	if (!node)
+		return -1;
 
 	xmlnode = node->data;
 	if (g_strcmp0(xmlnode->tag->tag, "folderlist") != 0) {
@@ -859,15 +859,15 @@ gint folder_read_list(void)
 		if (folder != NULL)
 			folder_add(folder);
 		else
-			folder_unloaded_list = g_slist_append(folder_unloaded_list,
-				(gpointer) xml_copy_tree(cur));
+			folder_unloaded_list = g_slist_append(folder_unloaded_list, (gpointer)xml_copy_tree(cur));
 		cur = cur->next;
 	}
 
 	for (list = xmlnode->tag->attr; list != NULL; list = list->next) {
 		XMLAttr *attr = list->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "config_version")) {
 			config_version = atoi(attr->value);
 			debug_print("Found folderlist config_version %d\n", config_version);
@@ -899,16 +899,16 @@ void folder_write_list(void)
 	XMLTag *tag;
 
 	path = folder_get_list_path();
-	if ((pfile = prefs_write_open(path)) == NULL) return;
+	if ((pfile = prefs_write_open(path)) == NULL)
+		return;
 
 	if (xml_file_put_xml_decl(pfile->fp) < 0) {
 		prefs_file_close_revert(pfile);
 		g_warning("failed to start write folder list");
-		return;		
+		return;
 	}
 	tag = xml_tag_new("folderlist");
-	xml_tag_add_attr(tag, xml_attr_new_int("config_version",
-				CLAWS_CONFIG_VERSION));
+	xml_tag_add_attr(tag, xml_attr_new_int("config_version", CLAWS_CONFIG_VERSION));
 
 	xmlnode = xml_node_new(tag, NULL);
 
@@ -924,9 +924,9 @@ void folder_write_list(void)
 	}
 
 	for (slist = folder_unloaded_list; slist != NULL; slist = g_slist_next(slist)) {
-		GNode *node = (GNode *) slist->data;
+		GNode *node = (GNode *)slist->data;
 
-		g_node_append(rootnode, (gpointer) xml_copy_tree(node));
+		g_node_append(rootnode, (gpointer)xml_copy_tree(node));
 	}
 
 	if (xml_write_tree(rootnode, pfile->fp) < 0) {
@@ -967,7 +967,7 @@ void folder_scan_tree(Folder *folder, gboolean rebuild)
 
 	if (!folder->klass->scan_tree)
 		return;
-	
+
 	pptable = folder_persist_prefs_new(folder);
 
 	if (rebuild)
@@ -1001,7 +1001,7 @@ void folder_scan_tree(Folder *folder, gboolean rebuild)
 FolderItem *folder_create_folder(FolderItem *parent, const gchar *name)
 {
 	FolderItem *new_item;
-	
+
 	cm_return_val_if_fail(parent != NULL, NULL);
 
 	new_item = parent->folder->klass->create_folder(parent->folder, parent, name);
@@ -1051,8 +1051,7 @@ gint folder_item_rename(FolderItem *item, gchar *newname)
 	return retval;
 }
 
-struct TotalMsgCount
-{
+struct TotalMsgCount {
 	guint new_msgs;
 	guint unread_msgs;
 	guint unreadmarked_msgs;
@@ -1065,16 +1064,15 @@ struct TotalMsgCount
 	guint watched_msgs;
 };
 
-struct FuncToAllFoldersData
-{
-	FolderItemFunc	function;
-	gpointer	data;
+struct FuncToAllFoldersData {
+	FolderItemFunc function;
+	gpointer data;
 };
 
 static gboolean folder_func_to_all_folders_func(GNode *node, gpointer data)
 {
 	FolderItem *item;
-	struct FuncToAllFoldersData *function_data = (struct FuncToAllFoldersData *) data;
+	struct FuncToAllFoldersData *function_data = (struct FuncToAllFoldersData *)data;
 
 	cm_return_val_if_fail(node->data != NULL, FALSE);
 
@@ -1091,17 +1089,14 @@ void folder_func_to_all_folders(FolderItemFunc function, gpointer data)
 	GList *list;
 	Folder *folder;
 	struct FuncToAllFoldersData function_data;
-	
+
 	function_data.function = function;
 	function_data.data = data;
 
 	for (list = folder_list; list != NULL; list = list->next) {
 		folder = FOLDER(list->data);
 		if (folder->node)
-			g_node_traverse(folder->node, G_PRE_ORDER,
-					G_TRAVERSE_ALL, -1,
-					folder_func_to_all_folders_func,
-					&function_data);
+			g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_func_to_all_folders_func, &function_data);
 	}
 }
 
@@ -1121,10 +1116,9 @@ static void folder_count_total_msgs_func(FolderItem *item, gpointer data)
 	count->watched_msgs += item->watched_msgs;
 }
 
-struct TotalMsgStatus
-{
-        guint new;
-        guint unread;
+struct TotalMsgStatus {
+	guint new;
+	guint unread;
 	guint total;
 	GString *str;
 };
@@ -1134,12 +1128,13 @@ static gboolean folder_get_status_full_all_func(GNode *node, gpointer data)
 	FolderItem *item;
 	struct TotalMsgStatus *status = (struct TotalMsgStatus *)data;
 	gchar *id;
- 
- 	cm_return_val_if_fail(node->data != NULL, FALSE);
- 
- 	item = FOLDER_ITEM(node->data);
 
-	if (!item->path) return FALSE;
+	cm_return_val_if_fail(node->data != NULL, FALSE);
+
+	item = FOLDER_ITEM(node->data);
+
+	if (!item->path)
+		return FALSE;
 
 	status->new += item->new_msgs;
 	status->unread += item->unread_msgs;
@@ -1147,36 +1142,30 @@ static gboolean folder_get_status_full_all_func(GNode *node, gpointer data)
 
 	if (status->str) {
 		id = folder_item_get_identifier(item);
-		g_string_append_printf(status->str, "%5d %5d %5d %s\n",
-				  item->new_msgs, item->unread_msgs,
-				  item->total_msgs, id);
+		g_string_append_printf(status->str, "%5d %5d %5d %s\n", item->new_msgs, item->unread_msgs, item->total_msgs, id);
 		g_free(id);
 	}
- 
- 	return FALSE;
- }
- 
-static void folder_get_status_full_all(GString *str, guint *new, guint *unread,
-				       guint *total)
+
+	return FALSE;
+}
+
+static void folder_get_status_full_all(GString *str, guint *new, guint *unread, guint *total)
 {
- 	GList *list;
- 	Folder *folder;
+	GList *list;
+	Folder *folder;
 	struct TotalMsgStatus status;
- 
+
 	status.new = status.unread = status.total = 0;
 	status.str = str;
- 
+
 	debug_print("Counting total number of messages...\n");
- 
- 	for (list = folder_list; list != NULL; list = list->next) {
- 		folder = FOLDER(list->data);
- 		if (folder->node)
- 			g_node_traverse(folder->node, G_PRE_ORDER,
- 					G_TRAVERSE_ALL, -1,
-					folder_get_status_full_all_func,
-					&status);
- 	}
- 
+
+	for (list = folder_list; list != NULL; list = list->next) {
+		folder = FOLDER(list->data);
+		if (folder->node)
+			g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_get_status_full_all_func, &status);
+	}
+
 	*new = status.new;
 	*unread = status.unread;
 	*total = status.total;
@@ -1205,15 +1194,12 @@ gchar *folder_get_status(GPtrArray *folders, gboolean full)
 				gchar *id;
 
 				id = folder_item_get_identifier(item);
-				g_string_append_printf(str, "%5d %5d %5d %s\n",
-						  item->new_msgs, item->unread_msgs,
-						  item->total_msgs, id);
+				g_string_append_printf(str, "%5d %5d %5d %s\n", item->new_msgs, item->unread_msgs, item->total_msgs, id);
 				g_free(id);
 			}
 		}
 	} else {
-		folder_get_status_full_all(full ? str : NULL,
-					   &new, &unread, &total);
+		folder_get_status_full_all(full ? str : NULL, &new, &unread, &total);
 	}
 
 	if (full)
@@ -1224,11 +1210,7 @@ gchar *folder_get_status(GPtrArray *folders, gboolean full)
 	return g_string_free(str, FALSE);
 }
 
-void folder_count_total_msgs(guint *new_msgs, guint *unread_msgs, 
-			     guint *unreadmarked_msgs, guint *marked_msgs,
-			     guint *total_msgs, guint *replied_msgs,
-			     guint *forwarded_msgs, guint *locked_msgs,
-			     guint *ignored_msgs, guint *watched_msgs)
+void folder_count_total_msgs(guint *new_msgs, guint *unread_msgs, guint *unreadmarked_msgs, guint *marked_msgs, guint *total_msgs, guint *replied_msgs, guint *forwarded_msgs, guint *locked_msgs, guint *ignored_msgs, guint *watched_msgs)
 {
 	struct TotalMsgCount count;
 
@@ -1260,9 +1242,7 @@ Folder *folder_find_from_path(const gchar *path)
 
 	for (list = folder_list; list != NULL; list = list->next) {
 		folder = list->data;
-		if ((FOLDER_TYPE(folder) == F_MH || 
-		     FOLDER_TYPE(folder) == F_MBOX) &&
-		    !path_cmp(LOCAL_FOLDER(folder)->rootpath, path))
+		if ((FOLDER_TYPE(folder) == F_MH || FOLDER_TYPE(folder) == F_MBOX) && !path_cmp(LOCAL_FOLDER(folder)->rootpath, path))
 			return folder;
 	}
 
@@ -1276,8 +1256,7 @@ Folder *folder_find_from_name(const gchar *name, FolderClass *klass)
 
 	for (list = folder_list; list != NULL; list = list->next) {
 		folder = list->data;
-		if (folder->klass == klass && 
-		    g_strcmp0(name, folder->name) == 0)
+		if (folder->klass == klass && g_strcmp0(name, folder->name) == 0)
 			return folder;
 	}
 
@@ -1303,17 +1282,16 @@ FolderItem *folder_find_item_from_path(const gchar *path)
 	Folder *folder;
 	gpointer d[2];
 	GList *list = folder_get_list();
-	
-	folder = list ? list->data:NULL;
-	
+
+	folder = list ? list->data : NULL;
+
 	cm_return_val_if_fail(folder != NULL, NULL);
 
 	d[0] = (gpointer)path;
 	d[1] = NULL;
 	while (d[1] == NULL && list) {
 		folder = FOLDER(list->data);
-		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-			folder_item_find_func, d);
+		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_item_find_func, d);
 		list = list->next;
 	}
 	return d[1];
@@ -1340,17 +1318,16 @@ FolderItem *folder_find_item_from_real_path(const gchar *path)
 	Folder *folder;
 	gpointer d[2];
 	GList *list = folder_get_list();
-	
-	folder = list ? list->data:NULL;
-	
+
+	folder = list ? list->data : NULL;
+
 	cm_return_val_if_fail(folder != NULL, NULL);
 
 	d[0] = (gpointer)path;
 	d[1] = NULL;
 	while (d[1] == NULL && list) {
 		folder = FOLDER(list->data);
-		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-			folder_item_find_func_real_path, d);
+		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_item_find_func_real_path, d);
 		list = list->next;
 	}
 	return d[1];
@@ -1377,7 +1354,7 @@ FolderClass *folder_get_class_from_string(const gchar *str)
 
 	classlist = folder_get_class_list();
 	for (; classlist != NULL; classlist = g_slist_next(classlist)) {
-		FolderClass *class = (FolderClass *) classlist->data;
+		FolderClass *class = (FolderClass *)classlist->data;
 		if (g_ascii_strcasecmp(class->idstr, str) == 0)
 			return class;
 	}
@@ -1484,8 +1461,7 @@ FolderItem *folder_find_item_from_identifier(const gchar *identifier)
 
 	d[0] = (gpointer)path;
 	d[1] = NULL;
-	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-			folder_item_find_func, d);
+	g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_item_find_func, d);
 	return d[1];
 }
 
@@ -1506,41 +1482,40 @@ FolderItem *folder_get_item_from_identifier(const gchar *identifier)
 	gboolean created_something = FALSE;
 
 	item = folder_find_item_from_identifier(identifier);
-	if(item)
+	if (item)
 		return item;
 
 	/* trivial sanity check: need at least # and two slashes */
 	len = strlen(identifier);
-	if(len < 3)
+	if (len < 3)
 		return NULL;
 
 	/* make sure identifier ends with a slash */
-	if(identifier[len-1] == G_DIR_SEPARATOR) {
+	if (identifier[len - 1] == G_DIR_SEPARATOR) {
 		Xstrdup_a(str, identifier, return NULL);
-	}
-	else {
-		Xstrndup_a(str, identifier, len+1, return NULL);
+	} else {
+		Xstrndup_a(str, identifier, len + 1, return NULL);
 		str[len] = G_DIR_SEPARATOR;
 	}
 
 	/* find folder class */
 	p1 = strchr(str, G_DIR_SEPARATOR);
-	if(!p1)
+	if (!p1)
 		return NULL;
 	*p1 = '\0';
 	class = folder_get_class_from_string(&str[1]);
-	if(!class)
+	if (!class)
 		return NULL;
 	*p1 = G_DIR_SEPARATOR;
 	++p1;
 
 	/* find folder from class and name */
 	p2 = strchr(p1, G_DIR_SEPARATOR);
-	if(!p2)
+	if (!p2)
 		return NULL;
 	*p2 = '\0';
 	folder = folder_find_from_name(p1, class);
-	if(!folder)
+	if (!folder)
 		return NULL;
 	*p2 = G_DIR_SEPARATOR;
 	++p2;
@@ -1548,16 +1523,16 @@ FolderItem *folder_get_item_from_identifier(const gchar *identifier)
 
 	/* Now, move forward and make sure all sections in the path exist */
 	last_parent = folder->node->data;
-	while((p1 = strchr(p1, G_DIR_SEPARATOR)) != NULL) {
+	while ((p1 = strchr(p1, G_DIR_SEPARATOR)) != NULL) {
 		*p1 = '\0';
 		item = folder_find_item_from_identifier(str);
-		if(!item) {
+		if (!item) {
 			item = folder_create_folder(last_parent, p2);
-			if(!item)
+			if (!item)
 				return NULL;
 			debug_print("Created folder '%s'\n", str);
 			created_something = TRUE;
-			if(prefs_common.inherit_folder_props && (last_parent != item->folder->node->data)) {
+			if (prefs_common.inherit_folder_props && (last_parent != item->folder->node->data)) {
 				folder_item_prefs_copy_prefs(last_parent, item);
 			}
 		}
@@ -1567,12 +1542,11 @@ FolderItem *folder_get_item_from_identifier(const gchar *identifier)
 		p2 = p1;
 	}
 
-	if(created_something)
+	if (created_something)
 		folder_write_list();
 
 	return item;
 }
-
 
 /**
  * Get a displayable name for a FolderItem
@@ -1589,24 +1563,19 @@ gchar *folder_item_get_name(FolderItem *item)
 
 	switch (item->stype) {
 	case F_INBOX:
-		name = g_strdup(!g_strcmp0(item->name, INBOX_DIR) ? _("Inbox") :
-				item->name);
+		name = g_strdup(!g_strcmp0(item->name, INBOX_DIR) ? _("Inbox") : item->name);
 		break;
 	case F_OUTBOX:
-		name = g_strdup(!g_strcmp0(item->name, OUTBOX_DIR) ? _("Sent") :
-				item->name);
+		name = g_strdup(!g_strcmp0(item->name, OUTBOX_DIR) ? _("Sent") : item->name);
 		break;
 	case F_QUEUE:
-		name = g_strdup(!g_strcmp0(item->name, QUEUE_DIR) ? _("Queue") :
-				item->name);
+		name = g_strdup(!g_strcmp0(item->name, QUEUE_DIR) ? _("Queue") : item->name);
 		break;
 	case F_TRASH:
-		name = g_strdup(!g_strcmp0(item->name, TRASH_DIR) ? _("Trash") :
-				item->name);
+		name = g_strdup(!g_strcmp0(item->name, TRASH_DIR) ? _("Trash") : item->name);
 		break;
 	case F_DRAFT:
-		name = g_strdup(!g_strcmp0(item->name, DRAFT_DIR) ? _("Drafts") :
-				item->name);
+		name = g_strdup(!g_strcmp0(item->name, DRAFT_DIR) ? _("Drafts") : item->name);
 		break;
 	default:
 		break;
@@ -1616,15 +1585,12 @@ gchar *folder_item_get_name(FolderItem *item)
 		/*
 		 * should probably be done by a virtual function,
 		 * the folder knows the ui string and how to abbrev
-		*/
+		 */
 		if (folder_item_parent(item) == NULL) {
 			name = g_strconcat(item->name, " (", item->folder->klass->uistr, ")", NULL);
 		} else {
-			if (FOLDER_CLASS(item->folder) == news_get_class() &&
-			    item->path && !g_strcmp0(item->name, item->path))
-				name = get_abbrev_newsgroup_name
-					(item->path,
-					 prefs_common.ng_abbrev_len);
+			if (FOLDER_CLASS(item->folder) == news_get_class() && item->path && !g_strcmp0(item->name, item->path))
+				name = get_abbrev_newsgroup_name(item->path, prefs_common.ng_abbrev_len);
 			else
 				name = g_strdup(item->name);
 		}
@@ -1636,7 +1602,7 @@ gchar *folder_item_get_name(FolderItem *item)
 	return name;
 }
 
-gboolean folder_have_mailbox (void)
+gboolean folder_have_mailbox(void)
 {
 	GList *cur;
 	for (cur = folder_list; cur != NULL; cur = g_list_next(cur)) {
@@ -1652,7 +1618,7 @@ FolderItem *folder_get_default_inbox(void)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1672,7 +1638,7 @@ FolderItem *folder_get_default_inbox_for_class(FolderType type)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1692,7 +1658,7 @@ FolderItem *folder_get_default_outbox(void)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1712,7 +1678,7 @@ FolderItem *folder_get_default_outbox_for_class(FolderType type)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1732,7 +1698,7 @@ FolderItem *folder_get_default_draft(void)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1752,7 +1718,7 @@ FolderItem *folder_get_default_draft_for_class(FolderType type)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1772,7 +1738,7 @@ FolderItem *folder_get_default_queue(void)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1792,7 +1758,7 @@ FolderItem *folder_get_default_queue_for_class(FolderType type)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1812,7 +1778,7 @@ FolderItem *folder_get_default_trash(void)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1832,7 +1798,7 @@ FolderItem *folder_get_default_trash_for_class(FolderType type)
 	GList *flist;
 
 	for (flist = folder_list; flist != NULL; flist = g_list_next(flist)) {
-		Folder * folder = FOLDER(flist->data);
+		Folder *folder = FOLDER(flist->data);
 
 		if (folder == NULL)
 			continue;
@@ -1866,25 +1832,24 @@ void folder_set_missing_folders(void)
 
 	for (list = folder_list; list != NULL; list = list->next) {
 		folder = list->data;
-		if (FOLDER_TYPE(folder) != F_MH) continue;
+		if (FOLDER_TYPE(folder) != F_MH)
+			continue;
 		rootitem = FOLDER_ITEM(folder->node->data);
 		cm_return_if_fail(rootitem != NULL);
 
-		if (folder->inbox && folder->outbox && folder->draft &&
-		    folder->queue && folder->trash)
+		if (folder->inbox && folder->outbox && folder->draft && folder->queue && folder->trash)
 			continue;
 
 		if (folder->klass->create_tree(folder) < 0) {
-			g_warning("%s: can't create the folder tree",
-				  LOCAL_FOLDER(folder)->rootpath);
+			g_warning("%s: can't create the folder tree", LOCAL_FOLDER(folder)->rootpath);
 			continue;
 		}
 
-		CREATE_FOLDER_IF_NOT_EXIST(inbox,  INBOX_DIR,  F_INBOX);
+		CREATE_FOLDER_IF_NOT_EXIST(inbox, INBOX_DIR, F_INBOX);
 		CREATE_FOLDER_IF_NOT_EXIST(outbox, OUTBOX_DIR, F_OUTBOX);
-		CREATE_FOLDER_IF_NOT_EXIST(draft,  DRAFT_DIR,  F_DRAFT);
-		CREATE_FOLDER_IF_NOT_EXIST(queue,  QUEUE_DIR,  F_QUEUE);
-		CREATE_FOLDER_IF_NOT_EXIST(trash,  TRASH_DIR,  F_TRASH);
+		CREATE_FOLDER_IF_NOT_EXIST(draft, DRAFT_DIR, F_DRAFT);
+		CREATE_FOLDER_IF_NOT_EXIST(queue, QUEUE_DIR, F_QUEUE);
+		CREATE_FOLDER_IF_NOT_EXIST(trash, TRASH_DIR, F_TRASH);
 	}
 }
 
@@ -1904,14 +1869,14 @@ void folder_unref_account_all(PrefsAccount *account)
 	Folder *folder;
 	GList *list;
 
-	if (!account) return;
+	if (!account)
+		return;
 
 	for (list = folder_list; list != NULL; list = list->next) {
 		folder = list->data;
 		if (folder->account == account)
 			folder->account = NULL;
-		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-				folder_unref_account_func, account);
+		g_node_traverse(folder->node, G_PRE_ORDER, G_TRAVERSE_ALL, -1, folder_unref_account_func, account);
 	}
 }
 
@@ -1930,8 +1895,8 @@ gchar *folder_item_get_path(FolderItem *item)
 
 static gint folder_sort_cache_list_by_msgnum(gconstpointer a, gconstpointer b)
 {
-	MsgInfo *msginfo_a = (MsgInfo *) a;
-	MsgInfo *msginfo_b = (MsgInfo *) b;
+	MsgInfo *msginfo_a = (MsgInfo *)a;
+	MsgInfo *msginfo_b = (MsgInfo *)b;
 
 	return (msginfo_a->msgnum - msginfo_b->msgnum);
 }
@@ -1940,7 +1905,7 @@ static gint folder_sort_folder_list(gconstpointer a, gconstpointer b)
 {
 	guint gint_a = GPOINTER_TO_INT(a);
 	guint gint_b = GPOINTER_TO_INT(b);
-	
+
 	return (gint_a - gint_b);
 }
 
@@ -1950,16 +1915,15 @@ static gint syncronize_flags(FolderItem *item, MsgInfoList *msglist)
 	gint ret = 0;
 	GSList *cur;
 
-	if(msglist == NULL)
+	if (msglist == NULL)
 		return 0;
-	if(item->folder->klass->get_flags == NULL)
+	if (item->folder->klass->get_flags == NULL)
 		return 0;
 	if (item->no_select)
 		return 0;
 
 	relation = g_hash_table_new(g_direct_hash, g_direct_equal);
-	if ((ret = item->folder->klass->get_flags(
-	    item->folder, item, msglist, relation)) == 0) {
+	if ((ret = item->folder->klass->get_flags(item->folder, item, msglist, relation)) == 0) {
 		gpointer data, old_key;
 		MsgInfo *msginfo;
 		MsgPermFlags permflags = 0;
@@ -1967,22 +1931,20 @@ static gint syncronize_flags(FolderItem *item, MsgInfoList *msglist)
 		folder_item_update_freeze();
 		folder_item_set_batch(item, TRUE);
 		for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
-			msginfo = (MsgInfo *) cur->data;
-		
+			msginfo = (MsgInfo *)cur->data;
+
 			if (g_hash_table_lookup_extended(relation, msginfo, &old_key, &data)) {
 				permflags = GPOINTER_TO_INT(data);
 
 				if (msginfo->flags.perm_flags != permflags) {
-					procmsg_msginfo_change_flags(msginfo,
-						permflags & ~msginfo->flags.perm_flags, 0,
-						~permflags & msginfo->flags.perm_flags, 0);
+					procmsg_msginfo_change_flags(msginfo, permflags & ~msginfo->flags.perm_flags, 0, ~permflags & msginfo->flags.perm_flags, 0);
 				}
 			}
 		}
 		folder_item_set_batch(item, FALSE);
 		folder_item_update_thaw();
 	}
-	g_hash_table_destroy(relation);	
+	g_hash_table_destroy(relation);
 
 	return ret;
 }
@@ -1992,7 +1954,7 @@ static gint folder_item_syncronize_flags(FolderItem *item)
 	MsgInfoList *msglist = NULL;
 	GSList *cur;
 	gint ret = 0;
-	
+
 	cm_return_val_if_fail(item != NULL, -1);
 	cm_return_val_if_fail(item->folder != NULL, -1);
 	cm_return_val_if_fail(item->folder->klass != NULL, -1);
@@ -2003,15 +1965,15 @@ static gint folder_item_syncronize_flags(FolderItem *item)
 
 	if (item->cache == NULL)
 		folder_item_read_cache(item);
-	
+
 	msglist = msgcache_get_msg_list(item->cache);
-	
+
 	ret = syncronize_flags(item, msglist);
 
 	for (cur = msglist; cur != NULL; cur = g_slist_next(cur)) {
 		procmsg_msginfo_free((MsgInfo **)&(cur->data));
 	}
-	
+
 	g_slist_free(msglist);
 
 	item->scanning = ITEM_NOT_SCANNING;
@@ -2019,25 +1981,20 @@ static gint folder_item_syncronize_flags(FolderItem *item)
 	return ret;
 }
 
-static void folder_item_process_open (FolderItem *item,
-				 void (*before_proc_func)(gpointer data),
-				 void (*after_proc_func)(gpointer data),
-				 gpointer data)
+static void folder_item_process_open(FolderItem *item, void (*before_proc_func)(gpointer data), void(*after_proc_func)(gpointer data), gpointer data)
 {
 	gchar *buf;
 	if (item == NULL)
 		return;
-	if((item->folder->klass->scan_required != NULL) &&
-	   (item->folder->klass->scan_required(item->folder, item))) {
+	if ((item->folder->klass->scan_required != NULL) && (item->folder->klass->scan_required(item->folder, item))) {
 		folder_item_scan_full(item, TRUE);
 	} else {
 		folder_item_syncronize_flags(item);
 	}
-	
+
 	/* Processing */
 	if (item->prefs->enable_processing_when_opening) {
-		buf = g_strdup_printf(_("Processing (%s)...\n"), 
-			      item->path ? item->path : item->name);
+		buf = g_strdup_printf(_("Processing (%s)...\n"), item->path ? item->path : item->name);
 		g_free(buf);
 
 		if (before_proc_func)
@@ -2049,12 +2006,12 @@ static void folder_item_process_open (FolderItem *item,
 			after_proc_func(data);
 	}
 	item->processing_pending = FALSE;
-	return;	
+	return;
 }
 
 gint folder_item_open(FolderItem *item)
 {
-	START_TIMING(""); 
+	START_TIMING("");
 	if (item->no_select)
 		return -1;
 
@@ -2064,8 +2021,8 @@ gint folder_item_open(FolderItem *item)
 	}
 
 	item->processing_pending = TRUE;
-	folder_item_process_open (item, NULL, NULL, NULL);
-	
+	folder_item_process_open(item, NULL, NULL, NULL);
+
 	item->opened = TRUE;
 	END_TIMING();
 	return 0;
@@ -2075,7 +2032,7 @@ gint folder_item_close(FolderItem *item)
 {
 	GSList *mlist, *cur;
 	Folder *folder;
-	
+
 	cm_return_val_if_fail(item != NULL, -1);
 
 	if (item->no_select)
@@ -2084,20 +2041,20 @@ gint folder_item_close(FolderItem *item)
 	if (item->new_msgs) {
 		folder_item_update_freeze();
 		mlist = folder_item_get_msg_list(item);
-		for (cur = mlist ; cur != NULL ; cur = cur->next) {
-			MsgInfo * msginfo;
+		for (cur = mlist; cur != NULL; cur = cur->next) {
+			MsgInfo *msginfo;
 
-			msginfo = (MsgInfo *) cur->data;
+			msginfo = (MsgInfo *)cur->data;
 			if (MSG_IS_NEW(msginfo->flags))
 				procmsg_msginfo_unset_flags(msginfo, MSG_NEW, 0);
 			procmsg_msginfo_free(&msginfo);
 		}
 		g_slist_free(mlist);
 		folder_item_update_thaw();
-	}		
+	}
 
 	folder_item_write_cache(item);
-	
+
 	folder_item_update(item, F_ITEM_UPDATE_MSGCNT);
 
 	item->opened = FALSE;
@@ -2115,7 +2072,7 @@ static MsgInfoList *get_msginfos(FolderItem *item, MsgNumberList *numlist)
 	Folder *folder = item->folder;
 	if (item->no_select)
 		return NULL;
-	
+
 	if (folder->klass->get_msginfos != NULL)
 		msglist = folder->klass->get_msginfos(folder, item, numlist);
 	else {
@@ -2129,7 +2086,7 @@ static MsgInfoList *get_msginfos(FolderItem *item, MsgNumberList *numlist)
 			msginfo = folder->klass->get_msginfo(folder, item, num);
 			if (msginfo != NULL)
 				msglist = g_slist_prepend(msglist, msginfo);
-		}		
+		}
 	}
 
 	return msglist;
@@ -2166,9 +2123,10 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 	guint cache_max_num, folder_max_num, cache_cur_num, folder_cur_num;
 	gboolean update_flags = 0, old_uids_valid = FALSE;
 	GHashTable *subject_table = NULL;
-	
+
 	cm_return_val_if_fail(item != NULL, -1);
-	if (item->path == NULL) return -1;
+	if (item->path == NULL)
+		return -1;
 
 	folder = item->folder;
 
@@ -2178,18 +2136,18 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 	item->scanning = ITEM_SCANNING_WITH_FLAGS;
 
 	debug_print("Scanning folder %s for cache changes.\n", item->path ? item->path : "(null)");
-	
+
 	/* Get list of messages for folder and cache */
 	if (folder->klass->get_num_list(item->folder, item, &folder_list, &old_uids_valid) < 0) {
 		debug_print("Error fetching list of message numbers\n");
 		item->scanning = ITEM_NOT_SCANNING;
-		return(-1);
+		return (-1);
 	}
 
-	if(prefs_common.thread_by_subject) {
+	if (prefs_common.thread_by_subject) {
 		subject_table = g_hash_table_new(g_str_hash, g_str_equal);
 	}
-	
+
 	if (old_uids_valid) {
 		if (!item->cache)
 			folder_item_read_cache(item);
@@ -2205,7 +2163,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 	}
 
 	/* Sort both lists */
-    	cache_list = g_slist_sort(cache_list, folder_sort_cache_list_by_msgnum);
+	cache_list = g_slist_sort(cache_list, folder_sort_cache_list_by_msgnum);
 	folder_list = g_slist_sort(folder_list, folder_sort_folder_list);
 
 	cache_list_cur = cache_list;
@@ -2213,7 +2171,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 
 	if (cache_list_cur != NULL) {
 		GSList *cache_list_last;
-	
+
 		cache_cur_num = ((MsgInfo *)cache_list_cur->data)->msgnum;
 		cache_list_last = g_slist_last(cache_list);
 		cache_max_num = ((MsgInfo *)cache_list_last->data)->msgnum;
@@ -2224,7 +2182,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 
 	if (folder_list_cur != NULL) {
 		GSList *folder_list_last;
-	
+
 		folder_cur_num = GPOINTER_TO_UINT(folder_list_cur->data);
 		folder_list_last = g_slist_last(folder_list);
 		folder_max_num = GPOINTER_TO_UINT(folder_list_last->data);
@@ -2241,26 +2199,26 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 		if (folder_cur_num < cache_cur_num) {
 			gboolean add = FALSE;
 
-			switch(FOLDER_TYPE(folder)) {
-				case F_NEWS:
-					if (folder_cur_num < cache_max_num)
-						break;
-					
-					if (folder->account->max_articles == 0) {
-						add = TRUE;
-					}
+			switch (FOLDER_TYPE(folder)) {
+			case F_NEWS:
+				if (folder_cur_num < cache_max_num)
+					break;
 
-					if (folder_max_num <= folder->account->max_articles) {
-						add = TRUE;
-					} else if (folder_cur_num > (folder_max_num - folder->account->max_articles)) {
-						add = TRUE;
-					}
-					break;
-				default:
+				if (folder->account->max_articles == 0) {
 					add = TRUE;
-					break;
+				}
+
+				if (folder_max_num <= folder->account->max_articles) {
+					add = TRUE;
+				} else if (folder_cur_num > (folder_max_num - folder->account->max_articles)) {
+					add = TRUE;
+				}
+				break;
+			default:
+				add = TRUE;
+				break;
 			}
-			
+
 			if (add) {
 				new_list = g_slist_prepend(new_list, GUINT_TO_POINTER(folder_cur_num));
 				debug_print("Remembered message %u for fetching\n", folder_cur_num);
@@ -2317,17 +2275,15 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 			} else if (msginfo) {
 				exists_list = g_slist_prepend(exists_list, msginfo);
 
-				if(prefs_common.thread_by_subject &&
-					MSG_IS_IGNORE_THREAD(msginfo->flags) &&
-					!subject_table_lookup(subject_table, msginfo->subject)) {
+				if (prefs_common.thread_by_subject && MSG_IS_IGNORE_THREAD(msginfo->flags) && !subject_table_lookup(subject_table, msginfo->subject)) {
 					subject_table_insert(subject_table, msginfo->subject, msginfo);
 				}
 			}
-			
+
 			/* Move to next folder and cache number */
 			if (cache_list_cur)
 				cache_list_cur = cache_list_cur->next;
-			
+
 			if (folder_list_cur)
 				folder_list_cur = folder_list_cur->next;
 
@@ -2344,8 +2300,8 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 			continue;
 		}
 	}
-	
-	for(cache_list_cur = cache_list; cache_list_cur != NULL; cache_list_cur = g_slist_next(cache_list_cur))
+
+	for (cache_list_cur = cache_list; cache_list_cur != NULL; cache_list_cur = g_slist_next(cache_list_cur))
 		procmsg_msginfo_free((MsgInfo **)&(cache_list_cur->data));
 
 	g_slist_free(cache_list);
@@ -2363,42 +2319,33 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 	}
 
 	folder_item_update_freeze();
-	
+
 	item->scanning = ITEM_SCANNING;
 
 	if (newmsg_list != NULL) {
 		GSList *elem, *to_filter = NULL;
-		gboolean do_filter = (filtering == TRUE) &&
-			(item->folder->account != NULL) &&
-			(item->folder->account->filter_on_recv) &&
-			((item->stype == F_INBOX) ||
-			 ((item->stype == F_NORMAL) &&
-			  (FOLDER_TYPE(item->folder) == F_NEWS)));
+		gboolean do_filter = (filtering == TRUE) && (item->folder->account != NULL) && (item->folder->account->filter_on_recv) && ((item->stype == F_INBOX) || ((item->stype == F_NORMAL) && (FOLDER_TYPE(item->folder) == F_NEWS)));
 
 		for (elem = newmsg_list; elem != NULL; elem = g_slist_next(elem)) {
-			MsgInfo *msginfo = (MsgInfo *) elem->data;
+			MsgInfo *msginfo = (MsgInfo *)elem->data;
 
 			msgcache_add_msg(item->cache, msginfo);
 			if (!do_filter) {
 				exists_list = g_slist_prepend(exists_list, msginfo);
 
-				if(prefs_common.thread_by_subject &&
-					MSG_IS_IGNORE_THREAD(msginfo->flags) &&
-					!subject_table_lookup(subject_table, msginfo->subject)) {
+				if (prefs_common.thread_by_subject && MSG_IS_IGNORE_THREAD(msginfo->flags) && !subject_table_lookup(subject_table, msginfo->subject)) {
 					subject_table_insert(subject_table, msginfo->subject, msginfo);
-				}			
+				}
 			}
 		}
 
 		if (do_filter) {
 			GSList *unfiltered;
-			
+
 			folder_item_set_batch(item, TRUE);
-			procmsg_msglist_filter(newmsg_list, item->folder->account, 
-					&to_filter, &unfiltered, 
-					TRUE);
+			procmsg_msglist_filter(newmsg_list, item->folder->account, &to_filter, &unfiltered, TRUE);
 			folder_item_set_batch(item, FALSE);
-			
+
 			filtering_move_and_copy_msgs(newmsg_list);
 			if (to_filter != NULL) {
 				for (elem = to_filter; elem; elem = g_slist_next(elem)) {
@@ -2412,9 +2359,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 					MsgInfo *msginfo = (MsgInfo *)elem->data;
 					exists_list = g_slist_prepend(exists_list, msginfo);
 
-					if(prefs_common.thread_by_subject &&
-						MSG_IS_IGNORE_THREAD(msginfo->flags) &&
-						!subject_table_lookup(subject_table, msginfo->subject)) {
+					if (prefs_common.thread_by_subject && MSG_IS_IGNORE_THREAD(msginfo->flags) && !subject_table_lookup(subject_table, msginfo->subject)) {
 						subject_table_insert(subject_table, msginfo->subject, msginfo);
 					}
 				}
@@ -2445,19 +2390,12 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 		if (!MSG_IS_WATCH_THREAD(msginfo->flags) && procmsg_msg_has_flagged_parent(msginfo, MSG_WATCH_THREAD)) {
 			procmsg_msginfo_set_flags(msginfo, MSG_WATCH_THREAD, 0);
 		}
-		if(prefs_common.thread_by_subject && !msginfo->inreplyto &&
-			!msginfo->references && !MSG_IS_IGNORE_THREAD(msginfo->flags) &&
-			(parent_msginfo = subject_table_lookup(subject_table, msginfo->subject)))
-		{
-			if(MSG_IS_IGNORE_THREAD(parent_msginfo->flags)) {
-				procmsg_msginfo_change_flags(msginfo, MSG_IGNORE_THREAD, 0,
-						MSG_NEW | MSG_UNREAD, 0);
+		if (prefs_common.thread_by_subject && !msginfo->inreplyto && !msginfo->references && !MSG_IS_IGNORE_THREAD(msginfo->flags) && (parent_msginfo = subject_table_lookup(subject_table, msginfo->subject))) {
+			if (MSG_IS_IGNORE_THREAD(parent_msginfo->flags)) {
+				procmsg_msginfo_change_flags(msginfo, MSG_IGNORE_THREAD, 0, MSG_NEW | MSG_UNREAD, 0);
 			}
 		}
-		if ((folder_has_parent_of_type(item, F_OUTBOX) ||
-		     folder_has_parent_of_type(item, F_QUEUE)  ||
-		     folder_has_parent_of_type(item, F_TRASH)) &&
-		    (MSG_IS_NEW(msginfo->flags) || MSG_IS_UNREAD(msginfo->flags)))
+		if ((folder_has_parent_of_type(item, F_OUTBOX) || folder_has_parent_of_type(item, F_QUEUE) || folder_has_parent_of_type(item, F_TRASH)) && (MSG_IS_NEW(msginfo->flags) || MSG_IS_UNREAD(msginfo->flags)))
 			procmsg_msginfo_unset_flags(msginfo, MSG_NEW | MSG_UNREAD, 0);
 		if (MSG_IS_NEW(msginfo->flags))
 			newcnt++;
@@ -2484,17 +2422,12 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 	}
 	folder_item_set_batch(item, FALSE);
 	g_slist_free(exists_list);
-	
-	if(prefs_common.thread_by_subject) {
+
+	if (prefs_common.thread_by_subject) {
 		g_hash_table_destroy(subject_table);
 	}
-	
-	if (item->new_msgs != newcnt || item->unread_msgs != unreadcnt
-	||  item->total_msgs != totalcnt || item->marked_msgs != markedcnt
-	||  item->unreadmarked_msgs != unreadmarkedcnt
-	||  item->replied_msgs != repliedcnt || item->forwarded_msgs != forwardedcnt
-	||  item->locked_msgs != lockedcnt || item->ignored_msgs != ignoredcnt
-	||  item->watched_msgs != watchedcnt) {
+
+	if (item->new_msgs != newcnt || item->unread_msgs != unreadcnt || item->total_msgs != totalcnt || item->marked_msgs != markedcnt || item->unreadmarked_msgs != unreadmarkedcnt || item->replied_msgs != repliedcnt || item->forwarded_msgs != forwardedcnt || item->locked_msgs != lockedcnt || item->ignored_msgs != ignoredcnt || item->watched_msgs != watchedcnt) {
 		update_flags |= F_ITEM_UPDATE_CONTENT;
 	}
 
@@ -2513,7 +2446,7 @@ gint folder_item_scan_full(FolderItem *item, gboolean filtering)
 
 	folder_item_update(item, update_flags);
 	folder_item_update_thaw();
-	
+
 	item->scanning = ITEM_NOT_SCANNING;
 
 	return 0;
@@ -2530,7 +2463,7 @@ static void folder_count_total_cache_memusage(FolderItem *item, gpointer data)
 
 	if (item->cache == NULL)
 		return;
-	
+
 	*memusage += msgcache_get_memory_usage(item->cache);
 }
 
@@ -2538,22 +2471,22 @@ static gint folder_cache_time_compare_func(gconstpointer a, gconstpointer b)
 {
 	FolderItem *fa = (FolderItem *)a;
 	FolderItem *fb = (FolderItem *)b;
-	
-	return (gint) (msgcache_get_last_access_time(fa->cache) - msgcache_get_last_access_time(fb->cache));
+
+	return (gint)(msgcache_get_last_access_time(fa->cache) - msgcache_get_last_access_time(fb->cache));
 }
 
 static void folder_find_expired_caches(FolderItem *item, gpointer data)
 {
 	GSList **folder_item_list = (GSList **)data;
 	gint difftime, expiretime;
-	
+
 	if (item->cache == NULL)
 		return;
 
 	if (item->opened > 0)
 		return;
 
-	difftime = (gint) (time(NULL) - msgcache_get_last_access_time(item->cache));
+	difftime = (gint)(time(NULL) - msgcache_get_last_access_time(item->cache));
 	expiretime = prefs_common.cache_min_keep_time * 60;
 	debug_print("Cache unused time: %d (Expire time: %d)\n", difftime, expiretime);
 
@@ -2565,10 +2498,10 @@ static void folder_find_expired_caches(FolderItem *item, gpointer data)
 gboolean folder_item_free_cache(FolderItem *item, gboolean force)
 {
 	cm_return_val_if_fail(item != NULL, TRUE);
-	
+
 	if (item->cache == NULL)
 		return TRUE;
-	
+
 	if (item->opened > 0 && !force)
 		return FALSE;
 
@@ -2596,17 +2529,17 @@ void folder_clean_cache_memory(FolderItem *protected_item)
 {
 	gint memusage = 0;
 
-	folder_func_to_all_folders(folder_count_total_cache_memusage, &memusage);	
+	folder_func_to_all_folders(folder_count_total_cache_memusage, &memusage);
 	debug_print("Total cache memory usage: %d\n", memusage);
-	
+
 	if (memusage > (prefs_common.cache_max_mem_usage * 1024)) {
 		GSList *folder_item_list = NULL, *listitem;
-		
+
 		debug_print("Trying to free cache memory\n");
 
-		folder_func_to_all_folders(folder_find_expired_caches, &folder_item_list);	
+		folder_func_to_all_folders(folder_find_expired_caches, &folder_item_list);
 		listitem = folder_item_list;
-		while((listitem != NULL) && (memusage > (prefs_common.cache_max_mem_usage * 1024))) {
+		while ((listitem != NULL) && (memusage > (prefs_common.cache_max_mem_usage * 1024))) {
 			FolderItem *item = (FolderItem *)(listitem->data);
 			gint cache_size = 0;
 			if (item == protected_item) {
@@ -2615,7 +2548,7 @@ void folder_clean_cache_memory(FolderItem *protected_item)
 			}
 			debug_print("Freeing cache memory for %s\n", item->path ? item->path : item->name);
 			cache_size = msgcache_get_memory_usage(item->cache);
-		        if (folder_item_free_cache(item, FALSE))
+			if (folder_item_free_cache(item, FALSE))
 				memusage -= cache_size;
 
 			listitem = listitem->next;
@@ -2632,7 +2565,7 @@ static void folder_item_remove_cached_msg(FolderItem *item, MsgInfo *msginfo)
 
 	if (folder->klass->remove_cached_msg == NULL)
 		return;
-	
+
 	folder->klass->remove_cached_msg(folder, item, msginfo);
 }
 
@@ -2641,14 +2574,13 @@ static void folder_item_clean_local_files(FolderItem *item, gint days)
 	cm_return_if_fail(item != NULL);
 	cm_return_if_fail(item->folder != NULL);
 
-	if (FOLDER_TYPE(item->folder) == F_IMAP ||
-	    FOLDER_TYPE(item->folder) == F_NEWS) {
+	if (FOLDER_TYPE(item->folder) == F_IMAP || FOLDER_TYPE(item->folder) == F_NEWS) {
 		GSList *msglist = folder_item_get_msg_list(item);
 		GSList *cur;
 		time_t t = time(NULL);
 		for (cur = msglist; cur; cur = cur->next) {
 			MsgInfo *msginfo = (MsgInfo *)cur->data;
-			gint age = (t - msginfo->date_t) / (60*60*24);
+			gint age = (t - msginfo->date_t) / (60 * 60 * 24);
 			if (age > days)
 				folder_item_remove_cached_msg(item, msginfo);
 		}
@@ -2663,7 +2595,7 @@ static void folder_item_read_cache(FolderItem *item)
 	cm_return_if_fail(item != NULL);
 
 	if (item->path != NULL) {
-	        cache_file = folder_item_get_cache_file(item);
+		cache_file = folder_item_get_cache_file(item);
 		mark_file = folder_item_get_mark_file(item);
 		tags_file = folder_item_get_tags_file(item);
 		item->cache = msgcache_read_cache(item, cache_file);
@@ -2712,7 +2644,7 @@ static void folder_item_read_cache(FolderItem *item)
 				procmsg_msginfo_unset_flags(msginfo, MSG_FULLY_CACHED, 0);
 			}
 			item->new_msgs = newcnt;
-		        item->unread_msgs = unreadcnt;
+			item->unread_msgs = unreadcnt;
 			item->unreadmarked_msgs = unreadmarkedcnt;
 			item->marked_msgs = markedcnt;
 			item->replied_msgs = repliedcnt;
@@ -2748,7 +2680,7 @@ void folder_item_write_cache(FolderItem *item)
 	gchar *id;
 	time_t last_mtime = (time_t)0;
 	gboolean need_scan = FALSE;
-	
+
 	if (!item || !item->path || !item->cache)
 		return;
 
@@ -2774,8 +2706,10 @@ void folder_item_write_cache(FolderItem *item)
 		prefs = item->prefs;
 		if (prefs && prefs->enable_folder_chmod && prefs->folder_chmod) {
 			filemode = prefs->folder_chmod;
-			if (filemode & S_IRGRP) filemode |= S_IWGRP;
-			if (filemode & S_IROTH) filemode |= S_IWOTH;
+			if (filemode & S_IRGRP)
+				filemode |= S_IWGRP;
+			if (filemode & S_IROTH)
+				filemode |= S_IWOTH;
 			if (cache_file) {
 				if (chmod(cache_file, filemode) < 0)
 					FILE_OP_ERROR(cache_file, "chmod");
@@ -2785,7 +2719,7 @@ void folder_item_write_cache(FolderItem *item)
 					FILE_OP_ERROR(mark_file, "chmod");
 			}
 		}
-        } else {
+	} else {
 		item->cache_dirty = TRUE;
 		item->mark_dirty = TRUE;
 		item->tags_dirty = TRUE;
@@ -2805,37 +2739,37 @@ void folder_item_write_cache(FolderItem *item)
 MsgInfo *folder_item_get_msginfo(FolderItem *item, gint num)
 {
 	MsgInfo *msginfo = NULL;
-	
+
 	cm_return_val_if_fail(item != NULL, NULL);
 	if (item->no_select)
 		return NULL;
 	if (!item->cache)
 		folder_item_read_cache(item);
-	
+
 	if ((msginfo = msgcache_get_msg(item->cache, num)) != NULL)
 		return msginfo;
-	
+
 	msginfo = get_msginfo(item, num);
 	if (msginfo != NULL) {
 		msgcache_add_msg(item->cache, msginfo);
 		return msginfo;
 	}
-	
+
 	return NULL;
 }
 
 MsgInfo *folder_item_get_msginfo_by_msgid(FolderItem *item, const gchar *msgid)
 {
 	MsgInfo *msginfo;
-	
+
 	cm_return_val_if_fail(item != NULL, NULL);
 	cm_return_val_if_fail(msgid != NULL, NULL);
 	if (item->no_select)
 		return NULL;
-	
+
 	if (!item->cache)
 		folder_item_read_cache(item);
-	
+
 	if ((msginfo = msgcache_get_msg_by_id(item->cache, msgid)) != NULL)
 		return msginfo;
 
@@ -2847,12 +2781,12 @@ GSList *folder_item_get_msg_list(FolderItem *item)
 	cm_return_val_if_fail(item != NULL, NULL);
 	if (item->no_select)
 		return NULL;
-	
+
 	if (item->cache == 0)
 		folder_item_read_cache(item);
 
 	cm_return_val_if_fail(item->cache != NULL, NULL);
-	
+
 	return msgcache_get_msg_list(item->cache);
 }
 
@@ -2860,28 +2794,13 @@ static void msginfo_set_mime_flags(GNode *node, gpointer data)
 {
 	MsgInfo *msginfo = data;
 	MimeInfo *mimeinfo = node->data;
-	
-	if (mimeinfo->disposition == DISPOSITIONTYPE_ATTACHMENT &&
-	    (!mimeinfo->subtype || (strcmp(mimeinfo->subtype, "pgp-signature") &&
-	     strcmp(mimeinfo->subtype, "x-pkcs7-signature") &&
-	     strcmp(mimeinfo->subtype, "pkcs7-signature")))) {
+
+	if (mimeinfo->disposition == DISPOSITIONTYPE_ATTACHMENT && (!mimeinfo->subtype || (strcmp(mimeinfo->subtype, "pgp-signature") && strcmp(mimeinfo->subtype, "x-pkcs7-signature") && strcmp(mimeinfo->subtype, "pkcs7-signature")))) {
 		procmsg_msginfo_set_flags(msginfo, 0, MSG_HAS_ATTACHMENT);
-	} else if (mimeinfo->disposition == DISPOSITIONTYPE_UNKNOWN && 
-		 mimeinfo->id == NULL &&
-		 mimeinfo->type != MIMETYPE_TEXT &&
-		 mimeinfo->type != MIMETYPE_MULTIPART) {
-		if (!mimeinfo->subtype 
-		|| (strcmp(mimeinfo->subtype, "pgp-signature") && 
-		    strcmp(mimeinfo->subtype, "x-pkcs7-signature") &&
-		    strcmp(mimeinfo->subtype, "pkcs7-signature")))
+	} else if (mimeinfo->disposition == DISPOSITIONTYPE_UNKNOWN && mimeinfo->id == NULL && mimeinfo->type != MIMETYPE_TEXT && mimeinfo->type != MIMETYPE_MULTIPART) {
+		if (!mimeinfo->subtype || (strcmp(mimeinfo->subtype, "pgp-signature") && strcmp(mimeinfo->subtype, "x-pkcs7-signature") && strcmp(mimeinfo->subtype, "pkcs7-signature")))
 			procmsg_msginfo_set_flags(msginfo, 0, MSG_HAS_ATTACHMENT);
-	} else if (mimeinfo->disposition == DISPOSITIONTYPE_INLINE &&
-		 mimeinfo->id == NULL &&
-		(strcmp(mimeinfo->subtype, "pgp-signature") &&
-		 strcmp(mimeinfo->subtype, "x-pkcs7-signature") &&
-		 strcmp(mimeinfo->subtype, "pkcs7-signature")) && 
-		(procmime_mimeinfo_get_parameter(mimeinfo, "name") != NULL ||
-		 procmime_mimeinfo_get_parameter(mimeinfo, "filename") != NULL)) {
+	} else if (mimeinfo->disposition == DISPOSITIONTYPE_INLINE && mimeinfo->id == NULL && (strcmp(mimeinfo->subtype, "pgp-signature") && strcmp(mimeinfo->subtype, "x-pkcs7-signature") && strcmp(mimeinfo->subtype, "pkcs7-signature")) && (procmime_mimeinfo_get_parameter(mimeinfo, "name") != NULL || procmime_mimeinfo_get_parameter(mimeinfo, "filename") != NULL)) {
 		procmsg_msginfo_set_flags(msginfo, 0, MSG_HAS_ATTACHMENT);
 	}
 
@@ -2922,13 +2841,12 @@ gchar *folder_item_fetch_msg(FolderItem *item, gint num)
 		if ((msginfo != NULL) && !MSG_IS_SCANNED(msginfo->flags)) {
 			MimeInfo *mimeinfo;
 
-			if (!folder_has_parent_of_type(msginfo->folder, F_QUEUE) && 
-			    !folder_has_parent_of_type(msginfo->folder, F_DRAFT))
+			if (!folder_has_parent_of_type(msginfo->folder, F_QUEUE) && !folder_has_parent_of_type(msginfo->folder, F_DRAFT))
 				mimeinfo = procmime_scan_file(msgfile);
 			else
 				mimeinfo = procmime_scan_queue_file(msgfile);
 			/* check for attachments */
-			if (mimeinfo != NULL) {	
+			if (mimeinfo != NULL) {
 				g_node_children_foreach(mimeinfo->node, G_TRAVERSE_ALL, msginfo_set_mime_flags, msginfo);
 				procmime_mimeinfo_free_all(&mimeinfo);
 
@@ -2941,8 +2859,7 @@ gchar *folder_item_fetch_msg(FolderItem *item, gint num)
 	return msgfile;
 }
 
-gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers,
-				  gboolean body)
+gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers, gboolean body)
 {
 	Folder *folder;
 	gchar *msgfile;
@@ -2951,31 +2868,28 @@ gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers,
 	cm_return_val_if_fail(item != NULL, NULL);
 	if (item->no_select)
 		return NULL;
-	
+
 	folder = item->folder;
 
 	if (folder->klass->fetch_msg_full == NULL)
 		return folder_item_fetch_msg(item, num);
 
 	if (item->prefs->offlinesync && prefs_common.real_time_sync)
-		msgfile = folder->klass->fetch_msg_full(folder, item, num, 
-						TRUE, TRUE);
+		msgfile = folder->klass->fetch_msg_full(folder, item, num, TRUE, TRUE);
 	else
-		msgfile = folder->klass->fetch_msg_full(folder, item, num, 
-						headers, body);
+		msgfile = folder->klass->fetch_msg_full(folder, item, num, headers, body);
 
 	if (msgfile != NULL) {
 		msginfo = folder_item_get_msginfo(item, num);
 		if ((msginfo != NULL) && !MSG_IS_SCANNED(msginfo->flags)) {
 			MimeInfo *mimeinfo;
 
-			if (!folder_has_parent_of_type(msginfo->folder, F_QUEUE) &&
-			    !folder_has_parent_of_type(msginfo->folder, F_DRAFT))
+			if (!folder_has_parent_of_type(msginfo->folder, F_QUEUE) && !folder_has_parent_of_type(msginfo->folder, F_DRAFT))
 				mimeinfo = procmime_scan_file(msgfile);
 			else
 				mimeinfo = procmime_scan_queue_file(msgfile);
 			/* check for attachments */
-			if (mimeinfo != NULL) {	
+			if (mimeinfo != NULL) {
 				g_node_children_foreach(mimeinfo->node, G_TRAVERSE_ALL, msginfo_set_mime_flags, msginfo);
 				procmime_mimeinfo_free_all(&mimeinfo);
 
@@ -2988,11 +2902,11 @@ gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers,
 	return msgfile;
 }
 
-
 static gint folder_item_get_msg_num_by_file(FolderItem *dest, const gchar *file)
 {
-	static HeaderEntry hentry[] = {{"Message-ID:",  NULL, TRUE},
-				       {NULL,		NULL, FALSE}};
+	static HeaderEntry hentry[] = { {"Message-ID:", NULL, TRUE},
+	{NULL, NULL, FALSE}
+	};
 	FILE *fp;
 	MsgInfo *msginfo;
 	gint msgnum = 0;
@@ -3001,22 +2915,19 @@ static gint folder_item_get_msg_num_by_file(FolderItem *dest, const gchar *file)
 	if ((fp = claws_fopen(file, "rb")) == NULL)
 		return 0;
 
-	if ((folder_has_parent_of_type(dest, F_QUEUE)) || 
-	    (folder_has_parent_of_type(dest, F_DRAFT)))
+	if ((folder_has_parent_of_type(dest, F_QUEUE)) || (folder_has_parent_of_type(dest, F_DRAFT)))
 		while (claws_fgets(buf, sizeof(buf), fp) != NULL) {
 			/* new way */
-			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1",
-				strlen("X-Claws-End-Special-Headers:"))) ||
-			    (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1",
-				strlen("X-Sylpheed-End-Special-Headers:"))))
+			if ((!strncmp(buf, "X-Claws-End-Special-Headers: 1", strlen("X-Claws-End-Special-Headers:"))) || (!strncmp(buf, "X-Sylpheed-End-Special-Headers: 1", strlen("X-Sylpheed-End-Special-Headers:"))))
 				break;
 			/* old way */
-			if (buf[0] == '\r' || buf[0] == '\n') break;
+			if (buf[0] == '\r' || buf[0] == '\n')
+				break;
 			/* from other mailers */
 			if (!strncmp(buf, "Date: ", 6)
-			||  !strncmp(buf, "To: ", 4)
-			||  !strncmp(buf, "From: ", 6)
-			||  !strncmp(buf, "Subject: ", 9)) {
+			    || !strncmp(buf, "To: ", 4)
+			    || !strncmp(buf, "From: ", 6)
+			    || !strncmp(buf, "Subject: ", 9)) {
 				rewind(fp);
 				break;
 			}
@@ -3025,7 +2936,7 @@ static gint folder_item_get_msg_num_by_file(FolderItem *dest, const gchar *file)
 	procheader_get_header_fields(fp, hentry);
 	debug_print("looking for %s\n", hentry[0].body);
 	if (hentry[0].body) {
-    		extract_parenthesis(hentry[0].body, '<', '>');
+		extract_parenthesis(hentry[0].body, '<', '>');
 		remove_space(hentry[0].body);
 		if ((msginfo = msgcache_get_msg_by_id(dest->cache, hentry[0].body)) != NULL) {
 			msgnum = msginfo->msgnum;
@@ -3034,7 +2945,7 @@ static gint folder_item_get_msg_num_by_file(FolderItem *dest, const gchar *file)
 			debug_print("found message as uid %d\n", msgnum);
 		}
 	}
-	
+
 	g_free(hentry[0].body);
 	hentry[0].body = NULL;
 	claws_fclose(fp);
@@ -3058,10 +2969,7 @@ static void copy_msginfo_flags(MsgInfo *source, MsgInfo *dest)
 	}
 
 	/* remove new, unread and deleted in special folders */
-	if (folder_has_parent_of_type(dest->folder, F_OUTBOX) || 
-	    folder_has_parent_of_type(dest->folder, F_QUEUE) || 
-	    folder_has_parent_of_type(dest->folder, F_DRAFT) || 
-	    folder_has_parent_of_type(dest->folder, F_TRASH))
+	if (folder_has_parent_of_type(dest->folder, F_OUTBOX) || folder_has_parent_of_type(dest->folder, F_QUEUE) || folder_has_parent_of_type(dest->folder, F_DRAFT) || folder_has_parent_of_type(dest->folder, F_TRASH))
 		perm_flags &= ~(MSG_NEW | MSG_UNREAD | MSG_DELETED);
 
 	/* set ignore flag of ignored parent exists */
@@ -3079,12 +2987,8 @@ static void copy_msginfo_flags(MsgInfo *source, MsgInfo *dest)
 
 	/* unset flags that are set but should not */
 	/* and set new flags */
-	procmsg_msginfo_change_flags(dest,
-				  ~dest->flags.perm_flags & perm_flags,
-				  ~dest->flags.tmp_flags  & tmp_flags,
-				   dest->flags.perm_flags & ~perm_flags,
-				   dest->flags.tmp_flags  & ~tmp_flags);
-	
+	procmsg_msginfo_change_flags(dest, ~dest->flags.perm_flags & perm_flags, ~dest->flags.tmp_flags & tmp_flags, dest->flags.perm_flags & ~perm_flags, dest->flags.tmp_flags & ~tmp_flags);
+
 	if (source && source->tags) {
 		g_slist_free(dest->tags);
 		dest->tags = g_slist_copy(source->tags);
@@ -3122,7 +3026,7 @@ static void add_msginfo_to_cache(FolderItem *item, MsgInfo *newmsginfo, MsgInfo 
 
 	msgcache_add_msg(item->cache, newmsginfo);
 	copy_msginfo_flags(flagsource, newmsginfo);
-	folder_item_update_with_msg(item,  F_ITEM_UPDATE_MSGCNT | F_ITEM_UPDATE_CONTENT | F_ITEM_UPDATE_ADDMSG, newmsginfo);
+	folder_item_update_with_msg(item, F_ITEM_UPDATE_MSGCNT | F_ITEM_UPDATE_CONTENT | F_ITEM_UPDATE_ADDMSG, newmsginfo);
 	folder_item_update_thaw();
 }
 
@@ -3162,46 +3066,44 @@ static void remove_msginfo_from_cache(FolderItem *item, MsgInfo *msginfo)
 	folder_item_update_with_msg(msginfo->folder, F_ITEM_UPDATE_MSGCNT | F_ITEM_UPDATE_CONTENT | F_ITEM_UPDATE_REMOVEMSG, msginfo);
 }
 
-gint folder_item_add_msg(FolderItem *dest, const gchar *file,
-			 MsgFlags *flags, gboolean remove_source)
+gint folder_item_add_msg(FolderItem *dest, const gchar *file, MsgFlags *flags, gboolean remove_source)
 {
-        GSList file_list;
-        MsgFileInfo fileinfo;
+	GSList file_list;
+	MsgFileInfo fileinfo;
 
 	cm_return_val_if_fail(dest != NULL, -1);
 	cm_return_val_if_fail(file != NULL, -1);
- 
+
 	fileinfo.msginfo = NULL;
-        fileinfo.file = (gchar *)file;
-        fileinfo.flags = flags;
-        file_list.data = &fileinfo;
-        file_list.next = NULL;
+	fileinfo.file = (gchar *)file;
+	fileinfo.flags = flags;
+	file_list.data = &fileinfo;
+	file_list.next = NULL;
 
 	return folder_item_add_msgs(dest, &file_list, remove_source);
 }
 
-gint folder_item_add_msgs(FolderItem *dest, GSList *file_list,
-                          gboolean remove_source)
+gint folder_item_add_msgs(FolderItem *dest, GSList *file_list, gboolean remove_source)
 {
-        Folder *folder;
-        gint ret, num, lastnum = -1;
+	Folder *folder;
+	gint ret, num, lastnum = -1;
 	GSList *file_cur;
 	GHashTable *relation;
 	MsgFileInfo *fileinfo = NULL;
 	gboolean folderscan = FALSE;
 
-        cm_return_val_if_fail(dest != NULL, -1);
-        cm_return_val_if_fail(file_list != NULL, -1);
-        cm_return_val_if_fail(dest->folder != NULL, -1);
+	cm_return_val_if_fail(dest != NULL, -1);
+	cm_return_val_if_fail(file_list != NULL, -1);
+	cm_return_val_if_fail(dest->folder != NULL, -1);
 	if (dest->no_select)
 		return -1;
 
-        folder = dest->folder;
+	folder = dest->folder;
 
 	relation = g_hash_table_new(g_direct_hash, g_direct_equal);
 
 	if (folder->klass->add_msgs != NULL) {
-    		ret = folder->klass->add_msgs(folder, dest, file_list, relation);
+		ret = folder->klass->add_msgs(folder, dest, file_list, relation);
 		if (ret < 0) {
 			g_hash_table_destroy(relation);
 			return ret;
@@ -3210,7 +3112,7 @@ gint folder_item_add_msgs(FolderItem *dest, GSList *file_list,
 		for (file_cur = file_list; file_cur != NULL; file_cur = g_slist_next(file_cur)) {
 			fileinfo = (MsgFileInfo *) file_cur->data;
 
-    			ret = folder->klass->add_msg(folder, dest, fileinfo->file, fileinfo->flags);
+			ret = folder->klass->add_msg(folder, dest, fileinfo->file, fileinfo->flags);
 			if (ret < 0) {
 				g_hash_table_destroy(relation);
 				return ret;
@@ -3251,8 +3153,7 @@ gint folder_item_add_msgs(FolderItem *dest, GSList *file_list,
 			if (num == 0)
 				continue;
 
-			if (!folderscan && 
-			    ((newmsginfo = get_msginfo(dest, num)) != NULL)) {
+			if (!folderscan && ((newmsginfo = get_msginfo(dest, num)) != NULL)) {
 				add_msginfo_to_cache(dest, newmsginfo, NULL);
 				procmsg_msginfo_free(&newmsginfo);
 			} else if ((newmsginfo = msgcache_get_msg(dest->cache, num)) != NULL) {
@@ -3264,10 +3165,10 @@ gint folder_item_add_msgs(FolderItem *dest, GSList *file_list,
 
 	g_hash_table_destroy(relation);
 
-        return lastnum;
+	return lastnum;
 }
 
-static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest, gboolean copy) 
+static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest, gboolean copy)
 {
 	GSList *mlist;
 	FolderItem *new_item;
@@ -3277,36 +3178,33 @@ static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest,
 	FolderUpdateData hookdata;
 
 	/* move messages */
-	debug_print("%s %s to %s\n", copy?"Copying":"Moving", src->path, dest->path);
+	debug_print("%s %s to %s\n", copy ? "Copying" : "Moving", src->path, dest->path);
 	new_item = folder_create_folder(dest, src->name);
 	if (new_item == NULL) {
 		g_print("Can't create folder\n");
 		return NULL;
 	}
-	
+
 	if (new_item->folder == NULL)
 		new_item->folder = dest->folder;
 
 	/* move messages */
-	log_message(LOG_PROTOCOL, copy ?_("Copying %s to %s...\n"):_("Moving %s to %s...\n"), 
-			src->name, new_item->path);
+	log_message(LOG_PROTOCOL, copy ? _("Copying %s to %s...\n") : _("Moving %s to %s...\n"), src->name, new_item->path);
 
-	/*copy prefs*/
+	/*copy prefs */
 	folder_item_prefs_copy_prefs(src, new_item);
-	
+
 	/* copy internal data */
-	if (src->folder->klass == new_item->folder->klass &&
-	    src->folder->klass->copy_private_data != NULL)
-		src->folder->klass->copy_private_data(src->folder,
-					src, new_item);
+	if (src->folder->klass == new_item->folder->klass && src->folder->klass->copy_private_data != NULL)
+		src->folder->klass->copy_private_data(src->folder, src, new_item);
 	new_item->collapsed = src->collapsed;
 	new_item->thread_collapsed = src->thread_collapsed;
-	new_item->threaded  = src->threaded;
-	new_item->ret_rcpt  = src->ret_rcpt;
+	new_item->threaded = src->threaded;
+	new_item->ret_rcpt = src->ret_rcpt;
 	new_item->hide_read_msgs = src->hide_read_msgs;
 	new_item->hide_del_msgs = src->hide_del_msgs;
 	new_item->hide_read_threads = src->hide_read_threads;
-	new_item->sort_key  = src->sort_key;
+	new_item->sort_key = src->sort_key;
 	new_item->sort_type = src->sort_type;
 
 	mlist = folder_item_get_msg_list(src);
@@ -3320,14 +3218,14 @@ static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest,
 	}
 
 	prefs_matcher_write_config();
-	
+
 	/* recurse */
-	srcnode = src->folder->node;	
+	srcnode = src->folder->node;
 	srcnode = g_node_find(srcnode, G_PRE_ORDER, G_TRAVERSE_ALL, src);
 	srcnode = srcnode->children;
 	while (srcnode != NULL) {
 		if (srcnode && srcnode->data) {
-			next_item = (FolderItem*) srcnode->data;
+			next_item = (FolderItem *)srcnode->data;
 			srcnode = srcnode->next;
 			if (folder_item_move_recursive(next_item, new_item, copy) == NULL) {
 				return NULL;
@@ -3344,7 +3242,7 @@ static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest,
 	hooks_invoke(FOLDER_UPDATE_HOOKLIST, &hookdata);
 
 	/* if src supports removing, otherwise only copy folder */
-	if (src->folder->klass->remove_folder != NULL && !copy)	
+	if (src->folder->klass->remove_folder != NULL && !copy)
 		src->folder->klass->remove_folder(src->folder, src);
 	folder_write_list();
 
@@ -3357,15 +3255,15 @@ static FolderItem *folder_item_move_recursive(FolderItem *src, FolderItem *dest,
 	}
 	g_free(old_id);
 	g_free(new_id);
-	
+
 	return new_item;
 }
 
 gint folder_item_move_to(FolderItem *src, FolderItem *dest, FolderItem **new_item, gboolean copy)
 {
 	FolderItem *tmp = folder_item_parent(dest);
-	gchar * src_identifier, * dst_identifier;
-	gchar * phys_srcpath, * phys_dstpath, *tmppath, *tmpname;
+	gchar *src_identifier, *dst_identifier;
+	gchar *phys_srcpath, *phys_dstpath, *tmppath, *tmpname;
 
 	while (tmp) {
 		if (tmp == src) {
@@ -3381,7 +3279,7 @@ gint folder_item_move_to(FolderItem *src, FolderItem *dest, FolderItem **new_ite
 	}
 
 	dst_identifier = folder_item_get_identifier(dest);
-	if(dst_identifier == NULL && dest->folder && folder_item_parent(dest) == NULL) {
+	if (dst_identifier == NULL && dest->folder && folder_item_parent(dest) == NULL) {
 		dst_identifier = folder_get_identifier(dest->folder);
 	}
 
@@ -3405,10 +3303,7 @@ gint folder_item_move_to(FolderItem *src, FolderItem *dest, FolderItem **new_ite
 	phys_srcpath = folder_item_get_path(src);
 	tmppath = folder_item_get_path(dest);
 	tmpname = g_path_get_basename(phys_srcpath);
-	phys_dstpath = g_strconcat(tmppath,
-		       G_DIR_SEPARATOR_S,
-		       tmpname,
-		       NULL);
+	phys_dstpath = g_strconcat(tmppath, G_DIR_SEPARATOR_S, tmpname, NULL);
 	g_free(tmpname);
 	g_free(tmppath);
 
@@ -3423,7 +3318,7 @@ gint folder_item_move_to(FolderItem *src, FolderItem *dest, FolderItem **new_ite
 		g_free(phys_dstpath);
 		return F_MOVE_FAILED;
 	}
-	
+
 	g_free(phys_srcpath);
 	g_free(phys_dstpath);
 
@@ -3432,10 +3327,9 @@ gint folder_item_move_to(FolderItem *src, FolderItem *dest, FolderItem **new_ite
 	return F_MOVE_OK;
 }
 
-struct find_data
-{
+struct find_data {
 	gboolean found;
-};	
+};
 static void find_num(gpointer key, gpointer value, gpointer data)
 {
 	struct find_data *fdata = (struct find_data *)data;
@@ -3446,10 +3340,10 @@ static void find_num(gpointer key, gpointer value, gpointer data)
 static gboolean some_msgs_have_zero_num(GHashTable *hashtable)
 {
 	struct find_data fdata;
-	
+
 	fdata.found = FALSE;
 	g_hash_table_foreach(hashtable, find_num, &fdata);
-	
+
 	return fdata.found;
 }
 
@@ -3478,28 +3372,25 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 		return -1;
 
 	msginfo = (MsgInfo *)msglist->data;
-	
+
 	if (!msginfo)
 		return -1;
-	
-	if (!MSG_IS_QUEUED(msginfo->flags) && 
-	    MSG_IS_DRAFT(msginfo->flags) && 
-	    folder_has_parent_of_type(dest, F_QUEUE)) {
+
+	if (!MSG_IS_QUEUED(msginfo->flags) && MSG_IS_DRAFT(msginfo->flags) && folder_has_parent_of_type(dest, F_QUEUE)) {
 		GSList *cur = msglist;
 		gboolean queue_err = FALSE;
 		for (; cur; cur = cur->next) {
 			Compose *compose = NULL;
 			FolderItem *queue = dest;
 			ComposeQueueResult val = COMPOSE_QUEUE_SUCCESS;
-			
+
 			msginfo = (MsgInfo *)cur->data;
 			compose = compose_reedit(msginfo, TRUE);
 			if (compose == NULL) {
 				queue_err = TRUE;
 				continue;
 			}
-			val = compose_queue(compose, NULL, &queue, NULL,
-					FALSE);
+			val = compose_queue(compose, NULL, &queue, NULL, FALSE);
 			if (val != COMPOSE_QUEUE_SUCCESS) {
 				queue_err = TRUE;
 			} else if (remove_source) {
@@ -3508,13 +3399,13 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 			if (val == COMPOSE_QUEUE_SUCCESS)
 				compose_close(compose);
 		}
-		return queue_err ? -1:0;
+		return queue_err ? -1 : 0;
 	}
 
 	relation = g_hash_table_new(g_direct_hash, g_direct_equal);
 
-	for (l = msglist ; l != NULL ; l = g_slist_next(l)) {
-		MsgInfo * msginfo = (MsgInfo *) l->data;
+	for (l = msglist; l != NULL; l = g_slist_next(l)) {
+		MsgInfo *msginfo = (MsgInfo *)l->data;
 
 		if (msginfo->planned_download != 0) {
 			int old_planned = msginfo->planned_download;
@@ -3534,20 +3425,20 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 			return -1;
 		}
 	} else {
-		MsgInfo * msginfo;
+		MsgInfo *msginfo;
 		l = msglist;
 
 		/* immediately stop if src and dest folders are identical */
 		if (l != NULL) {
-			msginfo = (MsgInfo *) l->data;
+			msginfo = (MsgInfo *)l->data;
 			if (msginfo != NULL && msginfo->folder == dest) {
 				g_hash_table_destroy(relation);
 				return -1;
 			}
 		}
 
-		for (; l != NULL ; l = g_slist_next(l)) {
-			msginfo = (MsgInfo *) l->data;
+		for (; l != NULL; l = g_slist_next(l)) {
+			msginfo = (MsgInfo *)l->data;
 
 			num = folder->klass->copy_msg(folder, dest, msginfo);
 			if (num > 0)
@@ -3558,7 +3449,7 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 	}
 
 	if (remove_source) {
-		MsgInfo *msginfo = (MsgInfo *) msglist->data;
+		MsgInfo *msginfo = (MsgInfo *)msglist->data;
 		FolderItem *item = msginfo->folder;
 		/*
 		 * Remove source messages from their folders if
@@ -3566,18 +3457,15 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 		 * message counts
 		 */
 		if (not_moved == NULL && item->folder->klass->remove_msgs) {
-			item->folder->klass->remove_msgs(item->folder,
-					    		        msginfo->folder,
-						    		msglist,
-								relation);
+			item->folder->klass->remove_msgs(item->folder, msginfo->folder, msglist, relation);
 		}
 		for (l = msglist; l != NULL; l = g_slist_next(l)) {
-            	        gpointer old_key, data;
-			msginfo = (MsgInfo *) l->data;
+			gpointer old_key, data;
+			msginfo = (MsgInfo *)l->data;
 			item = msginfo->folder;
 
-            		if (g_hash_table_lookup_extended(relation, msginfo, &old_key, &data))
-	            	        num = GPOINTER_TO_INT(data);
+			if (g_hash_table_lookup_extended(relation, msginfo, &old_key, &data))
+				num = GPOINTER_TO_INT(data);
 			else
 				num = 0;
 
@@ -3586,16 +3474,15 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 
 			if ((num >= 0) && (item->folder->klass->remove_msg != NULL)) {
 				if (!item->folder->klass->remove_msgs)
-					item->folder->klass->remove_msg(item->folder,
-					    		        msginfo->folder,
-						    		msginfo->msgnum);
+					item->folder->klass->remove_msg(item->folder, msginfo->folder, msginfo->msgnum);
 				remove_msginfo_from_cache(item, msginfo);
 			}
 		}
 	}
 
 	/* Read cache for dest folder */
-	if (!dest->cache) folder_item_read_cache(dest);
+	if (!dest->cache)
+		folder_item_read_cache(dest);
 
 	/* 
 	 * Fetch new MsgInfos for new messages in dest folder,
@@ -3608,25 +3495,25 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 
 	statusbar_print_all(_("Updating cache for %s..."), dest->path ? dest->path : "(null)");
 	total = g_slist_length(msglist);
-	
+
 	if (FOLDER_TYPE(dest->folder) == F_IMAP && total > 1) {
 		folder_item_scan_full(dest, FALSE);
 		folderscan = TRUE;
 	}
 	folder_item_set_batch(dest, TRUE);
 	for (l = msglist; l != NULL; l = g_slist_next(l)) {
-		MsgInfo *msginfo = (MsgInfo *) l->data;
-                gpointer data, old_key;
+		MsgInfo *msginfo = (MsgInfo *)l->data;
+		gpointer data, old_key;
 
 		if (!msginfo)
 			continue;
 
-                if (g_hash_table_lookup_extended(relation, msginfo, &old_key, &data))
-	                num = GPOINTER_TO_INT(data);
+		if (g_hash_table_lookup_extended(relation, msginfo, &old_key, &data))
+			num = GPOINTER_TO_INT(data);
 		else
 			num = 0;
 
-		statusbar_progress_all(curmsg++,total, 100);
+		statusbar_progress_all(curmsg++, total, 100);
 		if (curmsg % 100 == 0)
 			GTK_EVENTS_FLUSH();
 
@@ -3652,30 +3539,27 @@ static gint do_copy_msgs(FolderItem *dest, GSList *msglist, gboolean remove_sour
 					}
 				}
 			}
-			if (newmsginfo != NULL 
-			 && msginfo->planned_download == POP3_PARTIAL_DLOAD_DELE) {
+			if (newmsginfo != NULL && msginfo->planned_download == POP3_PARTIAL_DLOAD_DELE) {
 				partial_mark_for_delete(newmsginfo);
 			}
-			if (newmsginfo != NULL 
-			 && msginfo->planned_download == POP3_PARTIAL_DLOAD_DLOAD) {
+			if (newmsginfo != NULL && msginfo->planned_download == POP3_PARTIAL_DLOAD_DLOAD) {
 				partial_mark_for_download(newmsginfo);
 			}
-			if (!MSG_IS_POSTFILTERED (msginfo->flags)) {
-				procmsg_msginfo_set_flags (   msginfo, MSG_POSTFILTERED, 0);
+			if (!MSG_IS_POSTFILTERED(msginfo->flags)) {
+				procmsg_msginfo_set_flags(msginfo, MSG_POSTFILTERED, 0);
 				if (newmsginfo) {
-					procmsg_msginfo_set_flags (newmsginfo, MSG_POSTFILTERED, 0);
-					hooks_invoke (MAIL_POSTFILTERING_HOOKLIST, newmsginfo);
+					procmsg_msginfo_set_flags(newmsginfo, MSG_POSTFILTERED, 0);
+					hooks_invoke(MAIL_POSTFILTERING_HOOKLIST, newmsginfo);
 				}
 			}
 			procmsg_msginfo_free(&newmsginfo);
-
 
 			if (num > lastnum)
 				lastnum = num;
 		}
 	}
 	folder_item_set_batch(dest, FALSE);
-	statusbar_progress_all(0,0,0);
+	statusbar_progress_all(0, 0, 0);
 	statusbar_pop_all();
 
 	g_hash_table_destroy(relation);
@@ -3734,7 +3618,7 @@ gint folder_item_copy_msg(FolderItem *dest, MsgInfo *msginfo)
 
 	cm_return_val_if_fail(dest != NULL, -1);
 	cm_return_val_if_fail(msginfo != NULL, -1);
-    
+
 	list.data = msginfo;
 	list.next = NULL;
 
@@ -3756,7 +3640,7 @@ gint folder_item_copy_msgs(FolderItem *dest, GSList *msglist)
 	inc_lock();
 	result = do_copy_msgs(dest, msglist, FALSE);
 	inc_unlock();
-	
+
 	return result;
 }
 
@@ -3772,7 +3656,8 @@ gint folder_item_remove_msg(FolderItem *item, gint num)
 	if (item->no_select)
 		return -1;
 
-	if (!item->cache) folder_item_read_cache(item);
+	if (!item->cache)
+		folder_item_read_cache(item);
 
 	msginfo = msgcache_get_msg(item->cache, num);
 	if (msginfo && MSG_IS_LOCKED(msginfo->flags)) {
@@ -3802,10 +3687,11 @@ gint folder_item_remove_msgs(FolderItem *item, GSList *msglist)
 	if (item->no_select)
 		return -1;
 	inc_lock();
-	if (!item->cache) folder_item_read_cache(item);
+	if (!item->cache)
+		folder_item_read_cache(item);
 
 	folder_item_update_freeze();
-	
+
 	/* filter out locked mails */
 	for (cur = msglist; cur; cur = cur->next) {
 		MsgInfo *info = (MsgInfo *)cur->data;
@@ -3816,10 +3702,7 @@ gint folder_item_remove_msgs(FolderItem *item, GSList *msglist)
 	real_list = g_slist_reverse(real_list);
 
 	if (item->folder->klass->remove_msgs) {
-		ret = item->folder->klass->remove_msgs(item->folder,
-					    		item,
-						    	real_list,
-							NULL);
+		ret = item->folder->klass->remove_msgs(item->folder, item, real_list, NULL);
 	}
 	cur = real_list;
 	while (ret == 0 && cur != NULL) {
@@ -3830,7 +3713,8 @@ gint folder_item_remove_msgs(FolderItem *item, GSList *msglist)
 		}
 		if (!item->folder->klass->remove_msgs)
 			ret = folder_item_remove_msg(item, msginfo->msgnum);
-		if (ret != 0) break;
+		if (ret != 0)
+			break;
 		msgcache_remove_msg(item->cache, msginfo->msgnum);
 		cur = cur->next;
 	}
@@ -3916,12 +3800,12 @@ void folder_item_change_msg_flags(FolderItem *item, MsgInfo *msginfo, MsgPermFla
 {
 	cm_return_if_fail(item != NULL);
 	cm_return_if_fail(msginfo != NULL);
-	
+
 	item->mark_dirty = TRUE;
 
 	if (item->no_select)
 		return;
-	
+
 	if (item->folder->klass->change_flags != NULL && item->scanning != ITEM_SCANNING_WITH_FLAGS) {
 		item->folder->klass->change_flags(item->folder, item, msginfo, newflags);
 	} else {
@@ -3943,12 +3827,12 @@ void folder_item_commit_tags(FolderItem *item, MsgInfo *msginfo, GSList *tags_se
 	folder = item->folder;
 	if (!folder)
 		return;
-	
+
 	item->tags_dirty = TRUE;
 
 	if (folder->klass->commit_tags == NULL)
 		return;
-	
+
 	folder->klass->commit_tags(item, msginfo, tags_set, tags_unset);
 }
 
@@ -3983,12 +3867,12 @@ void folder_item_discard_cache(FolderItem *item)
 	if (is_dir_exist(dir))
 		remove_all_numbered_files(dir);
 	g_free(dir);
-	
+
 	cache = folder_item_get_cache_file(item);
 	if (is_file_exist(cache))
 		claws_unlink(cache);
 	g_free(cache);
-	
+
 }
 
 static gchar *folder_item_get_cache_file(FolderItem *item)
@@ -4059,17 +3943,15 @@ static gchar *folder_item_get_tags_file(FolderItem *item)
 		*strchr(identifier, '/') = '\\';
 #endif
 
-	path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-			   TAGS_DIR, G_DIR_SEPARATOR_S,
-			   identifier, NULL);
-	
+	path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, TAGS_DIR, G_DIR_SEPARATOR_S, identifier, NULL);
+
 	g_free(identifier);
-			   
+
 	if (!is_dir_exist(path))
 		make_dir_hier(path);
 
 	file = g_strconcat(path, G_DIR_SEPARATOR_S, TAGS_FILE, NULL);
-	
+
 	g_free(path);
 
 	return file;
@@ -4077,8 +3959,8 @@ static gchar *folder_item_get_tags_file(FolderItem *item)
 
 static gpointer xml_to_folder_item(gpointer nodedata, gpointer data)
 {
-	XMLNode *xmlnode = (XMLNode *) nodedata;
-	Folder *folder = (Folder *) data;
+	XMLNode *xmlnode = (XMLNode *)nodedata;
+	Folder *folder = (Folder *)data;
 	FolderItem *item;
 
 	cm_return_val_if_fail(xmlnode != NULL, NULL);
@@ -4099,12 +3981,23 @@ static gpointer xml_to_folder_item(gpointer nodedata, gpointer data)
 	item->folder = folder;
 
 	switch (item->stype) {
-	case F_INBOX:  folder->inbox  = item; break;
-	case F_OUTBOX: folder->outbox = item; break;
-	case F_DRAFT:  folder->draft  = item; break;
-	case F_QUEUE:  folder->queue  = item; break;
-	case F_TRASH:  folder->trash  = item; break;
-	default:       break;
+	case F_INBOX:
+		folder->inbox = item;
+		break;
+	case F_OUTBOX:
+		folder->outbox = item;
+		break;
+	case F_DRAFT:
+		folder->draft = item;
+		break;
+	case F_QUEUE:
+		folder->queue = item;
+		break;
+	case F_TRASH:
+		folder->trash = item;
+		break;
+	default:
+		break;
 	}
 	folder_item_prefs_read_config(item);
 
@@ -4115,7 +4008,7 @@ static gboolean folder_item_set_node(GNode *node, gpointer data)
 {
 	cm_return_val_if_fail(node->data != NULL, -1);
 
-	FolderItem *item = (FolderItem *) node->data;
+	FolderItem *item = (FolderItem *)node->data;
 	item->node = node;
 
 	return FALSE;
@@ -4140,7 +4033,8 @@ static Folder *folder_get_from_xml(GNode *node)
 	for (; list != NULL; list = list->next) {
 		XMLAttr *attr = list->data;
 
-		if (!attr || !attr->name || !attr->value) continue;
+		if (!attr || !attr->name || !attr->value)
+			continue;
 		if (!strcmp(attr->name, "type"))
 			klass = folder_get_class_from_string(attr->value);
 	}
@@ -4159,12 +4053,12 @@ static Folder *folder_get_from_xml(GNode *node)
 	while (cur != NULL) {
 		GNode *itemnode;
 
-		itemnode = g_node_map(cur, xml_to_folder_item, (gpointer) folder);
+		itemnode = g_node_map(cur, xml_to_folder_item, (gpointer)folder);
 		g_node_append(folder->node, itemnode);
 		cur = cur->next;
 	}
 	g_node_traverse(folder->node, G_IN_ORDER, G_TRAVERSE_ALL, -1, folder_item_set_node, NULL);
-	
+
 	return folder;
 }
 
@@ -4173,15 +4067,14 @@ gchar *folder_get_list_path(void)
 	static gchar *filename = NULL;
 
 	if (!filename)
-		filename =  g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-					FOLDER_LIST, NULL);
+		filename = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, FOLDER_LIST, NULL);
 
 	return filename;
 }
 
 static gpointer folder_item_to_xml(gpointer nodedata, gpointer data)
 {
-	FolderItem *item = (FolderItem *) nodedata;
+	FolderItem *item = (FolderItem *)nodedata;
 	XMLTag *tag;
 
 	cm_return_val_if_fail(item != NULL, NULL);
@@ -4212,9 +4105,9 @@ static GNode *folder_get_xml_node(Folder *folder)
 	xmlnode = xml_node_new(tag, NULL);
 
 	node = g_node_new(xmlnode);
-	
-	cm_return_val_if_fail (folder->node != NULL, NULL);
-	
+
+	cm_return_val_if_fail(folder->node != NULL, NULL);
+
 	if (folder->node->children) {
 		GNode *cur;
 
@@ -4222,7 +4115,7 @@ static GNode *folder_get_xml_node(Folder *folder)
 		while (cur) {
 			GNode *xmlnode;
 
-			xmlnode = g_node_map(cur, folder_item_to_xml, (gpointer) folder);
+			xmlnode = g_node_map(cur, folder_item_to_xml, (gpointer)folder);
 			g_node_append(node, xmlnode);
 			cur = cur->next;
 		}
@@ -4255,7 +4148,7 @@ static void folder_update_op_count_rec(GNode *node)
 	}
 }
 
-void folder_update_op_count(void) 
+void folder_update_op_count(void)
 {
 	GList *cur;
 	Folder *folder;
@@ -4267,10 +4160,9 @@ void folder_update_op_count(void)
 }
 
 typedef struct _type_str {
-	gchar * str;
+	gchar *str;
 	gint type;
 } type_str;
-
 
 /*
 static gchar * folder_item_get_tree_identifier(FolderItem * item)
@@ -4296,7 +4188,7 @@ static gchar * folder_item_get_tree_identifier(FolderItem * item)
 
 /* CLAWS: temporary local folder for filtering */
 #define TEMP_FOLDER "TEMP_FOLDER"
-#define PROCESSING_FOLDER_ITEM "processing"	
+#define PROCESSING_FOLDER_ITEM "processing"
 
 static FolderItem *folder_create_processing_folder(int account_id)
 {
@@ -4305,37 +4197,32 @@ static FolderItem *folder_create_processing_folder(int account_id)
 
 	gchar *processing_folder_item_name = NULL;
 
-        processing_folder_item_name = g_strdup_printf("%s-%d", PROCESSING_FOLDER_ITEM, account_id);
+	processing_folder_item_name = g_strdup_printf("%s-%d", PROCESSING_FOLDER_ITEM, account_id);
 
 	if (processing_folder == NULL) {
-		gchar *tmppath =
-		    g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				"tempfolder", NULL);
-		processing_folder =
-		    folder_new(mh_get_class(), TEMP_FOLDER, tmppath);
+		gchar *tmppath = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
+					     "tempfolder", NULL);
+		processing_folder = folder_new(mh_get_class(), TEMP_FOLDER, tmppath);
 		g_free(tmppath);
 		tmppath = NULL;
-		
+
 		g_assert(processing_folder != NULL);
 		processing_folder->klass->scan_tree(processing_folder);
 	}
 	g_assert(processing_folder != NULL);
 
-	processing_folder_item = folder_find_child_item_by_name(FOLDER_ITEM(processing_folder->node->data),
-					processing_folder_item_name);
+	processing_folder_item = folder_find_child_item_by_name(FOLDER_ITEM(processing_folder->node->data), processing_folder_item_name);
 	if (processing_folder_item) {
 		debug_print("*TMP* already created %s\n", folder_item_get_path(processing_folder_item));
 	} else {
-		processing_folder_item = processing_folder->klass->create_folder(processing_folder,
-								   	         processing_folder->node->data,
-										 processing_folder_item_name);
+		processing_folder_item = processing_folder->klass->create_folder(processing_folder, processing_folder->node->data, processing_folder_item_name);
 		folder_item_append(FOLDER_ITEM(processing_folder->node->data), processing_folder_item);
 		debug_print("*TMP* creating %s\n", folder_item_get_path(processing_folder_item));
-	} 
+	}
 	g_free(processing_folder_item_name);
 	g_assert(processing_folder_item != NULL);
 
-	return(processing_folder_item);
+	return (processing_folder_item);
 }
 
 FolderItem *folder_get_default_processing(int account_id)
@@ -4367,7 +4254,8 @@ static void folder_persist_prefs_free(GHashTable *pptable)
 
 static const PersistPrefs *folder_get_persist_prefs(GHashTable *pptable, const char *name)
 {
-	if (pptable == NULL || name == NULL) return NULL;
+	if (pptable == NULL || name == NULL)
+		return NULL;
 	return g_hash_table_lookup(pptable, name);
 }
 
@@ -4376,24 +4264,25 @@ static void folder_item_restore_persist_prefs(FolderItem *item, GHashTable *ppta
 	const PersistPrefs *pp;
 	gchar *id = folder_item_get_identifier(item);
 
-	pp = folder_get_persist_prefs(pptable, id); 
+	pp = folder_get_persist_prefs(pptable, id);
 	g_free(id);
 
-	if (!pp) return;
+	if (!pp)
+		return;
 
 	/* CLAWS: since not all folder properties have been migrated to 
 	 * folderlist.xml, we need to call the old stuff first before
 	 * setting things that apply both to Main and Claws. */
-	folder_item_prefs_read_config(item); 
+	folder_item_prefs_read_config(item);
 
 	item->collapsed = pp->collapsed;
 	item->thread_collapsed = pp->thread_collapsed;
-	item->threaded  = pp->threaded;
-	item->ret_rcpt  = pp->ret_rcpt;
+	item->threaded = pp->threaded;
+	item->ret_rcpt = pp->ret_rcpt;
 	item->hide_read_msgs = pp->hide_read_msgs;
 	item->hide_del_msgs = pp->hide_del_msgs;
 	item->hide_read_threads = pp->hide_read_threads;
-	item->sort_key  = pp->sort_key;
+	item->sort_key = pp->sort_key;
 	item->sort_type = pp->sort_type;
 }
 
@@ -4416,14 +4305,14 @@ static void folder_get_persist_prefs_recursive(GNode *node, GHashTable *pptable)
 			g_free(id);
 			return;
 		}
-   		pp->collapsed = item->collapsed;
+		pp->collapsed = item->collapsed;
 		pp->thread_collapsed = item->thread_collapsed;
-		pp->threaded  = item->threaded;
-		pp->ret_rcpt  = item->ret_rcpt;	
+		pp->threaded = item->threaded;
+		pp->ret_rcpt = item->ret_rcpt;
 		pp->hide_read_msgs = item->hide_read_msgs;
 		pp->hide_del_msgs = item->hide_del_msgs;
 		pp->hide_read_threads = item->hide_read_threads;
-		pp->sort_key  = item->sort_key;
+		pp->sort_key = item->sort_key;
 		pp->sort_type = item->sort_type;
 		g_hash_table_insert(pptable, id, pp);
 	}
@@ -4435,14 +4324,14 @@ static void folder_get_persist_prefs_recursive(GNode *node, GHashTable *pptable)
 			child = cur->next;
 			folder_get_persist_prefs_recursive(cur, pptable);
 		}
-	}	
+	}
 }
 
 static gboolean persist_prefs_free(gpointer key, gpointer val, gpointer data)
 {
 	g_free(key);
 	g_free(val);
-	return TRUE;	
+	return TRUE;
 }
 
 void folder_item_apply_processing(FolderItem *item)
@@ -4455,13 +4344,11 @@ void folder_item_apply_processing(FolderItem *item)
 	cm_return_if_fail(item != NULL);
 
 	if (item->no_select)
-	       return;
+		return;
 
 	processing_list = item->prefs->processing;
 
-	if (!processing_enabled(pre_global_processing) &&
-	    !processing_enabled(processing_list) &&
-	    !processing_enabled(post_global_processing))
+	if (!processing_enabled(pre_global_processing) && !processing_enabled(processing_list) && !processing_enabled(post_global_processing))
 		return;
 
 	debug_print("processing %s\n", item->name);
@@ -4477,28 +4364,25 @@ void folder_item_apply_processing(FolderItem *item)
 	prefs_common.apply_per_account_filtering_rules = FILTERING_ACCOUNT_RULES_SKIP;
 
 	folder_item_set_batch(item, TRUE);
-	for (cur = mlist ; cur != NULL ; cur = cur->next) {
-		MsgInfo * msginfo;
+	for (cur = mlist; cur != NULL; cur = cur->next) {
+		MsgInfo *msginfo;
 
-		msginfo = (MsgInfo *) cur->data;
-                
-                /* reset parameters that can be modified by processing */
-                msginfo->hidden = 0;
-                msginfo->score = 0;
+		msginfo = (MsgInfo *)cur->data;
 
-		statusbar_progress_all(curmsg++,total, 10);
+		/* reset parameters that can be modified by processing */
+		msginfo->hidden = 0;
+		msginfo->score = 0;
 
-                /* apply pre global rules */
-		filter_message_by_msginfo(pre_global_processing, msginfo, NULL,
-				FILTERING_PRE_PROCESSING, NULL);
-		
-                /* apply rules of the folder */
-		filter_message_by_msginfo(processing_list, msginfo, NULL,
-				FILTERING_FOLDER_PROCESSING, item->name);
+		statusbar_progress_all(curmsg++, total, 10);
 
-                /* apply post global rules */
-		filter_message_by_msginfo(post_global_processing, msginfo, NULL,
-				FILTERING_POST_PROCESSING, NULL);
+		/* apply pre global rules */
+		filter_message_by_msginfo(pre_global_processing, msginfo, NULL, FILTERING_PRE_PROCESSING, NULL);
+
+		/* apply rules of the folder */
+		filter_message_by_msginfo(processing_list, msginfo, NULL, FILTERING_FOLDER_PROCESSING, item->name);
+
+		/* apply post global rules */
+		filter_message_by_msginfo(post_global_processing, msginfo, NULL, FILTERING_POST_PROCESSING, NULL);
 		if (curmsg % 1000 == 0)
 			GTK_EVENTS_FLUSH();
 	}
@@ -4506,15 +4390,14 @@ void folder_item_apply_processing(FolderItem *item)
 
 	prefs_common.apply_per_account_filtering_rules = last_apply_per_account;
 
-	if (pre_global_processing || processing_list
-	    || post_global_processing)
+	if (pre_global_processing || processing_list || post_global_processing)
 		filtering_move_and_copy_msgs(mlist);
-	for (cur = mlist ; cur != NULL ; cur = cur->next) {
+	for (cur = mlist; cur != NULL; cur = cur->next) {
 		procmsg_msginfo_free((MsgInfo **)&(cur->data));
 	}
 	g_slist_free(mlist);
-	
-	statusbar_progress_all(0,0,0);
+
+	statusbar_progress_all(0, 0, 0);
 	statusbar_pop_all();
 
 	inc_unlock();
@@ -4529,13 +4412,13 @@ static gint folder_item_update_freeze_cnt = 0;
 
 static void folder_item_update_with_msg(FolderItem *item, FolderItemUpdateFlags update_flags, MsgInfo *msg)
 {
-	if (folder_item_update_freeze_cnt == 0 /* || (msg != NULL && item->opened) */) {
+	if (folder_item_update_freeze_cnt == 0 /* || (msg != NULL && item->opened) */ ) {
 		FolderItemUpdateData source;
-	
+
 		source.item = item;
 		source.update_flags = update_flags;
 		source.msg = msg;
-    		hooks_invoke(FOLDER_ITEM_UPDATE_HOOKLIST, &source);
+		hooks_invoke(FOLDER_ITEM_UPDATE_HOOKLIST, &source);
 	} else {
 		item->update_flags |= update_flags & ~(F_ITEM_UPDATE_ADDMSG | F_ITEM_UPDATE_REMOVEMSG);
 	}
@@ -4557,7 +4440,7 @@ void folder_item_update(FolderItem *item, FolderItemUpdateFlags update_flags)
 
 void folder_item_update_recursive(FolderItem *item, FolderItemUpdateFlags update_flags)
 {
-	GNode *node = item->folder->node;	
+	GNode *node = item->folder->node;
 
 	node = g_node_find(node, G_PRE_ORDER, G_TRAVERSE_ALL, item);
 	node = node->children;
@@ -4565,7 +4448,7 @@ void folder_item_update_recursive(FolderItem *item, FolderItemUpdateFlags update
 	folder_item_update(item, update_flags);
 	while (node != NULL) {
 		if (node && node->data) {
-			FolderItem *next_item = (FolderItem*) node->data;
+			FolderItem *next_item = (FolderItem *)node->data;
 
 			folder_item_update(next_item, update_flags);
 		}
@@ -4581,12 +4464,12 @@ void folder_item_update_freeze(void)
 static void folder_item_update_func(FolderItem *item, gpointer data)
 {
 	FolderItemUpdateData source;
-    
+
 	if (item->update_flags) {
 		source.item = item;
 		source.update_flags = item->update_flags;
 		source.msg = NULL;
-		hooks_invoke(FOLDER_ITEM_UPDATE_HOOKLIST, &source);				
+		hooks_invoke(FOLDER_ITEM_UPDATE_HOOKLIST, &source);
 		item->update_flags = 0;
 	}
 }
@@ -4607,10 +4490,8 @@ void folder_item_synchronise(FolderItem *item)
 		return;
 	if (item->prefs->offlinesync && item->folder->klass->synchronise) {
 		statusbar_print_all(_("Synchronising %s for offline use...\n"), item->path ? item->path : "(null)");
-		item->folder->klass->synchronise(item, 
-			item->prefs->offlinesync_days);
-		if (item->prefs->offlinesync_days > 0 &&
-		    item->prefs->remove_old_bodies)
+		item->folder->klass->synchronise(item, item->prefs->offlinesync_days);
+		if (item->prefs->offlinesync_days > 0 && item->prefs->remove_old_bodies)
 			folder_item_clean_local_files(item, item->prefs->offlinesync_days);
 		statusbar_pop_all();
 	}
@@ -4636,8 +4517,8 @@ typedef struct _WantSyncData {
 
 static void folder_item_want_synchronise_func(FolderItem *item, gpointer data)
 {
-	WantSyncData *want_sync_data = (WantSyncData *)data;
-	
+	WantSyncData *want_sync_data = (WantSyncData *) data;
+
 	if (want_sync_data->folder == NULL || item->folder == want_sync_data->folder) {
 		if (item->prefs->offlinesync && item->folder->klass->synchronise)
 			want_sync_data->want_sync |= TRUE;
@@ -4650,7 +4531,7 @@ gboolean folder_want_synchronise(Folder *folder)
 	gboolean result;
 	want_sync_data->folder = folder;
 	want_sync_data->want_sync = FALSE;
-	
+
 	folder_func_to_all_folders(folder_item_want_synchronise_func, want_sync_data);
 	result = want_sync_data->want_sync;
 	g_free(want_sync_data);
@@ -4659,7 +4540,7 @@ gboolean folder_want_synchronise(Folder *folder)
 	return result;
 }
 
-void folder_item_set_batch (FolderItem *item, gboolean batch)
+void folder_item_set_batch(FolderItem *item, gboolean batch)
 {
 	if (!item || !item->folder)
 		return;
@@ -4668,8 +4549,7 @@ void folder_item_set_batch (FolderItem *item, gboolean batch)
 	}
 }
 
-gboolean folder_has_parent_of_type(FolderItem *item, 
-					  SpecialFolderItemType type) 
+gboolean folder_has_parent_of_type(FolderItem *item, SpecialFolderItemType type)
 {
 	FolderItem *cur = item;
 
@@ -4679,7 +4559,7 @@ gboolean folder_has_parent_of_type(FolderItem *item,
 	if (item->parent_stype != -1) {
 		return (item->parent_stype == type);
 	}
-	
+
 	/* if we don't, find the type from the first possible parent,
 	 * and set our parent type to be faster next time */
 	while (cur) {
@@ -4689,7 +4569,7 @@ gboolean folder_has_parent_of_type(FolderItem *item,
 		}
 		cur = folder_item_parent(cur);
 	}
-	
+
 	/* if we didn't match what was asked, we didn't return. If our
 	 * parent type is unknown, we may as well find it now to be faster
 	 * later. */
@@ -4697,8 +4577,7 @@ gboolean folder_has_parent_of_type(FolderItem *item,
 		cur = item;
 		while (cur) {
 			/* here's an exception: Inbox subfolders are normal. */
-			if (item->parent_stype == -1 && cur->stype == F_INBOX 
-			&& item != cur) {
+			if (item->parent_stype == -1 && cur->stype == F_INBOX && item != cur) {
 				item->parent_stype = F_NORMAL;
 				break;
 			}
@@ -4742,15 +4621,13 @@ gboolean folder_is_child_of(FolderItem *item, FolderItem *parent)
 	return FALSE;
 }
 
-
-gboolean folder_subscribe (const gchar *uri)
+gboolean folder_subscribe(const gchar *uri)
 {
 	GList *cur;
 	for (cur = folder_get_list(); cur != NULL; cur = g_list_next(cur)) {
-		Folder *folder = (Folder *) cur->data;
+		Folder *folder = (Folder *)cur->data;
 
-		if (folder->klass->subscribe
-		&&  folder->klass->subscribe(folder, uri)) {
+		if (folder->klass->subscribe && folder->klass->subscribe(folder, uri)) {
 			return TRUE;
 		}
 	}
@@ -4758,37 +4635,27 @@ gboolean folder_subscribe (const gchar *uri)
 
 }
 
-gboolean folder_get_sort_type		(Folder		*folder,
-					 FolderSortKey	*sort_key,
-					 FolderSortType	*sort_type)
+gboolean folder_get_sort_type(Folder *folder, FolderSortKey *sort_key, FolderSortType *sort_type)
 {
 	if (!folder || !sort_key || !sort_type)
 		return FALSE;
 	if (folder->klass->get_sort_type == NULL)
 		return FALSE;
-	folder->klass->get_sort_type(folder, sort_key, sort_type); 
+	folder->klass->get_sort_type(folder, sort_key, sort_type);
 	return TRUE;
 }
 
-gint folder_item_search_msgs	(Folder			*folder,
-				 FolderItem		*container,
-				 MsgNumberList		**msgs,
-				 gboolean		*on_server,
-				 MatcherList		*predicate,
-				 SearchProgressNotify	progress_cb,
-				 gpointer		progress_data)
+gint folder_item_search_msgs(Folder *folder, FolderItem *container, MsgNumberList **msgs, gboolean *on_server, MatcherList *predicate, SearchProgressNotify progress_cb, gpointer progress_data)
 {
 	gint result = -1;
-	
+
 	folder_item_update_freeze();
 
 	if (folder->klass->search_msgs)
-		result = folder->klass->search_msgs(folder, container,
-				msgs, on_server, predicate, progress_cb, progress_data);
+		result = folder->klass->search_msgs(folder, container, msgs, on_server, predicate, progress_cb, progress_data);
 	if (result < 0)
-		result = folder_item_search_msgs_local(folder, container,
-				msgs, on_server, predicate, progress_cb, progress_data);
-	
+		result = folder_item_search_msgs_local(folder, container, msgs, on_server, predicate, progress_cb, progress_data);
+
 	folder_item_update_thaw();
 
 	return result;
@@ -4801,17 +4668,11 @@ MsgNumberList *folder_item_get_number_list(FolderItem *item)
 
 	nums = procmsg_get_number_list_for_msgs(msglist);
 	procmsg_msg_list_free(msglist);
-	
+
 	return nums;
 }
 
-gint folder_item_search_msgs_local	(Folder			*folder,
-					 FolderItem		*container,
-					 MsgNumberList		**msgs,
-					 gboolean		*on_server,
-					 MatcherList		*predicate,
-					 SearchProgressNotify	progress_cb,
-					 gpointer		progress_data)
+gint folder_item_search_msgs_local(Folder *folder, FolderItem *container, MsgNumberList **msgs, gboolean *on_server, MatcherList *predicate, SearchProgressNotify progress_cb, gpointer progress_data)
 {
 	GSList *result = NULL;
 	GSList *cur = NULL;
@@ -4848,9 +4709,7 @@ gint folder_item_search_msgs_local	(Folder			*folder,
 
 		procmsg_msginfo_free(&msg);
 
-		if (progress_cb != NULL
-		    && !progress_cb(progress_data, FALSE, processed_count,
-			    matched_count, msgcount))
+		if (progress_cb != NULL && !progress_cb(progress_data, FALSE, processed_count, matched_count, msgcount))
 			break;
 	}
 
@@ -4876,3 +4735,7 @@ gboolean folder_local_name_ok(const gchar *name)
 
 	return TRUE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

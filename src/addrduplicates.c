@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #include "claws-features.h"
 #endif
 
@@ -42,51 +42,46 @@
 #include "utils.h"
 #include "prefs_common.h"
 
-typedef struct
-{
-	ItemPerson        *person;
+typedef struct {
+	ItemPerson *person;
 	AddressDataSource *ds;
-	gchar             *book_path;
-}
-AddrDupListEntry;
+	gchar *book_path;
+} AddrDupListEntry;
 
 enum {
-    COL_BOOKPATH = 0,
-    COL_NAME,
-    COL_ITEM,
-    COL_DS,
-    NUM_COLS
+	COL_BOOKPATH = 0,
+	COL_NAME,
+	COL_ITEM,
+	COL_DS,
+	NUM_COLS
 };
 
 static gboolean create_dialog();
 static void refresh_addr_hash(void);
-static void refresh_stores(gchar*,GSList*);
-static void present_finder_results(GtkWindow*);
-static void cb_finder_results_dialog_destroy(GtkWindow*, gpointer);
-static gboolean cb_finder_results_dialog_key_pressed(GtkWidget*, GdkEventKey*,
-        gpointer);
+static void refresh_stores(gchar *, GSList *);
+static void present_finder_results(GtkWindow *);
+static void cb_finder_results_dialog_destroy(GtkWindow *, gpointer);
+static gboolean cb_finder_results_dialog_key_pressed(GtkWidget *, GdkEventKey *, gpointer);
 static void destroy_addr_hash_val(gpointer);
 static AddrDupListEntry *copy_hash_val(AddrDupListEntry *);
 static void fill_hash_table();
-static gint collect_emails(ItemPerson*, AddressDataSource*);
+static gint collect_emails(ItemPerson *, AddressDataSource *);
 static gboolean is_not_duplicate(gpointer, gpointer, gpointer);
 static gint books_compare(gconstpointer, gconstpointer);
-static GtkWidget* create_email_view(GtkListStore*);
-static GtkWidget* create_detail_view(GtkListStore*);
-static void append_to_email_store(gpointer,gpointer,gpointer);
-static void email_selection_changed(GtkTreeSelection*,gpointer);
-static void detail_selection_changed(GtkTreeSelection*,gpointer);
-static void detail_row_activated(GtkTreeView*,GtkTreePath*,
-                                 GtkTreeViewColumn*,
-                                 gpointer);
-static gboolean detail_focus_in(GtkWidget*,GdkEventFocus*,gpointer);
-static gboolean detail_focus_out(GtkWidget*,GdkEventFocus*,gpointer);
+static GtkWidget *create_email_view(GtkListStore *);
+static GtkWidget *create_detail_view(GtkListStore *);
+static void append_to_email_store(gpointer, gpointer, gpointer);
+static void email_selection_changed(GtkTreeSelection *, gpointer);
+static void detail_selection_changed(GtkTreeSelection *, gpointer);
+static void detail_row_activated(GtkTreeView *, GtkTreePath *, GtkTreeViewColumn *, gpointer);
+static gboolean detail_focus_in(GtkWidget *, GdkEventFocus *, gpointer);
+static gboolean detail_focus_out(GtkWidget *, GdkEventFocus *, gpointer);
 
 static void cb_del_btn_clicked(GtkButton *, gpointer);
 static void cb_edit_btn_clicked(GtkButton *, gpointer);
-static gchar* get_bookpath(ItemPerson*,AddressDataSource*);
+static gchar *get_bookpath(ItemPerson *, AddressDataSource *);
 static gboolean is_editing_entry_only_selection(void);
-static void edit_post_update_cb(ItemPerson*);
+static void edit_post_update_cb(ItemPerson *);
 
 static GHashTable *addr_hash;
 static gboolean include_same_book = TRUE;
@@ -94,9 +89,9 @@ static gboolean include_other_books = TRUE;
 
 static GtkListStore *email_store;
 static GtkListStore *detail_store;
-static GtkWidget    *email_view;
-static GtkWidget    *detail_view;
-static GtkWidget    *inline_edit_vbox;
+static GtkWidget *email_view;
+static GtkWidget *detail_view;
+static GtkWidget *inline_edit_vbox;
 
 static GtkWidget *del_btn;
 static GtkWidget *edit_btn;
@@ -107,7 +102,7 @@ static gboolean detail_view_has_focus;
 
 void addrduplicates_find(GtkWindow *parent)
 {
-	if(create_dialog()) {
+	if (create_dialog()) {
 		refresh_addr_hash();
 		present_finder_results(parent);
 	}
@@ -124,16 +119,12 @@ static gboolean create_dialog()
 	want_search = FALSE;
 
 	vbox = gtk_vbox_new(FALSE, 0);
-	check_same_book = gtk_check_button_new_with_label(_("Show duplicates in "
-	                  "the same book"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_same_book),
-	                             include_same_book);
+	check_same_book = gtk_check_button_new_with_label(_("Show duplicates in " "the same book"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_same_book), include_same_book);
 	gtk_box_pack_start(GTK_BOX(vbox), check_same_book, FALSE, FALSE, 0);
 	gtk_widget_show(check_same_book);
-	check_other_book = gtk_check_button_new_with_label(_("Show duplicates in "
-	                   "different books"));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_other_book),
-	                             include_other_books);
+	check_other_book = gtk_check_button_new_with_label(_("Show duplicates in " "different books"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_other_book), include_other_books);
 	gtk_box_pack_start(GTK_BOX(vbox), check_other_book, FALSE, FALSE, 0);
 	gtk_widget_show(check_other_book);
 
@@ -141,19 +132,13 @@ static gboolean create_dialog()
 	g_object_ref(check_same_book);
 	g_object_ref(check_other_book);
 
-	val = alertpanel_full(_("Find address book email duplicates"),
-	                      _("Claws Mail will now search for duplicate email "
-	                        "addresses in the address book."),
-	                      GTK_STOCK_CANCEL,GTK_STOCK_FIND, NULL,
-												ALERTFOCUS_SECOND, FALSE, vbox, ALERT_NOTICE);
-	if(val == G_ALERTALTERNATE) {
+	val = alertpanel_full(_("Find address book email duplicates"), _("Claws Mail will now search for duplicate email " "addresses in the address book."), GTK_STOCK_CANCEL, GTK_STOCK_FIND, NULL, ALERTFOCUS_SECOND, FALSE, vbox, ALERT_NOTICE);
+	if (val == G_ALERTALTERNATE) {
 		want_search = TRUE;
 
 		/* save options */
-		include_same_book =
-		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_same_book));
-		include_other_books =
-		    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_other_book));
+		include_same_book = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_same_book));
+		include_other_books = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_other_book));
 
 	}
 
@@ -164,26 +149,25 @@ static gboolean create_dialog()
 
 static void refresh_addr_hash(void)
 {
-	if(addr_hash)
+	if (addr_hash)
 		g_hash_table_destroy(addr_hash);
-	addr_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
-	                                  g_free, destroy_addr_hash_val);
+	addr_hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, destroy_addr_hash_val);
 	fill_hash_table();
 }
 
 static void destroy_addr_hash_val(gpointer value)
 {
-	GSList *list = (GSList*) value;
+	GSList *list = (GSList *)value;
 	GSList *walk;
 
-	for(walk = list; walk; walk = walk->next) {
-		AddrDupListEntry *entry = (AddrDupListEntry*) walk->data;
-		if(entry && entry->book_path)
+	for (walk = list; walk; walk = walk->next) {
+		AddrDupListEntry *entry = (AddrDupListEntry *)walk->data;
+		if (entry && entry->book_path)
 			g_free(entry->book_path);
-		if(entry)
+		if (entry)
 			g_free(entry);
 	}
-	if(list)
+	if (list)
 		g_slist_free(list);
 }
 
@@ -200,11 +184,10 @@ static AddrDupListEntry *copy_hash_val(AddrDupListEntry *entry)
 static void fill_hash_table()
 {
 	addrindex_load_person_ds(collect_emails);
-	g_hash_table_foreach_remove(addr_hash,is_not_duplicate, NULL);
+	g_hash_table_foreach_remove(addr_hash, is_not_duplicate, NULL);
 }
 
-static gboolean is_not_duplicate(gpointer key, gpointer value,
-                                 gpointer user_data)
+static gboolean is_not_duplicate(gpointer key, gpointer value, gpointer user_data)
 {
 	gboolean is_in_same_book;
 	gboolean is_in_other_books;
@@ -214,7 +197,7 @@ static gboolean is_not_duplicate(gpointer key, gpointer value,
 	GSList *list = value;
 
 	/* remove everything that is just in one book */
-	if(g_slist_length(list) <= 1)
+	if (g_slist_length(list) <= 1)
 		return TRUE;
 
 	/* work on a shallow copy */
@@ -225,8 +208,8 @@ static gboolean is_not_duplicate(gpointer key, gpointer value,
 
 	/* check if a book appears twice */
 	is_in_same_book = FALSE;
-	for(walk = books; walk && walk->next; walk = walk->next) {
-		if(books_compare(walk->data, walk->next->data) == 0) {
+	for (walk = books; walk && walk->next; walk = walk->next) {
+		if (books_compare(walk->data, walk->next->data) == 0) {
 			is_in_same_book = TRUE;
 			break;
 		}
@@ -234,9 +217,9 @@ static gboolean is_not_duplicate(gpointer key, gpointer value,
 
 	/* check is at least two different books appear in the list */
 	is_in_other_books = FALSE;
-	if(books && books->next) {
-		for(walk = books->next; walk; walk = walk->next) {
-			if(books_compare(walk->data, books->data) != 0) {
+	if (books && books->next) {
+		for (walk = books->next; walk; walk = walk->next) {
+			if (books_compare(walk->data, books->data) != 0) {
 				is_in_other_books = TRUE;
 				break;
 			}
@@ -247,9 +230,9 @@ static gboolean is_not_duplicate(gpointer key, gpointer value,
 	g_slist_free(books);
 
 	retval = FALSE;
-	if(is_in_same_book && include_same_book)
+	if (is_in_same_book && include_same_book)
 		retval = TRUE;
-	if(is_in_other_books && include_other_books)
+	if (is_in_other_books && include_other_books)
 		retval = TRUE;
 	retval = !retval;
 
@@ -266,19 +249,19 @@ static gint collect_emails(ItemPerson *itemperson, AddressDataSource *ds)
 
 	/* Process each E-Mail address */
 	nodeM = itemperson->listEMail;
-	while(nodeM) {
+	while (nodeM) {
 		ItemEMail *email = nodeM->data;
 
 		addr = g_utf8_strdown(email->address, -1);
 		old_val = g_hash_table_lookup(addr_hash, addr);
-		if(old_val)
-			new_val = g_slist_copy_deep(old_val, (GCopyFunc)copy_hash_val, NULL);
+		if (old_val)
+			new_val = g_slist_copy_deep(old_val, (GCopyFunc) copy_hash_val, NULL);
 		else
 			new_val = NULL;
 
-		entry = g_new0(AddrDupListEntry,1);
+		entry = g_new0(AddrDupListEntry, 1);
 		entry->person = itemperson;
-		entry->ds     = ds;
+		entry->ds = ds;
 		entry->book_path = get_bookpath(itemperson, ds);
 
 		new_val = g_slist_prepend(new_val, entry);
@@ -311,39 +294,35 @@ static void present_finder_results(GtkWindow *parent)
 	GtkTreeSelection *detail_select;
 	static GdkGeometry geometry;
 
-	if(g_hash_table_size(addr_hash) == 0) {
+	if (g_hash_table_size(addr_hash) == 0) {
 		alertpanel_notice(_("No duplicate email addresses found in the address book"));
 		return;
 	}
 
 	email_store = gtk_list_store_new(1, G_TYPE_STRING);
-	refresh_stores(NULL,NULL);
+	refresh_stores(NULL, NULL);
 	email_view = create_email_view(email_store);
 	email_select = gtk_tree_view_get_selection(GTK_TREE_VIEW(email_view));
-	gtk_tree_selection_set_mode(email_select,GTK_SELECTION_SINGLE);
+	gtk_tree_selection_set_mode(email_select, GTK_SELECTION_SINGLE);
 
-	g_signal_connect(email_select, "changed",
-	                 (GCallback)email_selection_changed, NULL);
+	g_signal_connect(email_select, "changed", (GCallback) email_selection_changed, NULL);
 
-	detail_store = gtk_list_store_new(NUM_COLS, G_TYPE_STRING, G_TYPE_STRING,
-	                                  G_TYPE_POINTER, G_TYPE_POINTER);
+	detail_store = gtk_list_store_new(NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 	detail_view = create_detail_view(detail_store);
 	detail_select = gtk_tree_view_get_selection(GTK_TREE_VIEW(detail_view));
-	gtk_tree_selection_set_mode(detail_select,GTK_SELECTION_MULTIPLE);
+	gtk_tree_selection_set_mode(detail_select, GTK_SELECTION_MULTIPLE);
 
-	g_signal_connect(detail_select, "changed",
-	                 (GCallback)detail_selection_changed, NULL);
+	g_signal_connect(detail_select, "changed", (GCallback) detail_selection_changed, NULL);
 
 	dialog = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "address_dupes_finder");
 	gtk_window_set_type_hint(GTK_WINDOW(dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_window_set_transient_for(GTK_WINDOW(dialog),parent);
-	gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
-	if(!geometry.min_height) {
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
+	gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+	if (!geometry.min_height) {
 		geometry.min_width = 600;
 		geometry.min_height = 400;
 	}
-	gtk_window_set_geometry_hints(GTK_WINDOW(dialog), NULL, &geometry,
-	                              GDK_HINT_MIN_SIZE);
+	gtk_window_set_geometry_hints(GTK_WINDOW(dialog), NULL, &geometry, GDK_HINT_MIN_SIZE);
 	gtk_window_set_title(GTK_WINDOW(dialog), _("Duplicate email addresses"));
 
 	vbox = gtk_vbox_new(FALSE, 0);
@@ -352,18 +331,14 @@ static void present_finder_results(GtkWindow *parent)
 	hpaned = gtk_hpaned_new();
 	gtk_box_pack_start(GTK_BOX(vbox), hpaned, TRUE, TRUE, 0);
 
-	scrolled_win = gtk_scrolled_window_new(NULL,NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
-	                               GTK_POLICY_AUTOMATIC,
-	                               GTK_POLICY_AUTOMATIC);
+	scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrolled_win), email_view);
 
 	gtk_paned_add1(GTK_PANED(hpaned), scrolled_win);
 
-	scrolled_win = gtk_scrolled_window_new(NULL,NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
-	                               GTK_POLICY_AUTOMATIC,
-	                               GTK_POLICY_AUTOMATIC);
+	scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrolled_win), detail_view);
 
 	if (prefs_common.addressbook_use_editaddress_dialog) {
@@ -377,9 +352,8 @@ static void present_finder_results(GtkWindow *parent)
 		gtk_paned_pack2(GTK_PANED(hpaned), vpaned, TRUE, FALSE);
 	}
 
-	g_object_get(G_OBJECT(hpaned),
-	             "position", &pos, NULL);
-	if(pos < 200)
+	g_object_get(G_OBJECT(hpaned), "position", &pos, NULL);
+	if (pos < 200)
 		gtk_paned_set_position(GTK_PANED(hpaned), 200);
 
 	hbox = gtk_hbutton_box_new();
@@ -399,16 +373,11 @@ static void present_finder_results(GtkWindow *parent)
 	close = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
 	gtk_box_pack_start(GTK_BOX(hbox), close, TRUE, TRUE, 0);
 
-	g_signal_connect(dialog, "destroy",
-	                 G_CALLBACK(cb_finder_results_dialog_destroy), NULL);
-	g_signal_connect(G_OBJECT(dialog), "key-press-event",
-	                 G_CALLBACK(cb_finder_results_dialog_key_pressed), NULL);
-	g_signal_connect_swapped(close, "clicked",
-	                         G_CALLBACK(gtk_widget_destroy), dialog);
-	g_signal_connect(del_btn, "clicked",
-	                 G_CALLBACK(cb_del_btn_clicked), detail_view);
-	g_signal_connect(edit_btn, "clicked",
-	                 G_CALLBACK(cb_edit_btn_clicked), detail_view);
+	g_signal_connect(dialog, "destroy", G_CALLBACK(cb_finder_results_dialog_destroy), NULL);
+	g_signal_connect(G_OBJECT(dialog), "key-press-event", G_CALLBACK(cb_finder_results_dialog_key_pressed), NULL);
+	g_signal_connect_swapped(close, "clicked", G_CALLBACK(gtk_widget_destroy), dialog);
+	g_signal_connect(del_btn, "clicked", G_CALLBACK(cb_del_btn_clicked), detail_view);
+	g_signal_connect(edit_btn, "clicked", G_CALLBACK(cb_edit_btn_clicked), detail_view);
 
 	inc_lock();
 	gtk_widget_show_all(dialog);
@@ -421,7 +390,7 @@ static void cb_finder_results_dialog_destroy(GtkWindow *win, gpointer data)
 	email_view = NULL;
 	inline_edit_vbox = NULL;
 
-	if(addr_hash) {
+	if (addr_hash) {
 		g_hash_table_destroy(addr_hash);
 		addr_hash = NULL;
 	}
@@ -430,7 +399,7 @@ static void cb_finder_results_dialog_destroy(GtkWindow *win, gpointer data)
 	inc_unlock();
 }
 
-static GtkWidget* create_email_view(GtkListStore *store)
+static GtkWidget *create_email_view(GtkListStore *store)
 {
 	GtkWidget *view;
 	GtkCellRenderer *renderer;
@@ -438,17 +407,12 @@ static GtkWidget* create_email_view(GtkListStore *store)
 	view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
 	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(view), prefs_common.use_stripes_everywhere);
 	renderer = gtk_cell_renderer_text_new();
-	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view),
-	        -1,
-	        _("Address"),
-	        renderer,
-	        "text", 0,
-	        NULL);
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, _("Address"), renderer, "text", 0, NULL);
 	g_object_unref(store);
 	return view;
 }
 
-static GtkWidget* create_detail_view(GtkListStore *store)
+static GtkWidget *create_detail_view(GtkListStore *store)
 {
 	GtkWidget *view;
 	GtkCellRenderer *renderer;
@@ -460,45 +424,30 @@ static GtkWidget* create_detail_view(GtkListStore *store)
 	renderer = gtk_cell_renderer_text_new();
 
 	/* col 1 */
-	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view),
-	        -1,
-	        _("Address book path"),
-	        renderer,
-	        "text", COL_BOOKPATH,
-	        NULL);
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, _("Address book path"), renderer, "text", COL_BOOKPATH, NULL);
 	/* col 2 */
-	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view),
-	        -1,
-	        _("Name"),
-	        renderer,
-	        "text", COL_NAME,
-	        NULL);
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, _("Name"), renderer, "text", COL_NAME, NULL);
 
 	cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(view));
-	for(walk = cols; walk; walk = walk->next)
-		gtk_tree_view_column_set_resizable(GTK_TREE_VIEW_COLUMN(walk->data),
-		                                   TRUE);
+	for (walk = cols; walk; walk = walk->next)
+		gtk_tree_view_column_set_resizable(GTK_TREE_VIEW_COLUMN(walk->data), TRUE);
 	g_list_free(cols);
 
-	g_signal_connect(view, "row-activated",
-	                 G_CALLBACK(detail_row_activated), NULL);
+	g_signal_connect(view, "row-activated", G_CALLBACK(detail_row_activated), NULL);
 
-	g_signal_connect(view, "focus-in-event",
-	                 G_CALLBACK(detail_focus_in), NULL);
-	g_signal_connect(view, "focus-out-event",
-	                 G_CALLBACK(detail_focus_out), NULL);
-
+	g_signal_connect(view, "focus-in-event", G_CALLBACK(detail_focus_in), NULL);
+	g_signal_connect(view, "focus-out-event", G_CALLBACK(detail_focus_out), NULL);
 
 	return view;
 }
 
-static void append_to_email_store(gpointer key,gpointer value,gpointer data)
+static void append_to_email_store(gpointer key, gpointer value, gpointer data)
 {
 	GtkTreeIter iter;
-	GtkListStore *store = (GtkListStore*) data;
+	GtkListStore *store = (GtkListStore *)data;
 
 	gtk_list_store_append(store, &iter);
-	gtk_list_store_set(store, &iter, 0, (gchar*) key, -1);
+	gtk_list_store_set(store, &iter, 0, (gchar *)key, -1);
 }
 
 static gboolean is_editing_entry_only_selection(void)
@@ -511,19 +460,18 @@ static gboolean is_editing_entry_only_selection(void)
 
 	sel_detail = gtk_tree_view_get_selection(GTK_TREE_VIEW(detail_view));
 
-	if(gtk_tree_selection_count_selected_rows(sel_detail) > 1)
+	if (gtk_tree_selection_count_selected_rows(sel_detail) > 1)
 		return FALSE;
 
-	selected = gtk_tree_selection_get_selected_rows(sel_detail,&model);
+	selected = gtk_tree_selection_get_selected_rows(sel_detail, &model);
 	cm_return_val_if_fail(selected, FALSE);
 
-	gtk_tree_model_get_iter(model, &iter, (GtkTreePath*)selected->data);
-	g_list_foreach(selected, (GFunc)gtk_tree_path_free, NULL);
+	gtk_tree_model_get_iter(model, &iter, (GtkTreePath *)selected->data);
+	g_list_foreach(selected, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free(selected);
 
-	gtk_tree_model_get(model, &iter, COL_ITEM, &item,-1);
-	if(ADDRITEM_ID(item) && editing_uid &&
-	        strcmp(ADDRITEM_ID(item),editing_uid) == 0)
+	gtk_tree_model_get(model, &iter, COL_ITEM, &item, -1);
+	if (ADDRITEM_ID(item) && editing_uid && strcmp(ADDRITEM_ID(item), editing_uid) == 0)
 		return TRUE;
 	else
 		return FALSE;
@@ -534,17 +482,17 @@ static void detail_selection_changed(GtkTreeSelection *selection, gpointer data)
 	gint num_selected;
 	num_selected = gtk_tree_selection_count_selected_rows(selection);
 
-	if(num_selected > 0)
-		gtk_widget_set_sensitive(del_btn,TRUE);
+	if (num_selected > 0)
+		gtk_widget_set_sensitive(del_btn, TRUE);
 	else
-		gtk_widget_set_sensitive(del_btn,FALSE);
+		gtk_widget_set_sensitive(del_btn, FALSE);
 
-	if(num_selected == 1)
-		gtk_widget_set_sensitive(edit_btn,TRUE);
+	if (num_selected == 1)
+		gtk_widget_set_sensitive(edit_btn, TRUE);
 	else
-		gtk_widget_set_sensitive(edit_btn,FALSE);
+		gtk_widget_set_sensitive(edit_btn, FALSE);
 
-	if(!is_editing_entry_only_selection())
+	if (!is_editing_entry_only_selection())
 		addressbook_edit_person_widgetset_hide();
 }
 
@@ -554,7 +502,7 @@ static void email_selection_changed(GtkTreeSelection *selection, gpointer data)
 	GtkTreeModel *model;
 	gchar *email;
 
-	if(gtk_tree_selection_get_selected(selection, &model, &iter)) {
+	if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
 		GSList *hashval;
 		GSList *walk;
 
@@ -562,49 +510,40 @@ static void email_selection_changed(GtkTreeSelection *selection, gpointer data)
 
 		hashval = g_hash_table_lookup(addr_hash, email);
 		gtk_list_store_clear(detail_store);
-		for(walk = hashval; walk; walk = walk->next) {
+		for (walk = hashval; walk; walk = walk->next) {
 			AddrDupListEntry *entry = walk->data;
-			if(!entry)
+			if (!entry)
 				continue;
 			gtk_list_store_append(detail_store, &iter);
-			gtk_list_store_set(detail_store, &iter,
-			                   COL_BOOKPATH, entry->book_path,
-			                   COL_NAME, addressbook_set_col_name_guard(ADDRITEM_NAME(entry->person)),
-			                   COL_ITEM, entry->person,
-			                   COL_DS, entry->ds,
-			                   -1);
+			gtk_list_store_set(detail_store, &iter, COL_BOOKPATH, entry->book_path, COL_NAME, addressbook_set_col_name_guard(ADDRITEM_NAME(entry->person)), COL_ITEM, entry->person, COL_DS, entry->ds, -1);
 		}
 		g_free(email);
 	}
 }
 
-static gchar* get_bookpath(ItemPerson *itemPerson, AddressDataSource *ds)
+static gchar *get_bookpath(ItemPerson *itemPerson, AddressDataSource *ds)
 {
 	gchar *path;
 	gchar *tmp;
 	AddrItemObject *item;
 
-	item = (AddrItemObject*)itemPerson;
+	item = (AddrItemObject *)itemPerson;
 	path = g_strdup("");
-	while((item = ADDRITEM_PARENT(item)) != NULL) {
+	while ((item = ADDRITEM_PARENT(item)) != NULL) {
 
-		if(ADDRITEM_TYPE(item) == ITEMTYPE_FOLDER) {
-			ItemFolder *folder = (ItemFolder*) item;
+		if (ADDRITEM_TYPE(item) == ITEMTYPE_FOLDER) {
+			ItemFolder *folder = (ItemFolder *)item;
 			tmp = path;
-			path = g_strdup_printf("%s%s%s",
-			                       folder->isRoot ? addrindex_ds_get_name(ds) :
-			                       ADDRITEM_NAME(folder),
-			                       (*tmp == '\0') ? "" : "/", tmp);
+			path = g_strdup_printf("%s%s%s", folder->isRoot ? addrindex_ds_get_name(ds) : ADDRITEM_NAME(folder), (*tmp == '\0') ? "" : "/", tmp);
 			g_free(tmp);
 		}
 
 	}
 
 	/* prepend bookpath */
-	if(ds && ds->interface && ds->interface->name) {
+	if (ds && ds->interface && ds->interface->name) {
 		tmp = path;
-		path = g_strdup_printf("%s%s%s", ds->interface->name,
-		                       (*tmp == '\0') ? "" : "/", tmp);
+		path = g_strdup_printf("%s%s%s", ds->interface->name, (*tmp == '\0') ? "" : "/", tmp);
 		g_free(tmp);
 	}
 
@@ -614,23 +553,22 @@ static gchar* get_bookpath(ItemPerson *itemPerson, AddressDataSource *ds)
 static void refresh_stores(gchar *email_to_select, GSList *detail_to_select)
 {
 	refresh_addr_hash();
-	if(email_store)
+	if (email_store)
 		gtk_list_store_clear(email_store);
-	if(detail_store)
+	if (detail_store)
 		gtk_list_store_clear(detail_store);
-	g_hash_table_foreach(addr_hash,append_to_email_store,email_store);
+	g_hash_table_foreach(addr_hash, append_to_email_store, email_store);
 
 	/* sort the email store */
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(email_store),
-	                                     0, GTK_SORT_ASCENDING);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(email_store), 0, GTK_SORT_ASCENDING);
 
 	/* try to select email address */
-	if(email_to_select) {
+	if (email_to_select) {
 		/* Search email in email store */
 		GtkTreeIter iter;
 		GtkTreeSelection *selection;
 
-		if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(email_store), &iter))
+		if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(email_store), &iter))
 			return;
 		selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(email_view));
 
@@ -639,43 +577,38 @@ static void refresh_stores(gchar *email_to_select, GSList *detail_to_select)
 			gchar *email;
 
 			gtk_tree_model_get(GTK_TREE_MODEL(email_store), &iter, 0, &email, -1);
-			retVal = g_ascii_strncasecmp(email,email_to_select,strlen(email));
+			retVal = g_ascii_strncasecmp(email, email_to_select, strlen(email));
 			g_free(email);
-			if(retVal == 0) {
-				gtk_tree_selection_select_iter(selection,&iter);
+			if (retVal == 0) {
+				gtk_tree_selection_select_iter(selection, &iter);
 				break;
 			}
-		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(email_store), &iter));
+		} while (gtk_tree_model_iter_next(GTK_TREE_MODEL(email_store), &iter));
 
 	}
 
 	/* try to select detail rows */
-	if(detail_to_select) {
+	if (detail_to_select) {
 		GtkTreeIter iter;
 		GtkTreeSelection *sel;
-		if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(detail_store), &iter))
+		if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(detail_store), &iter))
 			return;
 		sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(detail_view));
 
 		do {
 			GSList *walk;
 			ItemPerson *person;
-			gtk_tree_model_get(GTK_TREE_MODEL(detail_store), &iter,
-			                   COL_ITEM, &person, -1);
-			for(walk = detail_to_select; walk; walk = walk->next) {
+			gtk_tree_model_get(GTK_TREE_MODEL(detail_store), &iter, COL_ITEM, &person, -1);
+			for (walk = detail_to_select; walk; walk = walk->next) {
 				gchar *uid = walk->data;
-				if(uid && ADDRITEM_ID(person) &&
-				        (strcmp(uid,ADDRITEM_ID(person)) == 0))
-					gtk_tree_selection_select_iter(sel,&iter);
+				if (uid && ADDRITEM_ID(person) && (strcmp(uid, ADDRITEM_ID(person)) == 0))
+					gtk_tree_selection_select_iter(sel, &iter);
 			}
-		} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(detail_store), &iter));
+		} while (gtk_tree_model_iter_next(GTK_TREE_MODEL(detail_store), &iter));
 	}
 }
 
-static void detail_row_activated(GtkTreeView       *tree_view,
-                                 GtkTreePath       *path,
-                                 GtkTreeViewColumn *column,
-                                 gpointer           user_data)
+static void detail_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
 {
 	GtkTreeIter iter;
 	ItemPerson *person;
@@ -685,25 +618,23 @@ static void detail_row_activated(GtkTreeView       *tree_view,
 
 	model = gtk_tree_view_get_model(tree_view);
 
-	if(!gtk_tree_model_get_iter(model,&iter,path))
+	if (!gtk_tree_model_get_iter(model, &iter, path))
 		return;
 
 	gtk_tree_model_get(model, &iter, COL_ITEM, &person, COL_DS, &ds, -1);
 
-
-	if(!((ds->type == ADDR_IF_BOOK) || ds->type == ADDR_IF_LDAP)) {
+	if (!((ds->type == ADDR_IF_BOOK) || ds->type == ADDR_IF_LDAP)) {
 		debug_print("Unsupported address datasource type for editing\n");
 		return;
 	}
 
 	abf = ds->rawDataSource;
-	if(inline_edit_vbox)
+	if (inline_edit_vbox)
 		gtk_widget_show_all(inline_edit_vbox);
-	if(editing_uid)
+	if (editing_uid)
 		g_free(editing_uid);
 	editing_uid = g_strdup(ADDRITEM_ID(person));
-	addressbook_edit_person(abf,NULL,person,FALSE,inline_edit_vbox,
-	                        edit_post_update_cb,FALSE);
+	addressbook_edit_person(abf, NULL, person, FALSE, inline_edit_vbox, edit_post_update_cb, FALSE);
 }
 
 static void edit_post_update_cb(ItemPerson *item)
@@ -721,7 +652,7 @@ static void edit_post_update_cb(ItemPerson *item)
 
 	/* email -> string of email address */
 	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(email_view));
-	if(gtk_tree_selection_get_selected(sel,NULL,&iter))
+	if (gtk_tree_selection_get_selected(sel, NULL, &iter))
 		gtk_tree_model_get(GTK_TREE_MODEL(email_store), &iter, 0, &email, -1);
 	else
 		email = NULL;
@@ -730,23 +661,23 @@ static void edit_post_update_cb(ItemPerson *item)
 	detail = NULL;
 	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(detail_view));
 	detail_sel = gtk_tree_selection_get_selected_rows(sel, &model);
-	for(walk = detail_sel; walk; walk = walk->next) {
+	for (walk = detail_sel; walk; walk = walk->next) {
 		GtkTreePath *path = walk->data;
-		if(!gtk_tree_model_get_iter(model,&iter,path))
+		if (!gtk_tree_model_get_iter(model, &iter, path))
 			continue;
-		gtk_tree_model_get(model, &iter, COL_ITEM, &person,-1);
+		gtk_tree_model_get(model, &iter, COL_ITEM, &person, -1);
 		detail = g_slist_prepend(detail, g_strdup(ADDRITEM_ID(person)));
 	}
-	g_list_foreach(detail_sel, (GFunc)gtk_tree_path_free, NULL);
+	g_list_foreach(detail_sel, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free(detail_sel);
 
 	/* now refresh the stores, trying to keep the selections active */
-	refresh_stores(email,detail);
+	refresh_stores(email, detail);
 
 	/* cleanup */
-	if(email)
+	if (email)
 		g_free(email);
-	g_slist_foreach(detail, (GFunc)g_free, NULL);
+	g_slist_foreach(detail, (GFunc) g_free, NULL);
 	g_slist_free(detail);
 }
 
@@ -757,14 +688,13 @@ static void cb_edit_btn_clicked(GtkButton *button, gpointer data)
 	GtkTreeModel *model;
 
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(detail_view));
-	selected = gtk_tree_selection_get_selected_rows(selection,&model);
+	selected = gtk_tree_selection_get_selected_rows(selection, &model);
 	cm_return_if_fail(selected);
 
 	/* we are guaranteed to have exactly one row selected */
-	gtk_tree_view_row_activated(GTK_TREE_VIEW(detail_view),(GtkTreePath*)selected->data,
-	                            gtk_tree_view_get_column(GTK_TREE_VIEW(detail_view),0));
+	gtk_tree_view_row_activated(GTK_TREE_VIEW(detail_view), (GtkTreePath *)selected->data, gtk_tree_view_get_column(GTK_TREE_VIEW(detail_view), 0));
 
-	g_list_foreach(selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_foreach(selected, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free(selected);
 }
 
@@ -788,44 +718,41 @@ static void cb_del_btn_clicked(GtkButton *button, gpointer data)
 	list = gtk_tree_selection_get_selected_rows(selection, &model);
 	cm_return_if_fail(list);
 
-	aval = alertpanel(_("Delete address(es)"),
-	                  _("Really delete the address(es)?"),
-	                  GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL,
-										ALERTFOCUS_SECOND);
-	if(aval != G_ALERTALTERNATE)
+	aval = alertpanel(_("Delete address(es)"), _("Really delete the address(es)?"), GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL, ALERTFOCUS_SECOND);
+	if (aval != G_ALERTALTERNATE)
 		return;
 
 	ref_list = NULL;
-	for(walk = list; walk; walk = walk->next) {
-		ref = gtk_tree_row_reference_new(model,(GtkTreePath*)(walk->data));
+	for (walk = list; walk; walk = walk->next) {
+		ref = gtk_tree_row_reference_new(model, (GtkTreePath *)(walk->data));
 		ref_list = g_list_prepend(ref_list, ref);
 	}
-	g_list_foreach(list, (GFunc)gtk_tree_path_free, NULL);
+	g_list_foreach(list, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free(list);
 
-	for(walk = ref_list; walk; walk = walk->next) {
+	for (walk = ref_list; walk; walk = walk->next) {
 		GtkTreePath *path;
 		ref = walk->data;
-		if(!gtk_tree_row_reference_valid(ref))
+		if (!gtk_tree_row_reference_valid(ref))
 			continue;
 		path = gtk_tree_row_reference_get_path(ref);
-		if(gtk_tree_model_get_iter(model, &iter, path)) {
+		if (gtk_tree_model_get_iter(model, &iter, path)) {
 			gtk_tree_model_get(model, &iter, COL_ITEM, &item, COL_DS, &ds, -1);
-			addrduplicates_delete_item_person(item,ds);
+			addrduplicates_delete_item_person(item, ds);
 		}
 		gtk_tree_path_free(path);
 	}
 
-	g_list_foreach(ref_list, (GFunc)gtk_tree_row_reference_free, NULL);
+	g_list_foreach(ref_list, (GFunc) gtk_tree_row_reference_free, NULL);
 	g_list_free(ref_list);
 
 	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(email_view));
-	if(gtk_tree_selection_get_selected(sel,NULL,&iter))
+	if (gtk_tree_selection_get_selected(sel, NULL, &iter))
 		gtk_tree_model_get(GTK_TREE_MODEL(email_store), &iter, 0, &email, -1);
 	else
 		email = NULL;
-	refresh_stores(email,NULL);
-	if(email)
+	refresh_stores(email, NULL);
+	if (email)
 		g_free(email);
 }
 
@@ -837,14 +764,12 @@ gboolean addrduplicates_delete_item_person(ItemPerson *item, AddressDataSource *
 		return FALSE;
 	/* Test for read only */
 	iface = ds->interface;
-	if( iface && iface->readOnly ) {
-		alertpanel( _("Delete address"),
-		            _("This address data is read-only and cannot be deleted."),
-		            GTK_STOCK_CLOSE, NULL, NULL, ALERTFOCUS_FIRST );
+	if (iface && iface->readOnly) {
+		alertpanel(_("Delete address"), _("This address data is read-only and cannot be deleted."), GTK_STOCK_CLOSE, NULL, NULL, ALERTFOCUS_FIRST);
 		return FALSE;
 	}
 
-	if(!(abf = ds->rawDataSource))
+	if (!(abf = ds->rawDataSource))
 		return FALSE;
 
 	item->status = DELETE_ENTRY;
@@ -857,40 +782,39 @@ gboolean addrduplicates_delete_item_person(ItemPerson *item, AddressDataSource *
 		ldapsvr_set_modified(server, TRUE);
 		ldapsvr_update_book(server, item);
 	}
-
 #endif
 
-	if(item) {
+	if (item) {
 		addritem_person_remove_picture(item);
 		addritem_free_item_person(item);
 	}
 	return TRUE;
 }
 
-static gboolean cb_finder_results_dialog_key_pressed(GtkWidget *widget,
-        GdkEventKey *event,
-        gpointer data)
+static gboolean cb_finder_results_dialog_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-	if(event) {
-		if(event->keyval == GDK_KEY_Delete && detail_view_has_focus)
-			cb_del_btn_clicked(NULL,NULL);
-		else if(event->keyval == GDK_KEY_Escape)
+	if (event) {
+		if (event->keyval == GDK_KEY_Delete && detail_view_has_focus)
+			cb_del_btn_clicked(NULL, NULL);
+		else if (event->keyval == GDK_KEY_Escape)
 			gtk_widget_destroy(dialog);
 	}
 
 	return FALSE;
 }
 
-static gboolean detail_focus_in(GtkWidget *widget,
-                                GdkEventFocus *event,gpointer data)
+static gboolean detail_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
 	detail_view_has_focus = TRUE;
 	return FALSE;
 }
 
-static gboolean detail_focus_out(GtkWidget *widget,
-                                 GdkEventFocus *event,gpointer data)
+static gboolean detail_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
 	detail_view_has_focus = FALSE;
 	return FALSE;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

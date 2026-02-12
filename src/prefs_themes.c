@@ -17,7 +17,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 
 #include "defs.h"
@@ -58,11 +58,10 @@
 
 #define PREVIEW_ICONS 7
 
-typedef struct _ThemesPage
-{
+typedef struct _ThemesPage {
 	PrefsPage page;
 
-	GtkWidget *window;		/* do not modify */
+	GtkWidget *window; /* do not modify */
 
 	GtkWidget *op_menu;
 	GtkWidget *btn_install;
@@ -89,29 +88,26 @@ typedef struct _ThemesPage
 #endif
 } ThemesPage;
 
-typedef struct _ThemeInfo
-{
+typedef struct _ThemeInfo {
 	gchar *name;
 	gchar *author;
 	gchar *url;
 	gchar *status;
 } ThemeInfo;
 
-typedef struct _ThemeName
-{
+typedef struct _ThemeName {
 	gchar *name;
 	GList *item;
 } ThemeName;
 
-typedef struct _ThemesData
-{
-	GList      *themes;
-	GList	   *names;
-	gchar      *displayed;
+typedef struct _ThemesData {
+	GList *themes;
+	GList *names;
+	gchar *displayed;
 	ThemesPage *page;
 } ThemesData;
 
-typedef void (*FileFunc) (const gchar *filename, gpointer data);
+typedef void (*FileFunc)(const gchar *filename, gpointer data);
 
 typedef struct _DirInfo {
 	gint bytes;
@@ -129,54 +125,50 @@ typedef struct _CopyInfo {
 
 static ThemesData *prefs_themes_data;
 
-StockPixmap prefs_themes_icons[PREVIEW_ICONS] = { 
+StockPixmap prefs_themes_icons[PREVIEW_ICONS] = {
 	STOCK_PIXMAP_DIR_CLOSE,
 	STOCK_PIXMAP_MAIL_SEND,
-	STOCK_PIXMAP_MAIL_RECEIVE, 
+	STOCK_PIXMAP_MAIL_RECEIVE,
 	STOCK_PIXMAP_MAIL_ATTACH,
-	STOCK_PIXMAP_BOOK, 
-	STOCK_PIXMAP_MIME_TEXT_PLAIN, 
+	STOCK_PIXMAP_BOOK,
+	STOCK_PIXMAP_MIME_TEXT_PLAIN,
 	STOCK_PIXMAP_REPLIED
 };
 
-
-
-static void prefs_themes_btn_remove_clicked_cb	(GtkWidget *widget, gpointer data);
-static void prefs_themes_btn_install_clicked_cb	(GtkWidget *widget, gpointer data);
-static void prefs_themes_btn_viewall_clicked_cb	(GtkWidget *widget, gpointer data);
-static void prefs_themes_viewall_close_btn_clicked (GtkWidget *widget, gpointer data);
-static gboolean prefs_themes_viewall_key_pressed (GtkWidget *keywidget, GdkEventKey *event, GtkWidget **widget);
-static void prefs_themes_menu_item_activated_cb	(GtkWidget *widget, gpointer data);
+static void prefs_themes_btn_remove_clicked_cb(GtkWidget *widget, gpointer data);
+static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data);
+static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget, gpointer data);
+static void prefs_themes_viewall_close_btn_clicked(GtkWidget *widget, gpointer data);
+static gboolean prefs_themes_viewall_key_pressed(GtkWidget *keywidget, GdkEventKey *event, GtkWidget **widget);
+static void prefs_themes_menu_item_activated_cb(GtkWidget *widget, gpointer data);
 #ifdef HAVE_SVG
 static gdouble prefs_themes_compute_ppi(GdkScreen *screen);
 static gdouble prefs_themes_get_adjusted_ppi(void);
-static void prefs_themes_checkbtn_enable_scaling_toggled_cb (GtkWidget *widget, gpointer data);
-static void prefs_themes_checkbtn_scaling_auto_toggled_cb (GtkWidget *widget, gpointer data);
+static void prefs_themes_checkbtn_enable_scaling_toggled_cb(GtkWidget *widget, gpointer data);
+static void prefs_themes_checkbtn_scaling_auto_toggled_cb(GtkWidget *widget, gpointer data);
 #endif
 
-static void prefs_themes_update_buttons		(const ThemesData *tdata);
-static void prefs_themes_display_global_stats	(const ThemesData *tdata);
-static void prefs_themes_get_theme_info         (ThemesData *tdata);
-static void prefs_themes_display_theme_info     (ThemesData *tdata, const ThemeInfo *info);
-static void prefs_themes_get_themes_and_names	(ThemesData *tdata);
+static void prefs_themes_update_buttons(const ThemesData *tdata);
+static void prefs_themes_display_global_stats(const ThemesData *tdata);
+static void prefs_themes_get_theme_info(ThemesData *tdata);
+static void prefs_themes_display_theme_info(ThemesData *tdata, const ThemeInfo *info);
+static void prefs_themes_get_themes_and_names(ThemesData *tdata);
 static int prefs_themes_cmp_name(gconstpointer a, gconstpointer b);
-static void prefs_themes_free_names		(ThemesData *tdata);
+static void prefs_themes_free_names(ThemesData *tdata);
 
-static void prefs_themes_set_themes_menu	(GtkComboBox *combo, const ThemesData *tdata);
+static void prefs_themes_set_themes_menu(GtkComboBox *combo, const ThemesData *tdata);
 
-static gchar *prefs_themes_get_theme_stats	(const gchar *dirname);
-static gboolean prefs_themes_is_system_theme	(const gchar *dirname);
+static gchar *prefs_themes_get_theme_stats(const gchar *dirname);
+static gboolean prefs_themes_is_system_theme(const gchar *dirname);
 
-static void prefs_themes_create_widget          (PrefsPage *page, GtkWindow *window, gpointer data);
-static void prefs_themes_destroy_widget         (PrefsPage *page);
-static void prefs_themes_save                   (PrefsPage *page);
+static void prefs_themes_create_widget(PrefsPage *page, GtkWindow *window, gpointer data);
+static void prefs_themes_destroy_widget(PrefsPage *page);
+static void prefs_themes_save(PrefsPage *page);
 
-static void prefs_themes_foreach_file		(const gchar *dirname, const FileFunc func, gpointer data);
-static void prefs_themes_file_stats		(const gchar *filename, gpointer data);
-static void prefs_themes_file_remove		(const gchar *filename, gpointer data);
-static void prefs_themes_file_install		(const gchar *filename, gpointer data);
-
-
+static void prefs_themes_foreach_file(const gchar *dirname, const FileFunc func, gpointer data);
+static void prefs_themes_file_stats(const gchar *filename, gpointer data);
+static void prefs_themes_file_remove(const gchar *filename, gpointer data);
+static void prefs_themes_file_install(const gchar *filename, gpointer data);
 
 static void prefs_themes_file_stats(const gchar *filename, gpointer data)
 {
@@ -188,14 +180,13 @@ static void prefs_themes_file_stats(const gchar *filename, gpointer data)
 	GStatBuf s;
 #endif
 	goffset size;
-	DirInfo *di = (DirInfo *)data;
+	DirInfo *di = (DirInfo *) data;
 	gint len;
 	gint i;
 
 #ifdef G_OS_WIN32
 	f = g_file_new_for_path(filename);
-	fi = g_file_query_info(f, "standard::size,standard::type",
-			G_FILE_QUERY_INFO_NONE, NULL, &error);
+	fi = g_file_query_info(f, "standard::size,standard::type", G_FILE_QUERY_INFO_NONE, NULL, &error);
 	if (error != NULL) {
 		g_warning(error->message);
 		g_error_free(error);
@@ -235,7 +226,7 @@ static void prefs_themes_file_stats(const gchar *filename, gpointer data)
 		}
 	}
 }
-	
+
 static void prefs_themes_file_remove(const gchar *filename, gpointer data)
 {
 	gchar **status = (gchar **)data;
@@ -247,10 +238,8 @@ static void prefs_themes_file_remove(const gchar *filename, gpointer data)
 	base = g_path_get_basename(filename);
 	if (TRUE == is_dir_exist(filename)) {
 		if (strcmp(base, ".") != 0 && strcmp(base, "..") != 0)
-			g_warning("prefs_themes_file_remove(): subdir in theme dir skipped: '%s'",
-						base);
-	}
-	else if (0 != claws_unlink(filename)) {
+			g_warning("prefs_themes_file_remove(): subdir in theme dir skipped: '%s'", base);
+	} else if (0 != claws_unlink(filename)) {
 		(*status) = g_strdup(filename);
 	}
 	g_free(base);
@@ -258,7 +247,7 @@ static void prefs_themes_file_remove(const gchar *filename, gpointer data)
 
 static void prefs_themes_file_install(const gchar *filename, gpointer data)
 {
-	CopyInfo *ci = (CopyInfo *)data;
+	CopyInfo *ci = (CopyInfo *) data;
 	gchar *base;
 
 	if (ci->status != NULL)
@@ -266,11 +255,9 @@ static void prefs_themes_file_install(const gchar *filename, gpointer data)
 
 	base = g_path_get_basename(filename);
 	if (TRUE == is_dir_exist(filename)) {
-		if (strcmp(base, ".") != 0 && strcmp(base, "..") !=0 )
-			g_warning("prefs_themes_file_install(): subdir in theme dir skipped: '%s'",
-						base);
-	}
-	else {
+		if (strcmp(base, ".") != 0 && strcmp(base, "..") != 0)
+			g_warning("prefs_themes_file_install(): subdir in theme dir skipped: '%s'", base);
+	} else {
 		gchar *fulldest;
 
 		fulldest = g_strconcat(ci->dest, G_DIR_SEPARATOR_S, base, NULL);
@@ -294,8 +281,7 @@ static void prefs_themes_foreach_file(const gchar *dirname, const FileFunc func,
 	cm_return_if_fail(func != NULL);
 
 	if ((dp = g_dir_open(dirname, 0, &error)) == NULL) {
-		debug_print("couldn't open dir '%s': %s (%d)\n", dirname,
-				error->message, error->code);
+		debug_print("couldn't open dir '%s': %s (%d)\n", dirname, error->message, error->code);
 		g_error_free(error);
 		return;
 	}
@@ -304,7 +290,7 @@ static void prefs_themes_foreach_file(const gchar *dirname, const FileFunc func,
 
 		fullentry = g_strconcat(dirname, G_DIR_SEPARATOR_S, entry, NULL);
 
-		(*func)(fullentry, data);
+		(*func) (fullentry, data);
 
 		g_free(fullentry);
 	}
@@ -333,18 +319,17 @@ static void prefs_themes_set_themes_menu(GtkComboBox *combo, const ThemesData *t
 {
 	GtkListStore *store;
 	GtkTreeIter iter;
-	GList	  *themes = tdata->names;
-	gint       i = 0, active = 0;
-	GList     *sorted_list = NULL;
+	GList *themes = tdata->names;
+	gint i = 0, active = 0;
+	GList *sorted_list = NULL;
 
 	cm_return_if_fail(combo != NULL);
 
 	/* sort theme data list by data name */
 	while (themes != NULL) {
-		ThemeName *tname = (ThemeName *)(themes->data);
+		ThemeName *tname = (ThemeName *) (themes->data);
 
-		sorted_list = g_list_insert_sorted(sorted_list, (gpointer)(tname),
-				 		   (GCompareFunc)prefs_themes_cmp_name);
+		sorted_list = g_list_insert_sorted(sorted_list, (gpointer)(tname), (GCompareFunc) prefs_themes_cmp_name);
 
 		themes = g_list_next(themes);
 	}
@@ -354,15 +339,13 @@ static void prefs_themes_set_themes_menu(GtkComboBox *combo, const ThemesData *t
 	/* feed gtk_menu w/ sorted themes names */
 	themes = sorted_list;
 	while (themes != NULL) {
-		ThemeName *tname = (ThemeName *)(themes->data);
-		gchar     *tpath = (gchar *)(tname->item->data);
+		ThemeName *tname = (ThemeName *) (themes->data);
+		gchar *tpath = (gchar *)(tname->item->data);
 
 		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter,
-				   0, tname->name,
-				   1, tname->item->data, -1);
+		gtk_list_store_set(store, &iter, 0, tname->name, 1, tname->item->data, -1);
 
-		if (tdata->displayed != NULL && !g_strcmp0(tdata->displayed,tpath))
+		if (tdata->displayed != NULL && !g_strcmp0(tdata->displayed, tpath))
 			active = i;
 		++i;
 
@@ -371,9 +354,7 @@ static void prefs_themes_set_themes_menu(GtkComboBox *combo, const ThemesData *t
 
 	g_list_free(sorted_list);
 
-	g_signal_connect(G_OBJECT(combo), "changed",
-			 G_CALLBACK(prefs_themes_menu_item_activated_cb),
-			 NULL);
+	g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(prefs_themes_menu_item_activated_cb), NULL);
 
 	gtk_combo_box_set_model(combo, GTK_TREE_MODEL(store));
 	gtk_combo_box_set_active(combo, active);
@@ -382,8 +363,7 @@ static void prefs_themes_set_themes_menu(GtkComboBox *combo, const ThemesData *t
 static int prefs_themes_cmp_name(gconstpointer a_p, gconstpointer b_p)
 {
 	/* compare two ThemeData structures by their name attribute */
-	return g_strcmp0((gchar *)(((ThemeName*)a_p)->name),
-					(gchar *)(((ThemeName*)b_p)->name));
+	return g_strcmp0((gchar *)(((ThemeName *) a_p)->name), (gchar *)(((ThemeName *) b_p)->name));
 }
 
 static void prefs_themes_get_themes_and_names(ThemesData *tdata)
@@ -413,15 +393,15 @@ static void prefs_themes_get_themes_and_names(ThemesData *tdata)
 			tdata->displayed = (gchar *)tpaths->data;
 		}
 		tpaths = g_list_next(tpaths);
-		g_free(sname);	
+		g_free(sname);
 	}
 }
 
 void prefs_themes_init(void)
 {
-	ThemesData   *tdata;
-	ThemesPage   *page;
-	GList        *tpaths;
+	ThemesData *tdata;
+	ThemesPage *page;
+	GList *tpaths;
 	static gchar *path[3];
 
 	path[0] = _("Display");
@@ -442,7 +422,7 @@ void prefs_themes_init(void)
 	page->page.destroy_widget = prefs_themes_destroy_widget;
 	page->page.save_page = prefs_themes_save;
 	page->page.weight = 130.0;
-	prefs_gtk_register_page((PrefsPage *) page);
+	prefs_gtk_register_page((PrefsPage *)page);
 
 	tdata->page = page;
 
@@ -466,7 +446,7 @@ static void prefs_themes_free_names(ThemesData *tdata)
 
 	names = tdata->names;
 	while (names != NULL) {
-		ThemeName *tn = (ThemeName *)(names->data);
+		ThemeName *tn = (ThemeName *) (names->data);
 
 		tn->item = NULL;
 		g_free(tn->name);
@@ -485,7 +465,7 @@ void prefs_themes_done(void)
 	debug_print("Finished preferences for themes.\n");
 
 	stock_pixmap_themes_list_free(tdata->themes);
-	prefs_themes_free_names(tdata); 
+	prefs_themes_free_names(tdata);
 	g_free(tdata->page);
 	g_free(tdata);
 }
@@ -493,10 +473,10 @@ void prefs_themes_done(void)
 static void prefs_themes_btn_remove_clicked_cb(GtkWidget *widget, gpointer data)
 {
 	ThemesData *tdata = prefs_themes_data;
-	gchar      *theme_str;
-	gchar      *alert_title = NULL;
-	AlertValue  val = 0;
-	gchar      *tmp = NULL;
+	gchar *theme_str;
+	gchar *alert_title = NULL;
+	AlertValue val = 0;
+	gchar *tmp = NULL;
 
 	theme_str = tdata->displayed;
 
@@ -504,24 +484,20 @@ static void prefs_themes_btn_remove_clicked_cb(GtkWidget *widget, gpointer data)
 	alert_title = g_strdup_printf(_("Remove theme '%s'"), tmp);
 	g_free(tmp);
 
-	val = alertpanel(alert_title,
-			 _("Are you sure you want to remove this theme?"),
-			 GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
+	val = alertpanel(alert_title, _("Are you sure you want to remove this theme?"), GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
 	g_free(alert_title);
 
 	if (G_ALERTALTERNATE == val) {
 		gchar *status = NULL;
 
-		prefs_themes_foreach_file(theme_str, prefs_themes_file_remove, &status); 
+		prefs_themes_foreach_file(theme_str, prefs_themes_file_remove, &status);
 		if (0 != rmdir(theme_str)) {
 			if (status != NULL) {
 				alertpanel_error(_("File %s failed\nwhile removing theme."), status);
 				g_free(status);
-			}
-			else
+			} else
 				alertpanel_error(_("Removing theme directory failed."));
-		}
-		else {	
+		} else {
 			alertpanel_notice(_("Theme removed successfully"));
 			/* update interface back to first theme */
 			prefs_themes_get_themes_and_names(tdata);
@@ -535,15 +511,15 @@ static void prefs_themes_btn_remove_clicked_cb(GtkWidget *widget, gpointer data)
 
 static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data)
 {
-	gchar      *filename, *source;
-	gchar 	   *themeinfo, *themename;
-	gchar      *alert_title = NULL;
-	CopyInfo   *cinfo;
-	AlertValue  val = 0;
+	gchar *filename, *source;
+	gchar *themeinfo, *themename;
+	gchar *alert_title = NULL;
+	CopyInfo *cinfo;
+	AlertValue val = 0;
 	ThemesData *tdata = prefs_themes_data;
 
 	filename = filesel_select_file_open_folder(_("Select theme folder"), NULL);
-	if (filename == NULL) 
+	if (filename == NULL)
 		return;
 
 	if (filename[strlen(filename) - 1] != G_DIR_SEPARATOR)
@@ -559,29 +535,21 @@ static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data
 	themeinfo = g_strconcat(source, G_DIR_SEPARATOR_S, THEMEINFO_FILE, NULL);
 	alert_title = g_strdup_printf(_("Install theme '%s'"), themename);
 	if (file_exist(themeinfo, FALSE) == FALSE) {
-		val = alertpanel(alert_title,
-				 _("This folder doesn't seem to be a theme"
-				   "folder.\nInstall anyway?"),
-				 GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
+		val = alertpanel(alert_title, _("This folder doesn't seem to be a theme" "folder.\nInstall anyway?"), GTK_STOCK_NO, GTK_STOCK_YES, NULL, ALERTFOCUS_FIRST);
 		if (G_ALERTALTERNATE != val)
 			goto end_inst;
 	}
 
-	cinfo->dest = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S,
-				  PIXMAP_THEME_DIR, G_DIR_SEPARATOR_S,
-				  themename, NULL);
+	cinfo->dest = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PIXMAP_THEME_DIR, G_DIR_SEPARATOR_S, themename, NULL);
 
 	if (TRUE == is_dir_exist(cinfo->dest)) {
 		AlertValue val = alertpanel_full(_("Theme exists"),
-				_("A theme with the same name is\n"
-				  "already installed in this location.\n\n"
-				  "Do you want to replace it?"),
-				GTK_STOCK_CANCEL, _("Overwrite"), NULL, ALERTFOCUS_FIRST,
-				FALSE, NULL, ALERT_WARNING);
+						 _("A theme with the same name is\n" "already installed in this location.\n\n" "Do you want to replace it?"),
+						 GTK_STOCK_CANCEL, _("Overwrite"), NULL, ALERTFOCUS_FIRST,
+						 FALSE, NULL, ALERT_WARNING);
 		if (val == G_ALERTALTERNATE) {
 			if (remove_dir_recursive(cinfo->dest) < 0) {
-				alertpanel_error(_("Couldn't delete the old theme in %s."),
-						 cinfo->dest);
+				alertpanel_error(_("Couldn't delete the old theme in %s."), cinfo->dest);
 				goto end_inst;
 			}
 		} else {
@@ -589,8 +557,7 @@ static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data
 		}
 	}
 	if (0 != make_dir_hier(cinfo->dest)) {
-		alertpanel_error(_("Couldn't create destination directory %s."),
-				 cinfo->dest);
+		alertpanel_error(_("Couldn't create destination directory %s."), cinfo->dest);
 		goto end_inst;
 	}
 	prefs_themes_foreach_file(source, prefs_themes_file_install, cinfo);
@@ -599,22 +566,18 @@ static void prefs_themes_btn_install_clicked_cb(GtkWidget *widget, gpointer data
 
 		/* update interface to show newly installed theme */
 		prefs_themes_get_themes_and_names(tdata);
-		insted = g_list_find_custom(tdata->themes,
-					    (gpointer)(cinfo->dest),
-					    (GCompareFunc)g_strcmp0);
+		insted = g_list_find_custom(tdata->themes, (gpointer)(cinfo->dest), (GCompareFunc) g_strcmp0);
 		if (NULL != insted) {
 			alertpanel_notice(_("Theme installed successfully."));
 			tdata->displayed = (gchar *)(insted->data);
 			prefs_themes_set_themes_menu(GTK_COMBO_BOX(tdata->page->op_menu), tdata);
 			prefs_themes_display_global_stats(tdata);
 			prefs_themes_get_theme_info(tdata);
-		}
-		else
+		} else
 			alertpanel_error(_("Failed installing theme"));
-	}
-	else
+	} else
 		alertpanel_error(_("File %s failed\nwhile installing theme."), cinfo->status);
-end_inst:
+ end_inst:
 	g_free(cinfo->dest);
 	g_free(filename);
 	g_free(source);
@@ -624,9 +587,7 @@ end_inst:
 	g_free(alert_title);
 }
 
-static gboolean prefs_themes_viewall_key_pressed(GtkWidget *keywidget,
-						 GdkEventKey *event,
-						 GtkWidget **widget)
+static gboolean prefs_themes_viewall_key_pressed(GtkWidget *keywidget, GdkEventKey *event, GtkWidget **widget)
 {
 	if (event && event->keyval == GDK_KEY_Escape) {
 		prefs_themes_viewall_close_btn_clicked(NULL, widget);
@@ -635,10 +596,9 @@ static gboolean prefs_themes_viewall_key_pressed(GtkWidget *keywidget,
 	return FALSE;
 }
 
-static void prefs_themes_viewall_close_btn_clicked(GtkWidget *widget,
-						   gpointer data)
+static void prefs_themes_viewall_close_btn_clicked(GtkWidget *widget, gpointer data)
 {
-	GtkWidget **window = (GtkWidget **) data;
+	GtkWidget **window = (GtkWidget **)data;
 
 	cm_return_if_fail(window != NULL);
 	cm_return_if_fail(*window != NULL);
@@ -649,8 +609,7 @@ static void prefs_themes_viewall_close_btn_clicked(GtkWidget *widget,
 
 #define ICONS_PER_ROW 19
 
-static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget,
-						gpointer data)
+static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget, gpointer data)
 {
 	static GtkWidget *viewall_win = NULL;
 
@@ -680,7 +639,7 @@ static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget,
 	gtk_widget_show(hbox);
 	for (i = 0; i < N_STOCK_PIXMAPS; ++i) {
 		icons[i] = gtk_image_new();
-		gtk_widget_show (icons[i]);
+		gtk_widget_show(icons[i]);
 		stock_pixbuf_gdk(i, &(pixbufs[i]));
 		gtk_image_set_from_pixbuf(GTK_IMAGE(icons[i]), pixbufs[i]);
 		gtk_box_pack_start(GTK_BOX(hbox), icons[i], TRUE, TRUE, 5);
@@ -698,19 +657,14 @@ static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget,
 	gtk_widget_show(separator);
 	gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, FALSE, 0);
 
-	gtkut_stock_button_set_create(&confirm_area,
-			&close_btn, GTK_STOCK_CLOSE, NULL, NULL, NULL, NULL);
+	gtkut_stock_button_set_create(&confirm_area, &close_btn, GTK_STOCK_CLOSE, NULL, NULL, NULL, NULL);
 	gtk_box_pack_start(GTK_BOX(vbox), confirm_area, FALSE, FALSE, 5);
 	gtk_widget_show(confirm_area);
 	gtk_widget_grab_default(close_btn);
 	gtk_widget_grab_focus(close_btn);
 
-	g_signal_connect(G_OBJECT(close_btn), "clicked",
-			 G_CALLBACK(prefs_themes_viewall_close_btn_clicked),
-			 &viewall_win);
-	g_signal_connect(G_OBJECT(viewall_win), "key_press_event",
-			 G_CALLBACK(prefs_themes_viewall_key_pressed),
-			 &viewall_win);
+	g_signal_connect(G_OBJECT(close_btn), "clicked", G_CALLBACK(prefs_themes_viewall_close_btn_clicked), &viewall_win);
+	g_signal_connect(G_OBJECT(viewall_win), "key_press_event", G_CALLBACK(prefs_themes_viewall_key_pressed), &viewall_win);
 
 	manage_window_set_transient(GTK_WINDOW(viewall_win));
 	gtk_window_set_modal(GTK_WINDOW(viewall_win), TRUE);
@@ -720,7 +674,7 @@ static void prefs_themes_btn_viewall_clicked_cb(GtkWidget *widget,
 static void prefs_themes_menu_item_activated_cb(GtkWidget *widget, gpointer data)
 {
 	ThemesData *tdata = prefs_themes_data;
-	gchar      *path;
+	gchar *path;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
@@ -751,13 +705,13 @@ static gdouble prefs_themes_compute_ppi(GdkScreen *screen)
 	dp = sqrt(wp * wp + hp * hp);
 	di = sqrt(wi * wi + hi * hi);
 
-	return (di != 0.0)? dp / di: 0.0;
+	return (di != 0.0) ? dp / di : 0.0;
 }
 
 static gdouble prefs_themes_get_adjusted_ppi(void)
 {
 	gdouble ppi, cppi;
-	GdkScreen * screen = gdk_screen_get_default();
+	GdkScreen *screen = gdk_screen_get_default();
 
 	if (screen == NULL) { /* oops! */
 		g_warning("unable to get default GDK screen");
@@ -768,21 +722,19 @@ static gdouble prefs_themes_get_adjusted_ppi(void)
 	cppi = prefs_themes_compute_ppi(screen);
 	debug_print("returned PPI: %f / computed PPI: %f\n", ppi, cppi);
 	/*
-	 gdk_screen_get_resolution doesn't seem to work well when running
-	 on a remote display and returns the value of the local display.
-	 height/width functions do this better, so we can compute a PPI
-	 from them and take the highest value.
-	*/
+	   gdk_screen_get_resolution doesn't seem to work well when running
+	   on a remote display and returns the value of the local display.
+	   height/width functions do this better, so we can compute a PPI
+	   from them and take the highest value.
+	 */
 	return MAX(ppi, cppi);
 }
 
-static void prefs_themes_checkbtn_enable_scaling_toggled_cb (GtkWidget *widget, gpointer data)
+static void prefs_themes_checkbtn_enable_scaling_toggled_cb(GtkWidget *widget, gpointer data)
 {
 	ThemesPage *page = (ThemesPage *) data;
-	gboolean enabled = gtk_toggle_button_get_active(
-				GTK_TOGGLE_BUTTON (widget));
-	gboolean automatic = gtk_toggle_button_get_active(
-				GTK_TOGGLE_BUTTON (page->checkbtn_scaling_auto));
+	gboolean enabled = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+	gboolean automatic = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_scaling_auto));
 
 	gtk_widget_set_sensitive(page->checkbtn_scaling_auto, enabled);
 	gtk_widget_set_sensitive(page->spinbtn_scaling_ppi, enabled && !automatic);
@@ -792,27 +744,22 @@ static void prefs_themes_checkbtn_enable_scaling_toggled_cb (GtkWidget *widget, 
 static void prefs_themes_checkbtn_scaling_auto_toggled_cb(GtkWidget *widget, gpointer data)
 {
 	ThemesPage *page = (ThemesPage *) data;
-	gboolean automatic = gtk_toggle_button_get_active(
-				GTK_TOGGLE_BUTTON (widget));
+	gboolean automatic = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
 
 	gtk_widget_set_sensitive(page->spinbtn_scaling_ppi, !automatic);
 	gtk_widget_set_sensitive(page->label_scaling_ppi, !automatic);
 
 	if (automatic) /* update PPI value */
-		gtk_spin_button_set_value(
-				GTK_SPIN_BUTTON (page->spinbtn_scaling_ppi),
-				prefs_themes_get_adjusted_ppi());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(page->spinbtn_scaling_ppi), prefs_themes_get_adjusted_ppi());
 }
 #endif
 
 static void prefs_themes_update_buttons(const ThemesData *tdata)
 {
 	ThemesPage *theme = tdata->page;
-	gboolean    can_rem;
+	gboolean can_rem;
 
-	can_rem = !IS_CURRENT_THEME(tdata->displayed) &&
-		  !IS_INTERNAL_THEME(tdata->displayed) &&
-		  !IS_SYSTEM_THEME(tdata->displayed);
+	can_rem = !IS_CURRENT_THEME(tdata->displayed) && !IS_INTERNAL_THEME(tdata->displayed) && !IS_SYSTEM_THEME(tdata->displayed);
 
 	if (theme->btn_remove != NULL)
 		gtk_widget_set_sensitive(theme->btn_remove, can_rem);
@@ -837,52 +784,51 @@ static void prefs_themes_display_theme_info(ThemesData *tdata, const ThemeInfo *
 {
 	ThemesPage *theme = tdata->page;
 	gchar *save_prefs_path;
-	gint   i;
+	gint i;
 
-	SET_LABEL_TEXT_UTF8(theme->name,	info->name);
-	SET_LABEL_TEXT_UTF8(theme->author,	info->author);
-	SET_LABEL_TEXT_UTF8(theme->url,		info->url);
-	SET_LABEL_TEXT_UTF8(theme->status,	info->status);
+	SET_LABEL_TEXT_UTF8(theme->name, info->name);
+	SET_LABEL_TEXT_UTF8(theme->author, info->author);
+	SET_LABEL_TEXT_UTF8(theme->url, info->url);
+	SET_LABEL_TEXT_UTF8(theme->status, info->status);
 
 	save_prefs_path = prefs_common.pixmap_theme_path;
 	prefs_common.pixmap_theme_path = tdata->displayed;
 	for (i = 0; i < PREVIEW_ICONS; ++i) {
 		stock_pixbuf_gdk(prefs_themes_icons[i], &(theme->pixbufs[i]));
-		gtk_image_set_from_pixbuf(GTK_IMAGE(theme->icons[i]),
-				theme->pixbufs[i]);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(theme->icons[i]), theme->pixbufs[i]);
 	}
 	prefs_common.pixmap_theme_path = save_prefs_path;
 
 	prefs_themes_update_buttons(tdata);
 }
+
 #undef SET_LABEL_TEXT_UTF8
 
 static void prefs_themes_display_global_stats(const ThemesData *tdata)
 {
 	ThemesPage *theme = tdata->page;
-	GList      *tnames = tdata->names;
-	gchar      *gstats;
-	gint        sys = 0;
-	gint        usr = 0;
-	gint        all = 0;
+	GList *tnames = tdata->names;
+	gchar *gstats;
+	gint sys = 0;
+	gint usr = 0;
+	gint all = 0;
 
 	while (tnames != NULL) {
-		ThemeName *tname = (ThemeName *)(tnames->data);
-		gchar     *tpath = (gchar *)(tname->item->data);
-		
-		if (IS_SYSTEM_THEME(tpath)) 
+		ThemeName *tname = (ThemeName *) (tnames->data);
+		gchar *tpath = (gchar *)(tname->item->data);
+
+		if (IS_SYSTEM_THEME(tpath))
 			++sys;
-		else if (!IS_INTERNAL_THEME(tpath)) 
+		else if (!IS_INTERNAL_THEME(tpath))
 			++usr;
 		++all;
 		tnames = g_list_next(tnames);
 	}
 
-	gstats = g_strdup_printf(_("%d themes available (%d user, %d system, 1 internal)"),
-				 all, usr, sys);
+	gstats = g_strdup_printf(_("%d themes available (%d user, %d system, 1 internal)"), all, usr, sys);
 	gtk_label_set_text(GTK_LABEL(theme->global), gstats);
-	gtk_label_set_justify (GTK_LABEL (theme->global), GTK_JUSTIFY_LEFT);
-	gtkut_widget_set_small_font_size (theme->global);
+	gtk_label_set_justify(GTK_LABEL(theme->global), GTK_JUSTIFY_LEFT);
+	gtkut_widget_set_small_font_size(theme->global);
 	g_free(gstats);
 }
 
@@ -899,11 +845,11 @@ static void prefs_themes_display_global_stats(const ThemesData *tdata)
 
 static void prefs_themes_get_theme_info(ThemesData *tdata)
 {
-	FILE  *finfo;
+	FILE *finfo;
 	gchar *sinfo;
 	gchar *path;
-	gchar  line[INFOFILE_LINE_LEN];
-	gint   len;
+	gchar line[INFOFILE_LINE_LEN];
+	gint len;
 	ThemeInfo *info;
 	ThemesPage *theme = tdata->page;
 
@@ -920,23 +866,21 @@ static void prefs_themes_get_theme_info(ThemesData *tdata)
 		info->author = g_strdup(_("The Claws Mail Team"));
 		info->url = g_strdup(HOMEPAGE_URI);
 		info->status = g_strdup_printf(_("Internal theme has %d icons"), N_STOCK_PIXMAPS);
-	}
-	else {
+	} else {
 		sinfo = g_strconcat(path, G_DIR_SEPARATOR_S, THEMEINFO_FILE, NULL);
 		finfo = claws_fopen(sinfo, "r");
 		if (finfo == NULL) {
 			info->name = g_strdup(_("No info file available for this theme"));
 			info->author = g_strdup(_("Unknown"));
 			info->url = g_strdup(_("Unknown"));
-		}
-		else {
+		} else {
 			FGETS_INFOFILE_LINE()
-			info->name = g_strdup(line);
+			    info->name = g_strdup(line);
 			FGETS_INFOFILE_LINE()
-			info->author = g_strdup(line);
+			    info->author = g_strdup(line);
 			FGETS_INFOFILE_LINE()
-			info->url = g_strdup(line);
-		
+			    info->url = g_strdup(line);
+
 			claws_fclose(finfo);
 		}
 		g_free(sinfo);
@@ -961,21 +905,19 @@ static void prefs_themes_get_theme_info(ThemesData *tdata)
 
 static gchar *prefs_themes_get_theme_stats(const gchar *dirname)
 {
-	gchar   *stats;
+	gchar *stats;
 	DirInfo *dinfo;
-	gint     i;
+	gint i;
 
 	dinfo = g_new0(DirInfo, 1);
 	dinfo->supported = stock_pixmap_theme_extensions();
-	for (i = 0; (dinfo->supported)[i] != NULL; ++i);
+	for (i = 0; (dinfo->supported)[i] != NULL; ++i) ;
 	dinfo->length = g_malloc(i * sizeof(gint));
 	for (i = 0; (dinfo->supported)[i] != NULL; ++i) {
 		(dinfo->length)[i] = strlen((dinfo->supported)[i]);
 	}
 	prefs_themes_foreach_file(dirname, prefs_themes_file_stats, dinfo);
-	stats = g_strdup_printf(_("%d files (%d icons), size: %s"),
-				dinfo->files, dinfo->pixms,
-				to_human_readable((goffset)dinfo->bytes));
+	stats = g_strdup_printf(_("%d files (%d icons), size: %s"), dinfo->files, dinfo->pixms, to_human_readable((goffset) dinfo->bytes));
 	g_free(dinfo->length);
 	g_free(dinfo);
 	return stats;
@@ -983,7 +925,7 @@ static gchar *prefs_themes_get_theme_stats(const gchar *dirname)
 
 static void prefs_themes_create_widget(PrefsPage *page, GtkWindow *window, gpointer data)
 {
-	ThemesPage *prefs_themes = (ThemesPage *)page;
+	ThemesPage *prefs_themes = (ThemesPage *) page;
 	ThemesData *tdata = prefs_themes_data;
 
 	GtkWidget *vbox1;
@@ -1028,237 +970,198 @@ static void prefs_themes_create_widget(PrefsPage *page, GtkWindow *window, gpoin
 	GtkAdjustment *spinbtn_scaling_ppi_adj;
 #endif
 
-	vbox1 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), 5);
-	gtk_widget_show (vbox1);
+	vbox1 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox1), 5);
+	gtk_widget_show(vbox1);
 
 	vbox2 = gtkut_get_options_frame(vbox1, &frame1, _("Selector"));
 
-	hbox3 = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox3);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox3, FALSE, FALSE, 0);
+	hbox3 = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox3);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox3, FALSE, FALSE, 0);
 	// gtk_container_set_border_width (GTK_CONTAINER (hbox3), 5);
 
 	menu_themes = gtk_combo_box_new();
-	gtk_widget_show (menu_themes);
-	gtk_box_pack_start (GTK_BOX (hbox3), menu_themes, FALSE, FALSE, 0);
+	gtk_widget_show(menu_themes);
+	gtk_box_pack_start(GTK_BOX(hbox3), menu_themes, FALSE, FALSE, 0);
 
-	btn_install = gtk_button_new_with_label (_("Install new..."));
-	gtk_widget_show (btn_install);
-	gtk_box_pack_start (GTK_BOX (hbox3), btn_install, FALSE, FALSE, 0);
-	gtk_widget_set_can_default (btn_install, TRUE);
+	btn_install = gtk_button_new_with_label(_("Install new..."));
+	gtk_widget_show(btn_install);
+	gtk_box_pack_start(GTK_BOX(hbox3), btn_install, FALSE, FALSE, 0);
+	gtk_widget_set_can_default(btn_install, TRUE);
 
 	btn_more = gtkut_get_link_btn((GtkWidget *)window, THEMES_URI, _("Get more..."));
-	gtk_widget_show (btn_more);
-	gtk_box_pack_start (GTK_BOX (hbox3), btn_more, FALSE, FALSE, 0);
+	gtk_widget_show(btn_more);
+	gtk_box_pack_start(GTK_BOX(hbox3), btn_more, FALSE, FALSE, 0);
 
-	label_global_status = gtk_label_new ("");
-	gtk_widget_show (label_global_status);
-	gtk_box_pack_start (GTK_BOX (vbox2), label_global_status, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (label_global_status), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (label_global_status), 0, 0.5);
-	gtk_misc_set_padding (GTK_MISC (label_global_status), 1, 0);
+	label_global_status = gtk_label_new("");
+	gtk_widget_show(label_global_status);
+	gtk_box_pack_start(GTK_BOX(vbox2), label_global_status, FALSE, FALSE, 0);
+	gtk_label_set_justify(GTK_LABEL(label_global_status), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment(GTK_MISC(label_global_status), 0, 0.5);
+	gtk_misc_set_padding(GTK_MISC(label_global_status), 1, 0);
 
 	PACK_FRAME(vbox1, frame_info, _("Information"));
 
-	table1 = gtk_table_new (4, 2, FALSE);
-	gtk_widget_show (table1);
-	gtk_container_add (GTK_CONTAINER (frame_info), table1);
-	gtk_container_set_border_width (GTK_CONTAINER (table1), 5);
+	table1 = gtk_table_new(4, 2, FALSE);
+	gtk_widget_show(table1);
+	gtk_container_add(GTK_CONTAINER(frame_info), table1);
+	gtk_container_set_border_width(GTK_CONTAINER(table1), 5);
 
-	label1 = gtk_label_new (_("Name"));
-	gtk_widget_show (label1);
-	gtk_table_attach (GTK_TABLE (table1), label1, 0, 1, 0, 1,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 4);
-	gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (label1), 1, 0.5);
+	label1 = gtk_label_new(_("Name"));
+	gtk_widget_show(label1);
+	gtk_table_attach(GTK_TABLE(table1), label1, 0, 1, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 4);
+	gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment(GTK_MISC(label1), 1, 0.5);
 
-	label2 = gtk_label_new (_("Author"));
-	gtk_widget_show (label2);
-	gtk_table_attach (GTK_TABLE (table1), label2, 0, 1, 1, 2,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 4);
-	gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (label2), 1, 0.5);
+	label2 = gtk_label_new(_("Author"));
+	gtk_widget_show(label2);
+	gtk_table_attach(GTK_TABLE(table1), label2, 0, 1, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 4);
+	gtk_label_set_justify(GTK_LABEL(label2), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment(GTK_MISC(label2), 1, 0.5);
 
-	label3 = gtk_label_new (_("URL"));
-	gtk_widget_show (label3);
-	gtk_table_attach (GTK_TABLE (table1), label3, 0, 1, 2, 3,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 4);
-	gtk_misc_set_alignment (GTK_MISC (label3), 1, 0.5);
+	label3 = gtk_label_new(_("URL"));
+	gtk_widget_show(label3);
+	gtk_table_attach(GTK_TABLE(table1), label3, 0, 1, 2, 3, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 4);
+	gtk_misc_set_alignment(GTK_MISC(label3), 1, 0.5);
 
-	label_name = gtk_label_new ("");
-	gtk_widget_show (label_name);
-	gtk_table_attach (GTK_TABLE (table1), label_name, 1, 2, 0, 1,
-			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-			(GtkAttachOptions) (0), 5, 0);
-	gtk_misc_set_alignment (GTK_MISC (label_name), 0, 0.5);
+	label_name = gtk_label_new("");
+	gtk_widget_show(label_name);
+	gtk_table_attach(GTK_TABLE(table1), label_name, 1, 2, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 5, 0);
+	gtk_misc_set_alignment(GTK_MISC(label_name), 0, 0.5);
 
-	label_author = gtk_label_new ("");
-	gtk_widget_show (label_author);
-	gtk_table_attach (GTK_TABLE (table1), label_author, 1, 2, 1, 2,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 0);
-	gtk_misc_set_alignment (GTK_MISC (label_author), 0, 0.5);
+	label_author = gtk_label_new("");
+	gtk_widget_show(label_author);
+	gtk_table_attach(GTK_TABLE(table1), label_author, 1, 2, 1, 2, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 0);
+	gtk_misc_set_alignment(GTK_MISC(label_author), 0, 0.5);
 
-	label_url = gtk_label_new ("");
-	gtk_widget_show (label_url);
-	gtk_table_attach (GTK_TABLE (table1), label_url, 1, 2, 2, 3,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 0);
-	gtk_misc_set_alignment (GTK_MISC (label_url), 0, 0.5);
+	label_url = gtk_label_new("");
+	gtk_widget_show(label_url);
+	gtk_table_attach(GTK_TABLE(table1), label_url, 1, 2, 2, 3, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 0);
+	gtk_misc_set_alignment(GTK_MISC(label_url), 0, 0.5);
 
-	label4 = gtk_label_new (_("Status"));
-	gtk_widget_show (label4);
-	gtk_table_attach (GTK_TABLE (table1), label4, 0, 1, 3, 4,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 4);
-	gtk_misc_set_alignment (GTK_MISC (label4), 1, 0.5);
+	label4 = gtk_label_new(_("Status"));
+	gtk_widget_show(label4);
+	gtk_table_attach(GTK_TABLE(table1), label4, 0, 1, 3, 4, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 4);
+	gtk_misc_set_alignment(GTK_MISC(label4), 1, 0.5);
 
-	label_status = gtk_label_new ("");
-	gtk_widget_show (label_status);
-	gtk_table_attach (GTK_TABLE (table1), label_status, 1, 2, 3, 4,
-			(GtkAttachOptions) (GTK_FILL),
-			(GtkAttachOptions) (0), 5, 0);
-	gtk_misc_set_alignment (GTK_MISC (label_status), 0, 0.5);
+	label_status = gtk_label_new("");
+	gtk_widget_show(label_status);
+	gtk_table_attach(GTK_TABLE(table1), label_status, 1, 2, 3, 4, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 5, 0);
+	gtk_misc_set_alignment(GTK_MISC(label_status), 0, 0.5);
 
 	PACK_FRAME(vbox1, frame_preview, _("Preview"));
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 5);
-	gtk_widget_show (hbox1);
-	gtk_container_add (GTK_CONTAINER (frame_preview), hbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 5);
+	hbox1 = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
+	gtk_widget_show(hbox1);
+	gtk_container_add(GTK_CONTAINER(frame_preview), hbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox1), 5);
 
 	icon_1 = gtk_image_new();
-	gtk_widget_show (icon_1);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_1, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_1), 0, 5);
+	gtk_widget_show(icon_1);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_1, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_1), 0, 5);
 
 	icon_2 = gtk_image_new();
-	gtk_widget_show (icon_2);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_2, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_2), 0, 5);
+	gtk_widget_show(icon_2);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_2, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_2), 0, 5);
 
 	icon_3 = gtk_image_new();
-	gtk_widget_show (icon_3);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_3, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_3), 0, 5);
+	gtk_widget_show(icon_3);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_3, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_3), 0, 5);
 
 	icon_4 = gtk_image_new();
-	gtk_widget_show (icon_4);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_4, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_4), 0, 5);
+	gtk_widget_show(icon_4);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_4, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_4), 0, 5);
 
 	icon_5 = gtk_image_new();
-	gtk_widget_show (icon_5);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_5, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_5), 0, 5);
+	gtk_widget_show(icon_5);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_5, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_5), 0, 5);
 
 	icon_6 = gtk_image_new();
-	gtk_widget_show (icon_6);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_6, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_6), 0, 5);
+	gtk_widget_show(icon_6);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_6, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_6), 0, 5);
 
 	icon_7 = gtk_image_new();
-	gtk_widget_show (icon_7);
-	gtk_box_pack_start (GTK_BOX (hbox1), icon_7, TRUE, TRUE, 2);
-	gtk_misc_set_padding (GTK_MISC (icon_7), 0, 5);
+	gtk_widget_show(icon_7);
+	gtk_box_pack_start(GTK_BOX(hbox1), icon_7, TRUE, TRUE, 2);
+	gtk_misc_set_padding(GTK_MISC(icon_7), 0, 5);
 
 	PACK_FRAME(vbox1, frame_buttons, _("Actions"));
 
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_container_add (GTK_CONTAINER (frame_buttons), hbuttonbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (hbuttonbox1), 8);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_START);
-	gtk_box_set_spacing (GTK_BOX (hbuttonbox1), 5);
+	hbuttonbox1 = gtk_hbutton_box_new();
+	gtk_widget_show(hbuttonbox1);
+	gtk_container_add(GTK_CONTAINER(frame_buttons), hbuttonbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(hbuttonbox1), 8);
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbuttonbox1), GTK_BUTTONBOX_START);
+	gtk_box_set_spacing(GTK_BOX(hbuttonbox1), 5);
 
-	btn_remove = gtk_button_new_with_label (_("Remove"));
-	gtk_widget_show (btn_remove);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), btn_remove);
-	gtk_widget_set_can_default (btn_remove, TRUE);
+	btn_remove = gtk_button_new_with_label(_("Remove"));
+	gtk_widget_show(btn_remove);
+	gtk_container_add(GTK_CONTAINER(hbuttonbox1), btn_remove);
+	gtk_widget_set_can_default(btn_remove, TRUE);
 
-	btn_viewall = gtk_button_new_with_label (_("View all"));
-	gtk_widget_show (btn_viewall);
-	gtk_box_pack_start (GTK_BOX (hbuttonbox1), btn_viewall, FALSE, FALSE, 5);
+	btn_viewall = gtk_button_new_with_label(_("View all"));
+	gtk_widget_show(btn_viewall);
+	gtk_box_pack_start(GTK_BOX(hbuttonbox1), btn_viewall, FALSE, FALSE, 5);
 
 #ifdef HAVE_SVG
 	PACK_FRAME(vbox1, frame_scaling, _("SVG rendering"));
 
-	vbox2 = gtk_vbox_new (FALSE, VSPACING);
-	gtk_widget_show (vbox2);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
-	gtk_container_add (GTK_CONTAINER (frame_scaling), vbox2);
+	vbox2 = gtk_vbox_new(FALSE, VSPACING);
+	gtk_widget_show(vbox2);
+	gtk_container_set_border_width(GTK_CONTAINER(vbox2), 5);
+	gtk_container_add(GTK_CONTAINER(frame_scaling), vbox2);
 
 	PACK_CHECK_BUTTON(vbox2, checkbtn_enable_alpha, _("Enable alpha channel"));
 	PACK_CHECK_BUTTON(vbox2, checkbtn_enable_scaling, _("Force scaling"));
 	PACK_CHECK_BUTTON(vbox2, checkbtn_scaling_auto, _("Automatic"));
 
-	hbox3 = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hbox3);
+	hbox3 = gtk_hbox_new(FALSE, 5);
+	gtk_widget_show(hbox3);
 
-	label_scaling_ppi = gtk_label_new (_("Pixels per inch (PPI)"));
-	gtk_widget_show (label_scaling_ppi);
-	gtk_box_pack_start (GTK_BOX (hbox3), label_scaling_ppi,
-			FALSE, FALSE, 5);
+	label_scaling_ppi = gtk_label_new(_("Pixels per inch (PPI)"));
+	gtk_widget_show(label_scaling_ppi);
+	gtk_box_pack_start(GTK_BOX(hbox3), label_scaling_ppi, FALSE, FALSE, 5);
 
-	spinbtn_scaling_ppi_adj = GTK_ADJUSTMENT(
-		gtk_adjustment_new (MIN_PPI, MIN_PPI, MAX_PPI, 1, 10, 0));
-	spinbtn_scaling_ppi = gtk_spin_button_new(
-			spinbtn_scaling_ppi_adj, 1.0, 0);
-	gtk_widget_show (spinbtn_scaling_ppi);
-	gtk_box_pack_start (GTK_BOX (hbox3), spinbtn_scaling_ppi,
-			FALSE, FALSE, 5);
+	spinbtn_scaling_ppi_adj = GTK_ADJUSTMENT(gtk_adjustment_new(MIN_PPI, MIN_PPI, MAX_PPI, 1, 10, 0));
+	spinbtn_scaling_ppi = gtk_spin_button_new(spinbtn_scaling_ppi_adj, 1.0, 0);
+	gtk_widget_show(spinbtn_scaling_ppi);
+	gtk_box_pack_start(GTK_BOX(hbox3), spinbtn_scaling_ppi, FALSE, FALSE, 5);
 
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox3, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), hbox3, FALSE, FALSE, 0);
 
 	/* initialize widget values */
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (checkbtn_enable_alpha),
-			prefs_common.enable_alpha_svg);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (checkbtn_enable_scaling),
-			prefs_common.enable_pixmap_scaling);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (checkbtn_scaling_auto),
-			prefs_common.pixmap_scaling_auto);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON (spinbtn_scaling_ppi),
-			prefs_common.pixmap_scaling_ppi);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_enable_alpha), prefs_common.enable_alpha_svg);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_enable_scaling), prefs_common.enable_pixmap_scaling);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbtn_scaling_auto), prefs_common.pixmap_scaling_auto);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbtn_scaling_ppi), prefs_common.pixmap_scaling_ppi);
 
 	/* sensitivity */
-	gtk_widget_set_sensitive(checkbtn_scaling_auto,
-			prefs_common.enable_pixmap_scaling);
-	gtk_widget_set_sensitive(spinbtn_scaling_ppi,
-			prefs_common.enable_pixmap_scaling
-				&& !prefs_common.pixmap_scaling_auto);
-	gtk_widget_set_sensitive(label_scaling_ppi,
-			prefs_common.enable_pixmap_scaling
-				&& !prefs_common.pixmap_scaling_auto);
+	gtk_widget_set_sensitive(checkbtn_scaling_auto, prefs_common.enable_pixmap_scaling);
+	gtk_widget_set_sensitive(spinbtn_scaling_ppi, prefs_common.enable_pixmap_scaling && !prefs_common.pixmap_scaling_auto);
+	gtk_widget_set_sensitive(label_scaling_ppi, prefs_common.enable_pixmap_scaling && !prefs_common.pixmap_scaling_auto);
 
 	/* signals */
-	g_signal_connect(G_OBJECT(checkbtn_enable_scaling), "toggled",
-			 G_CALLBACK(prefs_themes_checkbtn_enable_scaling_toggled_cb),
-			 prefs_themes);
-	g_signal_connect(G_OBJECT(checkbtn_scaling_auto), "toggled",
-			 G_CALLBACK(prefs_themes_checkbtn_scaling_auto_toggled_cb),
-			 prefs_themes);
+	g_signal_connect(G_OBJECT(checkbtn_enable_scaling), "toggled", G_CALLBACK(prefs_themes_checkbtn_enable_scaling_toggled_cb), prefs_themes);
+	g_signal_connect(G_OBJECT(checkbtn_scaling_auto), "toggled", G_CALLBACK(prefs_themes_checkbtn_scaling_auto_toggled_cb), prefs_themes);
 #endif
 
-	g_signal_connect(G_OBJECT(btn_remove), "clicked",
-			 G_CALLBACK(prefs_themes_btn_remove_clicked_cb),
-			 NULL);
-	g_signal_connect(G_OBJECT(btn_install), "clicked",
-			 G_CALLBACK(prefs_themes_btn_install_clicked_cb),
-			 NULL);
-	g_signal_connect(G_OBJECT(btn_viewall), "clicked",
-			 G_CALLBACK(prefs_themes_btn_viewall_clicked_cb),
-			 NULL);
+	g_signal_connect(G_OBJECT(btn_remove), "clicked", G_CALLBACK(prefs_themes_btn_remove_clicked_cb), NULL);
+	g_signal_connect(G_OBJECT(btn_install), "clicked", G_CALLBACK(prefs_themes_btn_install_clicked_cb), NULL);
+	g_signal_connect(G_OBJECT(btn_viewall), "clicked", G_CALLBACK(prefs_themes_btn_viewall_clicked_cb), NULL);
 
 	prefs_themes->window = GTK_WIDGET(window);
 
-	prefs_themes->name   = label_name;
+	prefs_themes->name = label_name;
 	prefs_themes->author = label_author;
-	prefs_themes->url    = label_url;
+	prefs_themes->url = label_url;
 	prefs_themes->status = label_status;
 	prefs_themes->global = label_global_status;
 
@@ -1270,27 +1173,26 @@ static void prefs_themes_create_widget(PrefsPage *page, GtkWindow *window, gpoin
 	prefs_themes->icons[5] = icon_6;
 	prefs_themes->icons[6] = icon_7;
 
-	prefs_themes->btn_remove  = btn_remove;
+	prefs_themes->btn_remove = btn_remove;
 	prefs_themes->btn_install = btn_install;
-	prefs_themes->btn_more    = btn_more;
+	prefs_themes->btn_more = btn_more;
 
-	prefs_themes->op_menu     = menu_themes;
+	prefs_themes->op_menu = menu_themes;
 
 #ifdef HAVE_SVG
-	prefs_themes->checkbtn_enable_alpha   = checkbtn_enable_alpha;
+	prefs_themes->checkbtn_enable_alpha = checkbtn_enable_alpha;
 	prefs_themes->checkbtn_enable_scaling = checkbtn_enable_scaling;
-	prefs_themes->checkbtn_scaling_auto   = checkbtn_scaling_auto;
-	prefs_themes->label_scaling_ppi       = label_scaling_ppi;
-	prefs_themes->spinbtn_scaling_ppi     = spinbtn_scaling_ppi;
+	prefs_themes->checkbtn_scaling_auto = checkbtn_scaling_auto;
+	prefs_themes->label_scaling_ppi = label_scaling_ppi;
+	prefs_themes->spinbtn_scaling_ppi = spinbtn_scaling_ppi;
 #endif
 
 	prefs_themes->page.widget = vbox1;
-	
+
 	prefs_themes_set_themes_menu(GTK_COMBO_BOX(menu_themes), tdata);
 	renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(menu_themes), renderer, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(menu_themes), renderer,
-					"text", 0, NULL);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(menu_themes), renderer, "text", 0, NULL);
 
 	prefs_themes_get_theme_info(tdata);
 	prefs_themes_display_global_stats(tdata);
@@ -1304,7 +1206,7 @@ static void prefs_themes_destroy_widget(PrefsPage *page)
 static void prefs_themes_save(PrefsPage *page)
 {
 	ThemesData *tdata = prefs_themes_data;
-	gchar      *theme_str = tdata->displayed;
+	gchar *theme_str = tdata->displayed;
 #ifdef HAVE_SVG
 	ThemesPage *tpage = (ThemesPage *) page;
 	gboolean alpha = prefs_common.enable_alpha_svg;
@@ -1312,14 +1214,10 @@ static void prefs_themes_save(PrefsPage *page)
 	gboolean scaling_auto = prefs_common.pixmap_scaling_auto;
 	gint scaling_ppi = prefs_common.pixmap_scaling_ppi;
 
-	prefs_common.enable_alpha_svg = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON (tpage->checkbtn_enable_alpha));
-	prefs_common.enable_pixmap_scaling = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON (tpage->checkbtn_enable_scaling));
-	prefs_common.pixmap_scaling_auto = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON (tpage->checkbtn_scaling_auto));
-	prefs_common.pixmap_scaling_ppi = gtk_spin_button_get_value_as_int (
-		GTK_SPIN_BUTTON (tpage->spinbtn_scaling_ppi));
+	prefs_common.enable_alpha_svg = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tpage->checkbtn_enable_alpha));
+	prefs_common.enable_pixmap_scaling = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tpage->checkbtn_enable_scaling));
+	prefs_common.pixmap_scaling_auto = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tpage->checkbtn_scaling_auto));
+	prefs_common.pixmap_scaling_ppi = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(tpage->spinbtn_scaling_ppi));
 #endif
 
 	if (!IS_CURRENT_THEME(theme_str)) {
@@ -1335,10 +1233,7 @@ static void prefs_themes_save(PrefsPage *page)
 		prefs_themes_update_buttons(tdata);
 	}
 #ifdef HAVE_SVG
-	else if (scaling != prefs_common.enable_pixmap_scaling
-			|| alpha != prefs_common.enable_alpha_svg
-			|| (scaling_auto != prefs_common.pixmap_scaling_auto
-				&& scaling_ppi != prefs_common.pixmap_scaling_ppi)) {
+	else if (scaling != prefs_common.enable_pixmap_scaling || alpha != prefs_common.enable_alpha_svg || (scaling_auto != prefs_common.pixmap_scaling_auto && scaling_ppi != prefs_common.pixmap_scaling_ppi)) {
 		/* same theme, different scaling options */
 		debug_print("Updating theme scaling\n");
 		main_window_reflect_prefs_all_real(FALSE);
@@ -1348,3 +1243,6 @@ static void prefs_themes_save(PrefsPage *page)
 #endif
 }
 
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

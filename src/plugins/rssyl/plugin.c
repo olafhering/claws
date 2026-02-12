@@ -21,8 +21,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
-#  include "claws-features.h"
+#include "config.h"
+#include "claws-features.h"
 #endif
 
 /* Global includes */
@@ -39,8 +39,7 @@
 
 gint plugin_init(gchar **error)
 {
-	if( !check_plugin_version(MAKE_NUMERIC_VERSION(3, 7, 8, 31),
-				VERSION_NUMERIC, PLUGIN_NAME, error) )
+	if (!check_plugin_version(MAKE_NUMERIC_VERSION(3, 7, 8, 31), VERSION_NUMERIC, PLUGIN_NAME, error))
 		return -1;
 
 	curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -62,10 +61,7 @@ const gchar *plugin_name(void)
 
 const gchar *plugin_desc(void)
 {
-	return _("This plugin allows you to create a mailbox tree where you can add "
-		"newsfeeds in RSS 1.0, RSS 2.0 or Atom format.\n\n"
-		"Each newsfeed will create a folder with appropriate entries, fetched "
-		"from the web. You can read them, and delete or keep old entries.");
+	return _("This plugin allows you to create a mailbox tree where you can add " "newsfeeds in RSS 1.0, RSS 2.0 or Atom format.\n\n" "Each newsfeed will create a folder with appropriate entries, fetched " "from the web. You can read them, and delete or keep old entries.");
 }
 
 const gchar *plugin_type(void)
@@ -85,8 +81,12 @@ const gchar *plugin_version(void)
 
 struct PluginFeature *plugin_provides(void)
 {
-	static struct PluginFeature features[] = 
-		{ {PLUGIN_FOLDERCLASS, N_("RSS feed")},
-		  {PLUGIN_NOTHING, NULL}};
+	static struct PluginFeature features[] = { {PLUGIN_FOLDERCLASS, N_("RSS feed")},
+	{PLUGIN_NOTHING, NULL}
+	};
 	return features;
 }
+
+/*
+ * vim: noet ts=4 shiftwidth=4 nowrap
+ */

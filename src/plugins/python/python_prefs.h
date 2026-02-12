@@ -20,10 +20,9 @@
 
 typedef struct _PythonConfig PythonConfig;
 
-struct _PythonConfig
-{
-	gint		console_win_width;
-	gint		console_win_height;
+struct _PythonConfig {
+	gint console_win_width;
+	gint console_win_height;
 };
 
 extern PythonConfig python_config;

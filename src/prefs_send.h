@@ -20,7 +20,7 @@
 #ifndef PREFS_SEND_H
 #define PREFS_SEND_H
 
-void prefs_send_init	(void);
-void prefs_send_done	(void);
+void prefs_send_init(void);
+void prefs_send_done(void);
 
-#endif /* PREFS_SEND_H */ 
+#endif /* PREFS_SEND_H */

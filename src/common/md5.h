@@ -25,9 +25,6 @@
 
 void md5_hex_digest(char *hexdigest, const unsigned char *s);
 int md5_hex_digest_file(char *hexdigest, const unsigned char *file);
-void md5_hex_hmac(char *hexdigest,
-                  const unsigned char* text, int text_len,
-                  const unsigned char* key, int key_len);
+void md5_hex_hmac(char *hexdigest, const unsigned char *text, int text_len, const unsigned char *key, int key_len);
 
 #endif /* _MD5_HDR_ */
-

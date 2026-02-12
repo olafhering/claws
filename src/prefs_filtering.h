@@ -27,8 +27,7 @@ void prefs_scoring_read_config	(void);
 void prefs_scoring_write_config	(void);
 */
 
-typedef enum
-{
+typedef enum {
 	FILTER_BY_NONE,
 	FILTER_BY_AUTO,
 	FILTER_BY_FROM,
@@ -39,16 +38,10 @@ typedef enum
 
 #include "folder.h"
 
-void prefs_filtering_open(GSList ** p_processing,
-			  const gchar *title,
-			  const gchar *help_url_anchor,
-			  const gchar *header,
-			  const gchar *key,
-			  gboolean per_account_filtering);
+void prefs_filtering_open(GSList **p_processing, const gchar *title, const gchar *help_url_anchor, const gchar *header, const gchar *key, gboolean per_account_filtering);
 
-void prefs_filtering_rename_path	(const gchar	*old_path,
-				 	 const gchar	*new_path);
-void prefs_filtering_delete_path	(const gchar	*path);
+void prefs_filtering_rename_path(const gchar *old_path, const gchar *new_path);
+void prefs_filtering_delete_path(const gchar *path);
 
 void prefs_filtering_rename_tag(const gchar *old_tag, const gchar *new_tag);
 

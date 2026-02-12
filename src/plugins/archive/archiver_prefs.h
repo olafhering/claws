@@ -23,12 +23,12 @@
 #include <glib.h>
 #include <archive.h>
 
-typedef struct _ArchiverPrefs	ArchiverPrefs;
+typedef struct _ArchiverPrefs ArchiverPrefs;
 
 typedef enum {
 	COMPRESSION_GZIP,
 	COMPRESSION_BZIP,
-    COMPRESSION_COMPRESS,
+	COMPRESSION_COMPRESS,
 #if ARCHIVE_VERSION_NUMBER >= 2006990
 	COMPRESSION_LZMA,
 	COMPRESSION_XZ,
@@ -44,7 +44,7 @@ typedef enum {
 #if ARCHIVE_VERSION_NUMBER >= 3001900
 	COMPRESSION_LZ4,
 #endif
-    COMPRESSION_NONE
+	COMPRESSION_NONE
 } CompressionType;
 
 typedef enum {
@@ -54,15 +54,14 @@ typedef enum {
 	FORMAT_PAX
 } ArchiveFormat;
 
-struct _ArchiverPrefs
-{
-	gchar		*save_folder;
-	CompressionType	compression;
-	ArchiveFormat	format;
-	gint		recursive;
-	gint		md5sum;
-	gint		rename;
-    gint        unlink;
+struct _ArchiverPrefs {
+	gchar *save_folder;
+	CompressionType compression;
+	ArchiveFormat format;
+	gint recursive;
+	gint md5sum;
+	gint rename;
+	gint unlink;
 };
 
 extern ArchiverPrefs archiver_prefs;
@@ -70,4 +69,3 @@ void archiver_prefs_init(void);
 void archiver_prefs_done(void);
 
 #endif
-

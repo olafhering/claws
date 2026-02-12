@@ -24,12 +24,8 @@
 
 #include "socket.h"
 
-typedef gboolean (*RecvUIFunc)	(SockInfo	*sock,
-				 gint		 count,
-				 gint		 read_bytes,
-				 gpointer	 data);
+typedef gboolean (*RecvUIFunc) (SockInfo *sock, gint count, gint read_bytes, gpointer data);
 
-void recv_set_ui_func		(RecvUIFunc	 func,
-				 gpointer	 data);
+void recv_set_ui_func(RecvUIFunc func, gpointer data);
 
 #endif /* __RECV_H__ */

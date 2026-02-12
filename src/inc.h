@@ -32,11 +32,10 @@
 #include "session.h"
 #include "pop.h"
 
-typedef struct _IncProgressDialog	IncProgressDialog;
-typedef struct _IncSession		IncSession;
+typedef struct _IncProgressDialog IncProgressDialog;
+typedef struct _IncSession IncSession;
 
-typedef enum
-{
+typedef enum {
 	INC_SUCCESS,
 	INC_CONNECT_ERROR,
 	INC_AUTH_FAILED,
@@ -50,8 +49,7 @@ typedef enum
 	INC_CANCEL
 } IncState;
 
-struct _IncProgressDialog
-{
+struct _IncProgressDialog {
 	ProgressDialog *dialog;
 
 	MainWindow *mainwin;
@@ -61,12 +59,11 @@ struct _IncProgressDialog
 	GDateTime *progress_tv;
 	GDateTime *folder_tv;
 
-	GList *queue_list;	/* list of IncSession */
+	GList *queue_list; /* list of IncSession */
 	gint cur_row;
 };
 
-struct _IncSession
-{
+struct _IncSession {
 	Session *session;
 	IncState inc_state;
 
@@ -77,38 +74,31 @@ struct _IncSession
 
 #define TIMEOUT_ITV	200
 
-void inc_mail			(MainWindow	*mainwin,
-				 gboolean	 notify);
-gint inc_account_mail		(MainWindow	*mainwin,
-				 PrefsAccount	*account);
+void inc_mail(MainWindow *mainwin, gboolean notify);
+gint inc_account_mail(MainWindow *mainwin, PrefsAccount *account);
 
 /* This function just blindly checks all accounts in the passed
  * account_list, and doesn't care about whether the configuration
  * says they should be checked or not. These checks should be done
  * by the caller, and account_list should look accordingly.
  * The caller is responsible for freeing the list afterwards. */
-void inc_account_list_mail	(MainWindow	*mainwin,
-				 GList		*list, /* linked list of PrefsAccount* pointers */
-				 gboolean	 autocheck,
-				 gboolean 	 notify);
+void inc_account_list_mail(MainWindow *mainwin, GList *list, /* linked list of PrefsAccount* pointers */
+			   gboolean autocheck, gboolean notify);
 
 /* This function is used by the global autocheck interval (autocheck TRUE),
  * or check at startup (check_at_startup TRUE)
  * or by the manual 'Receive all' feature (autocheck FALSE). It makes
  * sure correct list of accounts is marked for checking, based on
  * global and account configuration, and calls inc_account_list_mail(). */
-void inc_all_account_mail	(MainWindow	*mainwin,
-				 gboolean	 autocheck,
-			         gboolean	 check_at_startup,
-				 gboolean 	 notify);
+void inc_all_account_mail(MainWindow *mainwin, gboolean autocheck, gboolean check_at_startup, gboolean notify);
 
-void inc_progress_update	(Pop3Session	*session);
+void inc_progress_update(Pop3Session *session);
 
-void inc_pop_before_smtp	(PrefsAccount 	*acc);
+void inc_pop_before_smtp(PrefsAccount *acc);
 
-gboolean inc_is_active		(void);
+gboolean inc_is_active(void);
 
-void inc_cancel_all		(void);
+void inc_cancel_all(void);
 
 extern guint inc_lock_count;
 #define inc_lock() {								\
@@ -121,12 +111,12 @@ extern guint inc_lock_count;
 	debug_print("called inc_unlock (lock count %d)\n", inc_lock_count);	\
 }
 
-void inc_lock_real		(void);
-void inc_unlock_real		(void);
+void inc_lock_real(void);
+void inc_unlock_real(void);
 
-void inc_autocheck_timer_init	(MainWindow	*mainwin);
-void inc_autocheck_timer_set	(void);
-void inc_autocheck_timer_remove	(void);
+void inc_autocheck_timer_init(MainWindow *mainwin);
+void inc_autocheck_timer_set(void);
+void inc_autocheck_timer_remove(void);
 gboolean inc_offline_should_override(gboolean force_ask, const gchar *msg);
 
 void inc_account_autocheck_timer_remove(PrefsAccount *account);
