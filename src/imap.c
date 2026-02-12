@@ -718,7 +718,7 @@ static gboolean imap_has_capability(IMAPSession *session, const gchar *cap)
 static gint imap_auth(IMAPSession *session, const gchar *user, const gchar *pass, IMAPAuthType type)
 {
 	gint ok = MAILIMAP_ERROR_LOGIN;
-	static time_t last_login_err = 0;
+	static time_t last_login_err;
 	gchar *ext_info = "";
 	int r;
 	gchar *server = NULL;
