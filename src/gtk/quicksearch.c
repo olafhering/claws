@@ -83,33 +83,10 @@ struct _QuickSearch {
 	gboolean want_history;
 };
 
-static GdkColor qs_active_bgcolor = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor qs_active_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor qs_error_bgcolor = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GdkColor qs_error_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
+static GdkColor qs_active_bgcolor;
+static GdkColor qs_active_color;
+static GdkColor qs_error_bgcolor;
+static GdkColor qs_error_color;
 
 void quicksearch_set_on_progress_cb(QuickSearch *search, gboolean (*cb)(gpointer data, guint at, guint matched, guint total), gpointer data)
 {
@@ -493,13 +470,10 @@ static gchar *search_descr_strings[] = {
 };
 
 static DescriptionWindow search_descr = {
-	NULL,
-	NULL,
-	FALSE,
-	2,
-	N_("Extended Search"),
-	N_("Extended Search allows the user to define criteria that messages must " "have in order to match and be displayed in the message list.\n" "The following symbols can be used:"),
-	search_descr_strings
+	.columns = 2,
+	.title = N_("Extended Search"),
+	.description = N_("Extended Search allows the user to define criteria that messages must " "have in order to match and be displayed in the message list.\n" "The following symbols can be used:"),
+	.symbol_table = search_descr_strings,
 };
 
 static void search_description_cb(GtkWidget *widget)
