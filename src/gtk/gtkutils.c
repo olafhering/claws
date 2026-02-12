@@ -669,7 +669,7 @@ void gtkut_widget_init(void)
 
 void gtkut_widget_set_app_icon(GtkWidget *widget)
 {
-	static GList *icon_list = NULL;
+	static GList *icon_list;
 
 	cm_return_if_fail(widget != NULL);
 	cm_return_if_fail(gtk_widget_get_window(widget) != NULL);
@@ -688,7 +688,7 @@ void gtkut_widget_set_app_icon(GtkWidget *widget)
 
 void gtkut_widget_set_composer_icon(GtkWidget *widget)
 {
-	static GList *icon_list = NULL;
+	static GList *icon_list;
 
 	cm_return_if_fail(widget != NULL);
 	cm_return_if_fail(gtk_widget_get_window(widget) != NULL);
@@ -705,7 +705,7 @@ void gtkut_widget_set_composer_icon(GtkWidget *widget)
 		gtk_window_set_icon_list(GTK_WINDOW(widget), icon_list);
 }
 
-static gboolean move_bar = FALSE;
+static gboolean move_bar;
 static guint move_bar_id;
 
 static gboolean move_bar_cb(gpointer data)
@@ -1112,7 +1112,7 @@ GtkWidget *face_get_from_header(const gchar *o_face)
 	return image;
 }
 
-static GdkCursor *hand_cursor = NULL;
+static GdkCursor *hand_cursor;
 
 static void link_btn_enter(GtkButton *button, gpointer data)
 {
@@ -1529,7 +1529,7 @@ gboolean gtkut_list_view_select_row(GtkWidget *list, gint row)
 	return TRUE;
 }
 
-static GtkUIManager *gui_manager = NULL;
+static GtkUIManager *gui_manager;
 
 GtkUIManager *gtkut_create_ui_manager(void)
 {
