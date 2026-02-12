@@ -35,7 +35,7 @@
 
 #define BUFFSIZE 1024
 
-static GList *statusbar_list = NULL;
+static GList *statusbar_list;
 static gulong statusbar_puts_all_hook_id = HOOK_NONE;
 
 GtkWidget *statusbar_create(void)
