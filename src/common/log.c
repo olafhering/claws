@@ -253,21 +253,40 @@ void log_warning(LogInstance instance, const gchar *format, ...)
 {
 	va_list args;
 	gchar buf[BUFFSIZE + LOG_TIME_LEN];
+	gint len_f;
+	size_t len_t, len_s;
 	time_t t;
 	LogText *logtext = g_new0(LogText, 1);
 	struct tm buft;
 
 	time(&t);
-	strftime(buf, LOG_TIME_LEN + 1, LOG_TIME_FORMAT, localtime_r(&t, &buft));
+	len_t = strftime(buf, sizeof(buf), LOG_TIME_FORMAT, localtime_r(&t, &buft));
+	if (!len_t || len_t >= sizeof(buf))
+		return;
 
 	va_start(args, format);
-	g_vsnprintf(buf + LOG_TIME_LEN, BUFFSIZE, format, args);
+	len_f = g_vsnprintf(buf + len_t, sizeof(buf) - len_t, format, args);
 	va_end(args);
 
+	if (len_f <= 0)
+		return;
+	len_s = len_t + len_f;
+	if (len_s > sizeof(buf))
+		return;
+	while (len_s--) {
+		if (buf[len_s]) {
+			if (buf[len_s] == '\n')
+				buf[len_s] = '\0';
+			else
+				break;
+		}
+	}
 	g_warning("%s", buf);
 
+	buf[len_s + 1] = '\n';
+	buf[len_s + 2] = '\0';
 	logtext->instance = instance;
-	logtext->text = g_strdup(buf + LOG_TIME_LEN);
+	logtext->text = g_strdup(buf + len_t);
 	logtext->type = LOG_WARN;
 
 	g_timeout_add(0, invoke_hook_cb, logtext);
