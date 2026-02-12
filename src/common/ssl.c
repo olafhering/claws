@@ -318,20 +318,20 @@ static gint SSL_connect_nb(gnutls_session_t ssl)
 #endif
 }
 
-gnutls_x509_crt_t *ssl_get_certificate_chain(gnutls_session_t session, gint *list_len)
+gnutls_x509_crt_t *ssl_get_certificate_chain(gnutls_session_t session, unsigned int *list_len)
 {
 	const gnutls_datum_t *raw_cert_list;
 	gnutls_x509_crt_t *certs = NULL;
 	gboolean result = TRUE;
 
-	*list_len = -1;
+	*list_len = 0;
 	if (!session)
 		return NULL;
 
 	raw_cert_list = gnutls_certificate_get_peers(session, list_len);
 
-	if (raw_cert_list && gnutls_certificate_type_get(session) == GNUTLS_CRT_X509) {
-		int i = 0;
+	if (raw_cert_list && *list_len && gnutls_certificate_type_get(session) == GNUTLS_CRT_X509) {
+		unsigned int i;
 
 		if (*list_len > 128)
 			*list_len = 128;
@@ -345,18 +345,18 @@ gnutls_x509_crt_t *ssl_get_certificate_chain(gnutls_session_t session, gint *lis
 			r = gnutls_x509_crt_import(certs[i], &raw_cert_list[i], GNUTLS_X509_FMT_DER);
 			if (r < 0) {
 				g_warning("cert get failure: %d %s", r, gnutls_strerror(r));
-
 				result = FALSE;
-				i--;
 				break;
 			}
 		}
 		if (!result) {
-			for (; i >= 0; i--)
+			do {
 				gnutls_x509_crt_deinit(certs[i]);
+			} while (i--);
+
 
 			g_free(certs);
-			*list_len = -1;
+			*list_len = 0;
 
 			return NULL;
 		}
