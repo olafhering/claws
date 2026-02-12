@@ -1018,12 +1018,12 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 
 	result = g_task_propagate_pointer(task, &error);
 
-	if (mimeview->siginfo->sig_data) {
+	if (mimeview->siginfo && mimeview->siginfo->sig_data) {
 		privacy_free_signature_data(mimeview->siginfo->sig_data);
 		mimeview->siginfo->sig_data = NULL;
 	}
 
-	if (result == NULL) {
+	if (!result || !mimeview->siginfo) {
 		debug_print("sig check task propagated NULL task:%p GError: domain:%s code:%d message:\"%s\"\n", task, g_quark_to_string(error->domain), error->code, error->message);
 		g_error_free(error);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
