@@ -825,26 +825,26 @@ static gboolean pgpinline_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 }
 
 static PrivacySystem pgpinline_system = {
-	"pgpinline", /* id */
-	"PGP Inline", /* name */
+	.id = "pgpinline",
+	.name = "PGP Inline",
 
-	pgpinline_free_privacydata, /* free_privacydata */
+	.free_privacydata = pgpinline_free_privacydata,
 
-	pgpinline_is_signed, /* is_signed(MimeInfo *) */
-	pgpinline_check_sig_async,
+	.is_signed = pgpinline_is_signed,
+	.check_signature = pgpinline_check_sig_async,
 
-	pgpinline_is_encrypted,	/* is_encrypted(MimeInfo *) */
-	pgpinline_decrypt, /* decrypt(MimeInfo *) */
+	.is_encrypted = pgpinline_is_encrypted,
+	.decrypt = pgpinline_decrypt,
 
-	TRUE,
-	pgpinline_sign,
+	.can_sign = TRUE,
+	.sign = pgpinline_sign,
 
-	TRUE,
-	pgpinline_get_encrypt_data,
-	pgpinline_encrypt,
-	pgpinline_get_encrypt_warning,
-	pgpinline_inhibit_encrypt_warning,
-	prefs_gpg_auto_check_signatures,
+	.can_encrypt = TRUE,
+	.get_encrypt_data = pgpinline_get_encrypt_data,
+	.encrypt = pgpinline_encrypt,
+	.get_encrypt_warning = pgpinline_get_encrypt_warning,
+	.inhibit_encrypt_warning = pgpinline_inhibit_encrypt_warning,
+	.auto_check_signatures = prefs_gpg_auto_check_signatures,
 };
 
 void pgpinline_init()
