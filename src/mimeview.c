@@ -995,7 +995,6 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 	GTask *task = G_TASK(async_result);
 	GCancellable *cancellable;
 	MimeView *mimeview = (MimeView *)user_data;
-	MimeInfo *siginfo = mimeview->siginfo;
 	gboolean cancelled;
 	SigCheckTaskResult *result = NULL;
 	GError *error = NULL;
@@ -1011,17 +1010,17 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 
 	result = g_task_propagate_pointer(task, &error);
 
-	if (siginfo && siginfo->sig_data) {
-		privacy_free_signature_data(siginfo->sig_data);
-		siginfo->sig_data = NULL;
+	if (mimeview->siginfo->sig_data) {
+		privacy_free_signature_data(mimeview->siginfo->sig_data);
+		mimeview->siginfo->sig_data = NULL;
 	}
 
-	if (!result || !siginfo) {
+	if (!result) {
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
 		goto out;
 	}
 
-	siginfo->sig_data = result->sig_data;
+	mimeview->siginfo->sig_data = result->sig_data;
 	update_signature_noticeview(mimeview, FALSE, SIGNATURE_UNCHECKED);
 
 	if (result->newinfo) {
@@ -1033,7 +1032,6 @@ out:
 	if (error)
 		g_error_free(error);
 	g_free(result);
-	mimeview->siginfo = NULL;
 }
 
 gboolean mimeview_check_sig_timeout(gpointer user_data)
@@ -1110,10 +1108,8 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		}
 	}
 
-	if (mimeview->siginfo) {
-		g_warning("%s siginfo %p", __func__, mimeview->siginfo);
+	if (mimeview->siginfo)
 		cancel_mimeview_siginfo(mimeview);
-	}
 
 	while (selected != NULL) {
 		if (privacy_mimeinfo_is_signed(selected))
