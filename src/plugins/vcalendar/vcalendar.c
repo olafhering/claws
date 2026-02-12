@@ -60,12 +60,7 @@ MimeViewerFactory vcal_viewer_factory;
 
 static void create_meeting_from_message_cb_ui(GtkAction *action, gpointer data);
 
-static GdkColor uri_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
+static GdkColor uri_color;
 
 struct _VCalViewer {
 	MimeViewer mimeviewer;
@@ -780,7 +775,7 @@ static void vcalviewer_get_event(VCalViewer *vcalviewer, MimeInfo *mimeinfo)
 	}
 }
 
-static VCalViewer *s_vcalviewer = NULL;
+static VCalViewer *s_vcalviewer;
 
 static void vcal_viewer_show_mimepart(MimeViewer *_mimeviewer, const gchar *file, MimeInfo *mimeinfo)
 {
@@ -1196,8 +1191,8 @@ MimeViewerFactory vcal_viewer_factory = {
 	vcal_viewer_create,
 };
 
-static gint alert_timeout_tag = 0;
-static gint scan_timeout_tag = 0;
+static gint alert_timeout_tag;
+static gint scan_timeout_tag;
 
 static gboolean vcal_webcal_check(gpointer data)
 {
@@ -1212,8 +1207,8 @@ static gboolean vcal_webcal_check(gpointer data)
 	return TRUE;
 }
 
-static guint context_menu_id = 0;
-static guint main_menu_id = 0;
+static guint context_menu_id;
+static guint main_menu_id;
 
 void vcalendar_init(void)
 {
