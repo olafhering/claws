@@ -64,7 +64,7 @@
 	 ((x[2]&0xff) << 16) |		\
 	 ((x[3]&0xff) << 24))
 
-static gboolean msgcache_use_mmap_read = TRUE;
+#define msgcache_use_mmap_read 1
 
 #else
 #define bswap_32(x) (x)
@@ -81,7 +81,7 @@ static gboolean msgcache_use_mmap_read = TRUE;
 	 ((x[2]&0xff) << 16) |		\
 	 ((x[3]&0xff) << 24))
 
-static gboolean msgcache_use_mmap_read = TRUE;
+#define msgcache_use_mmap_read 1
 #endif
 
 static gboolean swapping = TRUE;
@@ -597,7 +597,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 
 	cache = msgcache_new();
 
-	if (msgcache_use_mmap_read == TRUE) {
+	if (msgcache_use_mmap_read) {
 		if (fstat(fileno(fp), &st) >= 0)
 			map_len = st.st_size;
 		else
