@@ -50,7 +50,7 @@
 #include "prefs_common.h"
 
 #ifndef PASSWORD_CRYPTO_OLD
-static gchar *_primary_passphrase = NULL;
+static gchar *_primary_passphrase;
 
 /* Length of stored key derivation, before base64. */
 #define KD_LENGTH 64
