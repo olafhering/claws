@@ -1600,7 +1600,7 @@ static regex_t *summary_compile_simplify_regexp(gchar *simplify_subject_regexp)
 static void folder_regexp_test_cb(GtkWidget *widget, gpointer data)
 {
 	static GdkColor red;
-	static gboolean colors_initialised = FALSE;
+	static gboolean colors_initialised;
 	static gchar buf[BUFFSIZE];
 	FolderItemGeneralPage *page = (FolderItemGeneralPage *)data;
 	gchar *test_string, *regexp;
@@ -1724,7 +1724,7 @@ static void register_templates_page(void)
 	prefs_folder_item_register_page((PrefsPage *)&folder_item_templates_page, NULL);
 }
 
-static GSList *prefs_pages = NULL;
+static GSList *prefs_pages;
 
 static void prefs_folder_item_address_completion_start(PrefsWindow *window)
 {
