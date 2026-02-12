@@ -45,20 +45,11 @@
 					return; \
 				}
 
-static FILE *log_fp[LOG_INSTANCE_MAX] = {
-	NULL,
-	NULL
-};
+static FILE *log_fp[LOG_INSTANCE_MAX];
 
-static size_t log_size[LOG_INSTANCE_MAX] = {
-	0,
-	0
-};
+static size_t log_size[LOG_INSTANCE_MAX];
 
-static gchar *log_filename[LOG_INSTANCE_MAX] = {
-	NULL,
-	NULL
-};
+static gchar *log_filename[LOG_INSTANCE_MAX];
 
 /* read-only */
 static gboolean log_error_capability[LOG_INSTANCE_MAX] = {
@@ -76,8 +67,8 @@ struct _LogInstanceData {
 };
 
 static LogInstanceData log_instances[LOG_INSTANCE_MAX] = {
-	{LOG_APPEND_TEXT_HOOKLIST, NULL, NULL, NULL},
-	{DEBUG_FILTERING_APPEND_TEXT_HOOKLIST, NULL, NULL, NULL}
+	{.hook = LOG_APPEND_TEXT_HOOKLIST,},
+	{.hook = DEBUG_FILTERING_APPEND_TEXT_HOOKLIST,}
 };
 
 gboolean prefs_common_enable_log_standard(void);
