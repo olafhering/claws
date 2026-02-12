@@ -478,7 +478,7 @@ static gint msgcache_read_cache_data_str(FILE *fp, gchar **str, StringConverter 
 	return len;
 }
 
-static gint msgcache_get_cache_data_str(gchar *src, gchar **str, gint len, StringConverter *conv)
+static gint msgcache_get_cache_data_str(void *src, gchar **str, gint len, StringConverter *conv)
 {
 	gchar *tmpstr = NULL;
 
@@ -541,7 +541,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 	gchar *ref = NULL;
 	guint memusage = 0;
 	gint tmp_len = 0, map_len = -1;
-	char *cache_data = NULL;
+	void *cache_data = NULL;
 	struct stat st;
 
 	cm_return_val_if_fail(cache_file != NULL, NULL);
@@ -625,7 +625,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 	}
 	if (cache_data != NULL && cache_data != MAP_FAILED) {
 		int rem_len = map_len - ftell(fp);
-		char *walk_data = cache_data + ftell(fp);
+		unsigned char *walk_data = cache_data + ftell(fp);
 
 		while (rem_len > 0) {
 			msginfo = procmsg_msginfo_new();
@@ -767,7 +767,7 @@ void msgcache_read_mark(MsgCache *cache, const gchar *mark_file)
 	MsgPermFlags perm_flags;
 	guint32 num;
 	gint map_len = -1;
-	char *cache_data = NULL;
+	void *cache_data = NULL;
 	struct stat st;
 	gboolean error = FALSE;
 
@@ -815,7 +815,7 @@ void msgcache_read_mark(MsgCache *cache, const gchar *mark_file)
 	}
 	if (cache_data != NULL && cache_data != MAP_FAILED) {
 		int rem_len = map_len - ftell(fp);
-		char *walk_data = cache_data + ftell(fp);
+		unsigned char *walk_data = cache_data + ftell(fp);
 
 		while (rem_len > 0) {
 			GET_CACHE_DATA_INT(num);
@@ -861,7 +861,7 @@ void msgcache_read_tags(MsgCache *cache, const gchar *tags_file)
 	MsgInfo *msginfo;
 	guint32 num;
 	gint map_len = -1;
-	char *cache_data = NULL;
+	void *cache_data = NULL;
 	struct stat st;
 	gboolean error = FALSE;
 
@@ -909,7 +909,7 @@ void msgcache_read_tags(MsgCache *cache, const gchar *tags_file)
 	}
 	if (cache_data != NULL && cache_data != MAP_FAILED) {
 		int rem_len = map_len - ftell(fp);
-		char *walk_data = cache_data + ftell(fp);
+		unsigned char *walk_data = cache_data + ftell(fp);
 
 		while (rem_len > 0) {
 			gint id = -1;
