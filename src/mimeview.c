@@ -451,6 +451,21 @@ void mimeview_show_message(MimeView *mimeview, MimeInfo *mimeinfo, const gchar *
 	g_signal_handlers_unblock_by_func(G_OBJECT(ctree), mimeview_selected, mimeview);
 }
 
+static void cancel_mimeview_siginfo(MimeView *mimeview)
+{
+	GCancellable *sig_check_cancellable = mimeview->sig_check_cancellable;
+
+	if (mimeview->sig_check_timeout_tag) {
+		g_source_remove(mimeview->sig_check_timeout_tag);
+		mimeview->sig_check_timeout_tag = 0;
+	}
+	if (sig_check_cancellable) {
+		mimeview->sig_check_cancellable = NULL;
+		g_cancellable_cancel(sig_check_cancellable);
+		g_object_unref(sig_check_cancellable);
+	}
+}
+
 void mimeview_destroy(MimeView *mimeview)
 {
 	GSList *cur;
@@ -462,12 +477,7 @@ void mimeview_destroy(MimeView *mimeview)
 	g_slist_free(mimeview->viewers);
 	gtk_target_list_unref(mimeview->target_list);
 
-	if (mimeview->sig_check_timeout_tag != 0)
-		g_source_remove(mimeview->sig_check_timeout_tag);
-	if (mimeview->sig_check_cancellable != NULL) {
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-	}
+	cancel_mimeview_siginfo(mimeview);
 	procmime_mimeinfo_free_all(&mimeview->mimeinfo);
 	gtk_tree_path_free(mimeview->opened);
 	g_free(mimeview->file);
@@ -848,16 +858,7 @@ void mimeview_clear(MimeView *mimeview)
 	if (g_slist_find(mimeviews, mimeview) == NULL)
 		return;
 
-	if (mimeview->sig_check_timeout_tag != 0) {
-		g_source_remove(mimeview->sig_check_timeout_tag);
-		mimeview->sig_check_timeout_tag = 0;
-	}
-
-	if (mimeview->sig_check_cancellable != NULL) {
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
-	}
+	cancel_mimeview_siginfo(mimeview);
 
 	noticeview_hide(mimeview->siginfoview);
 
@@ -1006,11 +1007,7 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_TIMEOUT);
 		goto out;
 	}
-
-	g_source_remove(mimeview->sig_check_timeout_tag);
-	mimeview->sig_check_timeout_tag = 0;
-	g_object_unref(mimeview->sig_check_cancellable);
-	mimeview->sig_check_cancellable = NULL;
+	cancel_mimeview_siginfo(mimeview);
 
 	result = g_task_propagate_pointer(task, &error);
 
@@ -1042,18 +1039,7 @@ out:
 gboolean mimeview_check_sig_timeout(gpointer user_data)
 {
 	MimeView *mimeview = (MimeView *)user_data;
-	GCancellable *cancellable = mimeview->sig_check_cancellable;
-
-	mimeview->sig_check_timeout_tag = 0;
-
-	if (cancellable == NULL) {
-		return G_SOURCE_REMOVE;
-	}
-
-	mimeview->sig_check_cancellable = NULL;
-	g_cancellable_cancel(cancellable);
-	g_object_unref(cancellable);
-
+	cancel_mimeview_siginfo(mimeview);
 	return G_SOURCE_REMOVE;
 }
 
@@ -1068,13 +1054,7 @@ static void check_signature_cb(NoticeView *noticeview, void *user_data)
 	noticeview_set_text(mimeview->siginfoview, _("Checking signature..."));
 	GTK_EVENTS_FLUSH();
 
-	if (mimeview->sig_check_cancellable != NULL) {
-		if (mimeview->sig_check_timeout_tag == 0)
-			g_error("bad cancel source tag");
-		g_source_remove(mimeview->sig_check_timeout_tag);
-		g_cancellable_cancel(mimeview->sig_check_cancellable);
-		g_object_unref(mimeview->sig_check_cancellable);
-	}
+	cancel_mimeview_siginfo(mimeview);
 
 	mimeview->sig_check_cancellable = g_cancellable_new();
 
@@ -1082,12 +1062,10 @@ static void check_signature_cb(NoticeView *noticeview, void *user_data)
 	if (ret == 0) {
 		mimeview->sig_check_timeout_tag = g_timeout_add_seconds(prefs_common.io_timeout_secs, mimeview_check_sig_timeout, mimeview);
 	} else if (ret < 0) {
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
+		cancel_mimeview_siginfo(mimeview);
 		update_signature_noticeview(mimeview, TRUE, SIGNATURE_CHECK_ERROR);
 	} else {
-		g_object_unref(mimeview->sig_check_cancellable);
-		mimeview->sig_check_cancellable = NULL;
+		cancel_mimeview_siginfo(mimeview);
 		update_signature_noticeview(mimeview, FALSE, 0);
 	}
 }
@@ -1134,7 +1112,7 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 
 	if (mimeview->siginfo) {
 		g_warning("%s siginfo %p", __func__, mimeview->siginfo);
-		return;
+		cancel_mimeview_siginfo(mimeview);
 	}
 
 	while (selected != NULL) {
