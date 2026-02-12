@@ -404,7 +404,6 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo, GCancellable *_cancellable,
 	}
 
 	task = g_task_new(NULL, cancellable, callback, user_data);
-	mimeinfo->last_sig_check_task = task;
 
 	g_task_set_task_data(task, task_data, free_pkcs7_mime_task_data);
 	g_task_set_return_on_cancel(task, TRUE);
@@ -418,7 +417,6 @@ static gint check_pkcs7_mime_sig(MimeInfo *mimeinfo, GCancellable *_cancellable,
 
 	debug_print("creating check sig sync task:%p task_data:%p\n", task, task_data);
 	g_task_run_in_thread_sync(task, check_pkcs7_mime_sig_task);
-	mimeinfo->last_sig_check_task = NULL;
 
 	task_result = g_task_propagate_pointer(task, &error);
 	if (unref_cancellable)
