@@ -35,7 +35,7 @@
 /**
  * Query list for tracking current queries.
  */
-static GList *_requestList_ = NULL;
+static GList *_requestList_;
 
 /**
  * Mutex to protect list from multiple threads.
@@ -45,7 +45,7 @@ static pthread_mutex_t _requestListMutex_ = PTHREAD_MUTEX_INITIALIZER;
 /**
  * Current query ID. This is incremented for each query request created.
  */
-static gint _currentQueryID_ = 0;
+static gint _currentQueryID_;
 
 /**
  * Clear the query.
