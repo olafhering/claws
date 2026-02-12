@@ -2588,6 +2588,7 @@ void ldapsvr_execute_query(LdapServer *server, LdapQuery *qry);
  */
 static gboolean addrindex_start_dynamic(QueryRequest *req)
 {
+#ifdef USE_LDAP
 	AddressInterface *iface;
 	AddressDataSource *ds;
 	GList *nodeIf;
@@ -2612,7 +2613,6 @@ static gboolean addrindex_start_dynamic(QueryRequest *req)
 		while (nodeDS) {
 			ds = nodeDS->data;
 			nodeDS = g_list_next(nodeDS);
-#ifdef USE_LDAP
 			if (type == ADDR_IF_LDAP) {
 				LdapServer *server;
 				LdapQuery *qry;
@@ -2631,10 +2631,12 @@ static gboolean addrindex_start_dynamic(QueryRequest *req)
 					ldapsvr_execute_query(server, qry);
 				}
 			}
-#endif
 		}
 	}
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
 /**
