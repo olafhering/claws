@@ -308,7 +308,7 @@ static int partial_uidl_mark_mail(MsgInfo *msginfo, int download)
 	err = 0;
  bail:
 	g_free(filename);
-	procmsg_msginfo_free(&tinfo);
+	proc_msginfo_release(tinfo);
 
 	return err;
 }

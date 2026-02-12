@@ -1218,7 +1218,7 @@ gint messageview_show(MessageView *messageview, MsgInfo *msginfo, gboolean all_h
 	}
 
 	if (messageview->msginfo != msginfo) {
-		procmsg_msginfo_free(&(messageview->msginfo));
+		proc_msginfo_release(messageview->msginfo);
 		messageview->msginfo = NULL;
 		messageview_set_menu_sensitive(messageview);
 		messageview->msginfo = procmsg_msginfo_get_full_info_from_file(msginfo, file);
@@ -1357,7 +1357,7 @@ void messageview_clear(MessageView *messageview)
 {
 	if (!messageview)
 		return;
-	procmsg_msginfo_free(&(messageview->msginfo));
+	proc_msginfo_release(messageview->msginfo);
 	messageview->msginfo = NULL;
 	messageview->filtered = FALSE;
 
@@ -1406,7 +1406,7 @@ void messageview_destroy(MessageView *messageview)
 	mimeview_destroy(messageview->mimeview);
 	noticeview_destroy(messageview->noticeview);
 
-	procmsg_msginfo_free(&(messageview->msginfo));
+	proc_msginfo_release(messageview->msginfo);
 	toolbar_clear_list(TOOLBAR_MSGVIEW);
 	if (messageview->toolbar) {
 		toolbar_destroy(messageview->toolbar);
@@ -1468,7 +1468,7 @@ void messageview_delete(MessageView *msgview)
 			/* NOTE: does not update to next message in summaryview */
 		}
 
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 	}
 #ifdef GENERIC_UMPC
 	if (msgview->window && !prefs_common.always_show_msg) {
@@ -1701,7 +1701,7 @@ static void return_receipt_send_clicked(NoticeView *noticeview, void *user_data)
 		noticeview_hide(noticeview);
 	}
 
-	procmsg_msginfo_free(&tmpmsginfo);
+	proc_msginfo_release(tmpmsginfo);
 	g_free(file);
 }
 
@@ -2252,7 +2252,7 @@ static void prev_history_cb(GtkAction *action, gpointer data)
 		messageview->updating = TRUE;
 		messageview_show(messageview, info, messageview->all_headers);
 		messageview->updating = FALSE;
-		procmsg_msginfo_free(&info);
+		proc_msginfo_release(info);
 		if (messageview->deferred_destroy) {
 			debug_print("messageview got away!\n");
 			messageview_destroy(messageview);
@@ -2269,7 +2269,7 @@ static void next_history_cb(GtkAction *action, gpointer data)
 		messageview->updating = TRUE;
 		messageview_show(messageview, info, messageview->all_headers);
 		messageview->updating = FALSE;
-		procmsg_msginfo_free(&info);
+		proc_msginfo_release(info);
 		if (messageview->deferred_destroy) {
 			debug_print("messageview got away!\n");
 			messageview_destroy(messageview);
@@ -2439,7 +2439,7 @@ static void show_all_header_cb(GtkToggleAction *action, gpointer data)
 		return;
 	messageview->msginfo = NULL;
 	messageview_show(messageview, msginfo, messageview->all_headers);
-	procmsg_msginfo_free(&msginfo);
+	proc_msginfo_release(msginfo);
 	main_window_set_menu_sensitive(messageview->mainwin);
 	summary_redisplay_msg(messageview->mainwin->summaryview);
 }
@@ -2474,7 +2474,7 @@ static void msg_hide_quotes_cb(GtkToggleAction *action, gpointer data)
 		return;
 	messageview->msginfo = NULL;
 	messageview_show(messageview, msginfo, messageview->all_headers);
-	procmsg_msginfo_free(&msginfo);
+	proc_msginfo_release(msginfo);
 
 	/* update main window */
 	main_window_set_menu_sensitive(messageview->mainwin);
@@ -2563,7 +2563,7 @@ static void add_address_cb(GtkAction *action, gpointer data)
 	avatarr = avatars_avatarrender_new(full_msginfo);
 	hooks_invoke(AVATAR_IMAGE_RENDER_HOOKLIST, avatarr);
 
-	procmsg_msginfo_free(&full_msginfo);
+	proc_msginfo_release(full_msginfo);
 
 	if (avatarr->image != NULL)
 		picture = gtk_image_get_pixbuf(GTK_IMAGE(avatarr->image));

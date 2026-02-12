@@ -131,7 +131,7 @@ MsgCache *msgcache_new(void)
 
 static gboolean msgcache_msginfo_free_func(gpointer num, gpointer msginfo, gpointer user_data)
 {
-	procmsg_msginfo_free((MsgInfo **)&msginfo);
+	proc_msginfo_release(msginfo);
 	return TRUE;
 }
 
@@ -181,7 +181,7 @@ void msgcache_remove_msg(MsgCache *cache, guint msgnum)
 
 	msginfo->folder->cache_dirty = TRUE;
 
-	procmsg_msginfo_free(&msginfo);
+	proc_msginfo_release(msginfo);
 	cache->last_access = time(NULL);
 
 	debug_print("Cache size: %d messages, %u bytes\n", g_hash_table_size(cache->msgnum_table), cache->memusage);
@@ -200,7 +200,7 @@ void msgcache_update_msg(MsgCache *cache, MsgInfo *msginfo)
 	if (oldmsginfo) {
 		g_hash_table_remove(cache->msgnum_table, &oldmsginfo->msgnum);
 		cache->memusage -= procmsg_msginfo_memusage(oldmsginfo);
-		procmsg_msginfo_free(&oldmsginfo);
+		proc_msginfo_release(oldmsginfo);
 	}
 
 	newmsginfo = procmsg_msginfo_new_ref(msginfo);
@@ -289,7 +289,7 @@ gint msgcache_get_memory_usage(MsgCache *cache)
 #define READ_CACHE_DATA(data, fp, total_len) \
 { \
 	if ((tmp_len = msgcache_read_cache_data_str(fp, &data, conv)) < 0) { \
-		procmsg_msginfo_free(&msginfo); \
+		proc_msginfo_release(msginfo); \
 		error = TRUE; \
 		goto bail_err; \
 	} \
@@ -304,7 +304,7 @@ gint msgcache_get_memory_usage(MsgCache *cache)
 	if ((ni = claws_fread(&idata, sizeof(idata), 1, fp)) != 1) { \
 		g_warning("read_int: cache data corrupted, read %"G_GSIZE_FORMAT" of %"G_GSIZE_FORMAT" at " \
 			  "offset %ld", ni, sizeof(idata), ftell(fp)); \
-		procmsg_msginfo_free(&msginfo); \
+		proc_msginfo_release(msginfo); \
 		error = TRUE; \
 		goto bail_err; \
 	} else \
@@ -315,7 +315,7 @@ gint msgcache_get_memory_usage(MsgCache *cache)
 {												\
 	if (rem_len < 4) {									\
 		g_print("error at rem_len:%d\n", rem_len);					\
-		procmsg_msginfo_free(&msginfo); \
+		proc_msginfo_release(msginfo); \
 		error = TRUE;									\
 		goto bail_err;									\
 	}											\
@@ -328,13 +328,13 @@ gint msgcache_get_memory_usage(MsgCache *cache)
 	GET_CACHE_DATA_INT(tmp_len);	\
 	if (rem_len < tmp_len) {								\
 		g_print("error at rem_len:%d (tmp_len %d)\n", rem_len, tmp_len);		\
-		procmsg_msginfo_free(&msginfo); \
+		proc_msginfo_release(msginfo); \
 		error = TRUE;									\
 		goto bail_err;									\
 	}											\
 	if ((tmp_len = msgcache_get_cache_data_str(walk_data, &data, tmp_len, conv)) < 0) { \
 		g_print("error at rem_len:%d\n", rem_len);\
-		procmsg_msginfo_free(&msginfo); \
+		proc_msginfo_release(msginfo); \
 		error = TRUE; \
 		goto bail_err; \
 	} \

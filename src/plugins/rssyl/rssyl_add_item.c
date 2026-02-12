@@ -367,7 +367,7 @@ void rssyl_add_item(RFolderItem *ritem, FeedItem *feed_item)
 		msginfo = folder_item_get_msginfo((FolderItem *)ritem, atoi(pathbasename));
 		g_free(pathbasename);
 		oldperm_flags = msginfo->flags.perm_flags;
-		procmsg_msginfo_free(&msginfo);
+		proc_msginfo_release(msginfo);
 
 		ritem->items = g_slist_remove(ritem->items, old_item);
 		if (g_unlink(ctx->path) != 0) {
@@ -542,7 +542,7 @@ void rssyl_add_item(RFolderItem *ritem, FeedItem *feed_item)
 		if (!(oldperm_flags & MSG_UNREAD) && (ritem->silent_update == 2 || (ritem->silent_update == 1 && dif == EXISTS_CHANGED_TEXTONLY))) {
 			msginfo = folder_item_get_msginfo((FolderItem *)ritem, d);
 			procmsg_msginfo_unset_flags(msginfo, MSG_NEW | MSG_UNREAD, 0);
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 		}
 	}
 

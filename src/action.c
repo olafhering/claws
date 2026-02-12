@@ -543,7 +543,7 @@ static void _free_msginfos(gpointer data, gpointer user_data)
 {
 	MsgInfo *msginfo = (MsgInfo *)data;
 
-	procmsg_msginfo_free(&msginfo);
+	proc_msginfo_release(msginfo);
 }
 
 static void mainwin_actions_execute(MainWindow *mainwin, guint action_nb, GtkWidget *widget)
@@ -1316,7 +1316,7 @@ static void catch_status(GPid pid, gint status, gpointer data)
 				modified_something = TRUE;
 				last_item = nmi->folder;
 			}
-			procmsg_msginfo_free(&nmi);
+			proc_msginfo_release(nmi);
 			if (summaryview && summaryview->displayed && summaryview->folder_item == msginfo->folder && summary_get_msgnum(summaryview, summaryview->displayed) == msginfo->msgnum)
 				summary_redisplay_msg(summaryview);
 

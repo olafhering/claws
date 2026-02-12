@@ -929,7 +929,7 @@ Compose *compose_generic_new(PrefsAccount *account, const gchar *mailto, FolderI
 		}
 
 	}
-	procmsg_msginfo_free(&dummyinfo);
+	proc_msginfo_release(dummyinfo);
 
 	if (attach_files) {
 		GList *curr;
@@ -1524,7 +1524,7 @@ Compose *compose_forward(PrefsAccount *account, MsgInfo *msginfo, gboolean as_at
 		quote_fmtlex_destroy();
 
 		g_free(tmp);
-		procmsg_msginfo_free(&full_msginfo);
+		proc_msginfo_release(full_msginfo);
 	}
 
 	textview = GTK_TEXT_VIEW(compose->text);
@@ -1579,7 +1579,7 @@ Compose *compose_forward(PrefsAccount *account, MsgInfo *msginfo, gboolean as_at
 		quote_fmt_reset_vartable();
 		compose_attach_parts(compose, msginfo);
 
-		procmsg_msginfo_free(&full_msginfo);
+		proc_msginfo_release(full_msginfo);
 	}
 
 	SIGNAL_BLOCK(textbuf);
@@ -2852,7 +2852,7 @@ static gchar *compose_quote_fmt(Compose *compose, MsgInfo *msginfo, const gchar 
  ok:
 	SIGNAL_UNBLOCK(buffer);
 
-	procmsg_msginfo_free(&dummyinfo);
+	proc_msginfo_release(dummyinfo);
 
 	return buf;
 }
@@ -3407,7 +3407,7 @@ static gboolean compose_attach_append(Compose *compose, const gchar *file, const
 
 			ainfo->name = g_strdup_printf(_("Message: %s"), name);
 
-			procmsg_msginfo_free(&msginfo);
+			proc_msginfo_release(msginfo);
 		} else {
 			if (!g_ascii_strncasecmp(content_type, "text/", 5)) {
 				ainfo->charset = g_strdup(charset);
@@ -4802,7 +4802,7 @@ gint compose_send(Compose *compose)
 				if (tmp) {
 					debug_print("removing %d via %s\n", tmp->msgnum, tmsgid);
 					folder_item_remove_msg(folder, tmp->msgnum);
-					procmsg_msginfo_free(&tmp);
+					proc_msginfo_release(tmp);
 				}
 			}
 		}
@@ -4818,7 +4818,7 @@ gint compose_send(Compose *compose)
 			if (tmp) {
 				debug_print("removing %d via %s\n", tmp->msgnum, tmsgid);
 				folder_item_remove_msg(folder, tmp->msgnum);
-				procmsg_msginfo_free(&tmp);
+				proc_msginfo_release(tmp);
 			}
 		}
 		if (!discard_window) {
@@ -5731,7 +5731,7 @@ static ComposeQueueResult compose_queue_sub(Compose *compose, gint *msgnum, Fold
 
 			g_slist_free(mi->tags);
 			mi->tags = g_slist_copy(compose->targetinfo->tags);
-			procmsg_msginfo_free(&mi);
+			proc_msginfo_release(mi);
 		}
 	}
 
@@ -8032,7 +8032,7 @@ static void compose_template_apply(Compose *compose, Template *tmpl, gboolean re
 				gtk_text_buffer_set_text(buffer, "", -1);
 
 			parsed_str = compose_quote_fmt(compose, dummyinfo, tmpl->value, qmark, tmp, FALSE, FALSE, err_msg);
-			procmsg_msginfo_free(&dummyinfo);
+			proc_msginfo_release(dummyinfo);
 
 			g_free(tmp);
 		}
@@ -8225,7 +8225,7 @@ static void compose_template_apply_fields(Compose *compose, Template *tmpl)
 		quote_fmtlex_destroy();
 	}
 
-	procmsg_msginfo_free(&dummyinfo);
+	proc_msginfo_release(dummyinfo);
 }
 
 static void compose_destroy(Compose *compose)
@@ -8265,9 +8265,9 @@ static void compose_destroy(Compose *compose)
 
 	hooks_unregister_hook(FOLDER_UPDATE_HOOKLIST, compose->folder_update_callback_id);
 
-	procmsg_msginfo_free(&(compose->targetinfo));
-	procmsg_msginfo_free(&(compose->replyinfo));
-	procmsg_msginfo_free(&(compose->fwdinfo));
+	proc_msginfo_release(compose->targetinfo);
+	proc_msginfo_release(compose->replyinfo);
+	proc_msginfo_release(compose->fwdinfo);
 
 	g_free(compose->replyto);
 	g_free(compose->cc);
@@ -9459,7 +9459,7 @@ gboolean compose_draft(gpointer data, guint action)
 		}
 		if (tmpinfo) {
 			msgnum = tmpinfo->msgnum;
-			procmsg_msginfo_free(&tmpinfo);
+			proc_msginfo_release(tmpinfo);
 			debug_print("got draft msgnum %d from scanning\n", msgnum);
 		} else {
 			debug_print("didn't get draft msgnum after scanning\n");
@@ -9512,7 +9512,7 @@ gboolean compose_draft(gpointer data, guint action)
 		if (action == COMPOSE_DRAFT_FOR_EXIT) {
 			compose_register_draft(newmsginfo);
 		}
-		procmsg_msginfo_free(&newmsginfo);
+		proc_msginfo_release(newmsginfo);
 	}
 
 	folder_item_scan(draft);
@@ -9565,7 +9565,7 @@ gboolean compose_draft(gpointer data, guint action)
 #endif
 		g_free(path);
 
-		procmsg_msginfo_free(&(compose->targetinfo));
+		proc_msginfo_release(compose->targetinfo);
 		compose->targetinfo = procmsg_msginfo_new();
 		compose->targetinfo->msgnum = msgnum;
 		compose->targetinfo->size = size;
@@ -11098,7 +11098,7 @@ static void compose_reply_from_messageview_real(MessageView *msgview, GSList *ms
 
 	if (new_msglist) {
 		compose = compose_reply_mode((ComposeMode) action, new_msglist, body);
-		procmsg_msginfo_free(&tmp_msginfo);
+		proc_msginfo_release(tmp_msginfo);
 		g_slist_free(new_msglist);
 	} else
 		compose = compose_reply_mode((ComposeMode) action, msginfo_list, body);

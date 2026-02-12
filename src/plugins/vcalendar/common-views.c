@@ -188,7 +188,7 @@ void vcal_view_select_event(const gchar *uid, FolderItem *item, gboolean edit, G
 				summaryview = mainwindow_get_mainwindow()->summaryview;
 				g_signal_handlers_block_by_func(G_OBJECT(summaryview->ctree), G_CALLBACK(block_cb), block_data);
 				summary_select_by_msgnum(summaryview, info->msgnum, TRUE);
-				procmsg_msginfo_free(&info);
+				proc_msginfo_release(info);
 				g_signal_handlers_unblock_by_func(G_OBJECT(summaryview->ctree), G_CALLBACK(block_cb), block_data);
 			}
 		}
