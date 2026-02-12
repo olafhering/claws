@@ -60,7 +60,7 @@ FolderClass rssyl_class;
 static gint rssyl_create_tree(Folder *folder);
 static gint rssyl_scan_tree(Folder *folder);
 
-static gboolean existing_tree_found = FALSE;
+static gboolean existing_tree_found;
 
 static void rssyl_init_read_func(FolderItem *item, gpointer data)
 {
