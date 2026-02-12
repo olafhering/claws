@@ -3710,7 +3710,6 @@ static gchar *compose_get_itemized_chars(GtkTextBuffer *buffer, const GtkTextIte
 {
 	GtkTextIter iter = *start;
 	gunichar wc;
-	gint len = 0;
 	GString *item_chars = g_string_new("");
 
 	if (gtk_text_iter_ends_line(&iter)) {
@@ -3719,7 +3718,6 @@ static gchar *compose_get_itemized_chars(GtkTextBuffer *buffer, const GtkTextIte
 	}
 
 	while (1) {
-		len++;
 		wc = gtk_text_iter_get_char(&iter);
 		if (!g_unichar_isspace(wc))
 			break;
