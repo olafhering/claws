@@ -100,7 +100,7 @@ static FolderClass claws_mailmbox_class;
 
 static gchar *get_cache_dir(void)
 {
-	static gchar *mbox_cache_dir = NULL;
+	static gchar *mbox_cache_dir;
 
 	if (!mbox_cache_dir)
 		mbox_cache_dir = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, MAILMBOX_CACHE_DIR, NULL);
