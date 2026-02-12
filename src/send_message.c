@@ -197,7 +197,6 @@ gint send_message_local(const gchar *command, FILE *fp)
 
 gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, gboolean keep_session)
 {
-	Session *session;
 	SMTPSession *smtp_session;
 	gushort port = 0;
 	gchar buf[BUFFSIZE];
@@ -244,10 +243,8 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 
 	if (!ac_prefs->smtp_session) {
 		/* we can't reuse a previously initialised session */
-		session = smtp_session_new(ac_prefs);
-		session->ssl_cert_auto_accept = ac_prefs->ssl_certs_auto_accept;
-
-		smtp_session = SMTP_SESSION(session);
+		smtp_session = smtp_session_new(ac_prefs);
+		smtp_session->session.ssl_cert_auto_accept = ac_prefs->ssl_certs_auto_accept;
 
 		if (ac_prefs->set_domain && ac_prefs->domain && strlen(ac_prefs->domain)) {
 			smtp_session->hostname = g_strdup(ac_prefs->domain);
@@ -257,12 +254,12 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 
 #ifdef USE_GNUTLS
 		port = ac_prefs->set_smtpport ? ac_prefs->smtpport : ac_prefs->ssl_smtp == SSL_TUNNEL ? SSMTP_PORT : SMTP_PORT;
-		session->ssl_type = ac_prefs->ssl_smtp;
+		smtp_session->session.ssl_type = ac_prefs->ssl_smtp;
 		if (ac_prefs->ssl_smtp != SSL_NONE)
-			session->nonblocking = ac_prefs->use_nonblocking_ssl;
+			smtp_session->session.nonblocking = ac_prefs->use_nonblocking_ssl;
 		if (ac_prefs->set_gnutls_priority && ac_prefs->gnutls_priority && strlen(ac_prefs->gnutls_priority))
-			session->gnutls_priority = g_strdup(ac_prefs->gnutls_priority);
-		session->use_tls_sni = ac_prefs->use_tls_sni;
+			smtp_session->session.gnutls_priority = g_strdup(ac_prefs->gnutls_priority);
+		smtp_session->session.use_tls_sni = ac_prefs->use_tls_sni;
 #ifdef USE_OAUTH2
 		if (ac_prefs->use_smtp_auth && ac_prefs->smtp_auth_type == SMTPAUTH_OAUTH2)
 			oauth2_check_passwds(ac_prefs);
@@ -270,7 +267,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 #else
 		if (ac_prefs->ssl_smtp != SSL_NONE) {
 			if (alertpanel_full(_("Insecure connection"), _("This connection is configured to be secured " "using TLS, but TLS is not available " "in this build of Claws Mail. \n\n" "Do you want to continue connecting to this " "server? The communication would not be " "secure."), GTK_STOCK_CANCEL, _("Con_tinue connecting"), NULL, ALERTFOCUS_FIRST, FALSE, NULL, ALERT_WARNING) != G_ALERTALTERNATE) {
-				session_destroy(session);
+				session_destroy(&smtp_session->session);
 				return -1;
 			}
 		}
@@ -286,7 +283,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_SEND)) == NULL) {
 					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
 					if (!smtp_session->pass) {
-						session_destroy(session);
+						session_destroy(&smtp_session->session);
 						return -1;
 					}
 				}
@@ -297,7 +294,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 				} else if ((smtp_session->pass = passwd_store_get_account(ac_prefs->account_id, PWS_ACCOUNT_RECV)) == NULL) {
 					smtp_session->pass = input_dialog_query_password_keep(ac_prefs->smtp_server, smtp_session->user, &(ac_prefs->session_smtp_passwd));
 					if (!smtp_session->pass) {
-						session_destroy(session);
+						session_destroy(&smtp_session->session);
 						return -1;
 					}
 				}
@@ -308,7 +305,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		}
 
 		send_dialog = send_progress_dialog_create();
-		send_dialog->session = session;
+		send_dialog->session = &smtp_session->session;
 		smtp_session->dialog = send_dialog;
 
 		progress_dialog_list_set(send_dialog->dialog, 0, NULL, ac_prefs->smtp_server, _("Connecting"));
@@ -327,17 +324,16 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		progress_dialog_set_label(send_dialog->dialog, buf);
 		log_message(LOG_PROTOCOL, "%s\n", buf);
 
-		session_set_recv_message_notify(session, send_recv_message, send_dialog);
-		session_set_send_data_progressive_notify(session, send_send_data_progressive, send_dialog);
-		session_set_send_data_notify(session, send_send_data_finished, send_dialog);
+		session_set_recv_message_notify(&smtp_session->session, send_recv_message, send_dialog);
+		session_set_send_data_progressive_notify(&smtp_session->session, send_send_data_progressive, send_dialog);
+		session_set_send_data_notify(&smtp_session->session, send_send_data_finished, send_dialog);
 
 	} else {
 		/* everything is ready to start at MAIL FROM:, just
 		 * reinit useful variables. 
 		 */
-		session = SESSION(ac_prefs->smtp_session);
+		smtp_session = ac_prefs->smtp_session;
 		ac_prefs->smtp_session = NULL;
-		smtp_session = SMTP_SESSION(session);
 		smtp_session->state = SMTP_HELO;
 		send_dialog = smtp_session->dialog;
 		was_inited = TRUE;
@@ -363,10 +359,10 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	}
 	SESSION(smtp_session)->proxy_info = proxy_info;
 
-	session_set_timeout(session, prefs_common.io_timeout_secs * 1000);
+	session_set_timeout(&smtp_session->session, prefs_common.io_timeout_secs * 1000);
 	/* connect if necessary */
-	if (!was_inited && session_connect(session, ac_prefs->smtp_server, port) < 0) {
-		session_destroy(session);
+	if (!was_inited && session_connect(&smtp_session->session, ac_prefs->smtp_server, port) < 0) {
+		session_destroy(&smtp_session->session);
 		send_progress_dialog_destroy(send_dialog);
 		ac_prefs->smtp_session = NULL;
 		return -1;
@@ -379,30 +375,30 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		smtp_from(smtp_session);
 	}
 
-	while (session_is_running(session) && send_dialog->cancelled == FALSE && SMTP_SESSION(session)->state != SMTP_MAIL_SENT_OK)
+	while (session_is_running(&smtp_session->session) && send_dialog->cancelled == FALSE && smtp_session->state != SMTP_MAIL_SENT_OK)
 		gtk_main_iteration();
 
-	if (SMTP_SESSION(session)->error_val == SM_AUTHFAIL) {
+	if (smtp_session->error_val == SM_AUTHFAIL) {
 		if (ac_prefs->session_smtp_passwd) {
 			g_free(ac_prefs->session_smtp_passwd);
 			ac_prefs->session_smtp_passwd = NULL;
 		}
 		ret = -1;
-	} else if (SMTP_SESSION(session)->state == SMTP_MAIL_SENT_OK) {
+	} else if (smtp_session->state == SMTP_MAIL_SENT_OK) {
 		log_message(LOG_PROTOCOL, "%s\n", _("Mail sent successfully."));
 		ret = 0;
-	} else if (session->state == SESSION_EOF && SMTP_SESSION(session)->state == SMTP_QUIT) {
+	} else if (smtp_session->session.state == SESSION_EOF && smtp_session->state == SMTP_QUIT) {
 		/* consider EOF right after QUIT successful */
 		log_warning(LOG_PROTOCOL, "%s\n", _("Connection closed by the remote host."));
 		ret = 0;
-	} else if (session->state == SESSION_ERROR || session->state == SESSION_EOF || session->state == SESSION_TIMEOUT || SMTP_SESSION(session)->state == SMTP_ERROR || SMTP_SESSION(session)->error_val != SM_OK)
+	} else if (smtp_session->session.state == SESSION_ERROR || smtp_session->session.state == SESSION_EOF || smtp_session->session.state == SESSION_TIMEOUT || smtp_session->state == SMTP_ERROR || smtp_session->error_val != SM_OK)
 		ret = -1;
 	else if (send_dialog->cancelled == TRUE)
 		ret = -1;
 
 	if (ret == -1) {
 		manage_window_focus_in(send_dialog->dialog->window, NULL, NULL);
-		send_put_error(session);
+		send_put_error(&smtp_session->session);
 		manage_window_focus_out(send_dialog->dialog->window, NULL, NULL);
 	}
 
@@ -411,11 +407,11 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 	 * easier.
 	 */
 	if (!keep_session || ret != 0) {
-		if (session_is_connected(session))
+		if (session_is_connected(&smtp_session->session))
 			smtp_quit(smtp_session);
-		while (session_is_connected(session) && !send_dialog->cancelled)
+		while (session_is_connected(&smtp_session->session) && !send_dialog->cancelled)
 			gtk_main_iteration();
-		session_destroy(session);
+		session_destroy(&smtp_session->session);
 		ac_prefs->smtp_session = NULL;
 		send_progress_dialog_destroy(send_dialog);
 	} else {
@@ -424,7 +420,7 @@ gint send_message_smtp_full(PrefsAccount *ac_prefs, GSList *to_list, FILE *fp, g
 		g_free(smtp_session->error_msg);
 	}
 	if (keep_session && ret == 0 && ac_prefs->smtp_session == NULL)
-		ac_prefs->smtp_session = SMTP_SESSION(session);
+		ac_prefs->smtp_session = smtp_session;
 
 	statusbar_pop_all();
 	statusbar_verbosity_set(FALSE);
