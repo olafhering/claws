@@ -162,7 +162,7 @@ static void rssyl_fill_popup_menu_labels(void)
 	}
 }
 
-static guint main_menu_id = 0;
+static guint main_menu_id;
 
 void rssyl_gtk_init(void)
 {
