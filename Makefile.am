@@ -40,14 +40,16 @@ gnomapdir = $(datadir)/applications
 gnomap_DATA=claws-mail.desktop
 
 rename-icons:
+	@cd $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps && \
+            mv -v claws-mail.png $(PACKAGE_TARNAME).png
 	@cd $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps && \
-            mv claws-mail-64x64.png claws-mail.png
+            mv -v claws-mail-64x64.png $(PACKAGE_TARNAME).png
 	@cd $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps && \
-            mv claws-mail-128x128.png claws-mail.png
+            mv -v claws-mail-128x128.png $(PACKAGE_TARNAME).png
 
 remove-icons:
-	rm -f $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/claws-mail.png
-	rm -f $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/claws-mail.png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/$(PACKAGE_TARNAME).png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/$(PACKAGE_TARNAME).png
 
 if UPDATE_GTK_ICON_CACHE
 gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor

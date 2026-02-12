@@ -38,7 +38,7 @@
 #include "ldif.h"
 #include "file-utils.h"
 
-#define DFL_DIR_CLAWS_OUT  "claws-mail-out"
+#define DFL_DIR_CLAWS_OUT  PACKAGE_TARNAME "-out"
 #define DFL_FILE_CLAWS_OUT "addressbook.ldif"
 
 #define FMT_BUFSIZE           2048

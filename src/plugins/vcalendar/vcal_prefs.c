@@ -389,7 +389,7 @@ static void vcal_prefs_create_widget_func(PrefsPage *_page, GtkWindow *window, g
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(export_enable_checkbtn), vcalprefs.export_enable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(export_subs_checkbtn), vcalprefs.export_subs);
 	if (vcalprefs.export_path == NULL || *vcalprefs.export_path == '\0')
-		vcalprefs.export_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "claws-mail.ics", NULL);
+		vcalprefs.export_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PACKAGE_TARNAME ".ics", NULL);
 	if (vcalprefs.export_command == NULL)
 		vcalprefs.export_command = g_strdup("");
 	gtk_entry_set_text(GTK_ENTRY(export_path_entry), vcalprefs.export_path);
@@ -479,7 +479,7 @@ static void vcal_prefs_create_widget_func(PrefsPage *_page, GtkWindow *window, g
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(export_freebusy_enable_checkbtn), vcalprefs.export_freebusy_enable);
 	if (vcalprefs.export_freebusy_path == NULL || *vcalprefs.export_freebusy_path == '\0')
-		vcalprefs.export_freebusy_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, "claws-mail.ifb", NULL);
+		vcalprefs.export_freebusy_path = g_strconcat(get_rc_dir(), G_DIR_SEPARATOR_S, PACKAGE_TARNAME ".ifb", NULL);
 	if (vcalprefs.export_freebusy_command == NULL)
 		vcalprefs.export_freebusy_command = g_strdup("");
 	if (vcalprefs.freebusy_get_url == NULL)
