@@ -326,7 +326,7 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	gint i;
 
 	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST - 1))
+	if (!Oauth2Service_is_valid(provider))
 		return (1);
 
 	token = oauth2_get_token_from_response(provider, authcode);
@@ -460,7 +460,7 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	gint i;
 
 	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST - 1))
+	if (!Oauth2Service_is_valid(provider))
 		return (1);
 
 	sock = sock_connect(OAUTH2info[i][OA2_BASE_URL], 443);
@@ -576,7 +576,7 @@ gchar *oauth2_authorisation_url(Oauth2Service provider, const gchar *custom_clie
 	GString *url;
 
 	i = (int)provider - 1;
-	if (i < 0 || i > (OAUTH2AUTH_LAST - 1))
+	if (!Oauth2Service_is_valid(provider))
 		return NULL;
 
 	url = g_string_sized_new(1024);
