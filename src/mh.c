@@ -1234,7 +1234,7 @@ static gint sort_cache_list_by_msgnum(gconstpointer a, gconstpointer b)
 
 static gchar *get_unseen_seq_name(void)
 {
-	static gchar *seq_name = NULL;
+	static gchar *seq_name;
 	if (!seq_name) {
 		gchar buf[BUFFSIZE];
 		gchar *tmp;
