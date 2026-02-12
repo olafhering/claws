@@ -197,22 +197,11 @@ typedef enum {
 #define INVALID_PID -1
 #endif
 
-static GdkColor default_header_bgcolor = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
+static GdkColor default_header_bgcolor;
+static GdkColor default_header_color;
 
-static GdkColor default_header_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
-
-static GList *compose_list = NULL;
-static GSList *extra_headers = NULL;
+static GList *compose_list;
+static GSList *extra_headers;
 
 static Compose *compose_generic_new(PrefsAccount *account, const gchar *to, FolderItem *item, GList *attach_files, GList *listAddress);
 
@@ -623,13 +612,13 @@ static gboolean compose_put_existing_to_front(MsgInfo *info)
 	return FALSE;
 }
 
-static GdkColor quote_color1 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
-static GdkColor quote_color2 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
-static GdkColor quote_color3 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
+static GdkColor quote_color1;
+static GdkColor quote_color2;
+static GdkColor quote_color3;
 
-static GdkColor quote_bgcolor1 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
-static GdkColor quote_bgcolor2 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
-static GdkColor quote_bgcolor3 = { (gulong) 0, (gushort) 0, (gushort) 0, (gushort) 0 };
+static GdkColor quote_bgcolor1;
+static GdkColor quote_bgcolor2;
+static GdkColor quote_bgcolor3;
 
 static GdkColor signature_color = {
 	(gulong) 0,
@@ -638,12 +627,7 @@ static GdkColor signature_color = {
 	(gushort) 0x7fff
 };
 
-static GdkColor uri_color = {
-	(gulong) 0,
-	(gushort) 0,
-	(gushort) 0,
-	(gushort) 0
-};
+static GdkColor uri_color;
 
 static void compose_create_tags(GtkTextView *text, Compose *compose)
 {
@@ -9342,7 +9326,7 @@ gboolean compose_draft(gpointer data, guint action)
 	gchar *sheaders;
 	gint msgnum;
 	MsgFlags flag = { 0, 0 };
-	static gboolean lock = FALSE;
+	static gboolean lock;
 	MsgInfo *newmsginfo;
 	FILE *fp;
 	gboolean target_locked = FALSE;
