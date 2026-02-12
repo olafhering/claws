@@ -396,16 +396,6 @@ else
 fi
 AC_SUBST(SM_LIBS)
 
-dnl Check for __VA_OPT__ macro
-AC_CACHE_CHECK([for __VA_OPT__],
-	[ac_cv_va_opt],
-	[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]], [[#define va_opt_printf(format, ...) fprintf(stderr, format __VA_OPT__(,) __VA_ARGS__)
-		va_opt_printf("success\n");]])],[ac_cv_va_opt=yes],[ac_cv_va_opt=no])]
-)
-if test "$ac_cv_va_opt" = yes; then
-	AC_DEFINE([HAVE_VA_OPT], [1], [Define if __VA_OPT__ macro works])
-fi
-
 dnl Checks for header files.
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(paths.h \
