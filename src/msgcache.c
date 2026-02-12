@@ -578,6 +578,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 	} else if (strcmp(srccharset, dstcharset) == 0) {
 		debug_print("using Noop Converter\n");
 
+		g_free(srccharset);
 		conv = NULL;
 	} else {
 		CharsetConverter *charsetconv;
@@ -587,12 +588,11 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 		charsetconv = g_new0(CharsetConverter, 1);
 		charsetconv->converter.convert = strconv_charset_convert;
 		charsetconv->converter.free = strconv_charset_free;
-		charsetconv->srccharset = g_strdup(srccharset);
+		charsetconv->srccharset = srccharset;
 		charsetconv->dstcharset = dstcharset;
 
 		conv = (StringConverter *)charsetconv;
 	}
-	g_free(srccharset);
 
 	cache = msgcache_new();
 
