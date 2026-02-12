@@ -109,10 +109,10 @@ static void handle_method_call(GDBusConnection *connection, const gchar *sender,
 	g_variant_unref(value);
 }
 
-static GDBusInterfaceVTable *interface_vtable = NULL;
+static GDBusInterfaceVTable *interface_vtable;
 
-static GDBusNodeInfo *introspection_data = NULL;
-static GDBusInterfaceInfo *interface_info = NULL;
+static GDBusNodeInfo *introspection_data;
+static GDBusInterfaceInfo *interface_info;
 
 static const gchar introspection_xml[] = "<node>" "  <interface name='org.gnome.Shell.CalendarServer'>" "    <method name='GetEvents'>" "      <arg type='x' name='greeting' direction='in'/>" "      <arg type='x' name='greeting' direction='in'/>" "      <arg type='b' name='greeting' direction='in'/>" "      <arg type='a(sssbxxa{sv})' name='events' direction='out'/>" "    </method>" "  </interface>" "</node>";
 
