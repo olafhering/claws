@@ -1374,7 +1374,6 @@ MsgInfo *procmsg_msginfo_get_full_info(MsgInfo *msginfo)
 	return full_msginfo;
 }
 
-#define FREENULL(n) { g_free(n); n = NULL; }
 void proc_msginfo_release(MsgInfo *msginfo)
 {
 	if (msginfo == NULL)
@@ -1389,51 +1388,46 @@ void proc_msginfo_release(MsgInfo *msginfo)
 		folder_item_update(msginfo->to_folder, F_ITEM_UPDATE_MSGCNT);
 	}
 
-	FREENULL(msginfo->fromspace);
+	g_free(msginfo->fromspace);
 
-	FREENULL(msginfo->fromname);
+	g_free(msginfo->fromname);
 
-	FREENULL(msginfo->date);
-	FREENULL(msginfo->from);
-	FREENULL(msginfo->to);
-	FREENULL(msginfo->cc);
-	FREENULL(msginfo->newsgroups);
-	FREENULL(msginfo->subject);
-	FREENULL(msginfo->msgid);
-	FREENULL(msginfo->inreplyto);
-	FREENULL(msginfo->xref);
+	g_free(msginfo->date);
+	g_free(msginfo->from);
+	g_free(msginfo->to);
+	g_free(msginfo->cc);
+	g_free(msginfo->newsgroups);
+	g_free(msginfo->subject);
+	g_free(msginfo->msgid);
+	g_free(msginfo->inreplyto);
+	g_free(msginfo->xref);
 
 	if (msginfo->extradata) {
 		if (msginfo->extradata->avatars) {
 			g_slist_foreach(msginfo->extradata->avatars, (GFunc) procmsg_msginfoavatar_free, NULL);
 			g_slist_free(msginfo->extradata->avatars);
-			msginfo->extradata->avatars = NULL;
 		}
-		FREENULL(msginfo->extradata->returnreceiptto);
-		FREENULL(msginfo->extradata->dispositionnotificationto);
-		FREENULL(msginfo->extradata->list_post);
-		FREENULL(msginfo->extradata->list_subscribe);
-		FREENULL(msginfo->extradata->list_unsubscribe);
-		FREENULL(msginfo->extradata->list_help);
-		FREENULL(msginfo->extradata->list_archive);
-		FREENULL(msginfo->extradata->list_owner);
-		FREENULL(msginfo->extradata->partial_recv);
-		FREENULL(msginfo->extradata->account_server);
-		FREENULL(msginfo->extradata->account_login);
-		FREENULL(msginfo->extradata->resent_from);
-		FREENULL(msginfo->extradata);
+		g_free(msginfo->extradata->returnreceiptto);
+		g_free(msginfo->extradata->dispositionnotificationto);
+		g_free(msginfo->extradata->list_post);
+		g_free(msginfo->extradata->list_subscribe);
+		g_free(msginfo->extradata->list_unsubscribe);
+		g_free(msginfo->extradata->list_help);
+		g_free(msginfo->extradata->list_archive);
+		g_free(msginfo->extradata->list_owner);
+		g_free(msginfo->extradata->partial_recv);
+		g_free(msginfo->extradata->account_server);
+		g_free(msginfo->extradata->account_login);
+		g_free(msginfo->extradata->resent_from);
+		g_free(msginfo->extradata);
 	}
 	slist_free_strings_full(msginfo->references);
-	msginfo->references = NULL;
 	g_slist_free(msginfo->tags);
-	msginfo->tags = NULL;
 
-	FREENULL(msginfo->plaintext_file);
+	g_free(msginfo->plaintext_file);
 
 	g_free(msginfo);
 }
-
-#undef FREENULL
 
 guint procmsg_msginfo_memusage(MsgInfo *msginfo)
 {
