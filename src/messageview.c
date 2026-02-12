@@ -82,11 +82,11 @@ static gint messageview_delete_cb(GtkWidget *widget, GdkEventAny *event, Message
 static void messageview_size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation);
 static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, MessageView *messageview);
 static void return_receipt_show(NoticeView *noticeview, MsgInfo *msginfo);
-static void return_receipt_send_clicked(NoticeView *noticeview, MsgInfo *msginfo);
+static void return_receipt_send_clicked(NoticeView *noticeview, void *user_data);
 static void partial_recv_show(NoticeView *noticeview, MsgInfo *msginfo);
-static void partial_recv_dload_clicked(NoticeView *noticeview, MsgInfo *msginfo);
-static void partial_recv_del_clicked(NoticeView *noticeview, MsgInfo *msginfo);
-static void partial_recv_unmark_clicked(NoticeView *noticeview, MsgInfo *msginfo);
+static void partial_recv_dload_clicked(NoticeView *noticeview, void *user_data);
+static void partial_recv_del_clicked(NoticeView *noticeview, void *user_data);
+static void partial_recv_unmark_clicked(NoticeView *noticeview, void *user_data);
 static void save_as_cb(GtkAction *action, gpointer data);
 static void page_setup_cb(GtkAction *action, gpointer data);
 static void print_cb(GtkAction *action, gpointer data);
@@ -1621,8 +1621,10 @@ static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, MessageView *
 	return mimeview_pass_key_press_event(messageview->mimeview, event);
 }
 
-static void messageview_show_partial_display_cb(NoticeView *noticeview, MessageView *messageview)
+static void messageview_show_partial_display_cb(NoticeView *noticeview, void *user_data)
 {
+	MessageView *messageview = user_data;
+
 	messageview->show_full_text = TRUE;
 	main_window_cursor_wait(mainwindow_get_mainwindow());
 	noticeview_hide(messageview->noticeview);
@@ -1639,7 +1641,7 @@ void messageview_show_partial_display(MessageView *messageview, MsgInfo *msginfo
 	noticeview_set_text(messageview->noticeview, _("Only the first megabyte of text is shown."));
 	noticeview_set_button_text(messageview->noticeview, msg);
 	g_free(msg);
-	noticeview_set_button_press_callback(messageview->noticeview, G_CALLBACK(messageview_show_partial_display_cb), (gpointer)messageview);
+	noticeview_set_button_press_callback(messageview->noticeview, messageview_show_partial_display_cb, messageview);
 	noticeview_show(messageview->noticeview);
 	messageview->partial_display_shown = TRUE;
 }
@@ -1674,14 +1676,14 @@ static void return_receipt_show(NoticeView *noticeview, MsgInfo *msginfo)
 		noticeview_set_icon(noticeview, STOCK_PIXMAP_NOTICE_WARN);
 		noticeview_set_text(noticeview, _("This message asks for a return receipt."));
 		noticeview_set_button_text(noticeview, _("Send receipt"));
-		noticeview_set_button_press_callback(noticeview, G_CALLBACK(return_receipt_send_clicked), (gpointer)msginfo);
+		noticeview_set_button_press_callback(noticeview, return_receipt_send_clicked, msginfo);
 	}
 	noticeview_show(noticeview);
 }
 
-static void return_receipt_send_clicked(NoticeView *noticeview, MsgInfo *msginfo)
+static void return_receipt_send_clicked(NoticeView *noticeview, void *user_data)
 {
-	MsgInfo *tmpmsginfo;
+	MsgInfo *tmpmsginfo, *msginfo = user_data;
 	gchar *file;
 
 	file = procmsg_get_message_file_path(msginfo);
@@ -1708,8 +1710,8 @@ static void partial_recv_show(NoticeView *noticeview, MsgInfo *msginfo)
 	gchar *text = NULL;
 	gchar *button1 = NULL;
 	gchar *button2 = NULL;
-	void *button1_cb = NULL;
-	void *button2_cb = NULL;
+	void(*button1_cb)(NoticeView *, void *) = NULL;
+	void(*button2_cb)(NoticeView *, void *) = NULL;
 
 	if (!msginfo->extradata)
 		return;
@@ -1747,30 +1749,36 @@ static void partial_recv_show(NoticeView *noticeview, MsgInfo *msginfo)
 	noticeview_set_text(noticeview, text);
 	g_free(text);
 	noticeview_set_button_text(noticeview, button1);
-	noticeview_set_button_press_callback(noticeview, G_CALLBACK(button1_cb), (gpointer)msginfo);
+	noticeview_set_button_press_callback(noticeview, button1_cb, msginfo);
 
 	noticeview_set_2ndbutton_text(noticeview, button2);
-	noticeview_set_2ndbutton_press_callback(noticeview, G_CALLBACK(button2_cb), (gpointer)msginfo);
+	noticeview_set_2ndbutton_press_callback(noticeview, button2_cb, msginfo);
 
 	noticeview_show(noticeview);
 }
 
-static void partial_recv_dload_clicked(NoticeView *noticeview, MsgInfo *msginfo)
+static void partial_recv_dload_clicked(NoticeView *noticeview, void *user_data)
 {
+	MsgInfo *msginfo = user_data;
+
 	if (partial_mark_for_download(msginfo) == 0) {
 		partial_recv_show(noticeview, msginfo);
 	}
 }
 
-static void partial_recv_del_clicked(NoticeView *noticeview, MsgInfo *msginfo)
+static void partial_recv_del_clicked(NoticeView *noticeview, void *user_data)
 {
+	MsgInfo *msginfo = user_data;
+
 	if (partial_mark_for_delete(msginfo) == 0) {
 		partial_recv_show(noticeview, msginfo);
 	}
 }
 
-static void partial_recv_unmark_clicked(NoticeView *noticeview, MsgInfo *msginfo)
+static void partial_recv_unmark_clicked(NoticeView *noticeview, void *user_data)
 {
+	MsgInfo *msginfo = user_data;
+
 	if (partial_unmark(msginfo) == 0) {
 		partial_recv_show(noticeview, msginfo);
 	}
