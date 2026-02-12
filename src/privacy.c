@@ -418,9 +418,6 @@ gboolean privacy_sign(const gchar *id, MimeInfo *target, PrefsAccount *account, 
 {
 	PrivacySystem *system;
 
-	cm_return_val_if_fail(id != NULL, FALSE);
-	cm_return_val_if_fail(target != NULL, FALSE);
-
 	system = privacy_get_system(id);
 	if (system == NULL)
 		return FALSE;
