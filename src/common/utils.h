@@ -46,6 +46,7 @@
 #include <wchar.h>
 #endif
 
+#define g_source_remove(_id_) {gint _i_=(_id_);gboolean _r_=g_source_remove(_i_);if (!_r_)g_critical("%s:%u: Source ID %u ",__func__,__LINE__,_i_);}
 /* The Hurd doesn't have these limits */
 #ifndef PATH_MAX
 #define PATH_MAX 4196
