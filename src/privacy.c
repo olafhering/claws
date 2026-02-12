@@ -213,9 +213,6 @@ gint privacy_mimeinfo_check_signature(MimeInfo *mimeinfo, GCancellable *cancella
 {
 	PrivacySystem *system;
 
-	if (mimeinfo == NULL)
-		g_error("siginfo was NULL");
-
 	if (mimeinfo->privacy == NULL) {
 		g_warning("mimeinfo->privacy was NULL");
 
