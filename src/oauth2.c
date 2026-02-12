@@ -144,16 +144,50 @@ static gchar *OAUTH2CodeMarker[6][2] = {
 	{"yahoo_begin_mark", "yahoo_end_mark"} /* Not used since token avalable to user to copy in browser window */
 };
 
-static gint oauth2_post_request(gchar *buf, gchar *host, gchar *resource, gchar *header, gchar *body)
+static gchar *oauth2_post_request(gchar *host, gchar *resource, gchar *header, gchar *body)
 {
-	gint len;
+	static const char s_POST[] = "POST %s HTTP/1.1\r\n";
+	static const char s_ContentType[] = "Content-Type: application/x-www-form-urlencoded\r\n";
+	static const char s_Accept[] = "Accept: text/html,application/json\r\n";
+	static const char s_ContentLength[] = "Content-Length: %zd\r\n";
+	static const char s_Host[] = "Host: %s\r\n";
+	static const char s_Connection[] = "Connection: close\r\n";
+	static const char s_UserAgent[] = "User-Agent: ClawsMail\r\n";
+	GString *request;
+	gsize fixed_len = 32;
+	size_t len = strlen(body);
+
+	fixed_len += sizeof(s_POST);
+	fixed_len += sizeof(s_ContentType);
+	fixed_len += sizeof(s_Accept);
+	fixed_len += sizeof(s_ContentLength);
+	fixed_len += sizeof(s_Host);
+	fixed_len += sizeof(s_Connection);
+	fixed_len += sizeof(s_UserAgent);
+	fixed_len += strlen(host);
+	fixed_len += strlen(resource);
+	if (header)
+		fixed_len += strlen(header);
+	fixed_len += len;
+
+	request = g_string_sized_new(fixed_len);
+	if (!request)
+		return NULL;
 
 	debug_print("Complete body: %s\n", body);
-	len = strlen(body);
+
+	g_string_append_printf(request, s_POST, resource);
+	g_string_append(request, s_ContentType);
+	g_string_append(request, s_Accept);
+	g_string_append_printf(request, s_ContentLength, len);
+	g_string_append_printf(request, s_Host, host);
+	g_string_append(request, s_Connection);
+	g_string_append(request, s_UserAgent);
 	if (header[0])
-		return snprintf(buf, OAUTH2BUFSIZE, "POST %s HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nAccept: text/html,application/json\r\nContent-Length: %i\r\nHost: %s\r\nConnection: close\r\nUser-Agent: ClawsMail\r\n%s\r\n\r\n%s", resource, len, host, header, body);
-	else
-		return snprintf(buf, OAUTH2BUFSIZE, "POST %s HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nAccept: text/html,application/json\r\nContent-Length: %i\r\nHost: %s\r\nConnection: close\r\nUser-Agent: ClawsMail\r\n\r\n%s", resource, len, host, body);
+		g_string_append_printf(request, "%s\r\n", header);
+	g_string_append_printf(request, "\r\n%s", body);
+
+	return g_string_free(request, FALSE);
 }
 
 static gchar *oauth2_filter_access(const gchar *json, char **expiry)
@@ -275,8 +309,8 @@ static gchar *oauth2_contact_server(SockInfo *sock, const gchar *request)
 
 int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const gchar *authcode)
 {
-	gchar *request;
-	gchar *response;
+	g_autofree gchar *request = NULL;
+	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
 	gchar *header;
@@ -319,15 +353,12 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		return (1);
 	}
 
-	request = g_malloc(OAUTH2BUFSIZE + 1);
-
 	if (OAUTH2Data->custom_client_id)
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
 	else
 		client_id = oauth2_decode(OAUTH2info[i][OA2_CLIENT_ID]);
 
 	body = g_strconcat("client_id=", client_id, "&code=", token, NULL);
-	debug_print("Body: %s\n", body);
 
 	if (OAUTH2info[i][OA2_CLIENT_SECRET][0]) {
 		//Only allow custom client secret if the service provider would usually expect a client secret
@@ -380,8 +411,9 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 		header = g_strconcat("", NULL);
 	}
 
-	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
-	response = oauth2_contact_server(sock, request);
+	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_ACCESS_RESOURCE], header, body);
+	if (request)
+		response = oauth2_contact_server(sock, request);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		OAUTH2Data->access_token = access_token;
@@ -403,8 +435,6 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 	sock_close(sock, TRUE);
 	g_free(body);
 	g_free(header);
-	g_free(request);
-	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
 
@@ -414,8 +444,8 @@ int oauth2_obtain_tokens(Oauth2Service provider, OAUTH2Data *OAUTH2Data, const g
 static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2Data)
 {
 
-	gchar *request;
-	gchar *response;
+	g_autofree gchar *request = NULL;
+	g_autofree gchar *response = NULL;
 	gchar *body;
 	gchar *uri;
 	gchar *header;
@@ -449,8 +479,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		log_message(LOG_PROTOCOL, _("OAuth2 TLS connection error\n"));
 		return (1);
 	}
-
-	request = g_malloc(OAUTH2BUFSIZE + 1);
 
 	if (OAUTH2Data->custom_client_id)
 		client_id = g_strdup(OAUTH2Data->custom_client_id);
@@ -508,8 +536,9 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 		header = g_strconcat("", NULL);
 	}
 
-	oauth2_post_request(request, OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
-	response = oauth2_contact_server(sock, request);
+	request = oauth2_post_request(OAUTH2info[i][OA2_BASE_URL], OAUTH2info[i][OA2_REFRESH_RESOURCE], header, body);
+	if (request)
+		response = oauth2_contact_server(sock, request);
 
 	if (response && (access_token = oauth2_filter_access(response, &expiry))) {
 		OAUTH2Data->access_token = access_token;
@@ -533,8 +562,6 @@ static gint oauth2_use_refresh_token(Oauth2Service provider, OAUTH2Data *OAUTH2D
 	sock_close(sock, TRUE);
 	g_free(body);
 	g_free(header);
-	g_free(request);
-	g_free(response);
 	g_free(client_id);
 	g_free(client_secret);
 
