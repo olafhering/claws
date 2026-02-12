@@ -135,7 +135,7 @@ struct _Session {
 #endif
 };
 
-void session_init(Session *session, const void *prefs_account, gboolean is_smtp);
+void session_init(Session *session, const void *prefs_account);
 gint session_connect(Session *session, const gchar *server, gushort port);
 gint session_disconnect(Session *session);
 void session_destroy(Session *session);
