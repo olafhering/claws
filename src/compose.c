@@ -3990,7 +3990,6 @@ static gboolean compose_beautify_paragraph(Compose *compose, GtkTextIter *par_it
 	gboolean modified = force;
 	gboolean removed = FALSE;
 	gboolean modified_before_remove = FALSE;
-	gint lines = 0;
 	gboolean start = TRUE;
 	gint itemized_len = 0, rem_item_len = 0;
 	gchar *itemized_chars = NULL;
@@ -4176,7 +4175,6 @@ static gboolean compose_beautify_paragraph(Compose *compose, GtkTextIter *par_it
 		} else {
 			/* move iter to next line start */
 			iter = break_pos;
-			lines++;
 		}
 
  colorize:
@@ -4300,11 +4298,9 @@ static gboolean compose_beautify_paragraph(Compose *compose, GtkTextIter *par_it
 			}
 		}
 		if (!modified) {
-/*			debug_print("not modified, out after %d lines\n", lines); */
 			goto end;
 		}
 	}
-/*	debug_print("modified, out after %d lines\n", lines); */
  end:
 	g_free(itemized_chars);
 	if (par_iter)
