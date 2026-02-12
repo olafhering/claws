@@ -59,8 +59,8 @@ static struct URIOpener {
 
 static void uri_opener_list_copy_cb(gpointer action, gpointer data);
 
-static GtkActionGroup *uri_opener_popup_action = NULL;
-static GtkWidget *uri_opener_popup_menu = NULL;
+static GtkActionGroup *uri_opener_popup_action;
+static GtkWidget *uri_opener_popup_menu;
 
 static GtkActionEntry uri_opener_popup_entries[] = {
 	{"UriOpenerPopup", NULL, "UriOpenerPopup", NULL, NULL, NULL},
