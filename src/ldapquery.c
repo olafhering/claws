@@ -49,7 +49,7 @@
  * Key for thread specific data.
  */
 static pthread_key_t _queryThreadKey_;
-static gboolean _queryThreadInit_ = FALSE;
+static gboolean _queryThreadInit_;
 
 static gboolean callbackend(gpointer data)
 {
