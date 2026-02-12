@@ -77,8 +77,8 @@ static struct Actions {
 	GtkWidget *actions_list_view;
 } actions;
 
-static int modified = FALSE;
-static int modified_list = FALSE;
+static int modified;
+static int modified_list;
 
 /* widget creating functions */
 static void prefs_actions_create(MainWindow *mainwin);
@@ -968,8 +968,8 @@ static void prefs_actions_list_view_insert_action(GtkWidget *list_view, gint row
 	}
 }
 
-static GtkActionGroup *prefs_actions_popup_action = NULL;
-static GtkWidget *prefs_actions_popup_menu = NULL;
+static GtkActionGroup *prefs_actions_popup_action;
+static GtkWidget *prefs_actions_popup_menu;
 
 static GtkActionEntry prefs_actions_popup_entries[] = {
 	{"PrefsActionsPopup", NULL, "PrefsActionsPopup", NULL, NULL, NULL},
