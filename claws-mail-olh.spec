@@ -64,6 +64,7 @@ URL:            https://gitlab.com/olafhering/claws/-/compare/3.21.0...olh-3.21.
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
+BuildRequires:  bash
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  update-desktop-files
@@ -425,7 +426,16 @@ find %buildroot -ls
 find %buildroot -name "*.la" -print -delete
 find %buildroot -name RELEASE_NOTES -print -delete
 rm -rf %buildroot%_includedir %buildroot%_libdir/pkgconfig
+%if %{with claws_fsanitize}
+mv -v %buildroot%_bindir/{claws-mail,%name.bin}
+tee %buildroot%_bindir/%name <<'_EOF_'
+#!/bin/bash
+exec env ASAN_OPTIONS=alloc_dealloc_mismatch=0 %_bindir/%name.bin "$@"
+_EOF_
+chmod -c 555 %buildroot%_bindir/%name
+%else
 mv -v %buildroot%_bindir/{claws-mail,%name}
+%endif
 mv -v %buildroot%_mandir/man1/{claws-mail,%name}.1
 mkdir -vp %buildroot%_datadir/xfce4/helpers/
 pushd "$_" > /dev/null
