@@ -816,6 +816,7 @@ void msgcache_read_mark(MsgCache *cache, const gchar *mark_file)
 		int rem_len = map_len - ftell(fp);
 		unsigned char *walk_data = cache_data + ftell(fp);
 
+		msginfo = NULL;
 		while (rem_len > 0) {
 			GET_CACHE_DATA_INT(num);
 			GET_CACHE_DATA_INT(perm_flags);
@@ -910,6 +911,7 @@ void msgcache_read_tags(MsgCache *cache, const gchar *tags_file)
 		int rem_len = map_len - ftell(fp);
 		unsigned char *walk_data = cache_data + ftell(fp);
 
+		msginfo = NULL;
 		while (rem_len > 0) {
 			gint id = -1;
 			GET_CACHE_DATA_INT(num);
