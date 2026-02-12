@@ -3172,7 +3172,7 @@ static gchar *compose_quote_fmt(Compose *compose, MsgInfo *msginfo,
 		if (buf == NULL)
 			alertpanel_error(_("The \"Quotation mark\" of the template is invalid."));
 		else
-			Xstrdup_a(quote_str, buf, goto error)
+			Xstrdup_a(quote_str, buf, goto error);
 	}
 
 	if (fmt && *fmt != '\0') {
