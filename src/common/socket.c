@@ -258,7 +258,7 @@ gint fd_open_inet(gushort port)
 {
 	gint sock;
 	struct sockaddr_in addr;
-	gint val;
+	int val;
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (!SOCKET_IS_VALID(sock)) {
@@ -271,7 +271,7 @@ gint fd_open_inet(gushort port)
 	}
 
 	val = 1;
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&val, sizeof(val)) < 0) {
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) < 0) {
 		perror("setsockopt");
 		fd_close(sock);
 		return -1;
