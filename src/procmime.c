@@ -151,9 +151,8 @@ static gboolean free_func(GNode *node, gpointer data)
 	return FALSE;
 }
 
-void procmime_mimeinfo_free_all(MimeInfo **mimeinfo_ptr)
+void procmime_mimeinfo_unref(MimeInfo *mimeinfo)
 {
-	MimeInfo *mimeinfo = *mimeinfo_ptr;
 	GNode *node;
 
 	if (!mimeinfo)
@@ -163,8 +162,6 @@ void procmime_mimeinfo_free_all(MimeInfo **mimeinfo_ptr)
 	g_node_traverse(node, G_IN_ORDER, G_TRAVERSE_ALL, -1, free_func, NULL);
 
 	g_node_destroy(node);
-
-	*mimeinfo_ptr = NULL;
 }
 
 MimeInfo *procmime_mimeinfo_parent(MimeInfo *mimeinfo)
@@ -894,17 +891,17 @@ FILE *procmime_get_first_text_content(MsgInfo *msginfo)
 		 * fully for non-empty parts
 		 */
 		short_scan = FALSE;
-		procmime_mimeinfo_free_all(&mimeinfo);
+		procmime_mimeinfo_unref(mimeinfo);
 		goto scan_again;
 	} else if (!empty_ok && !short_scan) {
 		/* if full scan didn't find a non-empty part, rescan
 		 * accepting empty parts 
 		 */
 		empty_ok = TRUE;
-		procmime_mimeinfo_free_all(&mimeinfo);
+		procmime_mimeinfo_unref(mimeinfo);
 		goto scan_again;
 	}
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 
 	return outfp;
 }
@@ -963,7 +960,7 @@ FILE *procmime_get_first_encrypted_text_content(MsgInfo *msginfo)
 	if (partinfo)
 		outfp = procmime_get_text_content(partinfo);
 
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 
 	return outfp;
 }
@@ -982,7 +979,7 @@ gboolean procmime_msginfo_is_encrypted(MsgInfo *msginfo)
 
 	partinfo = mimeinfo;
 	result = (find_encrypted_part(partinfo) != NULL);
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 
 	return result;
 }
@@ -1945,7 +1942,7 @@ static int procmime_parse_mimepart(MimeInfo *parent, gchar *content_type, gchar 
 			 * this avoids DOSsing ourselves 
 			 * with enormous messages
 			 */
-			procmime_mimeinfo_free_all(&mimeinfo);
+			procmime_mimeinfo_unref(mimeinfo);
 			return -1;
 		}
 		g_node_append(parent->node, mimeinfo->node);

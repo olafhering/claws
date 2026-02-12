@@ -481,7 +481,7 @@ void mimeview_destroy(MimeView *mimeview)
 	gtk_target_list_unref(mimeview->target_list);
 
 	mimeview_sig_check_cancel_and_clear(mimeview);
-	procmime_mimeinfo_free_all(&mimeview->mimeinfo);
+	procmime_mimeinfo_unref(mimeview->mimeinfo);
 	gtk_tree_path_free(mimeview->opened);
 	g_free(mimeview->file);
 	mimeviews = g_slist_remove(mimeviews, mimeview);
@@ -872,7 +872,8 @@ void mimeview_clear(MimeView *mimeview)
 	if (mimeview->mimeviewer != NULL)
 		mimeview->mimeviewer->clear_viewer(mimeview->mimeviewer);
 
-	procmime_mimeinfo_free_all(&mimeview->mimeinfo);
+	procmime_mimeinfo_unref(mimeview->mimeinfo);
+	mimeview->mimeinfo = NULL;
 
 	gtk_tree_path_free(mimeview->opened);
 	mimeview->opened = NULL;
@@ -1022,7 +1023,7 @@ static void check_signature_async_cb(GObject *source_object, GAsyncResult *async
 
 	if (result->newinfo) {
 		g_warning("Check sig task returned an unexpected new MimeInfo");
-		procmime_mimeinfo_free_all(&result->newinfo);
+		procmime_mimeinfo_unref(result->newinfo);
 	}
 
 out:

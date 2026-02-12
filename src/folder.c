@@ -2851,7 +2851,7 @@ gchar *folder_item_fetch_msg(FolderItem *item, gint num)
 			/* check for attachments */
 			if (mimeinfo != NULL) {
 				g_node_children_foreach(mimeinfo->node, G_TRAVERSE_ALL, msginfo_set_mime_flags, msginfo);
-				procmime_mimeinfo_free_all(&mimeinfo);
+				procmime_mimeinfo_unref(mimeinfo);
 
 				procmsg_msginfo_set_flags(msginfo, 0, MSG_SCANNED);
 			}
@@ -2894,7 +2894,7 @@ gchar *folder_item_fetch_msg_full(FolderItem *item, gint num, gboolean headers, 
 			/* check for attachments */
 			if (mimeinfo != NULL) {
 				g_node_children_foreach(mimeinfo->node, G_TRAVERSE_ALL, msginfo_set_mime_flags, msginfo);
-				procmime_mimeinfo_free_all(&mimeinfo);
+				procmime_mimeinfo_unref(mimeinfo);
 
 				procmsg_msginfo_set_flags(msginfo, 0, MSG_SCANNED);
 			}

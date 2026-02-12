@@ -199,7 +199,7 @@ static gboolean create_mimeinfo_for_plaintext(const GString *verified, MimeInfo 
 		return FALSE;
 
 	g_node_unlink(decinfo->node);
-	procmime_mimeinfo_free_all(&newinfo);
+	procmime_mimeinfo_unref(newinfo);
 	decinfo->tmp = TRUE;
 
 	*created = decinfo;
@@ -626,7 +626,7 @@ static MimeInfo *smime_decrypt(MimeInfo *mimeinfo)
 	}
 
 	g_node_unlink(decinfo->node);
-	procmime_mimeinfo_free_all(&parseinfo);
+	procmime_mimeinfo_unref(parseinfo);
 
 	decinfo->tmp = TRUE;
 
@@ -973,7 +973,7 @@ gboolean smime_encrypt(MimeInfo *mimeinfo, const gchar *encrypt_data)
 	g_free(textstr);
 
 	/* create encrypted multipart */
-	procmime_mimeinfo_free_all(&msgcontent);
+	procmime_mimeinfo_unref(msgcontent);
 	g_node_append(mimeinfo->node, encmultipart->node);
 
 	encmultipart->content = MIMECONTENT_FILE;

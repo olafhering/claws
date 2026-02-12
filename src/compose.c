@@ -1237,7 +1237,7 @@ static void compose_extract_original_charset(Compose *compose)
 		if (partinfo) {
 			compose->orig_charset = g_strdup(procmime_mimeinfo_get_parameter(partinfo, "charset"));
 		}
-		procmime_mimeinfo_free_all(&mimeinfo);
+		procmime_mimeinfo_unref(mimeinfo);
 	}
 }
 
@@ -3493,7 +3493,7 @@ static void compose_attach_parts(Compose *compose, MsgInfo *msginfo)
 		return;
 
 	if (mimeinfo->node->children == NULL) {
-		procmime_mimeinfo_free_all(&mimeinfo);
+		procmime_mimeinfo_unref(mimeinfo);
 		return;
 	}
 
@@ -3557,7 +3557,7 @@ static void compose_attach_parts(Compose *compose, MsgInfo *msginfo)
 		g_free(outfile);
 		NEXT_PART_NOT_CHILD(child);
 	}
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 }
 
 #undef NEXT_PART_NOT_CHILD
@@ -5362,7 +5362,7 @@ static gint compose_write_to_file(Compose *compose, FILE *fp, gint action, gbool
 
 	procmime_write_mimeinfo(mimemsg, fp);
 
-	procmime_mimeinfo_free_all(&mimemsg);
+	procmime_mimeinfo_unref(mimemsg);
 
 	return 0;
 }

@@ -192,7 +192,7 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 		}
 	}
 
-	procmime_mimeinfo_free_all(&mimeinfo);
+	procmime_mimeinfo_unref(mimeinfo);
 
 	return (result.status == OK) ? FALSE : TRUE;
 }
