@@ -115,7 +115,7 @@ struct _CharsetConverter {
 	StringConverter converter;
 
 	gchar *srccharset;
-	gchar *dstcharset;
+	const gchar *dstcharset;
 };
 
 MsgCache *msgcache_new(void)
@@ -522,7 +522,6 @@ static void strconv_charset_free(StringConverter *conv)
 	CharsetConverter *charsetconv = (CharsetConverter *) conv;
 
 	g_free(charsetconv->srccharset);
-	g_free(charsetconv->dstcharset);
 }
 
 MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
@@ -537,7 +536,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 	gboolean error = FALSE;
 	StringConverter *conv = NULL;
 	gchar *srccharset = NULL;
-	const gchar *dstcharset = NULL;
+	const gchar *dstcharset;
 	gchar *ref = NULL;
 	guint memusage = 0;
 	gint tmp_len = 0, map_len = -1;
@@ -574,7 +573,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 		return NULL;
 	}
 	dstcharset = CS_UTF_8;
-	if (srccharset == NULL || dstcharset == NULL) {
+	if (srccharset == NULL) {
 		conv = NULL;
 	} else if (strcmp(srccharset, dstcharset) == 0) {
 		debug_print("using Noop Converter\n");
@@ -589,7 +588,7 @@ MsgCache *msgcache_read_cache(FolderItem *item, const gchar *cache_file)
 		charsetconv->converter.convert = strconv_charset_convert;
 		charsetconv->converter.free = strconv_charset_free;
 		charsetconv->srccharset = g_strdup(srccharset);
-		charsetconv->dstcharset = g_strdup(dstcharset);
+		charsetconv->dstcharset = dstcharset;
 
 		conv = (StringConverter *)charsetconv;
 	}
