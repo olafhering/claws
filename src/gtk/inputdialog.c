@@ -55,7 +55,7 @@ static GtkWidget *combo;
 static GtkWidget *remember_checkbtn;
 static GtkWidget *ok_button;
 static GtkWidget *icon_q, *icon_p;
-static gboolean is_pass = FALSE;
+static gboolean is_pass;
 static void input_dialog_create(gboolean is_password);
 static gchar *input_dialog_open(const gchar *title, const gchar *message, const gchar *checkbtn_label, const gchar *default_string, gboolean default_checkbtn_state, gboolean *remember);
 static void input_dialog_set(const gchar *title, const gchar *message, const gchar *default_string);
