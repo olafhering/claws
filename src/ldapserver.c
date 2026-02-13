@@ -55,8 +55,6 @@ LdapServer *ldapsvr_create_noctl( void ) {
 	server->type = ADBOOKTYPE_LDAP;
 	server->addressCache = addrcache_create();
 	server->retVal = MGU_SUCCESS;
-	server->control = NULL;
-	server->listQuery = NULL;
 	server->searchFlag = FALSE;
 	return server;
 }

@@ -67,11 +67,6 @@ AddressBookFile *addrbook_create_book()
 	book->type = ADBOOKTYPE_BOOK;
 	book->addressCache = addrcache_create();
 	book->retVal = MGU_SUCCESS;
-	book->path = NULL;
-	book->fileName = NULL;
-	book->maxValue = 0;
-	book->tempList = NULL;
-	book->tempHash = NULL;
 	book->addressCache->modified = TRUE;
 
 	return book;

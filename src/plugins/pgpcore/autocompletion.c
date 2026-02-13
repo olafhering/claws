@@ -82,10 +82,7 @@ static gboolean pgp_autocompletion_hook(gpointer source, gpointer data)
 						if (uid->name != NULL && *uid->name != 0) {
 							ae->name = g_strdup(uid->name);
 							addr_compl_add_address1(ae->name, ae);
-						} else
-							ae->name = NULL;
-
-						ae->grp_emails = NULL;
+						}
 
 						addr_list = g_list_prepend(addr_list, ae);
 

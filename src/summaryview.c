@@ -823,7 +823,6 @@ SummaryView *summary_create(MainWindow *mainwin)
 	summaryview->multiple_sel_togbtn = multiple_sel_togbtn;
 #endif
 	summaryview->toggle_search = toggle_search;
-	summaryview->lock_count = 0;
 	summaryview->msginfo_update_callback_id =
 		hooks_register_hook(MSGINFO_UPDATE_HOOKLIST, summary_update_msg, (gpointer) summaryview);
 	summaryview->folder_item_update_callback_id =
@@ -2322,7 +2321,6 @@ void summary_select_node(SummaryView *summaryview, GtkCMCTreeNode *node,
 		summaryview->messageview->mimeview->textview->stop_loading = TRUE;
 		
 		data->ctree = ctree;
-		data->row = NULL;
 		data->node = node;
 		data->summaryview = summaryview;
 		data->display_msg = display_msg;
@@ -7251,7 +7249,6 @@ static void summary_selected(GtkCMCTree *ctree, GtkCMCTreeNode *row,
 		
 		data->ctree = ctree;
 		data->row = row;
-		data->node = NULL;
 		data->column = column;
 		data->summaryview = summaryview;
 		debug_print("postponing open of message till end of load\n");

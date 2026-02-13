@@ -68,25 +68,12 @@ LdapQuery *ldapqry_create( void ) {
 
 	qry = g_new0( LdapQuery, 1 );
 	ADDRQUERY_TYPE(qry) = ADDRQUERY_LDAP;
-	ADDRQUERY_ID(qry) = 0;
 	ADDRQUERY_SEARCHTYPE(qry) = ADDRSEARCH_NONE;
-	ADDRQUERY_NAME(qry) = NULL;
 	ADDRQUERY_RETVAL(qry) = LDAPRC_SUCCESS;
-	ADDRQUERY_FOLDER(qry) = NULL;
-	ADDRQUERY_SEARCHVALUE(qry) = NULL;
-	qry->control = NULL;
-	qry->server = NULL;
-	qry->entriesRead = 0;
-	qry->elapsedTime = 0;
 	qry->stopFlag = FALSE;
 	qry->busyFlag = FALSE;
 	qry->agedFlag = FALSE;
 	qry->completed = FALSE;
-	qry->thread = NULL;
-	qry->callBackEntry = NULL;
-	qry->callBackEnd = NULL;
-	qry->ldap = NULL;
-	qry->data = NULL;
 
 	/* Mutex to protect stop and busy flags */
 	qry->mutexStop = g_malloc0( sizeof( pthread_mutex_t ) );

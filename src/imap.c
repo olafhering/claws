@@ -803,9 +803,6 @@ static FolderItem *imap_folder_item_new(Folder *folder)
 	IMAPFolderItem *item;
 	
 	item = g_new0(IMAPFolderItem, 1);
-	item->lastuid = 0;
-	item->uid_next = 0;
-	item->uid_list = NULL;
 
 	return (FolderItem *)item;
 }
@@ -1330,17 +1327,10 @@ static IMAPSession *imap_session_new(Folder * folder,
 	SESSION(session)->type             = SESSION_IMAP;
 	SESSION(session)->server           = g_strdup(account->recv_server);
 	SESSION(session)->port             = port;
- 	SESSION(session)->sock             = NULL;
 	SESSION(session)->proxy_info       = proxy_info;
 	SESSION(session)->destroy          = imap_session_destroy;
 
-	session->capability = NULL;
 	session->authenticated = authenticated;
-	session->mbox = NULL;
-	session->exists = 0;
-	session->recent = 0;
-	session->expunge = 0;
-	session->cmd_count = 0;
 	session->folder = folder;
 	IMAP_FOLDER(session->folder)->last_seen_separator = 0;
 

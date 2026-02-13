@@ -183,13 +183,8 @@ JPilotFile *jpilot_create() {
 	pilotFile->addressCache = addrcache_create();
 	pilotFile->retVal = MGU_SUCCESS;
 
-	pilotFile->file = NULL;
-	pilotFile->path = NULL;
 	pilotFile->readMetadata = FALSE;
-	pilotFile->customLabels = NULL;
-	pilotFile->labelInd = NULL;
 	pilotFile->havePC3 = FALSE;
-	pilotFile->pc3ModifyTime = 0;
 	return pilotFile;
 }
 

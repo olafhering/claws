@@ -849,11 +849,6 @@ static CompletionWindow *addrcompl_create_window( void ) {
 	CompletionWindow *cw;
 
 	cw = g_new0( CompletionWindow, 1 );
-	cw->listCount = 0;
-	cw->searchTerm = NULL;
-	cw->window = NULL;
-	cw->entry = NULL;
-	cw->list_view = NULL;
 	cw->in_mouse = FALSE;
 	cw->destroying = FALSE;
 

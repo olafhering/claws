@@ -38,8 +38,6 @@ static RDeletedItem *_new_deleted_item()
 {
 	RDeletedItem *ditem = g_new0(RDeletedItem, 1);
 
-	ditem->id = NULL;
-	ditem->title = NULL;
 	ditem->date_published = -1;
 
 	return ditem;

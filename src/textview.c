@@ -399,10 +399,7 @@ TextView *textview_create(void)
 	textview->vbox               = vbox;
 	textview->scrolledwin        = scrolledwin;
 	textview->text               = text;
-	textview->uri_list           = NULL;
-	textview->body_pos           = 0;
 	textview->last_buttonpress   = GDK_NOTHING;
-	textview->image		     = NULL;
 	return textview;
 }
 
@@ -1446,7 +1443,6 @@ static void textview_make_clickable_parts(TextView *textview,
 				(buffer, &iter, last->bp, last->ep - last->bp,
 				 uri_tag, fg_tag, NULL);
 			uri->end = gtk_text_iter_get_offset(&iter);
-			uri->filename = NULL;
 			textview->uri_list =
 				g_slist_prepend(textview->uri_list, uri);
 		}
@@ -1578,7 +1574,6 @@ static void textview_make_clickable_parts_later(TextView *textview,
 			gtk_text_buffer_apply_tag_by_name(buffer, "link", &start_iter, &end_iter);
 
 			uri->end = gtk_text_iter_get_offset(&end_iter);
-			uri->filename = NULL;
 			textview->uri_list =
 				g_slist_prepend(textview->uri_list, uri);
 		}
@@ -1693,8 +1688,7 @@ do_quote:
 					 "qlink", fg_color, NULL);
 			uri->end = gtk_text_iter_get_offset(&iter);
 			gtk_text_buffer_insert(buffer, &iter, "  \n", -1);
-			
-			uri->filename = NULL;
+
 			textview->uri_list =
 				g_slist_prepend(textview->uri_list, uri);
 		
@@ -1778,7 +1772,6 @@ void textview_write_link(TextView *textview, const gchar *str,
 	gtk_text_buffer_insert_with_tags_by_name
 		(buffer, &iter, bufp, -1, "link", NULL);
 	r_uri->end = gtk_text_iter_get_offset(&iter);
-	r_uri->filename = NULL;
 	textview->uri_list = g_slist_prepend(textview->uri_list, r_uri);
 }
 
@@ -2263,7 +2256,6 @@ static void textview_show_tags(TextView *textview)
 			"link", "header", "tags", NULL);
 		uri->end = gtk_text_iter_get_offset(&iter);
 		uri->filename = g_strdup_printf("cm://search_tags:%s", cur_tag);
-		uri->data = NULL;
 		textview->uri_list =
 			g_slist_prepend(textview->uri_list, uri);
 		if (cur->next && tags_get_tag(GPOINTER_TO_INT(cur->next->data)))

@@ -1756,8 +1756,6 @@ static MimeViewer *pdf_viewer_create(void)
 	viewer = g_new0(PdfViewer, 1);
 	debug_print("pdf_viewer_create\n");
     
-	viewer->last_x = 0;
-	viewer->last_y = 0;
 	viewer->mimeviewer.factory = &pdf_viewer_factory;
 	viewer->mimeviewer.get_widget = pdf_viewer_get_widget;
 	viewer->mimeviewer.show_mimepart = pdf_viewer_show_mimepart;
@@ -1779,8 +1777,6 @@ static MimeViewer *pdf_viewer_create(void)
 	gtk_widget_set_name(GTK_WIDGET(viewer->vbox), "pdf_viewer");
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	container_scrolled = gtk_scrolled_window_new(NULL, NULL);
-
-	viewer->mimeinfo  = NULL;
 
 	viewer->pdf_view = gtk_image_new();
 	gtk_widget_set_events(viewer->pdf_view_ebox, GDK_BUTTON_RELEASE_MASK |
@@ -2052,10 +2048,6 @@ static MimeViewer *pdf_viewer_create(void)
 	g_signal_connect(G_OBJECT(viewer->pdf_view_ebox), "motion_notify_event", 
 			 G_CALLBACK(pdf_viewer_move_events_cb), 
 			 (gpointer) viewer);
-
-	viewer->target_filename = NULL;
-	viewer->filename = NULL;
-	viewer->fsname = NULL;
 
 	return(MimeViewer *) viewer;
 }

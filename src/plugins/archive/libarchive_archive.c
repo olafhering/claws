@@ -90,7 +90,6 @@ MsgTrash* new_msg_trash(FolderItem* item) {
        return NULL; 
     msg_trash = g_new0(MsgTrash, 1);
     msg_trash->item = item;
-    msg_trash->msgs = NULL;
     msg_trash_list = g_slist_prepend(msg_trash_list, msg_trash);
     
     return msg_trash;

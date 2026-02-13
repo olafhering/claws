@@ -284,7 +284,6 @@ void folderview_initialize(void)
 	fpopup->path = "<CommonFolder>";
 	fpopup->entries = folderview_common_popup_entries;
 	fpopup->n_entries = G_N_ELEMENTS(folderview_common_popup_entries);
-	fpopup->set_sensitivity = NULL;
 
 	folderview_popups = g_hash_table_new(g_str_hash, g_str_equal);
 	g_hash_table_insert(folderview_popups, "common", fpopup);
@@ -651,11 +650,6 @@ FolderView *folderview_create(MainWindow *mainwin)
 	
 	folderview->target_list = gtk_target_list_new(folderview_drag_types, 2);
 	folderview_list = g_list_append(folderview_list, folderview);
-
-	folderview->drag_timer_id       = 0;
-	folderview->deferred_refresh_id = 0;
-	folderview->scroll_timeout_id   = 0;
-	folderview->postpone_select_id  = 0;
 
 	return folderview;
 }
@@ -3149,7 +3143,6 @@ void folderview_finish_dnd(const gchar *data, GdkDragContext *drag_context,
 
 		if (file_is_email((gchar *)tmp->data)) {
 			info = g_new0(MsgFileInfo, 1);
-			info->msginfo = NULL;
 			info->file = (gchar *)tmp->data;
 			msglist = g_slist_prepend(msglist, info);
 			debug_print("file is a mail\n");

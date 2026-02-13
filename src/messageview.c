@@ -429,14 +429,10 @@ MessageView *messageview_create(MainWindow *mainwin)
 
 	messageview->vbox        = vbox;
 	messageview->new_window  = FALSE;
-	messageview->window      = NULL;
 	messageview->headerview  = headerview;
 	messageview->mimeview    = mimeview;
 	messageview->noticeview = noticeview;
 	messageview->mainwin    = mainwin;
-
-	messageview->statusbar     = NULL;
-	messageview->statusbar_cid = 0;
 
 	messageview->show_full_text= FALSE;
 	messageview->update_needed = FALSE;

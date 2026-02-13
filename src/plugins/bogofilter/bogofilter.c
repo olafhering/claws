@@ -480,10 +480,6 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	to_filter_data = g_new0(BogoFilterData, 1);
 	to_filter_data->msglist = msglist;
 	to_filter_data->mail_filtering_data = mail_filtering_data;
-	to_filter_data->new_hams = NULL;
-	to_filter_data->new_unsure = NULL;
-	to_filter_data->new_spams = NULL;
-	to_filter_data->whitelisted_new_spams = NULL;
 	to_filter_data->done = FALSE;
 	to_filter_data->status = -1;
 	to_filter_data->bogo_args = bogo_args;

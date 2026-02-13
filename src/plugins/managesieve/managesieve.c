@@ -1040,7 +1040,6 @@ static SieveSession *sieve_session_new(PrefsAccount *account)
 	SESSION(session)->connect_finished = sieve_connect_finished;
 	session_set_recv_message_notify(SESSION(session), sieve_recv_message, NULL);
 
-	session->config = NULL;
 	sieve_session_reset(session);
 	return session;
 }

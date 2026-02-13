@@ -72,11 +72,7 @@ static gboolean search_impl(MsgInfoList **messages, AdvancedSearch* search,
 
 AdvancedSearch* advsearch_new()
 {
-	AdvancedSearch *result;
-
-	result = g_new0(AdvancedSearch, 1);
-
-	return result;
+	return g_new0(AdvancedSearch, 1);
 }
 
 void advsearch_free(AdvancedSearch *search)

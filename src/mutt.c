@@ -45,11 +45,8 @@
 MuttFile *mutt_create() {
 	MuttFile *muttFile;
 	muttFile = g_new0( MuttFile, 1 );
-	muttFile->path = NULL;
-	muttFile->file = NULL;
 	muttFile->retVal = MGU_SUCCESS;
 	muttFile->uniqTable = g_hash_table_new( g_str_hash, g_str_equal );
-	muttFile->cbProgress = NULL;
 	return muttFile;
 }
 

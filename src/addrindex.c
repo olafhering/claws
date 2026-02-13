@@ -183,9 +183,7 @@ static AddressInterface *addrindex_create_interface(
 	AddressInterface *iface = g_new0( AddressInterface, 1 );
 
 	ADDRITEM_TYPE(iface) = ITEMTYPE_INTERFACE;
-	ADDRITEM_ID(iface) = NULL;
 	ADDRITEM_NAME(iface) = g_strdup( name );
-	ADDRITEM_PARENT(iface) = NULL;
 	ADDRITEM_SUBTYPE(iface) = type;
 	iface->type = type;
 	iface->name = g_strdup( name );
@@ -196,25 +194,10 @@ static AddressInterface *addrindex_create_interface(
 	iface->useInterface = TRUE;
 	iface->readOnly      = TRUE;
 
-	/* Set callbacks to NULL values - override for each interface */
-	iface->getAccessFlag = NULL;
-	iface->getModifyFlag = NULL;
-	iface->getReadFlag   = NULL;
-	iface->getStatusCode = NULL;
-	iface->getReadData   = NULL;
-	iface->getRootFolder = NULL;
-	iface->getListFolder = NULL;
-	iface->getListPerson = NULL;
-	iface->getAllPersons = NULL;
-	iface->getAllGroups  = NULL;
-	iface->getName       = NULL;
-	iface->listSource = NULL;
+	/* Callbacks are overrided for each interface */
 
 	/* Search stuff */
 	iface->externalQuery = FALSE;
-	iface->searchOrder = 0;		/* Ignored */
-	iface->startSearch = NULL;
-	iface->stopSearch = NULL;
 
 	return iface;
 }
@@ -389,13 +372,7 @@ AddressDataSource *addrindex_create_datasource( AddressIfType ifType ) {
 	AddressDataSource *ds = g_new0( AddressDataSource, 1 );
 
 	ADDRITEM_TYPE(ds) = ITEMTYPE_DATASOURCE;
-	ADDRITEM_ID(ds) = NULL;
-	ADDRITEM_NAME(ds) = NULL;
-	ADDRITEM_PARENT(ds) = NULL;
-	ADDRITEM_SUBTYPE(ds) = 0;
 	ds->type = ifType;
-	ds->rawDataSource = NULL;
-	ds->interface = NULL;
 	return ds;
 }
 
@@ -633,22 +610,15 @@ AddressIndex *addrindex_create_index( void ) {
 	if( _addressIndex_ == NULL ) {
 		index = g_new0( AddressIndex, 1 );
 		ADDRITEM_TYPE(index) = ITEMTYPE_INDEX;
-		ADDRITEM_ID(index) = NULL;
 		ADDRITEM_NAME(index) = g_strdup( "Address Index" );
-		ADDRITEM_PARENT(index) = NULL;
-		ADDRITEM_SUBTYPE(index) = 0;
-		index->filePath = NULL;
-		index->fileName = NULL;
 		index->retVal = MGU_SUCCESS;
 		index->needsConversion = FALSE;
 		index->wasConverted = FALSE;
 		index->conversionError = FALSE;
-		index->interfaceList = NULL;
 		index->lastType = ADDR_IF_NONE;
 		index->dirtyFlag = FALSE;
 		index->hashCache = g_hash_table_new( g_str_hash, g_str_equal );
 		index->loadedFlag = FALSE;
-		index->searchOrder = NULL;
 		addrindex_build_if_list( index );
 		_addressIndex_ = index;
 	}
@@ -1015,10 +985,7 @@ static AddressIfFragment *addrindex_read_fragment( XMLFile *file ) {
 	/* Create new fragment */
 	fragment = g_new0( AddressIfFragment, 1 );
 	fragment->type = ADBOOKTYPE_NONE;
-	fragment->addressCache = NULL;
 	fragment->name = g_strdup( xtag->tag );
-	fragment->children = NULL;
-	fragment->attributes = NULL;
 
 	/* Read attributes */
 	list = NULL;
@@ -1932,7 +1899,6 @@ static AddressCvtNode *addrindex_parse_item( XMLFile *file ) {
 
 	nn = g_new0( AddressCvtNode, 1 );
 	nn->type = TEMPNODE_ADDRESS;
-	nn->list = NULL;
 
 	level = file->level;
 
@@ -2146,7 +2112,6 @@ static gboolean addrindex_process_book( AddressIndex *addrIndex, XMLFile *file, 
 	rootNode = g_new0( AddressCvtNode, 1 );
 	rootNode->type = TEMPNODE_ROOT;
 	rootNode->name = g_strdup( "root" );
-	rootNode->list = NULL;
 	addrindex_add_obj( file, rootNode );
 	/* addrindex_print_node( rootNode, stdout ); */
 

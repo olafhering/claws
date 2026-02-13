@@ -100,7 +100,6 @@ GSList *rssyl_old_feed_metadata_parse(gchar *filepath)
 	parser = XML_ParserCreate(NULL);
 
 	ctx = g_new0(struct _oldrssyl_ctx, 1);
-	ctx->oldfeeds = NULL;
 	XML_SetUserData(parser, ctx);
 	XML_SetElementHandler(parser,
 			_elparse_start_oldrssyl,

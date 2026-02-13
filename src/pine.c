@@ -47,11 +47,8 @@
 PineFile *pine_create() {
 	PineFile *pineFile;
 	pineFile = g_new0( PineFile, 1 );
-	pineFile->path = NULL;
-	pineFile->file = NULL;
 	pineFile->retVal = MGU_SUCCESS;
 	pineFile->uniqTable = g_hash_table_new( g_str_hash, g_str_equal );
-	pineFile->cbProgress = NULL;
 	return pineFile;
 }
 

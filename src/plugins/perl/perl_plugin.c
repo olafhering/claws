@@ -200,9 +200,7 @@ static gint add_to_email_slist(ItemPerson *person, const gchar *bookname)
     g_return_val_if_fail(ee != NULL, -1);
 
     if(email->address != NULL) ee->address  = g_strdup(email->address);
-    else                       ee->address  = NULL;
     if(bookname != NULL)       ee->bookname = g_strdup(bookname);
-    else                       ee->bookname = NULL;
 
     email_slist->g_slist = g_slist_prepend(email_slist->g_slist,ee);
     nodeM = g_list_next(nodeM);
@@ -307,7 +305,6 @@ static gboolean addr_in_addressbook(gchar *addr, gchar *bookname)
     /* check if email_list exists */
     if(email_slist == NULL) {
       email_slist = g_new0(PerlPluginTimedSList,1);
-      email_slist->g_slist = NULL;
       debug_print("email_slist created\n");
     }
 
@@ -355,11 +352,8 @@ static gint add_to_attribute_hash(ItemPerson *person, const gchar *bookname)
   g_return_val_if_fail(ae != NULL, -1);
 
   if(email->address != NULL) ae->address  = g_strdup(email->address);
-  else                       ae->address  = NULL;
   if(attrib->value  != NULL) ae->value    = g_strdup(attrib->value);
-  else                       ae->value    = NULL;
   if(bookname != NULL)       ae->bookname = g_strdup(bookname);
-  else                       ae->bookname = NULL;
 
   tl = (PerlPluginTimedSList *) g_hash_table_lookup(attribute_hash,attribute_key);
   tl->g_slist = g_slist_prepend(tl->g_slist,ae);
@@ -443,7 +437,6 @@ static void insert_attribute_hash(gchar *attr)
   }
 
   tl = g_new0(PerlPluginTimedSList,1);
-  tl->g_slist = NULL;
 
   attribute_key = g_strdup(attr);
   g_hash_table_insert(attribute_hash,attribute_key,tl);  
@@ -2467,10 +2460,7 @@ gint plugin_init(gchar **error)
 
   argc = 1;
   argv = g_new0(char*, 1);
-  argv[0] = NULL;
   env = g_new0(char*, 1);
-  env[0] = NULL;
-
 
   /* Initialize Perl Interpreter */
   PERL_SYS_INIT3(&argc, &argv, &env);

@@ -45,7 +45,6 @@ static AddrSelectItem *addrselect_create_item( AddrItemObject *aio ) {
 		item->objectType = aio->type;
 		item->addressItem = aio;
 		item->uid = g_strdup( aio->uid );
-		item->cacheID = NULL;
 	}
 	return item;
 }
@@ -61,9 +60,6 @@ AddrSelectItem *addrselect_create_node( AddressObject *obj ) {
 	if( obj ) {
 		item = g_new0( AddrSelectItem, 1 );
 		item->objectType = addressbook_type2item( obj->type );
-		item->addressItem = NULL;
-		item->uid = NULL;
-		item->cacheID = NULL;
 	}
 	return item;
 }
@@ -120,11 +116,7 @@ void addrselect_item_print( AddrSelectItem *item, FILE *stream ) {
  * \return Initialized object.
  */
 AddrSelectList *addrselect_list_create() {
-	AddrSelectList *asl;
-
-	asl = g_new0( AddrSelectList, 1 );
-	asl->listSelect = NULL;
-	return asl;
+	return g_new0( AddrSelectList, 1 );
 }
 
 /**

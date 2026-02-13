@@ -74,7 +74,6 @@ FeedItem *rssyl_parse_folder_item_file(gchar *path)
 
 	ctx = g_new0(RFeedCtx, 1);
 	ctx->path = g_strdup(path); /* store filesystem path to source file */
-	ctx->last_seen = 0;
 
 	item = feed_item_new(NULL);
 	item->data = ctx;

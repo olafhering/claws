@@ -139,7 +139,6 @@ HeaderView *headerview_create(void)
 	headerview->subject_body_label   = subject_body_label;
 	headerview->tags_header_label = tags_header_label;
 	headerview->tags_body_label   = tags_body_label;
-	headerview->image = NULL;
 
 	gtk_widget_show_all(hbox);
 

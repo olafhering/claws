@@ -1420,8 +1420,6 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 			recv_data->tls_service = "pop3";
 			recv_data->address = g_strdup(address);
 			recv_data->hostname_entry = GTK_ENTRY(wizard->recv_server);
-			recv_data->set_port = NULL;
-			recv_data->port = NULL;
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_tls);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_ssl);
 			recv_data->default_port = 110;
@@ -1432,8 +1430,6 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 			recv_data->tls_service = "imap";
 			recv_data->address = g_strdup(address);
 			recv_data->hostname_entry = GTK_ENTRY(wizard->recv_server);
-			recv_data->set_port = NULL;
-			recv_data->port = NULL;
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_tls);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_ssl);
 			recv_data->default_port = 143;
@@ -1451,12 +1447,9 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->info_label = GTK_LABEL(wizard->auto_configure_lbl);
 	send_data->cancel = send_cancel;
 
-	send_data->ssl_service = NULL;
 	send_data->tls_service = "submission";
 	send_data->address = g_strdup(address);
 	send_data->hostname_entry = GTK_ENTRY(wizard->smtp_server);
-	send_data->set_port = NULL;
-	send_data->port = NULL;
 	send_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->smtp_use_tls);
 	send_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->smtp_use_ssl);
 	send_data->default_port = 25;
@@ -1854,9 +1847,7 @@ gboolean run_wizard(MainWindow *mainwin, gboolean create_mailbox) {
 	gtk_notebook_set_show_border(GTK_NOTEBOOK(wizard->notebook), FALSE);
 	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(wizard->window))), 
 			    wizard->notebook, TRUE, TRUE, 0);
-	
-	wizard->pages = NULL;
-	
+
 /*welcome page: 0 */
 	WELCOME_PAGE = i;
 	page = create_page(wizard, _("Welcome to Claws Mail"));

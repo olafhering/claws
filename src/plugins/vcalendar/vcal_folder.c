@@ -1389,7 +1389,6 @@ GSList * vcal_folder_get_webcal_events(void)
 	GetWebcalData *data = g_new0(GetWebcalData, 1);
 	Folder *folder = folder_find_from_name (PLUGIN_NAME, vcal_folder_get_class());
 	GSList *list = NULL;
-	data->item = NULL;
 	g_node_traverse(folder->node, G_PRE_ORDER,
 			G_TRAVERSE_ALL, -1, get_webcal_events_func, data);
 

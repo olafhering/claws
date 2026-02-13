@@ -465,15 +465,8 @@ static FolderItem *rssyl_item_new(Folder *folder)
 {
 	RFolderItem *ritem = g_new0(RFolderItem, 1);
 
-	ritem->url = NULL;
 	ritem->auth = g_new0(FeedAuth, 1);
 	ritem->auth->type = FEED_AUTH_NONE;
-	ritem->auth->username = NULL;
-	ritem->auth->password = NULL;
-	ritem->official_title = NULL;
-	ritem->source_id = NULL;
-	ritem->items = NULL;
-	ritem->deleted_items = NULL;
 	ritem->keep_old = TRUE;
 	ritem->default_refresh_interval = TRUE;
 	ritem->refresh_interval = atoi(PREF_DEFAULT_REFRESH);
@@ -481,17 +474,9 @@ static FolderItem *rssyl_item_new(Folder *folder)
 	ritem->fetch_comments_max_age = -1;
 	ritem->write_heading = TRUE;
 	ritem->fetching_comments = FALSE;
-	ritem->silent_update = 0;
-	ritem->last_update = 0;
 	ritem->ignore_title_rename = FALSE;
 	ritem->ssl_verify_peer = TRUE;
-	ritem->feedprop = NULL;
-	ritem->refresh_id = 0;
 	ritem->use_default_user_agent = 1;
-	ritem->specific_user_agent = NULL;
-	ritem->last_modified = NULL;
-	ritem->etag = NULL;
-	ritem->retry_after = 0;
 
 	return (FolderItem *)ritem;
 }

@@ -123,7 +123,6 @@ QueryRequest *qrymgr_add_request(
 	req->callBackEnd = callBackEnd;
 	req->callBackEntry = callBackEntry;
 	req->timeStart = time( NULL );
-	req->queryList = NULL;
 
 	/* Insert in head of list */
 	pthread_mutex_lock( & _requestListMutex_ );

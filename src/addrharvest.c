@@ -91,8 +91,6 @@ static void addrharvest_build_entry(
 	entry = g_new0( HeaderEntry, 1 );
 	entry->header = name;
 	entry->selected = FALSE;
-	entry->folder = NULL;
-	entry->count = 0;
 	harvester->headerTable = g_list_append( harvester->headerTable, entry );
 }
 
@@ -141,13 +139,11 @@ AddressHarvester *addrharvest_create( void ) {
 	AddressHarvester *harvester;
 
 	harvester = g_new0( AddressHarvester, 1 );
-	harvester->path = NULL;
 	harvester->dupTable = g_hash_table_new( g_str_hash, g_str_equal );
 	harvester->folderSize = DFL_FOLDER_SIZE;
 	harvester->retVal = MGU_SUCCESS;
 
 	/* Build header table */
-	harvester->headerTable = NULL;
 	addrharvest_build_entry( harvester, _headerFrom_ );
 	addrharvest_build_entry( harvester, _headerReplyTo_ );
 	addrharvest_build_entry( harvester, _headerSender_ );

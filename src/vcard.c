@@ -58,9 +58,6 @@ VCardFile *vcard_create() {
 	cardFile->type = ADBOOKTYPE_VCARD;
 	cardFile->addressCache = addrcache_create();
 	cardFile->retVal = MGU_SUCCESS;
-
-	cardFile->file = NULL;
-	cardFile->path = NULL;
 	cardFile->bufptr = cardFile->buffer;
 	return cardFile;
 }

@@ -489,13 +489,11 @@ struct SieveAccountConfig *sieve_prefs_account_get_config(
 
 	config->enable = FALSE;
 	config->use_host = FALSE;
-	config->host = NULL;
 	config->use_port = FALSE;
 	config->port = 4190;
 	config->tls_type = SIEVE_TLS_YES;
 	config->auth = SIEVEAUTH_REUSE;
 	config->auth_type = SIEVEAUTH_AUTO;
-	config->userid = NULL;
 
 	confstr = prefs_account_get_privacy_prefs(account, "sieve");
 	if (confstr == NULL)

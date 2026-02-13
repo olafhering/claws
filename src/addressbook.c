@@ -4966,7 +4966,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = TRUE;
 	atci->treeLeaf = FALSE;
 	atci->displayName = _( "Interface" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -4990,7 +4989,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = FALSE;
 	atci->treeLeaf = FALSE;
 	atci->displayName = _( "Person" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5002,7 +5000,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = FALSE;
 	atci->treeLeaf = TRUE;
 	atci->displayName = _( "Email Address" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5014,7 +5011,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = FALSE;
 	atci->treeLeaf = FALSE;
 	atci->displayName = _( "Group" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5026,7 +5022,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = FALSE;
 	atci->treeLeaf = FALSE;
 	atci->displayName = _( "Folder" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5062,7 +5057,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = TRUE;
 	atci->treeLeaf = TRUE;
 	atci->displayName = _( "JPilot" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5086,7 +5080,6 @@ static void addrbookctl_build_map( GtkWidget *window ) {
 	atci->treeExpand = FALSE;
 	atci->treeLeaf = TRUE;
 	atci->displayName = _( "LDAP Query" );
-	atci->menuCommand = NULL;
 	g_hash_table_insert( _addressBookTypeHash_, &atci->objectType, atci );
 	_addressBookTypeList_ = g_list_append( _addressBookTypeList_, atci );
 
@@ -5181,7 +5174,6 @@ static void addrbookctl_build_iflist( void ) {
 			adapter->interfaceType = interface->type;
 			adapter->atci = atci;
 			adapter->interface = interface;
-			adapter->treeNode = NULL;
 			adapter->enabled = TRUE;
 			adapter->haveLibrary = interface->haveLibrary;
 			ADDRESS_OBJECT(adapter)->type = ADDR_INTERFACE;

@@ -780,9 +780,6 @@ gint sock_connect_async(const gchar *hostname, gushort port,
 	conn_data->id = id++;
 	conn_data->hostname = g_strdup(hostname);
 	conn_data->port = port;
-	conn_data->addr_list = NULL;
-	conn_data->cur_addr = NULL;
-	conn_data->io_tag = 0;
 	conn_data->func = func;
 	conn_data->data = data;
 

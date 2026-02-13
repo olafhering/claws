@@ -211,7 +211,6 @@ RFetchCtx *rssyl_prep_fetchctx_from_item(RFolderItem *ritem)
 
 	ctx = g_new0(RFetchCtx, 1);
 	ctx->feed = feed_new(ritem->url);
-	ctx->error = NULL;
 	ctx->success = TRUE;
 	ctx->ready = FALSE;
 	ctx->ritem = ritem;
@@ -243,10 +242,8 @@ RFetchCtx *rssyl_prep_fetchctx_from_url(gchar *url)
 
 	ctx = g_new0(RFetchCtx, 1);
 	ctx->feed = feed_new(url);
-	ctx->error = NULL;
 	ctx->success = TRUE;
 	ctx->ready = FALSE;
-	ctx->ritem = NULL;
 
 	feed_set_timeout(ctx->feed, prefs_common_get_prefs()->io_timeout_secs);
 	feed_set_cookies_path(ctx->feed, rssyl_prefs_get()->cookies_path);

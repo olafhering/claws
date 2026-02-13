@@ -67,16 +67,10 @@ FilteringAction * filteringaction_new(int type, int account_id,
 
 	action->type = type;
 	action->account_id = account_id;
-	if (destination) {
-		action->destination	  = g_strdup(destination);
-	} else {
-		action->destination       = NULL;
-	}
-	if (header) {
-		action->header	  = g_strdup(header);
-	} else {
-		action->header       = NULL;
-	}
+	if (destination)
+		action->destination = g_strdup(destination);
+	if (header)
+		action->header = g_strdup(header);
 	action->labelcolor = labelcolor;	
         action->score = score;
 	return action;
@@ -131,8 +125,6 @@ static FilteringAction * filteringaction_copy(FilteringAction * src)
 	new->account_id = src->account_id;
 	if (src->destination)
 		new->destination = g_strdup(src->destination);
-	else 
-		new->destination = NULL;
 	new->labelcolor = src->labelcolor;
 	new->score = src->score;
 
@@ -156,8 +148,6 @@ FilteringProp * filteringprop_copy(FilteringProp *src)
 	}
 
 	new->matchers->bool_and = src->matchers->bool_and;
-
-        new->action_list = NULL;
 
         for (tmp = src->action_list ; tmp != NULL ; tmp = tmp->next) {
                 FilteringAction *filtering_action;

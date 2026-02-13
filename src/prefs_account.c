@@ -4894,7 +4894,6 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->info_label = GTK_LABEL(basic_page.auto_configure_lbl);
 	send_data->cancel = send_cancel;
 
-	send_data->ssl_service = NULL;
 	send_data->tls_service = "submission";
 	send_data->address = g_strdup(address);
 	send_data->hostname_entry = GTK_ENTRY(basic_page.smtpserv_entry);
@@ -4904,7 +4903,6 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.smtp_ssltunnel_radiobtn);
 	send_data->default_port = 25;
 	send_data->default_ssl_port = -1;
-	send_data->uid_entry = NULL;
 	send_data->auth_checkbtn = GTK_TOGGLE_BUTTON(send_page.smtp_auth_checkbtn);
 
 	auto_configure_service(send_data);

@@ -46,11 +46,7 @@ LdapControl *ldapctl_create( void ) {
 	LdapControl *ctl;
 
 	ctl = g_new0( LdapControl, 1 );
-	ctl->hostName = NULL;
 	ctl->port = LDAPCTL_DFL_PORT;
-	ctl->baseDN = NULL;
-	ctl->bindDN = NULL;
-	ctl->listCriteria = NULL;
 	ctl->attribEMail = g_strdup( LDAPCTL_ATTR_EMAIL );
 	ctl->attribCName = g_strdup( LDAPCTL_ATTR_COMMONNAME );
 	ctl->attribFName = g_strdup( LDAPCTL_ATTR_GIVENNAME );
@@ -60,7 +56,6 @@ LdapControl *ldapctl_create( void ) {
 	ctl->timeOut = LDAPCTL_DFL_TIMEOUT;
 	ctl->maxQueryAge = LDAPCTL_DFL_QUERY_AGE;
 	ctl->matchingOption = LDAPCTL_MATCH_BEGINWITH;
-	ctl->version = 0;
 	ctl->enableTLS = FALSE;
 	ctl->enableSSL = FALSE;
 

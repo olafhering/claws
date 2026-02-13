@@ -1388,7 +1388,6 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 		meet->uid = g_strdup(event->uid);
 		meet->sequence = event->sequence + 1;
 		meet->created = event->created ? g_strdup(event->created) : NULL;
-		meet->last_modified = NULL; /* Make sure to update modification time */
 
 		meet->method = (event->method == ICAL_METHOD_CANCEL ?
 				ICAL_METHOD_CANCEL:ICAL_METHOD_REQUEST);

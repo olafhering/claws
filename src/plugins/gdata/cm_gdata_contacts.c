@@ -631,7 +631,6 @@ static void add_contacts_to_list(GList **address_list, GSList *contacts)
     ae = g_new0(address_entry, 1);
     ae->name = g_strdup(contact->full_name);
     ae->address = g_strdup(contact->address);
-    ae->grp_emails = NULL;
 
     *address_list = g_list_prepend(*address_list, ae);
     addr_compl_add_address1(ae->address, ae);

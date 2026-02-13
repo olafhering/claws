@@ -73,7 +73,6 @@ MimeInfo *procmime_mimeinfo_new(void)
 	mimeinfo = g_new0(MimeInfo, 1);
 
 	mimeinfo->content	 = MIMECONTENT_EMPTY;
-	mimeinfo->data.filename	 = NULL;
 
 	mimeinfo->type     	 = MIMETYPE_UNKNOWN;
 	mimeinfo->encoding_type  = ENC_UNKNOWN;

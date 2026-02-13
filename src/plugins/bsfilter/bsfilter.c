@@ -293,7 +293,6 @@ static gboolean mail_filtering_hook(gpointer source, gpointer data)
 	to_filter_data->mail_filtering_data = mail_filtering_data;
 	to_filter_data->done = FALSE;
 	to_filter_data->status = -1;
-	to_filter_data->whitelisted = 0;
 #ifdef USE_PTHREAD
 	to_filter_data->in_thread = (filter_th_started != 0);
 #else

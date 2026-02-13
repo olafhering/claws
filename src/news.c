@@ -338,7 +338,6 @@ static Session *news_session_new(Folder *folder, const PrefsAccount *account, gu
 	SESSION(session)->type             = SESSION_NEWS;
 	SESSION(session)->server           = g_strdup(server);
 	SESSION(session)->port             = port;
- 	SESSION(session)->sock             = NULL;
 	SESSION(session)->destroy          = news_session_destroy;
 
 	if (account->use_proxy) {

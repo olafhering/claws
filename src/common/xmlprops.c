@@ -69,8 +69,6 @@ XmlProperty *xmlprops_create( void ) {
 	XmlProperty *props;
 
 	props = g_new0( XmlProperty, 1 );
-	props->path = NULL;
-	props->encoding = NULL;
 	props->propertyTable = g_hash_table_new( g_str_hash, g_str_equal );
 	props->retVal = MGU_SUCCESS;
 	return props;

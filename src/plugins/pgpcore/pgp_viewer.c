@@ -256,7 +256,6 @@ static MimeViewer *pgp_viewer_create(void)
 	viewer->mimeviewer.show_mimepart = pgp_show_mimepart;
 	viewer->mimeviewer.clear_viewer = pgp_clear_viewer;
 	viewer->mimeviewer.destroy_viewer = pgp_destroy_viewer;	
-	viewer->mimeviewer.get_selection = NULL;
 	viewer->textview = textview_create();
 	textview_init(viewer->textview);
 

@@ -849,7 +849,6 @@ static gboolean execute_actions(gchar *action, GSList *msg_list,
 
 	children = g_new0(Children, 1);
 
-	children->nb          = 0;
 	children->action      = g_strdup(action);
 	children->action_type = action_type;
 	children->msg_text    = text;

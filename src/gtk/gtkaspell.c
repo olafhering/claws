@@ -1556,7 +1556,6 @@ static GSList *create_empty_dictionary_list(void)
 
 	dict = g_new0(Dictionary, 1);
 	dict->fullname = g_strdup(_("None"));
-	dict->dictname = NULL;
 
 	return g_slist_append(list, dict);
 }

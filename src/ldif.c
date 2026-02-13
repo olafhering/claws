@@ -46,15 +46,10 @@
 LdifFile *ldif_create() {
 	LdifFile *ldifFile;
 	ldifFile = g_new0( LdifFile, 1 );
-	ldifFile->path = NULL;
-	ldifFile->file = NULL;
 	ldifFile->hashFields = g_hash_table_new( g_str_hash, g_str_equal );
-	ldifFile->tempList = NULL;
 	ldifFile->dirtyFlag = TRUE;
 	ldifFile->accessFlag = FALSE;
 	ldifFile->retVal = MGU_SUCCESS;
-	ldifFile->cbProgress = NULL;
-	ldifFile->importCount = 0;
 	return ldifFile;
 }
 
@@ -95,7 +90,6 @@ void ldif_set_accessed( LdifFile *ldifFile, const gboolean value ) {
 static Ldif_FieldRec *ldif_create_fieldrec( const gchar *field ) {
 	Ldif_FieldRec *rec = g_new0( Ldif_FieldRec, 1 );
 	rec->tagName = g_strdup( field );
-	rec->userName = NULL;
 	rec->reserved = FALSE;
 	rec->selected = FALSE;
 	return rec;

@@ -561,9 +561,7 @@ struct GPGAccountConfig *prefs_gpg_account_get_config(PrefsAccount *account)
 
 	config = g_new0(GPGAccountConfig, 1);
 	config->sign_key = SIGN_KEY_DEFAULT;
-	config->sign_key_id = NULL;
 	config->smime_sign_key = SIGN_KEY_DEFAULT;
-	config->smime_sign_key_id = NULL;
 
 	confstr = prefs_account_get_privacy_prefs(account, "gpg");
 	if (confstr != NULL) {

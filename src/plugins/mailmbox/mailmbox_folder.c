@@ -196,8 +196,6 @@ static FolderItem *claws_mailmbox_folder_item_new(Folder *folder)
 	MAILMBOXFolderItem *item;
 	
 	item = g_new0(MAILMBOXFolderItem, 1);
-	item->mbox = NULL;
-        item->old_max_uid = 0;
 
 	return (FolderItem *)item;
 }

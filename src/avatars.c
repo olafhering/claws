@@ -38,8 +38,6 @@ AvatarRender *avatars_avatarrender_new(MsgInfo *msginfo)
 {
 	AvatarRender *ar = g_new0(AvatarRender, 1);
 	ar->full_msginfo = msginfo;
-	ar->image = NULL;
-	ar->type = 0;
 
 	return ar;
 }

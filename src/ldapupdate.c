@@ -91,13 +91,7 @@ void ldapsvr_retrieve_item_group(ItemGroup *group, GHashTable *array) {
  * \return empty structure
  */
 EmailKeyValue *emailkeyvalue_create() {
-	EmailKeyValue *buf;
-
-	buf = g_new0(EmailKeyValue, 1);
-	buf->alias = NULL;
-	buf->mail = NULL;
-	buf->remarks = NULL;
-	return buf;
+	return g_new0(EmailKeyValue, 1);
 }
 
 /**
@@ -105,12 +99,7 @@ EmailKeyValue *emailkeyvalue_create() {
  * \return empty structure
  */
 AttrKeyValue *attrkeyvalue_create() {
-	AttrKeyValue *buf;
-
-	buf = g_new0(AttrKeyValue, 1);
-	buf->key = NULL;
-	buf->value = NULL;
-	return buf;
+	return g_new0(AttrKeyValue, 1);
 }
 
 /**
@@ -300,13 +289,7 @@ ItemPerson *ldapsvr_get_contact(LdapServer *server, gchar *uid) {
  * \return empty structure
  */
 Rdn *rdn_create() {
-	Rdn *buf;
-
-	buf = g_new0(Rdn, 1);
-	buf->attribute = NULL;
-	buf->value = NULL;
-	buf->new_dn = NULL;
-	return buf;
+	return g_new0(Rdn, 1);
 }
 
 /**

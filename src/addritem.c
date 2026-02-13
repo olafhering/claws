@@ -41,12 +41,6 @@ ItemEMail *addritem_create_item_email( void ) {
 	ItemEMail *item;
 	item = g_new0( ItemEMail, 1 );
 	ADDRITEM_TYPE(item) = ITEMTYPE_EMAIL;
-	ADDRITEM_ID(item) = NULL;
-	ADDRITEM_NAME(item) = NULL;
-	ADDRITEM_PARENT(item) = NULL;
-	ADDRITEM_SUBTYPE(item) = 0;
-	item->address = NULL;
-	item->remarks = NULL;
 	return item;
 }
 
@@ -141,9 +135,6 @@ void addritem_free_item_email( ItemEMail *item ) {
 UserAttribute *addritem_create_attribute( void ) {
 	UserAttribute *item;
 	item = g_new0( UserAttribute, 1 );
-	item->uid = NULL;
-	item->name = NULL;
-	item->value = NULL;
 	return item;
 }
 
@@ -216,17 +207,6 @@ ItemPerson *addritem_create_item_person( void ) {
 	ItemPerson *person;
 	person = g_new0( ItemPerson, 1 );
 	ADDRITEM_TYPE(person) = ITEMTYPE_PERSON;
-	ADDRITEM_ID(person) = NULL;
-	ADDRITEM_NAME(person) = NULL;
-	ADDRITEM_PARENT(person) = NULL;
-	ADDRITEM_SUBTYPE(person) = 0;
-	person->picture = NULL;
-	person->firstName = NULL;
-	person->lastName = NULL;
-	person->nickName = NULL;
-	person->listEMail = NULL;
-	person->listAttrib = NULL;
-	person->externalID = NULL;
 	person->isOpened = FALSE;
 	person->status = NONE;
 	return person;
@@ -644,12 +624,6 @@ ItemGroup *addritem_create_item_group( void ) {
 
 	group = g_new0( ItemGroup, 1 );
 	ADDRITEM_TYPE(group) = ITEMTYPE_GROUP;
-	ADDRITEM_ID(group) = NULL;
-	ADDRITEM_NAME(group) = NULL;
-	ADDRITEM_PARENT(group) = NULL;
-	ADDRITEM_SUBTYPE(group) = 0;
-	group->remarks = NULL;
-	group->listEMail = NULL;
 	return group;
 }
 
@@ -793,18 +767,8 @@ ItemFolder *addritem_create_item_folder( void ) {
 	if (!folder)
 		g_error("could not create new itemFolder");
 	ADDRITEM_TYPE(folder) = ITEMTYPE_FOLDER;
-	ADDRITEM_ID(folder) = NULL;
-	ADDRITEM_NAME(folder) = NULL;
-	ADDRITEM_PARENT(folder) = NULL;
-	ADDRITEM_SUBTYPE(folder) = 0;
-	folder->remarks = NULL;
 	folder->isRoot = FALSE;
-	folder->listItems = NULL;
-	folder->listFolder = NULL;
-	folder->listPerson = NULL;
-	folder->listGroup = NULL;
 	folder->folderType = ADDRFOLDER_NONE;
-	folder->folderData = NULL;
 	folder->isHidden = FALSE;
 	return folder;
 }
