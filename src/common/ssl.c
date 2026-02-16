@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,30 +272,31 @@ gnutls_x509_crt_t *ssl_get_certificate_chain(gnutls_session_t session, unsigned 
 
 	raw_cert_list = gnutls_certificate_get_peers(session, list_len);
 
-	if (raw_cert_list && (*list_len>0) && gnutls_certificate_type_get(session) == GNUTLS_CRT_X509) {
-		glong i = 0;
+	if (raw_cert_list && *list_len && gnutls_certificate_type_get(session) == GNUTLS_CRT_X509) {
+		unsigned int i;
 
 		if (*list_len > 128)
 			*list_len = 128;
 
-		certs = g_malloc(sizeof(gnutls_x509_crt_t) * (*list_len));
+		certs = g_malloc0(sizeof(gnutls_x509_crt_t) * (*list_len));
 
-		for(i = 0 ; i < (glong)(*list_len) ; i++) {
+		for(i = 0 ; i < *list_len ; i++) {
 			int r;
 
-			gnutls_x509_crt_init(&certs[i]);
-			r = gnutls_x509_crt_import(certs[i], &raw_cert_list[i], GNUTLS_X509_FMT_DER);
+			r = gnutls_x509_crt_init(&certs[i]);
+			if (r == 0)
+				r = gnutls_x509_crt_import(certs[i], &raw_cert_list[i], GNUTLS_X509_FMT_DER);
 			if (r < 0) {
 				g_warning("cert get failure: %d %s", r, gnutls_strerror(r));
 
 				result = FALSE;
-				i--;
 				break;
 			}
 		}
 		if (!result) {
-			for (; i >= 0; i--)
+			do {
 				gnutls_x509_crt_deinit(certs[i]);
+			} while (i--);
 
 			g_free(certs);
 			*list_len = 0;
