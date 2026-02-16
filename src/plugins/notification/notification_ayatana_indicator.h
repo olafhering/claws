@@ -1,5 +1,5 @@
 /* Notification plugin for Claws Mail
- * Copyright (C) 2005-2024 Holger Berndt, Jan Willamowius and the Claws Mail Team.
+ * Copyright (C) 2005-2026 Holger Berndt, Jan Willamowius and the Claws Mail Team.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #ifdef NOTIFICATION_AYATANA_INDICATOR
 
 #include <glib.h>
+
+#define AYATANA_INDICATOR_SPECIFIC_FOLDER_ID_STR "ayatana_indicator"
 
 void notification_update_ayatana_indicator(void);
 void notification_ayatana_indicator_enable(void);

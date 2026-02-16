@@ -1,5 +1,5 @@
 /* Notification plugin for Claws Mail
- * Copyright (C) 2005-2007 Holger Berndt
+ * Copyright (C) 2005-2026 the Claws Mail Team and Holger Berndt
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +102,8 @@ typedef struct {
 #endif /* Trayicon */
 #ifdef NOTIFICATION_AYATANA_INDICATOR
   gboolean ayatana_indicator_enabled;
+  gboolean ayatana_folder_specific;
+  gboolean ayatana_display_folder_name;
 #endif /* NOTIFICATION_AYATANA_INDICATOR */
 #ifdef NOTIFICATION_INDICATOR
   gboolean indicator_enabled;

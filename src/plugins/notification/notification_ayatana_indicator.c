@@ -1,5 +1,5 @@
 /* Notification plugin for Claws Mail
- * Copyright (C) 2005-2025 the Claws Mail Team, Holger Berndt and Jan Willamowius
+ * Copyright (C) 2005-2026 the Claws Mail Team, Holger Berndt and Jan Willamowius
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,33 @@
 #ifdef NOTIFICATION_AYATANA_INDICATOR
 
 #include "notification_indicator.h"
+#include "notification_ayatana_indicator.h"
 #include "notification_prefs.h"
 #include "notification_core.h"
+#include "notification_foldercheck.h"
 
-//#include "folder.h"
 #include "common/utils.h"
+#include "addressbook.h"
 
 #include "libayatana-appindicator/app-indicator.h"
 
 static AppIndicator *ayatana_indicator = NULL;
 static GtkWidget *status = NULL;
+
+static void ayatana_addressbook_cb(GtkAction *action, gpointer data)
+{
+#ifndef USE_ALT_ADDRBOOK
+    addressbook_open(NULL);
+#else
+    GError* error = NULL;
+
+    addressbook_dbus_open(FALSE, &error);
+    if (error) {
+      g_warning("%s", error->message);
+      g_error_free(error);
+    }
+#endif
+}
 
 void notification_ayatana_indicator_enable(void)
 {
@@ -52,6 +69,10 @@ void notification_ayatana_indicator_enable(void)
     g_signal_connect(G_OBJECT(status), "activate", G_CALLBACK(notification_toggle_hide_show_window), NULL);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), status);
     gtk_widget_show (status);
+    GtkWidget *abook = gtk_menu_item_new_with_label (_("Open Address Book"));
+    g_signal_connect (abook, "activate", G_CALLBACK (ayatana_addressbook_cb), ayatana_indicator);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), abook);
+    gtk_widget_show (abook);
     GtkWidget *quit = gtk_menu_item_new_with_label (_("Quit Claws Mail"));
     g_signal_connect (quit, "activate", G_CALLBACK (gtk_main_quit), ayatana_indicator);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), quit);
@@ -76,6 +97,14 @@ void notification_update_ayatana_indicator(void)
 
   if(!notify_config.ayatana_indicator_enabled || !ayatana_indicator)
     return;
+
+  if(notify_config.ayatana_folder_specific) {
+    guint id;
+    id =
+      notification_register_folder_specific_list
+      (AYATANA_INDICATOR_SPECIFIC_FOLDER_ID_STR);
+    list = notification_foldercheck_get_list(id);
+  }
 
   notification_core_get_msg_count(list, &count);
 

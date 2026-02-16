@@ -1,7 +1,7 @@
 /*
  * Notification plugin for Claws-Mail
  * Claws Mail -- A GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2005-2025 the Claws Mail team and Holger Berndt
+ * Copyright (C) 2005-2026 the Claws Mail team and Holger Berndt
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,6 +170,10 @@ NotifyTrayiconPage trayicon_page;
 typedef struct {
 	PrefsPage page;
 	GtkWidget *ayatana_indicator_enabled;
+	GtkWidget *ayatana_cont_enable;
+	GtkWidget *ayatana_folder_specific;
+	GtkWidget *ayatana_cont_folder_specific;
+	GtkWidget *ayatana_display_folder_name;
 }NotifyAyatanaIndicatorPage;
 NotifyAyatanaIndicatorPage ayatana_indicator_page;
 #endif
@@ -319,6 +323,12 @@ PrefParam
 #ifdef NOTIFICATION_AYATANA_INDICATOR
 				{	"ayatana_indicator_enabled", "FALSE", &notify_config.ayatana_indicator_enabled, P_BOOL,
 					NULL, NULL, NULL},
+				{	"ayatana_folder_specific", "FALSE",
+					&notify_config.ayatana_folder_specific,
+					P_BOOL, NULL, NULL, NULL},
+				{	"ayatana_display_folder_name", "FALSE",
+					&notify_config.ayatana_display_folder_name,
+					P_BOOL, NULL, NULL, NULL},
 #endif /* NOTIFICATION_AYATANA_INDICATOR */
 #ifdef NOTIFICATION_INDICATOR
 				{	"indicator_enabled", "FALSE", &notify_config.indicator_enabled, P_BOOL,
@@ -396,6 +406,9 @@ static void notify_trayicon_popup_enable_set_sensitivity(GtkToggleButton*,
 static void notify_create_ayatana_indicator_page(PrefsPage*, GtkWindow*, gpointer);
 static void notify_destroy_ayatana_indicator_page(PrefsPage*);
 static void notify_save_ayatana_indicator(PrefsPage*);
+static void notify_ayatana_indicator_enable_set_sensitivity(GtkToggleButton*, gpointer);
+static void notify_ayatana_indicator_folder_specific_set_sensitivity(GtkToggleButton*,
+		gpointer);
 #endif /* NOTIFICATION_AYATANA_INDICATOR */
 
 #ifdef NOTIFICATION_INDICATOR
@@ -1818,22 +1831,58 @@ static void notify_create_ayatana_indicator_page(PrefsPage *page, GtkWindow *win
 		gpointer data)
 {
 	GtkWidget *pvbox;
+	GtkWidget *hbox;
 	GtkWidget *vbox;
 	GtkWidget *checkbox;
+	GtkWidget *folder_button;
 
 	pvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
 	gtk_container_set_border_width(GTK_CONTAINER(pvbox), 10);
-
 	/* Enable indicator */
 	checkbox = gtk_check_button_new_with_label(_("Enable Ayatana App Indicator"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox),
 			notify_config.ayatana_indicator_enabled);
 	gtk_box_pack_start(GTK_BOX(pvbox), checkbox, FALSE, FALSE, 0);
+		g_signal_connect(G_OBJECT(checkbox), "toggled",
+			G_CALLBACK(notify_ayatana_indicator_enable_set_sensitivity), NULL);
+	gtk_widget_show(checkbox);
 	ayatana_indicator_page.ayatana_indicator_enabled = checkbox;
 
 	/* Container vbox for greying out everything */
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_box_pack_start(GTK_BOX(pvbox), vbox, FALSE, FALSE, 0);
+	gtk_widget_show(vbox);
+	ayatana_indicator_page.ayatana_cont_enable = vbox;
+
+	/* folder specific */
+	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+	gtk_widget_show(hbox);
+	checkbox = gtk_check_button_new_with_label(_("Only include selected folders"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox),
+			notify_config.ayatana_folder_specific);
+	gtk_box_pack_start(GTK_BOX(hbox), checkbox, FALSE, FALSE, 0);
+	g_signal_connect(G_OBJECT(checkbox), "toggled",
+			G_CALLBACK(notify_ayatana_indicator_folder_specific_set_sensitivity),
+			NULL);
+	gtk_widget_show(checkbox);
+	ayatana_indicator_page.ayatana_folder_specific = checkbox;
+	folder_button = gtk_button_new_with_label(_("Select folders..."));
+	g_signal_connect(G_OBJECT(folder_button), "clicked",
+			G_CALLBACK(notification_foldercheck_sel_folders_cb),
+			AYATANA_INDICATOR_SPECIFIC_FOLDER_ID_STR);
+	gtk_box_pack_start(GTK_BOX(hbox), folder_button, FALSE, FALSE, 0);
+	ayatana_indicator_page.ayatana_cont_folder_specific = folder_button;
+	gtk_widget_show(folder_button);
+
+	notify_trayicon_enable_set_sensitivity
+	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled), NULL);
+
+	notify_ayatana_indicator_enable_set_sensitivity
+	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled), NULL);
+
+	notify_ayatana_indicator_folder_specific_set_sensitivity
+	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_folder_specific), NULL);
 
 	gtk_widget_show_all(pvbox);
 	ayatana_indicator_page.page.widget = pvbox;
@@ -1849,10 +1898,35 @@ static void notify_save_ayatana_indicator(PrefsPage *page)
 
 	notify_config.ayatana_indicator_enabled = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled));
 
+	notify_config.ayatana_display_folder_name =
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_display_folder_name));
+
+	notify_config.ayatana_folder_specific =
+		gtk_toggle_button_get_active
+		(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_folder_specific));
+
 	if(notify_config.ayatana_indicator_enabled) {
 	  notification_ayatana_indicator_enable();
 	  notification_update_ayatana_indicator();
 	}
+}
+
+static void notify_ayatana_indicator_enable_set_sensitivity(GtkToggleButton *button,
+		gpointer data)
+{
+	gboolean active;
+	active = gtk_toggle_button_get_active
+	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled));
+	gtk_widget_set_sensitive(ayatana_indicator_page.ayatana_cont_enable, active);
+}
+
+static void notify_ayatana_indicator_folder_specific_set_sensitivity(GtkToggleButton *bu,
+		gpointer data)
+{
+	gboolean active;
+	active = gtk_toggle_button_get_active
+	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_folder_specific));
+	gtk_widget_set_sensitive(ayatana_indicator_page.ayatana_cont_folder_specific, active);
 }
 #endif /* NOTIFICATION_AYATANA_INDICATOR */
 
