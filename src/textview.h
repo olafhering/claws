@@ -59,6 +59,7 @@ struct _TextView
 	GtkActionGroup *link_action_group;
 	GtkWidget *link_popup_menu;
 	GtkActionGroup *mail_action_group;
+	GtkAction *search_key_action;
 	GtkWidget *mail_popup_menu;
 	GtkActionGroup *file_action_group;
 	GtkWidget *file_popup_menu;

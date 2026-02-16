@@ -51,6 +51,23 @@ GtkActionGroup *cm_menu_create_action_group_full(GtkUIManager *manager, const gc
 	return group;
 }
 
+static gint is_gtk_action_with_name(gconstpointer _action, gconstpointer _name)
+{
+	GtkAction *action = (GtkAction *)_action;
+	gchar *name = (gchar *)_name;
+	const gchar *aname = gtk_action_get_name(action);
+	return g_strcmp0 (name, aname);
+}
+
+GtkAction *cm_menu_find_action(GtkActionGroup *group, gchar *name)
+{
+	GList* actions = gtk_action_group_list_actions (group);
+	GList* found = g_list_find_custom (actions, name, is_gtk_action_with_name);
+	if (found == NULL)
+		return NULL;
+	return (GtkAction*)found->data;
+}
+
 gchar *menu_translate(const gchar *path, gpointer data)
 {
 	gchar *retval;

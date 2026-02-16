@@ -61,6 +61,8 @@
 #include "claws.h"
 #include "file-utils.h"
 
+#define PGP_FINGERPRINT_MAX_LENGTH 128
+
 static void sgpgme_disable_all(void)
 {
     /* FIXME: set a flag, so that we don't bother the user with failed
@@ -1379,8 +1381,8 @@ gpgme_error_t cm_gpgme_data_rewind(gpgme_data_t dh)
 #endif
 }
 
-/* temporary replacement for GPGME's gpgme_get_key while the fix
- * to the ctx cloning propagate. For more info see
+
+/* custom replacement for GPGME's gpgme_get_key. For more info see
  * https://lists.gnupg.org/pipermail/gnupg-devel/2025-November/036087.html
  *
  * Code adapted from GPGME/src/keylist.c (LGPL-2.1-or-later):
@@ -1388,15 +1390,23 @@ gpgme_error_t cm_gpgme_data_rewind(gpgme_data_t dh)
  * - replaced gpg_error with gpgme_error alias
  * - removed context duplication as we already pass a brand new one
  * - indented according to CLaws-Mail rules
+ * - skipped secret and invalid keys
+ * - properly end the keylisting since listctx comes as a argument
+ * - skip expired and revoked keys when a usable key exists
+ * - only check for ambiguity (to return GPG_ERR_AMBIGUOUS_NAME) if
+ *   the key found is neither expired nor revoked
  *
  * Original checkout from libgpgme last commit at 2025-10-29T09:22:34
  * 2360b937cf8f9bc52655e45dccd1885dd4c7ac32
  */
 static gpgme_error_t
-sgpgme_download_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
+sgpgme_get_public_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 {
 	gpgme_error_t err;
-	gpgme_key_t result, key;
+	gpgme_key_t key = NULL;
+	gpgme_key_t result = NULL;
+	gpgme_key_t expired = NULL;
+	gpgme_key_t revoked = NULL;
 
 	if (r_key)
 		*r_key = NULL;
@@ -1408,13 +1418,60 @@ sgpgme_download_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 		return gpgme_error(GPG_ERR_INV_VALUE);
 
 	err = gpgme_op_keylist_start(listctx, fpr, 0);
-	if (!err)
-		err = gpgme_op_keylist_next(listctx, &result);
+	pick_a_candidate_result:
 	if (!err) {
+		err = gpgme_op_keylist_next(listctx, &result);
+		if (result && result->secret) {
+			/* we need a public key */
+			gpgme_key_unref(result);
+			goto pick_a_candidate_result;
+		}
+		if (result && result->invalid) {
+			/* we can't handle invalid keys */
+			gpgme_key_unref(result);
+			goto pick_a_candidate_result;
+		}
+		if (result && result->expired) {
+			/* we return expired keys only if no valid one is available */
+			gpgme_key_unref(expired);
+			expired = result;
+			result = NULL;
+			goto pick_a_candidate_result;
+		}
+		if (result && result->revoked){
+			/* we return revoked keys only if no valid one is available */
+			gpgme_key_unref(revoked);
+			revoked = result;
+			result = NULL;
+			goto pick_a_candidate_result;
+		}
+	}
+	if (result == NULL) {
+		if (expired != NULL) {
+			result = expired;
+			gpgme_key_unref(revoked);
+			err = 0;
+		} else if (revoked != NULL) {
+			result = revoked;
+			err = 0;
+		}
+	} else {
+		gpgme_key_unref(expired);
+		gpgme_key_unref(revoked);
+	}
+	expired = NULL;
+	revoked = NULL;
+	if (!err && result && !result->expired && !result->revoked) {
 		try_next_key:
 		err = gpgme_op_keylist_next(listctx, &key);
 		if (gpgme_err_code(err) == GPG_ERR_EOF)
 			err = 0;
+		else if (!err && key && (key->secret || key->invalid ||
+					 key->expired || key->revoked)) {
+			/* we only consider usable keys as alternatives */
+			gpgme_key_unref(key);
+			goto try_next_key;
+		}
 		else {
 			if (!err && result && result->subkeys &&
 			    result->subkeys->fpr && key && key->subkeys &&
@@ -1439,21 +1496,456 @@ sgpgme_download_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 	}
 	if (!err)
 		*r_key = result;
+	gpgme_op_keylist_end(listctx);
 	return err;
 }
 
 
-gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr, MimeInfo *mimeinfo)
+/* Returns the proper message for proposing the user a key search
+ * for the given email address.
+ * Check if the key already exists in the keyring and returns NULL
+ * if a valid key is found
+ */
+static gchar* requires_online_search_for(const gchar *email_addr)
+{
+	gpgme_ctx_t ctx = NULL;
+	gpgme_key_t r_key = NULL;
+	gpgme_error_t err;
+	gchar *message = NULL;
+	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
+		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
+		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
+		return _("Couldn't initialize GPG context.");
+	}
+	gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
+	gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCAL);
+	err = sgpgme_get_public_key(ctx, email_addr, &r_key);
+	if (r_key == NULL) {
+		if(gpgme_err_code(err) != GPG_ERR_AMBIGUOUS_NAME)
+			message = _("This key is not in your keyring. Do you want "
+				    "Claws Mail to try to import it?");
+		/* else: when multiple valid matching keys exist in
+		 * 	 the keyring, the user will be able to choose
+		 * 	 one when sending an email and the correct one
+		 * 	 will be automatically used during signature
+		 * 	 verification.
+		 */
+	}
+	else if (r_key->expired)
+		message = _("The key in your keyring has expired. Do you want "
+			    "Claws Mail to try to update it?");
+	else if (r_key->revoked)
+		message = _("The key in your keyring has been revoked. Do you want "
+			    "Claws Mail to try to import a new one?");
+	if (r_key != NULL)
+		gpgme_key_unref(r_key);
+	gpgme_release(ctx);
+
+	return message;
+}
+
+static gboolean
+save_key_in_default_keyring(gpgme_ctx_t from, gpgme_key_t r_key)
+{
+	gpgme_error_t err;
+	gpgme_ctx_t ctx = NULL;
+	gpgme_data_t key_data;
+	gpgme_key_t ekey[2] = {NULL,NULL};
+	gboolean result;
+
+	if (gpgme_data_new(&key_data) != GPG_ERR_NO_ERROR)
+		goto SaveFailed0;
+	ekey[0] = r_key;
+	if ((err = gpgme_op_export_keys(from, ekey, 0, key_data)) != GPG_ERR_NO_ERROR)
+		goto SaveFailed1;
+	gpgme_data_seek(key_data, 0, SEEK_SET);
+	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR)
+		goto SaveFailed1;
+	if ((err = gpgme_op_import(ctx, key_data)) != GPG_ERR_NO_ERROR)
+		goto SaveFailed2;
+
+	gpgme_import_result_t import = gpgme_op_import_result(ctx);
+	result = import->imported > 0;
+
+	gpgme_release(ctx);
+	gpgme_data_release(key_data);
+	return result;
+
+SaveFailed2:
+	gpgme_release(ctx);
+SaveFailed1:
+	gpgme_data_release(key_data);
+SaveFailed0:
+	return FALSE;
+}
+
+static char *
+sgpgme_make_tmp_gpghome(void){
+	gchar* home;
+	GError *mkderr = NULL;
+	GFile *src;
+	GFile *dest;
+	home = g_dir_make_tmp ("claws-gpg-home-XXXXXX", &mkderr);
+	if (mkderr != NULL) {
+		alertpanel_notice(_("Cannot create a temporary home for GPG: %s"),
+				  mkderr->message);
+		g_error_free (mkderr);
+		return NULL;
+	}
+	const char *originalHome = gpgme_get_dirinfo("homedir");
+	src = g_file_new_build_filename(originalHome, "gpg.conf", NULL);
+	dest = g_file_new_build_filename(home, "gpg.conf", NULL);
+
+	if (!g_file_copy (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &mkderr)) {
+		alertpanel_notice(_("Cannot copy gpg.conf into temporary home %s: %s"),
+				  home, mkderr->message);
+		g_error_free (mkderr);
+		g_free(home);
+		home = NULL;
+	}
+	g_free(src);
+	g_free(dest);
+
+	return home;
+}
+
+static const char *
+isotimestr (unsigned long value, char *buffer, size_t size)
+{
+	time_t t;
+	struct tm *tp;
+
+	if (!value)
+		return "";
+	t = value;
+
+	tp = gmtime (&t);
+	snprintf (buffer, size, "%04d-%02d-%02d %02d:%02d:%02d",
+		1900+tp->tm_year, tp->tm_mon+1, tp->tm_mday,
+		tp->tm_hour, tp->tm_min, tp->tm_sec);
+	return buffer;
+}
+
+static char*
+key_warning_message(gpgme_key_t key) {
+	if (key->invalid)
+		return _("The key is invalid.");
+	if (key->revoked)
+		return _("Revoked");
+	if (key->expired)
+		return _("Expired");
+	if (key->disabled)
+		return _("The key has been disabled.");
+	return "Unknown issue";
+}
+
+static GtkWidget *
+gpgkey_property_view(gpgme_key_t key){
+	enum
+	{
+		COL_NAME = 0,
+		COL_VALUE,
+		NUM_COLS
+	};
+	static char buffer[72];
+	gboolean dangerous_key = key->expired || key->revoked || key->disabled || key->invalid;
+	GtkWidget *view = gtk_tree_view_new ();
+
+	GtkCellRenderer *renderer;
+
+	GtkListStore *store = gtk_list_store_new (NUM_COLS,
+						G_TYPE_STRING,
+						G_TYPE_STRING);
+	GtkTreeIter iter;
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, _("ID"),
+		COL_VALUE, key->subkeys->keyid,
+		-1);
+	if (dangerous_key) {
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter,
+			COL_NAME, "",
+			COL_VALUE, key_warning_message(key),
+			-1);
+	}
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, _("Primary Name"),
+		COL_VALUE, key->uids->name,
+		-1);
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, _("Primary Email"),
+		COL_VALUE, key->uids->email,
+		-1);
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, _("Created"),
+		COL_VALUE, key->subkeys->timestamp == ((unsigned long)-1)
+			? _("Invalid")
+			: isotimestr(key->subkeys->timestamp, buffer, sizeof(buffer)),
+		-1);
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, key->expired
+			? _("Expired on")
+			: _("Expires"),
+		COL_VALUE, key->subkeys->expires
+			? isotimestr(key->subkeys->expires, buffer, sizeof(buffer))
+			: _("Never"),
+		-1);
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+		COL_NAME, "Fingerprint",
+		COL_VALUE, key->fpr,
+		-1);
+
+	GtkTreeModel * model = GTK_TREE_MODEL (store);
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
+		-1,
+		"Property",
+		renderer,
+		"text", COL_NAME,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
+		-1,
+		"Value",
+		renderer,
+		"text", COL_VALUE,
+		NULL);
+
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(view), model);
+
+	g_object_unref(model);
+	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+		GTK_SELECTION_NONE);
+
+	return view;
+}
+
+enum AmbiguousKeySelectorColumns
+{
+	SEL_ID = 0,
+	SEL_PRIMARY_NAME,
+	SEL_PRIMARY_EMAIL,
+	SEL_CREATED,
+	SEL_EXPIRES,
+	SEL_FINGERPRINT,
+	NUM_COLS
+};
+
+static gboolean
+_ambiguous_key_selection_func (GtkTreeSelection *selection,
+				GtkTreeModel     *model,
+				GtkTreePath      *path,
+				gboolean          path_currently_selected,
+				gpointer          userdata)
+{
+	char *fpr;
+	GtkTreeIter iter;
+	char* selected_key = userdata;
+
+	if (gtk_tree_model_get_iter(model, &iter, path)) {
+		gtk_tree_model_get(model, &iter, SEL_FINGERPRINT, &fpr, -1);
+
+		if (!path_currently_selected) {
+			// was not selected, thus it's selected now.
+			strncpy(selected_key, fpr, PGP_FINGERPRINT_MAX_LENGTH+1);
+		} else if (strncmp(fpr, selected_key, PGP_FINGERPRINT_MAX_LENGTH+1) == 0) {
+			// was unselected, clean up
+			memset(selected_key, '\0', PGP_FINGERPRINT_MAX_LENGTH+1); 
+		}
+
+		g_free(fpr);
+	}
+	return TRUE;
+}
+static GtkWidget *
+ambiguous_key_selection(
+	gpgme_ctx_t listctx,
+	const char* email_addr,
+	char* selected_key)
+{
+	gpgme_error_t err;
+	gpgme_key_t key = NULL;
+	gboolean dangerous_key = FALSE;
+	static char tbuffer[72];
+	static char ebuffer[72];
+	GtkWidget *view = gtk_tree_view_new ();
+
+	GtkCellRenderer *renderer;
+
+	GtkListStore *store = gtk_list_store_new (NUM_COLS,
+						G_TYPE_STRING,
+						G_TYPE_STRING,
+						G_TYPE_STRING,
+						G_TYPE_STRING,
+						G_TYPE_STRING,
+						G_TYPE_STRING);
+	GtkTreeIter iter;
+
+	err = gpgme_op_keylist_start(listctx, email_addr, 0);
+	while (!err && !(err = gpgme_op_keylist_next(listctx, &key))) {
+		dangerous_key = key->expired || key->revoked || key->disabled || key->invalid;
+		if (!dangerous_key) {
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter,
+				SEL_ID, key->subkeys->keyid,
+				SEL_PRIMARY_NAME, key->uids->name,
+				SEL_PRIMARY_EMAIL, key->uids->email,
+				SEL_CREATED, key->subkeys->timestamp != -1
+					? isotimestr(key->subkeys->timestamp, tbuffer, sizeof(tbuffer))
+					: _("Invalid Value"),
+				SEL_EXPIRES, key->subkeys->expires
+					? isotimestr(key->subkeys->expires, ebuffer, sizeof(ebuffer))
+					: _("Never"),
+				SEL_FINGERPRINT, key->fpr,
+				-1);
+		}
+		gpgme_key_unref(key);
+	}
+	gpgme_op_keylist_end(listctx);
+
+	GtkTreeModel * model = GTK_TREE_MODEL(store);
+
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		"ID",
+		renderer,
+		"text", SEL_ID,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		_("Owner"),
+		renderer,
+		"text", SEL_PRIMARY_NAME,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		_("Email"),
+		renderer,
+		"text", SEL_PRIMARY_EMAIL,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		_("Created"),
+		renderer,
+		"text", SEL_CREATED,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		_("Expires"),
+		renderer,
+		"text", SEL_EXPIRES,
+		NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+		-1,
+		_("Fingerprint"),
+		renderer,
+		"text", SEL_FINGERPRINT,
+		NULL);
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(view), model);
+
+	g_object_unref(model);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+
+	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+		GTK_SELECTION_SINGLE);
+	gtk_tree_selection_set_select_function(selection, _ambiguous_key_selection_func, selected_key, NULL);
+	return view;
+}
+
+static gboolean
+import_desired_key(gpgme_ctx_t ctx, const char* email_addr)
+{
+	gpgme_error_t err;
+	gboolean res = FALSE;
+	gpgme_key_t r_key = NULL;
+	AlertValue val = G_ALERTDEFAULT;
+	char selected_key[PGP_FINGERPRINT_MAX_LENGTH+1];
+	char *buf = g_strdup_printf(
+			_("More than one public key for <b>%s</b> were found.\nSelect the key you want to add to your keyring.\n"),
+			email_addr
+			);
+
+	memset(selected_key, 0, PGP_FINGERPRINT_MAX_LENGTH+1);
+	GtkWidget * selector = ambiguous_key_selection(ctx, email_addr, selected_key);
+
+	val = alertpanel_full(_("Notice"), buf,
+			NULL, _("_Add to keyring"),
+			NULL, _("_Cancel"),
+			NULL, NULL,
+			ALERTFOCUS_FIRST,
+			FALSE,
+			selector,
+			ALERT_QUESTION);
+	g_free(buf);
+
+	if (val == G_ALERTDEFAULT && selected_key[0]){
+		gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCAL);
+		gpgme_set_ctx_flag(ctx, "auto-key-locate","clear,nodefault");
+		err = sgpgme_get_public_key(ctx, selected_key, &r_key);
+		if (err) {
+			debug_print("Couldn't load key %s: %s\n", selected_key, gpgme_strerror(err));
+			privacy_set_error(_("Couldn't load key %s: %s"), selected_key, gpgme_strerror(err));
+			return FALSE;
+		}
+		GtkWidget * properties = gpgkey_property_view(r_key);
+		val = alertpanel_full(
+			_("Are you sure?"),
+			_("Add the following public key to your keyring?"),
+			NULL, _("_Add to keyring"),
+			NULL, _("_Cancel"),
+			NULL, NULL,
+			ALERTFOCUS_FIRST,
+			FALSE,
+			properties,
+			ALERT_QUESTION
+			);
+		if (val == G_ALERTDEFAULT)
+			res = save_key_in_default_keyring(ctx, r_key);
+		else
+			res = FALSE;
+		gpgme_key_unref(r_key);
+	}
+
+	return res;
+}
+
+gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr)
 {
 	AlertValue val = G_ALERTDEFAULT;
 	gpgme_ctx_t ctx = NULL;
 	gpgme_key_t r_key = NULL;
 	gpgme_error_t err;
 	gboolean res = TRUE;
+	gchar *buf = NULL;
+	gchar* home;
+	gchar *message = requires_online_search_for(email_addr);
+
+	if (message == NULL) {
+		// a NULL message means that at least one valid key
+		// is already present in the keyring
+		alertpanel_notice(_("The public key for %s is already "
+				    "in your keyring."), email_addr);
+		return TRUE;
+	}
 
 	val = alertpanel(_("Key import"),
-			 _("This key is not in your keyring. Do you want "
-			 "Claws Mail to try to import it?"), NULL,
+			 message, NULL,
 			 _("_No"), NULL, _("from keyserver"), NULL,
 			 _("from Web Key Directory"), ALERTFOCUS_SECOND);
 	GTK_EVENTS_FLUSH();
@@ -1461,39 +1953,78 @@ gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr, MimeInfo *mimein
 		return FALSE;
 	if (val != G_ALERTALTERNATE && val != G_ALERTOTHER)
 		return FALSE;
+	if ((home = sgpgme_make_tmp_gpghome()) == NULL)
+		return FALSE;
 
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
+		g_free(home);
 		return FALSE;
 	}
 
+	gpgme_ctx_set_engine_info(ctx, GPGME_PROTOCOL_OpenPGP, NULL, home);
 	gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
 	gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCATE);
 	/* Note that we do NOT add "clear" when keyserver import is requested.
-	 * That's because the gpg.conf might contains keyservers urls that
-	 * the user want queried: nodefault is enough to avoid a WKD
+	 * That's because the gpg.conf might contain keyserver urls that
+	 * the user wants queried: nodefault is enough to avoid a WKD
 	 * request to be sent before the keyserver one.
 	 */
 	gpgme_set_ctx_flag(ctx, "auto-key-locate",
 		(val == G_ALERTOTHER)? "clear,nodefault,wkd" : "nodefault,keyserver");
 
-	err = sgpgme_download_key(ctx, email_addr, &r_key);
-	if (err != GPG_ERR_NO_ERROR)
+	err = sgpgme_get_public_key(ctx, email_addr, &r_key);
+	if (r_key == NULL && val != G_ALERTOTHER && gpgme_err_code(err) == GPG_ERR_EOF) {
+		// inefficient workaround to https://dev.gnupg.org/T8093
+		gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCAL);
+		gpgme_set_ctx_flag(ctx, "auto-key-locate","clear,nodefault");
+		err = sgpgme_get_public_key(ctx, email_addr, &r_key);
+	}
+	if (err != GPG_ERR_NO_ERROR && gpgme_err_code(err) != GPG_ERR_AMBIGUOUS_NAME)
 		res = FALSE;
-	if (r_key == NULL)
+	if (r_key == NULL && gpgme_err_code(err) != GPG_ERR_AMBIGUOUS_NAME)
 		res = FALSE;
-	else
-		gpgme_key_unref(r_key);
 
-	gpgme_release(ctx);
+	if (res) {
+		if (gpgme_err_code(err) == GPG_ERR_AMBIGUOUS_NAME) {
+			res = import_desired_key(ctx, email_addr);
+		} else {
+			GtkWidget * properties = gpgkey_property_view(r_key);
+			buf = g_strdup_printf(
+					r_key->expired
+					? _("An <b>expired</b> public key for <b>%s</b> was found.\nAdd it to your keyring?\n")
+					: _("A public key for <b>%s</b> was found.\nAdd it to your keyring?\n"),
+					email_addr
+					);
 
-	if (!res) {
-		if(val == G_ALERTOTHER)
+			val = alertpanel_full(_("Notice"), buf,
+					NULL, _("_Add to keyring"),
+					NULL, _("_Cancel"),
+					NULL, NULL,
+					ALERTFOCUS_FIRST,
+					FALSE,
+					properties,
+					ALERT_QUESTION);
+			g_free(buf);
+			if (val == G_ALERTDEFAULT)
+				res = save_key_in_default_keyring(ctx, r_key);
+
+			else
+				res = FALSE;
+		}
+		if (res)
+			alertpanel_notice(_("The public key for <b>%s</b> is now in your keyring."), email_addr);
+	} else {
+		if (val == G_ALERTOTHER)
 			alertpanel_error(_("Cannot locate the missing key from Web Key Directory."));
 		else
 			alertpanel_error(_("Cannot locate the missing key from keyserver."));
 	}
+
+	gpgme_key_unref(r_key);
+	gpgme_release(ctx);
+	g_free(home);
 
 	return res;
 }

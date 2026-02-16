@@ -92,6 +92,7 @@ void cm_menu_set_sensitive_full(GtkUIManager *gui_manager, const gchar *menu, gb
 void cm_toggle_menu_set_active_full(GtkUIManager *gui_manager, gchar *menu, gboolean active);
 gchar *cm_menu_item_get_shortcut(GtkUIManager *gui_manager, gchar *menu);
 GtkWidget *cm_menu_item_new_label_from_url(gchar *label);
+GtkAction *cm_menu_find_action(GtkActionGroup *group, gchar *name);
 
 void menu_set_sensitive_all(GtkMenuShell *menu_shell, gboolean sensitive);
 
