@@ -1,7 +1,7 @@
 /*
  * PGP/Core keyring autocompletion
  *
- * Copyright (C) 2014-2025 the Claws Mail team and Christian Hesse <mail@eworm.de>
+ * Copyright (C) 2014-2026 the Claws Mail team and Christian Hesse <mail@eworm.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

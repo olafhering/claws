@@ -1,6 +1,6 @@
 /* Perl plugin -- Perl Support for Claws Mail
  *
- * Copyright (C) 2004-2022 Holger Berndt and the Claws Mail Team
+ * Copyright (C) 2004-2026 Holger Berndt and the Claws Mail Team
  *
  * Claws Mail are GTK based, lightweight, and fast e-mail clients
  * Copyright (C) 1999-2022 the Claws Mail Team

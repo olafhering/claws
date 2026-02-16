@@ -1,7 +1,7 @@
 /* gtkaspell - a spell-checking addon for GtkText
  * Copyright (c) 2000 Evan Martin (original code for ispell).
  * Copyright (c) 2002 Melvin Hadasht.
- * Copyright (C) 2001-2025 the Claws Mail Team
+ * Copyright (C) 2001-2026 the Claws Mail Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Andrej Kacian <andrej@kacian.sk>
+ * Copyright (C) 2012-2026 the Claws Mail team and Andrej Kacian <andrej@kacian.sk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
