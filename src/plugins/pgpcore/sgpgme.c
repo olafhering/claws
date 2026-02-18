@@ -1390,9 +1390,9 @@ gpgme_error_t cm_gpgme_data_rewind(gpgme_data_t dh)
  * - replaced gpg_error with gpgme_error alias
  * - removed context duplication as we already pass a brand new one
  * - indented according to CLaws-Mail rules
- * - skipped secret and invalid keys
+ * - skipped secret, revoked and invalid keys
  * - properly end the keylisting since listctx comes as a argument
- * - skip expired and revoked keys when a usable key exists
+ * - skip expired keys when a usable key exists
  * - only check for ambiguity (to return GPG_ERR_AMBIGUOUS_NAME) if
  *   the key found is neither expired nor revoked
  *
@@ -1406,7 +1406,6 @@ sgpgme_get_public_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 	gpgme_key_t key = NULL;
 	gpgme_key_t result = NULL;
 	gpgme_key_t expired = NULL;
-	gpgme_key_t revoked = NULL;
 
 	if (r_key)
 		*r_key = NULL;
@@ -1426,22 +1425,23 @@ sgpgme_get_public_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 			gpgme_key_unref(result);
 			goto pick_a_candidate_result;
 		}
-		if (result && result->invalid) {
+		if (result && (result->invalid || result->revoked)) {
 			/* we can't handle invalid keys */
 			gpgme_key_unref(result);
 			goto pick_a_candidate_result;
 		}
 		if (result && result->expired) {
-			/* we return expired keys only if no valid one is available */
-			gpgme_key_unref(expired);
-			expired = result;
-			result = NULL;
-			goto pick_a_candidate_result;
-		}
-		if (result && result->revoked){
-			/* we return revoked keys only if no valid one is available */
-			gpgme_key_unref(revoked);
-			revoked = result;
+			/* we return expired keys only if no better one is available */
+			if (expired) {
+				if (expired->subkeys->timestamp < result->subkeys->timestamp) {
+					/* we only keep the most recent expired key */
+					gpgme_key_unref(expired);
+					expired = result;
+				} else {
+					gpgme_key_unref(result);
+				}
+			} else
+				expired = result;
 			result = NULL;
 			goto pick_a_candidate_result;
 		}
@@ -1449,18 +1449,12 @@ sgpgme_get_public_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
 	if (result == NULL) {
 		if (expired != NULL) {
 			result = expired;
-			gpgme_key_unref(revoked);
-			err = 0;
-		} else if (revoked != NULL) {
-			result = revoked;
 			err = 0;
 		}
 	} else {
 		gpgme_key_unref(expired);
-		gpgme_key_unref(revoked);
 	}
 	expired = NULL;
-	revoked = NULL;
 	if (!err && result && !result->expired && !result->revoked) {
 		try_next_key:
 		err = gpgme_op_keylist_next(listctx, &key);
