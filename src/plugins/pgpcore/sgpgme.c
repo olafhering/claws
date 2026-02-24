@@ -1950,6 +1950,7 @@ gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr)
 	if ((err = gpgme_new(&ctx)) != GPG_ERR_NO_ERROR) {
 		debug_print("Couldn't initialize GPG context, %s\n", gpgme_strerror(err));
 		privacy_set_error(_("Couldn't initialize GPG context, %s"), gpgme_strerror(err));
+		remove_dir_recursive(home);
 		g_free(home);
 		return FALSE;
 	}
@@ -2015,6 +2016,7 @@ gboolean sgpgme_propose_pgp_key_search(const gchar *email_addr)
 
 	gpgme_key_unref(r_key);
 	gpgme_release(ctx);
+	remove_dir_recursive(home);
 	g_free(home);
 
 	return res;
