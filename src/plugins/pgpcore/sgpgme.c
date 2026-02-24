@@ -1399,8 +1399,9 @@ gpgme_error_t cm_gpgme_data_rewind(gpgme_data_t dh)
  * Original checkout from libgpgme last commit at 2025-10-29T09:22:34
  * 2360b937cf8f9bc52655e45dccd1885dd4c7ac32
  */
-static gpgme_error_t
-sgpgme_get_public_key (gpgme_ctx_t listctx, const char *fpr, gpgme_key_t *r_key)
+static gpgme_error_t sgpgme_get_public_key (gpgme_ctx_t listctx,
+					    const char *fpr,
+					    gpgme_key_t *r_key)
 {
 	gpgme_error_t err;
 	gpgme_key_t key = NULL;
@@ -1538,8 +1539,7 @@ static gchar* requires_online_search_for(const gchar *email_addr)
 	return message;
 }
 
-static gboolean
-save_key_in_default_keyring(gpgme_ctx_t from, gpgme_key_t r_key)
+static gboolean save_key_in_default_keyring(gpgme_ctx_t from, gpgme_key_t r_key)
 {
 	gpgme_error_t err;
 	gpgme_ctx_t ctx = NULL;
@@ -1565,16 +1565,16 @@ save_key_in_default_keyring(gpgme_ctx_t from, gpgme_key_t r_key)
 	gpgme_data_release(key_data);
 	return result;
 
-SaveFailed2:
-	gpgme_release(ctx);
-SaveFailed1:
-	gpgme_data_release(key_data);
-SaveFailed0:
+	SaveFailed2:
+		gpgme_release(ctx);
+	SaveFailed1:
+		gpgme_data_release(key_data);
+	SaveFailed0:
 	return FALSE;
 }
 
-static char *
-sgpgme_make_tmp_gpghome(void){
+static char *sgpgme_make_tmp_gpghome(void)
+{
 	gchar* home;
 	GError *mkderr = NULL;
 	GFile *src;
@@ -1603,8 +1603,9 @@ sgpgme_make_tmp_gpghome(void){
 	return home;
 }
 
-static const char *
-isotimestr (unsigned long value, char *buffer, size_t size)
+static const char *isotimestr (unsigned long	value,
+			       char 		*buffer,
+			       size_t		size)
 {
 	time_t t;
 	struct tm *tp;
@@ -1620,8 +1621,8 @@ isotimestr (unsigned long value, char *buffer, size_t size)
 	return buffer;
 }
 
-static char*
-key_warning_message(gpgme_key_t key) {
+static char *key_warning_message(gpgme_key_t key)
+{
 	if (key->invalid)
 		return _("The key is invalid.");
 	if (key->revoked)
@@ -1633,8 +1634,8 @@ key_warning_message(gpgme_key_t key) {
 	return "Unknown issue";
 }
 
-static GtkWidget *
-gpgkey_property_view(gpgme_key_t key){
+static GtkWidget *gpgkey_property_view(gpgme_key_t key)
+{
 	enum
 	{
 		COL_NAME = 0,
@@ -1734,12 +1735,11 @@ enum AmbiguousKeySelectorColumns
 	NUM_COLS
 };
 
-static gboolean
-_ambiguous_key_selection_func (GtkTreeSelection *selection,
-				GtkTreeModel     *model,
-				GtkTreePath      *path,
-				gboolean          path_currently_selected,
-				gpointer          userdata)
+static gboolean _ambiguous_key_selection_func(GtkTreeSelection *selection,
+					      GtkTreeModel     *model,
+					      GtkTreePath      *path,
+					      gboolean          path_currently_selected,
+					      gpointer          userdata)
 {
 	char *fpr;
 	GtkTreeIter iter;
@@ -1760,11 +1760,9 @@ _ambiguous_key_selection_func (GtkTreeSelection *selection,
 	}
 	return TRUE;
 }
-static GtkWidget *
-ambiguous_key_selection(
-	gpgme_ctx_t listctx,
-	const char* email_addr,
-	char* selected_key)
+static GtkWidget *ambiguous_key_selection(gpgme_ctx_t 	listctx,
+					  const char 	*email_addr,
+					  char		*selected_key)
 {
 	gpgme_error_t err;
 	gpgme_key_t key = NULL;
@@ -1862,8 +1860,7 @@ ambiguous_key_selection(
 	return view;
 }
 
-static gboolean
-import_desired_key(gpgme_ctx_t ctx, const char* email_addr)
+static gboolean import_desired_key(gpgme_ctx_t ctx, const char *email_addr)
 {
 	gpgme_error_t err;
 	gboolean res = FALSE;
