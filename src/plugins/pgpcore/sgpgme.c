@@ -1868,7 +1868,7 @@ static gboolean import_desired_key(gpgme_ctx_t ctx, const char *email_addr)
 	AlertValue val = G_ALERTDEFAULT;
 	char selected_key[PGP_FINGERPRINT_MAX_LENGTH+1];
 	char *buf = g_strdup_printf(
-			_("More than one public key for <b>%s</b> were found.\nSelect the key you want to add to your keyring.\n"),
+			_("More than one public key for <b>%s</b> was found.\nSelect the key you want to add to your keyring.\n"),
 			email_addr
 			);
 
