@@ -631,10 +631,10 @@ static void mimeview_set_multipart_tree(MimeView *mimeview, MimeInfo *mimeinfo, 
 
 	while (mimeinfo != NULL) {
 		const gchar *content_type, *length, *name;
-	   	char s[123];
+		char s[123];
 		if (mimeinfo->type != MIMETYPE_UNKNOWN && mimeinfo->subtype) {
 			gint l = g_snprintf(s, sizeof(s), "%s/%s", procmime_get_media_type_str(mimeinfo->type), mimeinfo->subtype);
-			if (l != sizeof(s))
+			if (l >= sizeof(s))
 				g_warning("'%s/%s' truncated to '%s'", procmime_get_media_type_str(mimeinfo->type), mimeinfo->subtype, s);
 			content_type = s;
 		} else
