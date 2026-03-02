@@ -2976,7 +2976,6 @@ gboolean networkmanager_is_online(GError **error)
 	GDBusProxy *proxy;
 	GError *tmp_error = NULL;
 	GVariant *result;
-	gboolean retVal;
 	guint32 state;
 
 	if (!prefs_common.use_networkmanager)
