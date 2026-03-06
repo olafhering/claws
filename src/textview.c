@@ -2362,7 +2362,8 @@ static void textview_show_header(TextView *textview, GPtrArray *headers)
 	textview_show_avatar(textview);
 	if (prefs_common.save_xface)
 		textview_save_contact_pic(textview);
-	textview_show_contact_pic(textview);
+	if (prefs_common.show_contact_pic)
+		textview_show_contact_pic(textview);
 }
 
 gboolean textview_search_string(TextView *textview, const gchar *str,
