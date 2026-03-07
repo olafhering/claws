@@ -1166,6 +1166,26 @@
 	</listitem>
       </varlistentry>
       <varlistentry>
+	<term><literal>show_contact_pic</literal></term>
+	<listitem>
+	  <para>
+
+    '0' o '1'. Al visualizar un mensaje, si el remitente est&aacute; en
+    la agenda de direcciones y tiene guardada una imagen del contacto,
+    esta opci&oacute;n mostrar&aacute; esa imagen, salvo que ya se
+    est&eacute; mostrando el panel de cabeceras, se haya seleccionado no
+    mostrar (X-)Face o la opci&oacute;n 'enable_avatars' est&aacute; a
+    '0'.
+
+    Si tiene una agenda de direcciones grande se recomienda mantener
+    esta opci&oacute;n desactivada para evitar retrasos en la
+    visualizaci&oacute;n de los mensajes. El valor predeterminado es
+    '0', desactivado.
+
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
 	<term><literal>show_inline_attachments</literal></term>
 	<listitem>
 	  <para>
