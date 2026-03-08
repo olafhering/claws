@@ -1,5 +1,5 @@
 # French translation of Claws Mail
-# Copyright © 1999-2025 The Claws Mail team.
+# Copyright © 1999-2026 The Claws Mail team.
 # This file is distributed under the same license
 # as the Claws Mail package, see COPYING file.
 #

@@ -8,7 +8,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Claws Mail 4.3.2\n"
+"Project-Id-Version: Claws Mail 4.4.0\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
 "POT-Creation-Date: 2023-11-16 00:28+0100\n"
 "PO-Revision-Date: 2026-03-08 22:42+0100\n"
