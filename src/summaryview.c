@@ -3571,25 +3571,25 @@ static inline void summary_set_header(SummaryView *summaryview, gchar *text[],
 		text[col_pos[S_COL_SUBJECT]] = msginfo->subject ? msginfo->subject :
 			_("(No Subject)");
 	if ((vert_layout || small_layout) && prefs_common.two_line_vert) {
+		gchar *str;
 		if (!FOLDER_SHOWS_TO_HDR(summaryview->folder_item)) {
-			gchar *tmp = g_markup_printf_escaped(g_strconcat("%s\n",
-									"<span color='%s' style='italic'>",
-									_("From: %s, on %s"), "</span>", NULL),
+			str = g_strconcat("%s\n", "<span color='%s' style='italic'>",
+					_("From: %s, on %s"), "</span>", NULL);
+			text[col_pos[S_COL_SUBJECT]] = g_markup_printf_escaped(str,
 					text[col_pos[S_COL_SUBJECT]],
 					color_dim_rgb,
 					text[col_pos[S_COL_FROM]],
 					text[col_pos[S_COL_DATE]]);
-			text[col_pos[S_COL_SUBJECT]] = tmp;
 		} else {
-			gchar *tmp = g_markup_printf_escaped(g_strconcat("%s\n",
-									 "<span color='%s' style='italic'>",
-									_("To: %s, on %s"), "</span>", NULL),
+			str = g_strconcat("%s\n", "<span color='%s' style='italic'>",
+					_("To: %s, on %s"), "</span>", NULL),
+			text[col_pos[S_COL_SUBJECT]] = g_markup_printf_escaped(str,
 					text[col_pos[S_COL_SUBJECT]],
 					color_dim_rgb,
 					text[col_pos[S_COL_TO]],
 					text[col_pos[S_COL_DATE]]);
-			text[col_pos[S_COL_SUBJECT]] = tmp;
 		}
+		g_free(str);
 	}
 }
 

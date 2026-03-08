@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2005-2023 the Claws Mail Team and Andrej Kacian <andrej@kacian.sk>
+ // * Copyright (C) 2005-2026 the Claws Mail Team and Andrej Kacian <andrej@kacian.sk>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 	GtkWidget *win, *vbox, *title, *titleframe, *titlelabel, *editprops;
 	gint ret;
 	gchar *newtitle;
+	gchar *str;
 
 	g_return_if_fail(ctx != NULL);
 	g_return_if_fail(ctx->feed != NULL);
@@ -56,8 +57,9 @@ void rssyl_subscribe_dialog(RSubCtx *ctx) {
 	gtk_frame_set_label_align(GTK_FRAME(titleframe), 0.05, 0.5);
 	gtk_frame_set_shadow_type(GTK_FRAME(titleframe), GTK_SHADOW_ETCHED_OUT);
 	gtk_box_pack_start(GTK_BOX(vbox), titleframe, FALSE, FALSE, 0);
-
-	titlelabel = gtk_label_new(g_strconcat("<b>",_("Feed folder:"),"</b>", NULL));
+	str = g_strconcat("<b>",_("Feed folder:"),"</b>", NULL);
+	titlelabel = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_use_markup(GTK_LABEL(titlelabel), TRUE);
 	gtk_widget_set_margin_start(GTK_WIDGET(titlelabel), 5);
 	gtk_widget_set_margin_end(GTK_WIDGET(titlelabel), 0);

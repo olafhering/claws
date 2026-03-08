@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2005-2022 the Claws Mail team
+ * Copyright (C) 2005-2026 the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,6 +120,7 @@ static void legend_create(void)
 	GtkWidget *icon_label;
 	GtkWidget *desc_label;
 	GtkWidget *table;
+	gchar *str;
 	gint i, j, k;
 
 	window = gtkut_window_new(GTK_WINDOW_TOPLEVEL, "icon_legend");
@@ -142,9 +143,11 @@ static void legend_create(void)
 	gtk_widget_show(hbox);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-	label = gtk_label_new(g_strconcat("<span weight=\"bold\">",_("The following icons "
-				"are used to show the status of messages and "
-				"folders:"), "</span>", NULL));
+	str = g_strconcat("<span weight=\"bold\">",_("The following icons "
+			"are used to show the status of messages and "
+			"folders:"), "</span>", NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);

@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1090,22 +1090,26 @@ int main(int argc, char *argv[])
 	if (!is_dir_exist(get_rc_dir())) {
 		prefs_destroy_cache();
 		gboolean r = FALSE;
+		gchar *str = NULL;
 		
 		/* if one of the old dirs exist, we'll ask if the user 
 		 * want to migrates, and r will be TRUE if he said yes
 		 * and migration succeeded, and FALSE otherwise.
 		 */
 		if (is_dir_exist(OLD_GTK2_RC_DIR)) {
-			r = migrate_old_config(OLD_GTK2_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 2.6.0 ", _("(or older)"), NULL));
+			str = g_strconcat("Sylpheed-Claws 2.6.0 ", _("(or older)"), NULL);
+			r = migrate_old_config(OLD_GTK2_RC_DIR, get_rc_dir(), str);
+			g_free(str);
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(OLDER_GTK2_RC_DIR)) {
-			r = migrate_old_config(OLDER_GTK2_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 1.9.15 ",_("(or older)"), NULL));
+			str = g_strconcat("Sylpheed-Claws 1.9.15 ",_("(or older)"), NULL);
+			r = migrate_old_config(OLDER_GTK2_RC_DIR, get_rc_dir(), str);
+			g_free(str);
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(OLD_GTK1_RC_DIR)) {
-			r = migrate_old_config(OLD_GTK1_RC_DIR, get_rc_dir(),
-					       g_strconcat("Sylpheed-Claws 1.0.5 ",_("(or older)"), NULL));
+			str = g_strconcat("Sylpheed-Claws 1.0.5 ",_("(or older)"), NULL);
+			r = migrate_old_config(OLD_GTK1_RC_DIR, get_rc_dir(), str);
+			g_free(str);
 			asked_for_migration = TRUE;
 		} else if (is_dir_exist(SYLPHEED_RC_DIR)) {
 			r = migrate_old_config(SYLPHEED_RC_DIR, get_rc_dir(), "Sylpheed");

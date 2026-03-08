@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2005-2025 the Claws Mail Team and Andrej Kacian <andrej@kacian.sk>
+ * Copyright (C) 2005-2026 the Claws Mail Team and Andrej Kacian <andrej@kacian.sk>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -261,6 +261,7 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 		*silent_update_label;
 	GtkAdjustment *adj;
 	gint refresh;
+	gchar *str;
 
 	g_return_if_fail(ritem != NULL);
 
@@ -435,8 +436,10 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 			ritem->fetch_comments);
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->fetch_comments_max_age, FALSE, FALSE, 0);
 	/* Fetch comments max age - units label */
-	label = gtk_label_new(g_strconcat(_("days"), "<small>    ",
-				_("Set to -1 to fetch all comments"), "</small>", NULL));
+	str = g_strconcat(_("days"), "<small>    ",
+				_("Set to -1 to fetch all comments"), "</small>", NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -485,9 +488,11 @@ void rssyl_gtk_prop(RFolderItem *ritem)
 			!ritem->default_refresh_interval);
 	gtk_box_pack_start(GTK_BOX(hbox), feedprop->refresh_interval, FALSE, FALSE, 0);
 	/* Refresh interval - units label */
-	label = gtk_label_new(g_strconcat(_("minutes"), "<small>    ",
+	str = g_strconcat(_("minutes"), "<small>    ",
 			_("Set to 0 to disable automatic refreshing for this feed"),
-			"</small>", NULL));
+			"</small>", NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(inner_vbox), hbox, FALSE, FALSE, 0);

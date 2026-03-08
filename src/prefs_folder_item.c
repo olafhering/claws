@@ -211,17 +211,20 @@ static GtkWidget *prefs_folder_no_save_warning_create_widget() {
 	GtkWidget *hbox;
 	GtkWidget *icon;
 	GtkWidget *label;
+	gchar *str;
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
 	icon = stock_pixmap_widget(STOCK_PIXMAP_NOTICE_WARN);
 	gtk_box_pack_start(GTK_BOX(hbox), icon, FALSE, FALSE, 8);
 
-	label = gtk_label_new(g_strconcat("<i>",
+	str = g_strconcat("<i>",
 		_("These preferences will not be saved as this folder "
 		"is a top-level folder.\nHowever, you can set them for the "
 		"whole mailbox tree by using \"Apply to subfolders\"."),
-		"</i>", NULL));
+		"</i>", NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);

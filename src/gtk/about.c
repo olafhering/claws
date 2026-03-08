@@ -553,6 +553,7 @@ static GtkWidget *about_create_child_page_license(void)
 	GtkTextIter iter;
 	GdkRGBA uri_color;
 	GtkTextTag *tag;
+	gchar *str;
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
@@ -597,9 +598,11 @@ static GtkWidget *about_create_child_page_license(void)
 		"underline", PANGO_UNDERLINE_SINGLE,
 		NULL);
 
-	gtk_text_buffer_insert(buffer, &iter, g_strconcat(
+	str = g_strconcat(
 		_("You should have received a copy of the GNU General Public License "
-		  "along with this program. If not, see "), "<", NULL), -1);
+		  "along with this program. If not, see "), "<", NULL);
+	gtk_text_buffer_insert(buffer, &iter, str , -1);
+	g_free(str);
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, 
 		"http://www.gnu.org/licenses/", -1,
 		"link", NULL);

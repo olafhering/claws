@@ -1343,6 +1343,7 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	int i = 0, num = 0;
 	GtkWidget *scrolledwin;
 	GList *accounts;
+	gchar *str;
 #ifdef GENERIC_UMPC
 	GtkWidget *notebook;
 	GtkWidget *maemo_vbox0;
@@ -1493,13 +1494,17 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	date_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	date_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	label = gtk_label_new(g_strconcat("<b>",_("Starts at:"),"</b> ",NULL));
+	str = g_strconcat("<b>",_("Starts at:"),"</b> ",NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->start_time, FALSE, FALSE, 0);
-	label = gtk_label_new(g_strconcat("<b> ",_("on:"),"</b>",NULL));
+	str = g_strconcat("<b> ",_("on:"),"</b>",NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -1517,13 +1522,17 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 
 	date_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	label = gtk_label_new(g_strconcat("<b>",_("Ends at:"),"</b> ", NULL));
+	str = g_strconcat("<b>",_("Ends at:"),"</b> ", NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), meet->end_time, FALSE, FALSE, 0);
-	label = gtk_label_new(g_strconcat("<b> ",_("on:"),"</b>",NULL));
+	str = g_strconcat("<b> ",_("on:"),"</b>",NULL);
+	label = gtk_label_new(str);
+	g_free(str);
 	gtk_label_set_xalign(GTK_LABEL(label), 0.0);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);

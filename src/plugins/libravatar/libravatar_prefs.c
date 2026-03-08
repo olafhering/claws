@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2014-2022 Ricardo Mones and the Claws Mail Team
+ * Copyright (C) 2014-2026 Ricardo Mones and the Claws Mail Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,22 +193,25 @@ static void cache_clean_button_clicked_cb(GtkButton *button, gpointer data)
 	}
 
 	if (acr->e_stat == 0 && acr->e_unlink == 0) {
+		gchar *str = g_strconcat("<span color=\"#006400\">",
+			_("Icon cache successfully cleared!"), "</span>", NULL);
 		alertpanel_notice(_("Icon cache successfully cleared:\n"
 			"• %u missing entries removed.\n"
 			"• %u files removed."),
 			misses, acr->removed);
-		gtk_label_set_markup(label, g_strconcat("<span color=\"#006400\">",
-			_("Icon cache successfully cleared!"), "</span>", NULL));
-	}
-	else {
+		gtk_label_set_markup(label, str);
+		g_free(str);
+	} else {
+		gchar *str = g_strconcat("<span color=\"red\">",
+			_("Error clearing icon cache."), "</span>", NULL);
 		alertpanel_warning(_("Errors clearing icon cache:\n"
 			"• %u missing entries removed.\n"
 			"• %u files removed.\n"
 			"• %u files failed to be read.\n"
 			"• %u files couldn't be removed."),
 			misses, acr->removed, acr->e_stat, acr->e_unlink);
-		gtk_label_set_markup(label, g_strconcat("<span color=\"red\">",
-			_("Error clearing icon cache."), "</span>", NULL));
+		gtk_label_set_markup(label, str);
+		g_free(str);
 	}
 	gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
 	g_free(acr);
