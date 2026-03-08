@@ -989,11 +989,28 @@
       </varlistentry>
       <varlistentry>
         <term>
+          <literal>show_contact_pic</literal>
+        </term>
+        <listitem>
+          <para>
+	        '0' ou '1'. Dans la vue d'un message, cette option, si activée, affiche l'image
+            assignée au contact émetteur du-dit message (si celui-ci est trouvé dans le carnet
+            d'adresses), si le panneau d'en-têtes n'est pas activé et que la configuration n'active
+            pas non plus l'affichage des (X-)Face ou des images d'avatars à l'aide de modules additionnels
+            (par example le module libravatar).
+            L'activation de cette option peut impacter les performances d'affichage et d'utilisation
+            si le carnet d'adresse contient de très nombreux contacts.
+	        La valeur par défaut est '0', option désactivée.
+    	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
           <literal>show_compose_margin</literal>
         </term>
         <listitem>
           <para>
-	        '0' ou '1'. Ajoute des marges lors de l'édition de message
+	        '0' ou '1'. Ajoute des marges lors de l'édition de message.
 	        La valeur par défaut est '0', option désactivée.
     	  </para>
         </listitem>
