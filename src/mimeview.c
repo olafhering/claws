@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1343,12 +1343,6 @@ static void update_signature_info(MimeView *mimeview, MimeInfo *selected)
 		siginfo = procmime_mimeinfo_parent(siginfo);
 	}
 	mimeview->siginfo = siginfo;
-
-	/* This shortcut boolean is there to correctly set the menu's
-	 * CheckSignature item sensitivity without killing performance
-	 * each time the menu sensitiveness is updated (a lot).
-	 */
-	mimeview->signed_part = (siginfo != NULL);
 
 	if (siginfo == NULL) {
 		noticeview_hide(mimeview->siginfoview);

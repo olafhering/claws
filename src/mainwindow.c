@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -3334,7 +3334,7 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/PrevPart", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Part", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Message/CheckSignature", 
-				   mimepart_selected && mainwin->messageview->mimeview->signed_part);
+				   mimepart_selected && mainwin->messageview->mimeview->siginfo != NULL);
 
 	sensitive = TRUE;
 	if (mimepart_selected) {

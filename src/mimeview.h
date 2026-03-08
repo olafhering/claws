@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2021 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,6 @@ struct _MimeView
 	MimeInfo *spec_part;
 	GtkUIManager *ui_manager;
 	GtkActionGroup *action_group;
-	gboolean signed_part;
 
 	GCancellable *sig_check_cancellable;
 	guint sig_check_timeout_tag;
