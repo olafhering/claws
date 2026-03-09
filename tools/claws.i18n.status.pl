@@ -2,7 +2,7 @@
 #
 # claws.i18n.stats.pl - Generate statistics for Claws Mail po directory.
 #
-# Copyright (C) 2003-2023 by Ricardo Mones <ricardo@mones.org>,
+# Copyright (C) 2003-2026 by Ricardo Mones <ricardo@mones.org>,
 #                            Paul Mangan <paul@claws-mail.org>
 # This program is released under the GNU General Public License.
 #
@@ -30,7 +30,7 @@ my %lang = (
 	},
 	'de.po' => {
 		'out' => 1, 'name' => 'German',
-		'last' => 'Simon Legner <simon.legner@gmail.com>',
+		'last' => 'Christian Weiske <cweiske@cweiske.de>',
 	},
 	'el_GR.po' => {
 		'out' => 1, 'name' => 'Greek',
