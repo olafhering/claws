@@ -72,7 +72,7 @@ const gchar *plugin_desc(void)
 		 "\n"
 		 "Information about how to get S/MIME certificates working "
 		 "with GPGSM can be found at:\n"
-		 "http://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
+		 "https://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
 		 "\n"
 		 "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>.");
 }

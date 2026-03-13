@@ -67,14 +67,14 @@ typedef struct _PredefinedAcpis {
 char *acpi_help[] = {
 	"",
 	N_("Make sure that the kernel module 'acerhk' is loaded.\n"
-	    "You can get it from http://www.cakey.de/acerhk/"),
+	    "You can get it from https://sourceforge.net/projects/acerhk/"),
 	N_("Make sure that the kernel module 'acer_acpi' is loaded.\n"
-	    "You can get it from http://code.google.com/p/aceracpi/"),
+	    "You can get it from https://code.google.com/archive/p/aceracpi/"),
 	N_("Make sure that the kernel module 'asus_laptop' is loaded."),
 	N_("Make sure that the kernel module 'asus_acpi' is loaded."),
 	N_("Make sure that the kernel module 'ibm_acpi' is loaded."),
 	N_("Make sure that you have 'apanelc' installed.\n"
-	    "You can get it from http://apanel.sourceforge.net/"),
+	    "You can get it from https://apanel.sourceforge.net/"),
 	NULL
 };
 PredefinedAcpis known_implementations[] = {
