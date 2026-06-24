@@ -1291,6 +1291,11 @@ AC_SUBST(LIBGUMBO_LIBS)
 
 dnl libical ********************************************************************
 PKG_CHECK_MODULES(LIBICAL, libical >= 2.0, HAVE_LIBICAL=yes, HAVE_LIBICAL=no)
+if test x"$HAVE_LIBICAL" = xyes; then
+	PKG_CHECK_MODULES(LIBICAL, libical >= 4.0, [
+			AC_DEFINE(HAVE_LIBICAL_V4, 1, [Define if libical v4 is detected.])
+		], [ ])
+fi
 AC_SUBST(LIBICAL_CFLAGS)
 AC_SUBST(LIBICAL_LIBS)
 

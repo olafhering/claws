@@ -536,7 +536,11 @@ static gint feed_fetch(FolderItem *fitem, MsgNumberList ** list, gboolean *old_u
 	while (evt) {
 		icalproperty *prop;
 		icalproperty *rprop = icalcomponent_get_first_property(evt, ICAL_RRULE_PROPERTY);
+#ifdef HAVE_LIBICAL_V4
+		struct icalrecurrencetype* recur;
+#else
 		struct icalrecurrencetype recur;
+#endif
         	struct icaltimetype next;
         	icalrecur_iterator* ritr = NULL;
 		EventTime days;
@@ -559,7 +563,12 @@ static gint feed_fetch(FolderItem *fitem, MsgNumberList ** list, gboolean *old_u
 			gchar *orig_uid = NULL;
 			gchar *uid = g_strdup(icalproperty_get_uid(prop));
 			IcalFeedData *data = icalfeeddata_new(
-						icalcomponent_new_clone(evt), NULL);
+#ifdef HAVE_LIBICAL_V4
+						icalcomponent_clone(evt),
+#else
+						icalcomponent_new_clone(evt),
+#endif
+						NULL);
 			int i = 0;
 			orig_uid = g_strdup(uid);
 
@@ -610,7 +619,11 @@ add_new:
 				struct icaldurationtype ical_dur;
 				struct icaltimetype dtstart = icaltime_null_time();
 				struct icaltimetype dtend = icaltime_null_time();
+#ifdef HAVE_LIBICAL_V4
+				evt = icalcomponent_clone(evt);
+#else
 				evt = icalcomponent_new_clone(evt);
+#endif
 				prop = icalcomponent_get_first_property(evt, ICAL_RRULE_PROPERTY);
 				if (prop) {
 					icalcomponent_remove_property(evt, prop);
@@ -626,7 +639,11 @@ add_new:
 					dtend = icalproperty_get_dtend(prop);
 				else
 					debug_print("event has no DTEND!\n");
+#ifdef HAVE_LIBICAL_V4
+				ical_dur = icalduration_from_times(dtend, dtstart);
+#else
 				ical_dur = icaltime_subtract(dtend, dtstart);
+#endif
 				next = icalrecur_iterator_next(ritr);
 				if (!icaltime_is_null_time(next) &&
 				    !icaltime_is_null_time(dtstart) && i < 100) {
@@ -635,8 +652,11 @@ add_new:
 
 					prop = icalcomponent_get_first_property(evt, ICAL_DTEND_PROPERTY);
 					if (prop)
+#ifdef HAVE_LIBICAL_V4
+						icalproperty_set_dtend(prop, icalduration_extend(next, ical_dur));
+#else
 						icalproperty_set_dtend(prop, icaltime_add(next, ical_dur));
-
+#endif
 					prop = icalcomponent_get_first_property(evt, ICAL_UID_PROPERTY);
 					uid = g_strdup_printf("%s-%d", orig_uid, i);
 					icalproperty_set_uid(prop, uid);
@@ -770,7 +790,11 @@ GSList *vcal_get_events_list(FolderItem *item)
 			if ((status == ICAL_PARTSTAT_ACCEPTED
 			     || status == ICAL_PARTSTAT_TENTATIVE) 
 			    && event->recur && *(event->recur)) {
+#ifdef HAVE_LIBICAL_V4
+				struct icalrecurrencetype* recur;
+#else
         			struct icalrecurrencetype recur;
+#endif
         			struct icaltimetype dtstart;
         			struct icaltimetype next;
         			icalrecur_iterator* ritr;
@@ -779,14 +803,21 @@ GSList *vcal_get_events_list(FolderItem *item)
 				int i = 0;
 
 				debug_print("dumping recurring events from main event %s\n", d);
+#ifdef HAVE_LIBICAL_V4
+				recur = icalrecurrencetype_new_from_string(event->recur);
+#else
         			recur = icalrecurrencetype_from_string(event->recur);
+#endif
 				dtstart = icaltime_from_string(event->dtstart);
 
 				duration = icaltime_as_timet(icaltime_from_string(event->dtend))
 							    - icaltime_as_timet(icaltime_from_string(event->dtstart));
 
+#ifdef HAVE_LIBICAL_V4
+				ical_dur = icaldurationtype_from_seconds(duration);
+#else
 				ical_dur = icaldurationtype_from_int(duration);
-
+#endif
         			ritr = icalrecur_iterator_new(recur, dtstart);
 
 				next = icalrecur_iterator_next(ritr); /* skip first one */
@@ -799,7 +830,12 @@ GSList *vcal_get_events_list(FolderItem *item)
 					gchar *uid = g_strdup_printf("%s-%d", event->uid, i);
 					new_start = icaltime_as_ical_string(next);
 					new_end = icaltime_as_ical_string(
-							icaltime_add(next, ical_dur));
+#ifdef HAVE_LIBICAL_V4
+							icalduration_extend(next, ical_dur)
+#else
+							icaltime_add(next, ical_dur)
+#endif
+							);
 					debug_print("adding with start/end %s:%s\n", new_start, new_end);
 					nevent = vcal_manager_new_event(uid, event->organizer, event->orgname, 
 								event->location, event->summary, event->description, 
@@ -825,6 +861,9 @@ GSList *vcal_get_events_list(FolderItem *item)
 					i++;
 				}
 				icalrecur_iterator_free(ritr);
+#ifdef HAVE_LIBICAL_V4
+				icalrecurrencetype_unref(recur);
+#endif
 			}
 		} else {
 			vcal_manager_free_event(event);
@@ -2379,7 +2418,11 @@ VCalEvent *vcal_get_event_from_ical(const gchar *ical, const gchar *charset)
 			if (prop) {
 				itt = icalproperty_get_dtstart(prop);
 				icalproperty_free(prop);
+#ifdef HAVE_LIBICAL_V4
+				dtend = g_strdup(icaltime_as_ical_string(icalduration_extend(itt,duration)));
+#else
 				dtend = g_strdup(icaltime_as_ical_string(icaltime_add(itt,duration)));
+#endif
 				TO_UTF8(dtend);
 			}
 		}
@@ -2434,8 +2477,13 @@ VCalEvent *vcal_get_event_from_ical(const gchar *ical, const gchar *charset)
 	}
 	GET_PROP(comp, prop, ICAL_RRULE_PROPERTY);
 	if (prop) {
+#ifdef HAVE_LIBICAL_V4
+		struct icalrecurrencetype* rrule = icalproperty_get_rrule(prop);
+		recur = g_strdup(icalrecurrencetype_as_string(rrule));		
+#else
 		struct icalrecurrencetype rrule = icalproperty_get_rrule(prop);
 		recur = g_strdup(icalrecurrencetype_as_string(&rrule));
+#endif
 		TO_UTF8(recur);
 		icalproperty_free(prop);
 	}

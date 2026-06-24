@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2023 the Claws Mail team and Colin Leroy <colin@colino.net>
+ * Copyright (C) 1999-2026 the Claws Mail team and Colin Leroy <colin@colino.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -401,8 +401,12 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 	icalcomponent_add_property(ievent,
 		icalproperty_vanew_dtend((icaltime_from_string(event->dtend)), (void*)0));
 	if (event->recur && *(event->recur)) {
-		icalcomponent_add_property(ievent,
+        icalcomponent_add_property(ievent,
+#ifdef HAVE_LIBICAL_V4
+			icalproperty_vanew_rrule((icalrecurrencetype_new_from_string(event->recur)), (void*)0));
+#else
 			icalproperty_vanew_rrule((icalrecurrencetype_from_string(event->recur)), (void*)0));
+#endif
 	}
 	icalcomponent_add_property(ievent,
 		icalproperty_new_description(event->description));
@@ -689,9 +693,11 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 	icalproperty *prop;
 	icalcomponent *ievent = NULL;
 	int i = 0;
-
+#ifdef HAVE_LIBICAL_V4
+	ievent = icalcomponent_clone(event);
+#else
 	ievent = icalcomponent_new_clone(event);
-
+#endif
 	prop = icalcomponent_get_first_property(ievent, ICAL_UID_PROPERTY);
 	if (prop) {
 		gchar *sanitized_uid = g_strdup(icalproperty_get_uid(prop));
