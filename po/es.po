@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Claws Mail 4.4.0\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2026-03-18 23:39+0100\n"
+"POT-Creation-Date: 2026-06-26 18:44+0200\n"
 "PO-Revision-Date: 2026-03-19 23:57+0100\n"
 "Last-Translator: Ricardo Mones <ricardo@mones.org>\n"
 "Language-Team: Spanish\n"
@@ -226,7 +226,7 @@ msgstr "Borrar cuenta"
 #: src/plugins/rssyl/rssyl_feed_props.c:534
 #: src/plugins/rssyl/rssyl_subscribe_gtk.c:47
 #: src/plugins/vcalendar/vcalendar.c:122 src/plugins/vcalendar/vcalendar.c:1063
-#: src/plugins/vcalendar/vcal_folder.c:2027
+#: src/plugins/vcalendar/vcal_folder.c:2066
 #: src/plugins/vcalendar/vcal_meeting_gtk.c:932 src/prefs_actions.c:219
 #: src/prefs_actions.c:724 src/prefs_actions.c:746 src/prefs_customheader.c:176
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:245
@@ -238,7 +238,7 @@ msgstr "Borrar cuenta"
 #: src/prefs_template.c:398 src/prefs_template.c:898 src/prefs_template.c:911
 #: src/prefs_themes.c:577 src/send_message.c:300 src/ssl_manager.c:451
 #: src/summaryview.c:1338 src/summaryview.c:4572 src/summaryview.c:5041
-#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3145
+#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3150
 #: src/toolbar.c:3110 src/wizard.c:1840
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -251,7 +251,7 @@ msgstr "_Cancelar"
 #: src/plugins/mailmbox/plugin_gtk.c:336
 #: src/plugins/managesieve/sieve_manager.c:330
 #: src/plugins/rssyl/rssyl_cb_menu.c:189
-#: src/plugins/vcalendar/vcal_folder.c:2028 src/prefs_actions.c:1105
+#: src/plugins/vcalendar/vcal_folder.c:2067 src/prefs_actions.c:1105
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:327
 #: src/prefs_filtering.c:1689 src/prefs_template.c:1104 src/summaryview.c:4572
 msgid "_Delete"
@@ -340,10 +340,10 @@ msgstr ""
 #: src/compose.c:9787 src/ldaputil.c:334
 #: src/plugins/bogofilter/bogofilter.c:857
 #: src/plugins/tnef_parse/tnef_parse.c:76
-#: src/plugins/vcalendar/vcal_folder.c:1820
-#: src/plugins/vcalendar/vcal_folder.c:1824
-#: src/plugins/vcalendar/vcal_folder.c:1842
-#: src/plugins/vcalendar/vcal_folder.c:1845 src/privacy.c:64
+#: src/plugins/vcalendar/vcal_folder.c:1859
+#: src/plugins/vcalendar/vcal_folder.c:1863
+#: src/plugins/vcalendar/vcal_folder.c:1881
+#: src/plugins/vcalendar/vcal_folder.c:1884 src/privacy.c:64
 msgid "Unknown error"
 msgstr "Error desconocido"
 
@@ -2554,7 +2554,9 @@ msgstr ""
 
 #: src/compose.c:9707
 msgid "Socket communication with an external editor is only available on X11."
-msgstr "La comunicación por conector con un editor externo sólo está disponible en X11."
+msgstr ""
+"La comunicación por conector con un editor externo sólo está disponible en "
+"X11."
 
 #: src/compose.c:9742
 #, c-format
@@ -3210,11 +3212,11 @@ msgstr "Coincide con nombres «conteniendo» el término buscado"
 
 #: src/editldap.c:636
 msgid ""
-"Searches for names and addresses can be performed either using \"begins-"
-"with\" or \"contains\" search term. Check this option to perform a "
-"\"contains\" search; this type of search usually takes longer to complete. "
-"Note that for performance reasons, address completion uses \"begins-with\" "
-"for all searches against other address interfaces."
+"Searches for names and addresses can be performed either using \"begins-with"
+"\" or \"contains\" search term. Check this option to perform a \"contains\" "
+"search; this type of search usually takes longer to complete. Note that for "
+"performance reasons, address completion uses \"begins-with\" for all "
+"searches against other address interfaces."
 msgstr ""
 "Las búsquedas de nombres y direcciones se pueden realizar usando bien "
 "«comienza-con» o bien «contiene» y el término a buscar. Marque esta opción "
@@ -3872,8 +3874,8 @@ msgstr ""
 #: src/filtering.c:745
 #, c-format
 msgid ""
-"rule is account-based [id=%d, name='%s'], not matching current account "
-"[id=%d, name='%s']\n"
+"rule is account-based [id=%d, name='%s'], not matching current account [id="
+"%d, name='%s']\n"
 msgstr ""
 "la regla está basada en una cuenta [id=%d, nombre=«%s»], que no coincide con "
 "la cuenta actual [id=%d, nombre=«%s»]\n"
@@ -4045,7 +4047,7 @@ msgstr "Heredar las propiedades y reglas de procesamiento de la carpeta padre"
 #: src/imap_gtk.c:275 src/mh_gtk.c:154 src/mh_gtk.c:263 src/news_gtk.c:304
 #: src/plugins/mailmbox/plugin_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:434
 #: src/plugins/rssyl/rssyl_cb_menu.c:235
-#: src/plugins/vcalendar/vcal_folder.c:2099
+#: src/plugins/vcalendar/vcal_folder.c:2138
 #, c-format
 msgid "'%c' can't be included in folder name."
 msgstr "No se puede usar «%c» en el nombre de la carpeta."
@@ -4053,7 +4055,7 @@ msgstr "No se puede usar «%c» en el nombre de la carpeta."
 #: src/foldersel.c:598 src/imap_gtk.c:224 src/imap_gtk.c:282 src/mh_gtk.c:167
 #: src/mh_gtk.c:273 src/news_gtk.c:311 src/plugins/mailmbox/plugin_gtk.c:270
 #: src/plugins/mailmbox/plugin_gtk.c:446 src/plugins/rssyl/rssyl_cb_menu.c:247
-#: src/plugins/vcalendar/vcal_folder.c:2106
+#: src/plugins/vcalendar/vcal_folder.c:2145
 #, c-format
 msgid "The folder '%s' already exists."
 msgstr "La carpeta «%s» ya existe."
@@ -6538,20 +6540,20 @@ msgstr ""
 
 #: src/imap_gtk.c:259 src/mh_gtk.c:253 src/news_gtk.c:295
 #: src/plugins/mailmbox/plugin_gtk.c:423 src/plugins/rssyl/rssyl_cb_menu.c:229
-#: src/plugins/vcalendar/vcal_folder.c:2091
+#: src/plugins/vcalendar/vcal_folder.c:2130
 #, c-format
 msgid "Input new name for '%s':"
 msgstr "Introduzca el nuevo nombre para «%s»:"
 
 #: src/imap_gtk.c:261 src/mh_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:424
 #: src/plugins/rssyl/rssyl_cb_menu.c:230
-#: src/plugins/vcalendar/vcal_folder.c:2092
+#: src/plugins/vcalendar/vcal_folder.c:2131
 msgid "Rename folder"
 msgstr "Renombrar carpeta"
 
 #: src/imap_gtk.c:290 src/mh_gtk.c:281 src/news_gtk.c:317
 #: src/plugins/mailmbox/plugin_gtk.c:454 src/plugins/rssyl/rssyl_cb_menu.c:253
-#: src/plugins/vcalendar/vcal_folder.c:2112
+#: src/plugins/vcalendar/vcal_folder.c:2151
 msgid ""
 "The folder could not be renamed.\n"
 "The new folder name is not allowed."
@@ -6585,7 +6587,7 @@ msgstr ""
 
 #: src/imap_gtk.c:385 src/news_gtk.c:268 src/plugins/mailmbox/plugin_gtk.c:351
 #: src/plugins/rssyl/rssyl_cb_menu.c:205
-#: src/plugins/vcalendar/vcal_folder.c:2045
+#: src/plugins/vcalendar/vcal_folder.c:2084
 #, c-format
 msgid "Can't remove the folder '%s'."
 msgstr "No se puede eliminar la carpeta «%s»."
@@ -8617,7 +8619,7 @@ msgstr "Se llegó al final del mensaje. ¿Seguir desde el principio?"
 msgid "Search finished"
 msgstr "Búsqueda concluida"
 
-#: src/messageview.c:300 src/textview.c:250
+#: src/messageview.c:300 src/textview.c:253
 msgid "Write _new message"
 msgstr "Escribir un mensaje _nuevo"
 
@@ -9720,8 +9722,8 @@ msgstr "Seleccionar carpeta a archivar"
 #: src/plugins/archive/archiver_gtk.c:952
 msgid "Select file name for archive [suffix should reflect archive like .tgz]"
 msgstr ""
-"Seleccione un nombre para el archivo (el sufijo debería reflejar el tipo, "
-"p.ej.: .tgz)"
+"Seleccione un nombre para el archivo (el sufijo debería reflejar el tipo, p."
+"ej.: .tgz)"
 
 #: src/plugins/archive/archiver_gtk.c:997
 #, c-format
@@ -10535,15 +10537,15 @@ msgstr ""
 "Cuando se encuentra un virus en algún archivo adjunto puede borrarse o "
 "guardarse en una carpeta designada al efecto.\n"
 "\n"
-"Debido a que el módulo se comunica con clamd a través de un conector "
-"hay unos requisitos mínimos para los permisos de su carpeta de usuario "
-"y la carpeta «.claws-mail» suponiendo que el demonio clamav esté "
-"configurado para comunicarse usando un conector. Es necesario que éstas "
-"tengan permisos de ejecución para todos los usuarios.\n"
+"Debido a que el módulo se comunica con clamd a través de un conector hay "
+"unos requisitos mínimos para los permisos de su carpeta de usuario y la "
+"carpeta «.claws-mail» suponiendo que el demonio clamav esté configurado para "
+"comunicarse usando un conector. Es necesario que éstas tengan permisos de "
+"ejecución para todos los usuarios.\n"
 "\n"
-"Para evitar el cambio de permisos podría configurar el demonio clamav "
-"para comunicarse a través de un conector TCP y elegir la configuración "
-"manual para clamd.\n"
+"Para evitar el cambio de permisos podría configurar el demonio clamav para "
+"comunicarse a través de un conector TCP y elegir la configuración manual "
+"para clamd.\n"
 "\n"
 "Las opciones se encuentran en «/Configuración/Preferencias/Módulos/Antivirus "
 "Clam»."
@@ -11087,18 +11089,19 @@ msgid ""
 "\n"
 "Feedback to <ricardo@mones.org> is welcome."
 msgstr ""
-"Muestra imágenes de los perfiles libravatar en los mensajes. Más "
-"información sobre libravatar en http://www.libravatar.org/. Si tiene "
-"un perfil de gravatar.com pero no en libravatar también podrán ser "
-"recuperado (cuando la configuración del módulo permita redirecciones).\n"
+"Muestra imágenes de los perfiles libravatar en los mensajes. Más información "
+"sobre libravatar en http://www.libravatar.org/. Si tiene un perfil de "
+"gravatar.com pero no en libravatar también podrán ser recuperado (cuando la "
+"configuración del módulo permita redirecciones).\n"
 "\n"
 "La página de configuración del módulo está disponible desde la ventana "
-"principal en:\n«/Configuración/Preferencias/Módulos/Libravatar».\n"
+"principal en:\n"
+"«/Configuración/Preferencias/Módulos/Libravatar».\n"
 "\n"
-"Este módulo usa libcurl para recuperar imágenes, por lo que si está "
-"detrás de un proxy compruebe la página del manual de curl(1) para los "
-"detalles acerca de la configuración de «http_proxy». Más detalles sobre "
-"esto y más en el fichero README (en inglés).\n"
+"Este módulo usa libcurl para recuperar imágenes, por lo que si está detrás "
+"de un proxy compruebe la página del manual de curl(1) para los detalles "
+"acerca de la configuración de «http_proxy». Más detalles sobre esto y más en "
+"el fichero README (en inglés).\n"
 "\n"
 "Sugerencias para <ricardo@mones.org> serán bienvenidas."
 
@@ -11342,15 +11345,15 @@ msgstr "Visor LiteHTML"
 
 #: src/plugins/litehtml_viewer/plugin.c:60
 msgid ""
-"This plugin renders HTML mail using the litehtml library (http://"
-"www.litehtml.com/).\n"
+"This plugin renders HTML mail using the litehtml library (http://www."
+"litehtml.com/).\n"
 "\n"
 "By default all remote content is blocked.\n"
 "\n"
 "Options can be found in '/Configuration/Preferences/Plugins/LiteHTML'."
 msgstr ""
-"Este módulo muestra el correo HTML usando la biblioteca litehtml "
-"(http://www.litehtml.com/).\n"
+"Este módulo muestra el correo HTML usando la biblioteca litehtml (http://www."
+"litehtml.com/).\n"
 "\n"
 "Todo el contenido remoto está bloqueado de manera predeterminada.\n"
 "\n"
@@ -11688,8 +11691,8 @@ msgid ""
 "\n"
 "Current log is '%s'."
 msgstr ""
-"Este módulo escribe un resumen en un fichero de registro de las "
-"cabeceras de cada mensaje recibido después de ordenarlos.\n"
+"Este módulo escribe un resumen en un fichero de registro de las cabeceras de "
+"cada mensaje recibido después de ordenarlos.\n"
 "\n"
 "De manera predeterminado está en «~/Mail/NewLog»\n"
 "\n"
@@ -12436,8 +12439,8 @@ msgid ""
 "Error processing Perl script file: (line numbers may not be valid)\n"
 "%s"
 msgstr ""
-"Error procesando el fichero de script Perl: (los números de línea "
-"pueden no ser válidos)\n"
+"Error procesando el fichero de script Perl: (los números de línea pueden no "
+"ser válidos)\n"
 "%s"
 
 #: src/plugins/perl/perl_plugin.c:1741
@@ -12462,8 +12465,7 @@ msgid ""
 "\n"
 "Feedback to <berndth@gmx.de> is welcome."
 msgstr ""
-"Este módulo proporciona un interfaz Perl para los filtros de "
-"mensajes.\n"
+"Este módulo proporciona un interfaz Perl para los filtros de mensajes.\n"
 "\n"
 "Sugerencias para <berndth@gmx.de> serán bienvenidas."
 
@@ -12551,8 +12553,8 @@ msgstr ""
 "completado de direcciones a partir del anillo GPG. También es usado por "
 "otros módulos como PGP/Mime.\n"
 "\n"
-"Las opciones se encuentran en «/Configuración/Preferencias/Módulos/GPG» "
-"y en «/Configuración/[Preferencias de la cuenta]/Módulos/GPG».\n"
+"Las opciones se encuentran en «/Configuración/Preferencias/Módulos/GPG» y en "
+"«/Configuración/[Preferencias de la cuenta]/Módulos/GPG».\n"
 "\n"
 "El módulo utiliza la librería GPGME como encapsulación de GnuPG.\n"
 "\n"
@@ -12572,7 +12574,8 @@ msgstr "Usar el anillo de claves para autocompletar direcciones"
 
 #: src/plugins/pgpcore/prefs_gpg.c:152
 msgid "Automatically locate missing keys when sending encrypted messages"
-msgstr "Ubicar automáticamente las claves que falten al enviar mensajes cifrados"
+msgstr ""
+"Ubicar automáticamente las claves que falten al enviar mensajes cifrados"
 
 #: src/plugins/pgpcore/prefs_gpg.c:154
 msgid ""
@@ -12580,9 +12583,9 @@ msgid ""
 "if permitted by your 'auto-key-locate' configuration in gpg.conf, (default: "
 "local,wkd)."
 msgstr ""
-"Si la clave del destinatario no está en su anillo de claves, se intentará "
-"la recuperación remota, si está permitido por la configuración de "
-"«auto-key-locate» en su gpg.conf, (por omisión: local,wkd)."
+"Si la clave del destinatario no está en su anillo de claves, se intentará la "
+"recuperación remota, si está permitido por la configuración de «auto-key-"
+"locate» en su gpg.conf, (por omisión: local,wkd)."
 
 #: src/plugins/pgpcore/prefs_gpg.c:161
 msgid "Use gpg-agent to manage passwords"
@@ -13023,16 +13026,16 @@ msgid ""
 "The key in your keyring has expired. Do you want Claws Mail to try to update "
 "it?"
 msgstr ""
-"La clave en su anillo de claves ha caducado. ¿Quiere que Claws Mail "
-"intente actualizarla?"
+"La clave en su anillo de claves ha caducado. ¿Quiere que Claws Mail intente "
+"actualizarla?"
 
 #: src/plugins/pgpcore/sgpgme.c:1533
 msgid ""
 "The key in your keyring has been revoked. Do you want Claws Mail to try to "
 "import a new one?"
 msgstr ""
-"La clave en su anillo de claves ha sido revocada. ¿Quiere que Claws "
-"Mail intente importar una nueva?"
+"La clave en su anillo de claves ha sido revocada. ¿Quiere que Claws Mail "
+"intente importar una nueva?"
 
 #: src/plugins/pgpcore/sgpgme.c:1584
 #, c-format
@@ -13389,8 +13392,8 @@ msgid ""
 "put buttons for script invocation into the toolbars using Claws Mail's "
 "builtin toolbar editor.\n"
 "\n"
-"You can provide scripts working on the main window by placing files into "
-"'~/.claws-mail/python-scripts/main'.\n"
+"You can provide scripts working on the main window by placing files into '~/."
+"claws-mail/python-scripts/main'.\n"
 "\n"
 "You can also provide scripts working on an open compose window by placing "
 "files into '~/.claws-mail/python-scripts/compose'.\n"
@@ -13440,9 +13443,8 @@ msgstr ""
 "serán ejecutados automáticamente si ocurren ciertos eventos. Los siguientes "
 "nombre de ficheros son reconocidos actualmente:\n"
 "\n"
-" «compose_any» - se ejecuta al abrir una ventana de composición, no "
-"importa si es por crear un nuevo mensaje, por reenviar o responder "
-"a un mensaje.\n"
+" «compose_any» - se ejecuta al abrir una ventana de composición, no importa "
+"si es por crear un nuevo mensaje, por reenviar o responder a un mensaje.\n"
 "\n"
 " «startup» - ee ejecuta al cargar el módulo.\n"
 "\n"
@@ -13725,7 +13727,9 @@ msgstr "Cabecera Agente-Usuario"
 
 #: src/plugins/rssyl/rssyl_feed_props.c:515
 msgid "Disable this to use a User-Agent header specific to this feed"
-msgstr "Desactive esto para usar una cabecera Agente-Usuario específica para este canal"
+msgstr ""
+"Desactive esto para usar una cabecera Agente-Usuario específica para este "
+"canal"
 
 #: src/plugins/rssyl/rssyl_feed_props.c:517
 msgid ""
@@ -13733,8 +13737,8 @@ msgid ""
 "header set in '/Configuration/Preferences/Plugins/RSSyl' will be used"
 msgstr ""
 "Cabecera Agente-Usuario específica para usar con este canal. Si se deja "
-"vacía se utilizará la cabecera establecida en "
-"«/Configuración/Preferencias/Módulos/RSSyl»"
+"vacía se utilizará la cabecera establecida en «/Configuración/Preferencias/"
+"Módulos/RSSyl»"
 
 #: src/plugins/rssyl/rssyl_feed_props.c:549
 msgid "Set feed properties"
@@ -13831,16 +13835,16 @@ msgid ""
 "Instead of using the default User-Agent header for feed retrieval, you can "
 "enter a custom value"
 msgstr ""
-"En lugar de usar el valor predeterminado de la cabecera Agente-Usuario "
-"para recuperar el canal puede introducir un valor personalizado"
+"En lugar de usar el valor predeterminado de la cabecera Agente-Usuario para "
+"recuperar el canal puede introducir un valor personalizado"
 
 #: src/plugins/rssyl/rssyl_prefs.c:244
 msgid ""
 "Custom User-Agent header to use for feed retrieval. If empty, the default "
 "User-Agent header will be used"
 msgstr ""
-"Cabecera Agente-Usuario personalizada para recuperar los canales. Si "
-"está vacía se utilizará la cabecera predeterminada"
+"Cabecera Agente-Usuario personalizada para recuperar los canales. Si está "
+"vacía se utilizará la cabecera predeterminada"
 
 #: src/plugins/rssyl/rssyl_prefs.c:253
 msgid "Refreshing"
@@ -13881,7 +13885,7 @@ msgid "Updating comments for '%s'..."
 msgstr "Actualizando comentarios para «%s»..."
 
 #: src/plugins/rssyl/rssyl_update_feed.c:151
-#: src/plugins/vcalendar/vcal_folder.c:1623
+#: src/plugins/vcalendar/vcal_folder.c:1662
 msgid "401 (Authorisation required)"
 msgstr "401 (Se requiere autorización)"
 
@@ -13890,7 +13894,7 @@ msgid "403 (Forbidden)"
 msgstr "403 (No autorizado)"
 
 #: src/plugins/rssyl/rssyl_update_feed.c:157
-#: src/plugins/vcalendar/vcal_folder.c:1629
+#: src/plugins/vcalendar/vcal_folder.c:1668
 msgid "404 (Not found)"
 msgstr "404 (No encontrado)"
 
@@ -14214,8 +14218,8 @@ msgid ""
 "Maximum time allowed for checking. If the check takes longer it will be "
 "aborted"
 msgstr ""
-"Tiempo máximo permitido para la comprobación. Si la comprobación "
-"tarda más tiempo se cancelará"
+"Tiempo máximo permitido para la comprobación. Si la comprobación tarda más "
+"tiempo se cancelará"
 
 #: src/plugins/tnef_parse/tnef_parse.c:74
 #, c-format
@@ -14621,36 +14625,36 @@ msgstr "Vista _semanal"
 msgid "_Month view"
 msgstr "Vista _mensual"
 
-#: src/plugins/vcalendar/vcal_folder.c:1100
+#: src/plugins/vcalendar/vcal_folder.c:1139
 msgid "Meetings"
 msgstr "Reuniones"
 
-#: src/plugins/vcalendar/vcal_folder.c:1477
-#: src/plugins/vcalendar/vcal_manager.c:1372
+#: src/plugins/vcalendar/vcal_folder.c:1516
+#: src/plugins/vcalendar/vcal_manager.c:1378
 msgid "[no summary]"
 msgstr "[sin resumen]"
 
-#: src/plugins/vcalendar/vcal_folder.c:1498
+#: src/plugins/vcalendar/vcal_folder.c:1537
 msgid "in the past"
 msgstr "en el pasado"
 
-#: src/plugins/vcalendar/vcal_folder.c:1501
+#: src/plugins/vcalendar/vcal_folder.c:1540
 msgid "today"
 msgstr "hoy"
 
-#: src/plugins/vcalendar/vcal_folder.c:1504
+#: src/plugins/vcalendar/vcal_folder.c:1543
 msgid "tomorrow"
 msgstr "mañana"
 
-#: src/plugins/vcalendar/vcal_folder.c:1507
+#: src/plugins/vcalendar/vcal_folder.c:1546
 msgid "this week"
 msgstr "esta semana"
 
-#: src/plugins/vcalendar/vcal_folder.c:1510
+#: src/plugins/vcalendar/vcal_folder.c:1549
 msgid "later"
 msgstr "más tarde"
 
-#: src/plugins/vcalendar/vcal_folder.c:1514
+#: src/plugins/vcalendar/vcal_folder.c:1553
 #, c-format
 msgid ""
 "\n"
@@ -14659,21 +14663,21 @@ msgstr ""
 "\n"
 "Estos son los eventos planificados %s:\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1614
+#: src/plugins/vcalendar/vcal_folder.c:1653
 #, c-format
 msgid "Timeout (%d seconds) connecting to %s\n"
 msgstr "Excedido el tiempo (%d segundos) conectando a %s\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1626
+#: src/plugins/vcalendar/vcal_folder.c:1665
 msgid "403 (Unauthorised)"
 msgstr "403 (No autorizado)"
 
-#: src/plugins/vcalendar/vcal_folder.c:1632
+#: src/plugins/vcalendar/vcal_folder.c:1671
 #, c-format
 msgid "Error %ld"
 msgstr "Error %ld"
 
-#: src/plugins/vcalendar/vcal_folder.c:1808
+#: src/plugins/vcalendar/vcal_folder.c:1847
 #, c-format
 msgid ""
 "Could not retrieve the Webcal URL:\n"
@@ -14686,7 +14690,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1839
+#: src/plugins/vcalendar/vcal_folder.c:1878
 #, c-format
 msgid ""
 "This URL does not look like a Webcal URL:\n"
@@ -14697,49 +14701,49 @@ msgstr ""
 "%s\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1870
-#: src/plugins/vcalendar/vcal_folder.c:1873
+#: src/plugins/vcalendar/vcal_folder.c:1909
+#: src/plugins/vcalendar/vcal_folder.c:1912
 #, c-format
 msgid "Could not create directory %s"
 msgstr "No se puede crear el directorio %s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1913
+#: src/plugins/vcalendar/vcal_folder.c:1952
 msgid "Claws Mail needs network access in order to update the Webcal feed."
 msgstr ""
 "Claws Mail necesita acceso a la red para actualizar la subscripción del "
 "calendario web."
 
-#: src/plugins/vcalendar/vcal_folder.c:1924
+#: src/plugins/vcalendar/vcal_folder.c:1963
 #, c-format
 msgid "Fetching calendar for %s..."
 msgstr "Recuperando calendario para %s..."
 
-#: src/plugins/vcalendar/vcal_folder.c:1925
+#: src/plugins/vcalendar/vcal_folder.c:1964
 msgid "new subscription"
 msgstr "nueva suscripción"
 
-#: src/plugins/vcalendar/vcal_folder.c:1936
+#: src/plugins/vcalendar/vcal_folder.c:1975
 msgid "Claws Mail needs network access in order to update the subscription."
 msgstr ""
 "Claws Mail necesita acceso a la red para poder actualizar la subscripción."
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Subscribe to Webcal"
 msgstr "Suscribirse a un calendario web"
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Enter the Webcal URL:"
 msgstr "Introduzca la URL del calendario web (Webcal):"
 
-#: src/plugins/vcalendar/vcal_folder.c:1997
+#: src/plugins/vcalendar/vcal_folder.c:2036
 msgid "Could not parse the URL."
 msgstr "No se pudo procesar la URL."
 
-#: src/plugins/vcalendar/vcal_folder.c:2025
+#: src/plugins/vcalendar/vcal_folder.c:2064
 msgid "Do you really want to unsubscribe?"
 msgstr "¿Desea realmente desuscribirse?"
 
-#: src/plugins/vcalendar/vcal_folder.c:2026
+#: src/plugins/vcalendar/vcal_folder.c:2065
 msgid "Delete subscription"
 msgstr "Borrar suscripción"
 
@@ -14775,35 +14779,35 @@ msgstr "recurso"
 msgid "room"
 msgstr "lugar"
 
-#: src/plugins/vcalendar/vcal_manager.c:583
+#: src/plugins/vcalendar/vcal_manager.c:587
 msgid "Past"
 msgstr "Pasado"
 
-#: src/plugins/vcalendar/vcal_manager.c:586
+#: src/plugins/vcalendar/vcal_manager.c:590
 msgid "Today"
 msgstr "Hoy"
 
-#: src/plugins/vcalendar/vcal_manager.c:589
+#: src/plugins/vcalendar/vcal_manager.c:593
 msgid "Tomorrow"
 msgstr "Mañana"
 
-#: src/plugins/vcalendar/vcal_manager.c:592
+#: src/plugins/vcalendar/vcal_manager.c:596
 msgid "This week"
 msgstr "Esta semana"
 
-#: src/plugins/vcalendar/vcal_manager.c:595
+#: src/plugins/vcalendar/vcal_manager.c:599
 msgid "Later"
 msgstr "Más tarde"
 
-#: src/plugins/vcalendar/vcal_manager.c:1284
+#: src/plugins/vcalendar/vcal_manager.c:1290
 msgid "Accepted: "
 msgstr "Aceptada: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1286
+#: src/plugins/vcalendar/vcal_manager.c:1292
 msgid "Declined: "
 msgstr "Rehusada: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1288
+#: src/plugins/vcalendar/vcal_manager.c:1294
 msgid "Tentatively Accepted: "
 msgstr "Aceptada provisionalmente: "
 
@@ -15102,11 +15106,11 @@ msgstr "Exportar calendario a ICS"
 msgid "Couldn't export calendar to '%s'\n"
 msgstr "No se puede exportar el calendario a «%s»\n"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2132
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2136
 msgid "Could not export the freebusy info."
 msgstr "No se puede exportar la información de libre/ocupado."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2164
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2168
 #, c-format
 msgid "Couldn't export free/busy to '%s'\n"
 msgstr "No se puede exportar la información de libre/ocupado a «%s»\n"
@@ -16203,8 +16207,8 @@ msgstr "El %d\\n%f escribió:\\n%q\\n%X"
 
 #: src/prefs_common.c:327 src/prefs_quote.c:85
 msgid ""
-"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: "
-"%t\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
+"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: %t"
+"\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
 msgstr ""
 "\\n\\nInicio del mensaje redirigido:\\n\\n?d{Fecha: %d\\n}?f{Desde: %f\\n}?"
 "t{Para: %t\\n}?c{Cc: %c\\n}?n{Grupos: %n\\n}?s{Asunto: %s\\n}\\n\\n%M"
@@ -17969,10 +17973,9 @@ msgid ""
 "writeable by the user only. If this is too restrictive for you, set a chmod "
 "value here, otherwise leave blank to use the default"
 msgstr ""
-"Por omisión los adjuntos se guardan con valor de modo 600: lectura "
-"y escritura sólo por el usuario. Si esto es demasiado restrictivo "
-"establezca un valor de modo aquí, o déjelo en blanco para usar el "
-"valor predeterminado"
+"Por omisión los adjuntos se guardan con valor de modo 600: lectura y "
+"escritura sólo por el usuario. Si esto es demasiado restrictivo establezca "
+"un valor de modo aquí, o déjelo en blanco para usar el valor predeterminado"
 
 #: src/prefs_other.c:545
 msgid "Primary passphrase"
@@ -18627,8 +18630,8 @@ msgid ""
 "Override writing account's From header. This doesn't change the writing "
 "account."
 msgstr ""
-"Sobreescribir la cabecera «Desde» de la cuenta de escritura. Esto no "
-"cambia la cuenta de escritura."
+"Sobreescribir la cabecera «Desde» de la cuenta de escritura. Esto no cambia "
+"la cuenta de escritura."
 
 #: src/prefs_template.c:304
 msgid "Append the new template above to the list"
@@ -19937,41 +19940,47 @@ msgstr "Volver a la lista de carpetas (tiene mensajes sin leer)"
 msgid "Go back to the folder list"
 msgstr "Volver a la lista de carpetas"
 
-#: src/textview.c:243
+#: src/textview.c:245
 msgid "_Open in web browser"
 msgstr "_Abrir con el navegador web"
 
-#: src/textview.c:244
-msgid "Copy this _link"
-msgstr "_Copiar el enlace"
+#: src/textview.c:246
+#, fuzzy
+msgid "Copy _link"
+msgstr "Copiar enlace"
 
-#: src/textview.c:251
+#: src/textview.c:247
+#, fuzzy
+msgid "Copy _clean link"
+msgstr "Copiar enlace"
+
+#: src/textview.c:254
 msgid "_Reply to this address"
 msgstr "_Responder a esta dirección"
 
-#: src/textview.c:252
+#: src/textview.c:255
 msgid "Add to _Address book"
 msgstr "Añadir a la _agenda"
 
-#: src/textview.c:253
+#: src/textview.c:256
 msgid "_Copy this address"
 msgstr "_Copiar esta dirección"
 
-#: src/textview.c:254
+#: src/textview.c:257
 msgid "Search for _PGP key"
 msgstr "Buscar la clave _PGP"
 
-#: src/textview.c:716
+#: src/textview.c:721
 #, c-format
 msgid "[%s  %s (%ld bytes)]"
 msgstr "[%s  %s (%ld bytes)]"
 
-#: src/textview.c:719
+#: src/textview.c:724
 #, c-format
 msgid "[%s (%ld bytes)]"
 msgstr "[%s (%ld bytes)]"
 
-#: src/textview.c:890
+#: src/textview.c:895
 msgid ""
 "\n"
 "  This message can't be displayed.\n"
@@ -19985,76 +19994,77 @@ msgstr ""
 "\n"
 "  Utilice "
 
-#: src/textview.c:895
+#: src/textview.c:900
 msgid "'Network Log'"
 msgstr "«Traza de red»"
 
-#: src/textview.c:896
+#: src/textview.c:901
 msgid " in the Tools menu for more information."
 msgstr " en el menú Herramientas para más información."
 
-#: src/textview.c:962
+#: src/textview.c:967
 msgid "  The following can be performed on this part\n"
 msgstr "  Puede efectuar las siguientes acciones en esta parte haciendo\n"
 
-#: src/textview.c:964
+#: src/textview.c:969
 msgid "  by right-clicking the icon or list item:"
 msgstr "  clic con el botón derecho en el icono o elemento de la lista:"
 
-#: src/textview.c:968
+#: src/textview.c:973
 msgid "     - To save, select "
 msgstr "     - Para guardar, seleccione "
 
-#: src/textview.c:969
+#: src/textview.c:974
 msgid "'Save as...'"
 msgstr "«Guardar como...»"
 
 # NOTE: closing quote is within and untranslated string
-#: src/textview.c:971 src/textview.c:983 src/textview.c:995 src/textview.c:1005
+#: src/textview.c:976 src/textview.c:988 src/textview.c:1000
+#: src/textview.c:1010
 msgid " (Shortcut key: '"
 msgstr " (Atajo de teclado: «"
 
-#: src/textview.c:975 src/textview.c:987 src/textview.c:1009
+#: src/textview.c:980 src/textview.c:992 src/textview.c:1014
 msgid "')"
 msgstr "»)"
 
-#: src/textview.c:979
+#: src/textview.c:984
 msgid "     - To display as text, select "
 msgstr "     - Para mostrar como texto, seleccione "
 
-#: src/textview.c:980
+#: src/textview.c:985
 msgid "'Display as text'"
 msgstr "«Mostrar como texto»"
 
-#: src/textview.c:991
+#: src/textview.c:996
 msgid "     - To open with an external program, select "
 msgstr "     - Para abrir con un programa externo, seleccione "
 
-#: src/textview.c:992
+#: src/textview.c:997
 msgid "'Open'"
 msgstr "«Abrir»"
 
-#: src/textview.c:999
+#: src/textview.c:1004
 msgid "')\n"
 msgstr "»)\n"
 
-#: src/textview.c:1000
+#: src/textview.c:1005
 msgid "       (alternately double-click, or click the middle "
 msgstr "       (alternativamente doble clic, o clic con el botón "
 
-#: src/textview.c:1001
+#: src/textview.c:1006
 msgid "mouse button)\n"
 msgstr "central del ratón)\n"
 
-#: src/textview.c:1003
+#: src/textview.c:1008
 msgid "     - Or use "
 msgstr "     - O utilice "
 
-#: src/textview.c:1004
+#: src/textview.c:1009
 msgid "'Open with...'"
 msgstr "«Abrir con...»"
 
-#: src/textview.c:1133
+#: src/textview.c:1138
 #, c-format
 msgid ""
 "The command to view attachment as text failed:\n"
@@ -20065,51 +20075,51 @@ msgstr ""
 "    %s\n"
 "Código de salida %d\n"
 
-#: src/textview.c:2251
+#: src/textview.c:2256
 msgid "Tags: "
 msgstr "Etiquetas: "
 
-#: src/textview.c:2742
+#: src/textview.c:2747
 msgid "Zoom _In"
 msgstr "_Aumentar"
 
-#: src/textview.c:2751
+#: src/textview.c:2756
 msgid "Zoom _Out"
 msgstr "_Disminuir"
 
-#: src/textview.c:2760
+#: src/textview.c:2765
 msgid "Reset _zoom"
 msgstr "_Reiniciar"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Copy it anyway?"
 msgstr "¿Copiarla de todas formas?"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Open it anyway?"
 msgstr "¿Abrirla de todas formas?"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "Co_py URL"
 msgstr "Co_piar URL"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "_Open URL"
 msgstr "_Abrir URL"
 
-#: src/textview.c:3140
+#: src/textview.c:3145
 msgid "The real URL is different from the displayed URL."
 msgstr "La URL real es distinta de la URL mostrada."
 
-#: src/textview.c:3141
+#: src/textview.c:3146
 msgid "Displayed URL:"
 msgstr "URL mostrada:"
 
-#: src/textview.c:3142
+#: src/textview.c:3147
 msgid "Real URL:"
 msgstr "URL real:"
 
-#: src/textview.c:3144
+#: src/textview.c:3149
 msgid "Phishing attempt warning"
 msgstr "Aviso de intento de «phishing»"
 
@@ -20664,11 +20674,11 @@ msgstr ""
 
 #: src/wizard.c:1109
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:25\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:25\""
 msgstr ""
-"Puede especificar el número de puerto añadiéndolo al final: "
-"«correo.ejemplo.com:25»"
+"Puede especificar el número de puerto añadiéndolo al final: «correo.ejemplo."
+"com:25»"
 
 #: src/wizard.c:1111
 msgid "SMTP server address:"
@@ -20720,11 +20730,11 @@ msgstr "POP3"
 
 #: src/wizard.c:1578
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:110\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:110\""
 msgstr ""
-"Puede especificar el número de puerto añadiéndolo al final: "
-"«correo.ejemplo.com:110»"
+"Puede especificar el número de puerto añadiéndolo al final: «correo.ejemplo."
+"com:110»"
 
 #: src/wizard.c:1617
 msgid "Use TLS to connect to receiving server"
@@ -20799,3 +20809,6 @@ msgid ""
 msgstr ""
 "Claws Mail ya está preparado.\n"
 "Pulse «Guardar» para comenzar."
+
+#~ msgid "Copy this _link"
+#~ msgstr "_Copiar el enlace"

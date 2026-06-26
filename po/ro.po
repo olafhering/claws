@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Claws Mail 4.4.0\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2026-03-08 14:12+0000\n"
+"POT-Creation-Date: 2026-06-26 18:44+0200\n"
 "PO-Revision-Date: 2026-03-09 09:47+0200\n"
 "Last-Translator: Cristian Secară <cristi AT secarica DOT ro>\n"
 "Language-Team: Gnome Romanian Team <gnomero-list@lists.sourceforge.net>\n"
@@ -227,7 +227,7 @@ msgstr "Ștergere cont"
 #: src/plugins/rssyl/rssyl_feed_props.c:534
 #: src/plugins/rssyl/rssyl_subscribe_gtk.c:47
 #: src/plugins/vcalendar/vcalendar.c:122 src/plugins/vcalendar/vcalendar.c:1063
-#: src/plugins/vcalendar/vcal_folder.c:2027
+#: src/plugins/vcalendar/vcal_folder.c:2066
 #: src/plugins/vcalendar/vcal_meeting_gtk.c:932 src/prefs_actions.c:219
 #: src/prefs_actions.c:724 src/prefs_actions.c:746 src/prefs_customheader.c:176
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:245
@@ -239,7 +239,7 @@ msgstr "Ștergere cont"
 #: src/prefs_template.c:398 src/prefs_template.c:898 src/prefs_template.c:911
 #: src/prefs_themes.c:577 src/send_message.c:300 src/ssl_manager.c:451
 #: src/summaryview.c:1338 src/summaryview.c:4572 src/summaryview.c:5041
-#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3145
+#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3150
 #: src/toolbar.c:3110 src/wizard.c:1840
 msgid "_Cancel"
 msgstr "_Renunță"
@@ -252,7 +252,7 @@ msgstr "_Renunță"
 #: src/plugins/mailmbox/plugin_gtk.c:336
 #: src/plugins/managesieve/sieve_manager.c:330
 #: src/plugins/rssyl/rssyl_cb_menu.c:189
-#: src/plugins/vcalendar/vcal_folder.c:2028 src/prefs_actions.c:1105
+#: src/plugins/vcalendar/vcal_folder.c:2067 src/prefs_actions.c:1105
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:327
 #: src/prefs_filtering.c:1689 src/prefs_template.c:1104 src/summaryview.c:4572
 msgid "_Delete"
@@ -344,10 +344,10 @@ msgstr ""
 #: src/compose.c:9787 src/ldaputil.c:334
 #: src/plugins/bogofilter/bogofilter.c:857
 #: src/plugins/tnef_parse/tnef_parse.c:76
-#: src/plugins/vcalendar/vcal_folder.c:1820
-#: src/plugins/vcalendar/vcal_folder.c:1824
-#: src/plugins/vcalendar/vcal_folder.c:1842
-#: src/plugins/vcalendar/vcal_folder.c:1845 src/privacy.c:64
+#: src/plugins/vcalendar/vcal_folder.c:1859
+#: src/plugins/vcalendar/vcal_folder.c:1863
+#: src/plugins/vcalendar/vcal_folder.c:1881
+#: src/plugins/vcalendar/vcal_folder.c:1884 src/privacy.c:64
 msgid "Unknown error"
 msgstr "Eroare necunoscută"
 
@@ -3265,11 +3265,11 @@ msgstr "Potriviți numele „conținând” termenul de căutare"
 
 #: src/editldap.c:636
 msgid ""
-"Searches for names and addresses can be performed either using \"begins-"
-"with\" or \"contains\" search term. Check this option to perform a "
-"\"contains\" search; this type of search usually takes longer to complete. "
-"Note that for performance reasons, address completion uses \"begins-with\" "
-"for all searches against other address interfaces."
+"Searches for names and addresses can be performed either using \"begins-with"
+"\" or \"contains\" search term. Check this option to perform a \"contains\" "
+"search; this type of search usually takes longer to complete. Note that for "
+"performance reasons, address completion uses \"begins-with\" for all "
+"searches against other address interfaces."
 msgstr ""
 "Căutările pentru nume și adrese pot fi efectuate fie folosind termenul de "
 "căutare „începe cu”, fie „conține”. Bifați această opțiune pentru a efectua "
@@ -3901,8 +3901,8 @@ msgstr "regula este bazată per cont, dar nu se potrivește cu contul curent\n"
 #: src/filtering.c:745
 #, c-format
 msgid ""
-"rule is account-based [id=%d, name='%s'], not matching current account "
-"[id=%d, name='%s']\n"
+"rule is account-based [id=%d, name='%s'], not matching current account [id="
+"%d, name='%s']\n"
 msgstr ""
 "regula este bazată per cont [id=%d, nume=„%s”], dar nu se potrivește cu "
 "contul curent [id=%d, nume=„%s”]\n"
@@ -4074,7 +4074,7 @@ msgstr ""
 #: src/imap_gtk.c:275 src/mh_gtk.c:154 src/mh_gtk.c:263 src/news_gtk.c:304
 #: src/plugins/mailmbox/plugin_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:434
 #: src/plugins/rssyl/rssyl_cb_menu.c:235
-#: src/plugins/vcalendar/vcal_folder.c:2099
+#: src/plugins/vcalendar/vcal_folder.c:2138
 #, c-format
 msgid "'%c' can't be included in folder name."
 msgstr "„%c” nu poate fi inclus în numele dosarului."
@@ -4082,7 +4082,7 @@ msgstr "„%c” nu poate fi inclus în numele dosarului."
 #: src/foldersel.c:598 src/imap_gtk.c:224 src/imap_gtk.c:282 src/mh_gtk.c:167
 #: src/mh_gtk.c:273 src/news_gtk.c:311 src/plugins/mailmbox/plugin_gtk.c:270
 #: src/plugins/mailmbox/plugin_gtk.c:446 src/plugins/rssyl/rssyl_cb_menu.c:247
-#: src/plugins/vcalendar/vcal_folder.c:2106
+#: src/plugins/vcalendar/vcal_folder.c:2145
 #, c-format
 msgid "The folder '%s' already exists."
 msgstr "Dosarul „%s” există deja."
@@ -5522,8 +5522,8 @@ msgstr "Descriere"
 #, c-format
 msgid "For more information about plugins see the %sClaws Mail website%s."
 msgstr ""
-"Pentru mai multe informații despre plugin-uri vedeți %ssite-ul web Claws "
-"Mail%s."
+"Pentru mai multe informații despre plugin-uri vedeți %ssite-ul web Claws Mail"
+"%s."
 
 #: src/gtk/pluginwindow.c:419
 msgid "Click here to load one or more plugins"
@@ -6558,20 +6558,20 @@ msgstr ""
 
 #: src/imap_gtk.c:259 src/mh_gtk.c:253 src/news_gtk.c:295
 #: src/plugins/mailmbox/plugin_gtk.c:423 src/plugins/rssyl/rssyl_cb_menu.c:229
-#: src/plugins/vcalendar/vcal_folder.c:2091
+#: src/plugins/vcalendar/vcal_folder.c:2130
 #, c-format
 msgid "Input new name for '%s':"
 msgstr "Introduceți noul nume pentru „%s”:"
 
 #: src/imap_gtk.c:261 src/mh_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:424
 #: src/plugins/rssyl/rssyl_cb_menu.c:230
-#: src/plugins/vcalendar/vcal_folder.c:2092
+#: src/plugins/vcalendar/vcal_folder.c:2131
 msgid "Rename folder"
 msgstr "Redenumește dosarul"
 
 #: src/imap_gtk.c:290 src/mh_gtk.c:281 src/news_gtk.c:317
 #: src/plugins/mailmbox/plugin_gtk.c:454 src/plugins/rssyl/rssyl_cb_menu.c:253
-#: src/plugins/vcalendar/vcal_folder.c:2112
+#: src/plugins/vcalendar/vcal_folder.c:2151
 msgid ""
 "The folder could not be renamed.\n"
 "The new folder name is not allowed."
@@ -6605,7 +6605,7 @@ msgstr ""
 
 #: src/imap_gtk.c:385 src/news_gtk.c:268 src/plugins/mailmbox/plugin_gtk.c:351
 #: src/plugins/rssyl/rssyl_cb_menu.c:205
-#: src/plugins/vcalendar/vcal_folder.c:2045
+#: src/plugins/vcalendar/vcal_folder.c:2084
 #, c-format
 msgid "Can't remove the folder '%s'."
 msgstr "Nu se poate șterge dosarul „%s”."
@@ -8661,7 +8661,7 @@ msgstr "S-a ajuns la sfârșitul mesajului. Continuați de la început?"
 msgid "Search finished"
 msgstr "Căutare terminată"
 
-#: src/messageview.c:300 src/textview.c:250
+#: src/messageview.c:300 src/textview.c:253
 msgid "Write _new message"
 msgstr "Scrieți un mesaj _nou"
 
@@ -9364,17 +9364,19 @@ msgid "Acpi Notifier"
 msgstr "Notificator ACPI"
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:69
+#, fuzzy
 msgid ""
 "Make sure that the kernel module 'acerhk' is loaded.\n"
-"You can get it from http://www.cakey.de/acerhk/"
+"You can get it from https://sourceforge.net/projects/acerhk/"
 msgstr ""
 "Asigurați-vă că modulul kernel „acerhk” este încărcat.\n"
 "Îl puteți obține de la http://www.cakey.de/acerhk/"
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:71
+#, fuzzy
 msgid ""
 "Make sure that the kernel module 'acer_acpi' is loaded.\n"
-"You can get it from http://code.google.com/p/aceracpi/"
+"You can get it from https://code.google.com/archive/p/aceracpi/"
 msgstr ""
 "Asigurați-vă că modulul kernel „acer_acpi” este încărcat.\n"
 "Îl puteți obține de la http://code.google.com/p/aceracpi/"
@@ -9392,9 +9394,10 @@ msgid "Make sure that the kernel module 'ibm_acpi' is loaded."
 msgstr "Asigurați-vă că modulul kernel „ibm_acpi” este încărcat."
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:76
+#, fuzzy
 msgid ""
 "Make sure that you have 'apanelc' installed.\n"
-"You can get it from http://apanel.sourceforge.net/"
+"You can get it from https://apanel.sourceforge.net/"
 msgstr ""
 "Asigurați-vă că „apanelc” este instalat.\n"
 "Îl puteți obține de la http://apanel.sourceforge.net/"
@@ -10441,11 +10444,8 @@ msgid ""
 msgstr ""
 
 #: src/plugins/clamd/clamav_plugin.c:120
-msgid "Detected "
-msgstr ""
-
-#: src/plugins/clamd/clamav_plugin.c:120
-msgid " virus."
+#, c-format
+msgid "Detected %s virus."
 msgstr ""
 
 #: src/plugins/clamd/clamav_plugin.c:136
@@ -11223,8 +11223,8 @@ msgstr ""
 
 #: src/plugins/litehtml_viewer/plugin.c:60
 msgid ""
-"This plugin renders HTML mail using the litehtml library (http://"
-"www.litehtml.com/).\n"
+"This plugin renders HTML mail using the litehtml library (http://www."
+"litehtml.com/).\n"
 "\n"
 "By default all remote content is blocked.\n"
 "\n"
@@ -13177,8 +13177,8 @@ msgid ""
 "put buttons for script invocation into the toolbars using Claws Mail's "
 "builtin toolbar editor.\n"
 "\n"
-"You can provide scripts working on the main window by placing files into "
-"'~/.claws-mail/python-scripts/main'.\n"
+"You can provide scripts working on the main window by placing files into '~/."
+"claws-mail/python-scripts/main'.\n"
 "\n"
 "You can also provide scripts working on an open compose window by placing "
 "files into '~/.claws-mail/python-scripts/compose'.\n"
@@ -13625,7 +13625,7 @@ msgid "Updating comments for '%s'..."
 msgstr "Se actualizează comentariile pentru '%s'..."
 
 #: src/plugins/rssyl/rssyl_update_feed.c:151
-#: src/plugins/vcalendar/vcal_folder.c:1623
+#: src/plugins/vcalendar/vcal_folder.c:1662
 msgid "401 (Authorisation required)"
 msgstr "401 (Necesită autorizare)"
 
@@ -13634,7 +13634,7 @@ msgid "403 (Forbidden)"
 msgstr "403 (Interzis)"
 
 #: src/plugins/rssyl/rssyl_update_feed.c:157
-#: src/plugins/vcalendar/vcal_folder.c:1629
+#: src/plugins/vcalendar/vcal_folder.c:1668
 msgid "404 (Not found)"
 msgstr "404 (Nu s-a găsit)"
 
@@ -13708,7 +13708,7 @@ msgid ""
 "\n"
 "Information about how to get S/MIME certificates working with GPGSM can be "
 "found at:\n"
-"http://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
+"https://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
 "\n"
 "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>."
 msgstr ""
@@ -14313,36 +14313,36 @@ msgstr "Vizualizare tip _săptămânal"
 msgid "_Month view"
 msgstr "Vizualizare tip _lunar"
 
-#: src/plugins/vcalendar/vcal_folder.c:1100
+#: src/plugins/vcalendar/vcal_folder.c:1139
 msgid "Meetings"
 msgstr "Întâlniri"
 
-#: src/plugins/vcalendar/vcal_folder.c:1477
-#: src/plugins/vcalendar/vcal_manager.c:1372
+#: src/plugins/vcalendar/vcal_folder.c:1516
+#: src/plugins/vcalendar/vcal_manager.c:1378
 msgid "[no summary]"
 msgstr "(niciun rezumat)"
 
-#: src/plugins/vcalendar/vcal_folder.c:1498
+#: src/plugins/vcalendar/vcal_folder.c:1537
 msgid "in the past"
 msgstr "în trecut"
 
-#: src/plugins/vcalendar/vcal_folder.c:1501
+#: src/plugins/vcalendar/vcal_folder.c:1540
 msgid "today"
 msgstr "azi"
 
-#: src/plugins/vcalendar/vcal_folder.c:1504
+#: src/plugins/vcalendar/vcal_folder.c:1543
 msgid "tomorrow"
 msgstr "mâine"
 
-#: src/plugins/vcalendar/vcal_folder.c:1507
+#: src/plugins/vcalendar/vcal_folder.c:1546
 msgid "this week"
 msgstr "săptămâna aceasta"
 
-#: src/plugins/vcalendar/vcal_folder.c:1510
+#: src/plugins/vcalendar/vcal_folder.c:1549
 msgid "later"
 msgstr "mai târziu"
 
-#: src/plugins/vcalendar/vcal_folder.c:1514
+#: src/plugins/vcalendar/vcal_folder.c:1553
 #, c-format
 msgid ""
 "\n"
@@ -14351,21 +14351,21 @@ msgstr ""
 "\n"
 "Acestea sunt evenimentele planificate %s:\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1614
+#: src/plugins/vcalendar/vcal_folder.c:1653
 #, c-format
 msgid "Timeout (%d seconds) connecting to %s\n"
 msgstr "Perioadă expirată de timp (%d secunde) la conectarea la %s\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1626
+#: src/plugins/vcalendar/vcal_folder.c:1665
 msgid "403 (Unauthorised)"
 msgstr "403 (Neautorizat)"
 
-#: src/plugins/vcalendar/vcal_folder.c:1632
+#: src/plugins/vcalendar/vcal_folder.c:1671
 #, c-format
 msgid "Error %ld"
 msgstr "Eroare %ld"
 
-#: src/plugins/vcalendar/vcal_folder.c:1808
+#: src/plugins/vcalendar/vcal_folder.c:1847
 #, c-format
 msgid ""
 "Could not retrieve the Webcal URL:\n"
@@ -14378,7 +14378,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1839
+#: src/plugins/vcalendar/vcal_folder.c:1878
 #, c-format
 msgid ""
 "This URL does not look like a Webcal URL:\n"
@@ -14389,48 +14389,48 @@ msgstr ""
 "%s\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1870
-#: src/plugins/vcalendar/vcal_folder.c:1873
+#: src/plugins/vcalendar/vcal_folder.c:1909
+#: src/plugins/vcalendar/vcal_folder.c:1912
 #, c-format
 msgid "Could not create directory %s"
 msgstr "Nu s-a putut crea directorul %s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1913
+#: src/plugins/vcalendar/vcal_folder.c:1952
 msgid "Claws Mail needs network access in order to update the Webcal feed."
 msgstr ""
 "Claws Mail are nevoie de acces la rețea pentru a actualiza fluxul Webcal."
 
-#: src/plugins/vcalendar/vcal_folder.c:1924
+#: src/plugins/vcalendar/vcal_folder.c:1963
 #, c-format
 msgid "Fetching calendar for %s..."
 msgstr "Se preia calendarul pentru %s..."
 
-#: src/plugins/vcalendar/vcal_folder.c:1925
+#: src/plugins/vcalendar/vcal_folder.c:1964
 msgid "new subscription"
 msgstr "abonament nou"
 
-#: src/plugins/vcalendar/vcal_folder.c:1936
+#: src/plugins/vcalendar/vcal_folder.c:1975
 msgid "Claws Mail needs network access in order to update the subscription."
 msgstr ""
 "Claws Mail are nevoie de acces la rețea pentru a actualiza abonamentul."
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Subscribe to Webcal"
 msgstr "Abonare la Webcal"
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Enter the Webcal URL:"
 msgstr "Introduceți URL-ul Webcal:"
 
-#: src/plugins/vcalendar/vcal_folder.c:1997
+#: src/plugins/vcalendar/vcal_folder.c:2036
 msgid "Could not parse the URL."
 msgstr "Nu s-a putut prelucra URL-ul."
 
-#: src/plugins/vcalendar/vcal_folder.c:2025
+#: src/plugins/vcalendar/vcal_folder.c:2064
 msgid "Do you really want to unsubscribe?"
 msgstr "Chiar vreți să vă dezabonați?"
 
-#: src/plugins/vcalendar/vcal_folder.c:2026
+#: src/plugins/vcalendar/vcal_folder.c:2065
 msgid "Delete subscription"
 msgstr "Șterge abonamentul"
 
@@ -14466,35 +14466,35 @@ msgstr "resursă"
 msgid "room"
 msgstr "cameră"
 
-#: src/plugins/vcalendar/vcal_manager.c:583
+#: src/plugins/vcalendar/vcal_manager.c:587
 msgid "Past"
 msgstr "Trecut"
 
-#: src/plugins/vcalendar/vcal_manager.c:586
+#: src/plugins/vcalendar/vcal_manager.c:590
 msgid "Today"
 msgstr "Azi"
 
-#: src/plugins/vcalendar/vcal_manager.c:589
+#: src/plugins/vcalendar/vcal_manager.c:593
 msgid "Tomorrow"
 msgstr "Mâine"
 
-#: src/plugins/vcalendar/vcal_manager.c:592
+#: src/plugins/vcalendar/vcal_manager.c:596
 msgid "This week"
 msgstr "Această săptămână"
 
-#: src/plugins/vcalendar/vcal_manager.c:595
+#: src/plugins/vcalendar/vcal_manager.c:599
 msgid "Later"
 msgstr "Mai târziu"
 
-#: src/plugins/vcalendar/vcal_manager.c:1284
+#: src/plugins/vcalendar/vcal_manager.c:1290
 msgid "Accepted: "
 msgstr "Acceptat: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1286
+#: src/plugins/vcalendar/vcal_manager.c:1292
 msgid "Declined: "
 msgstr "Refuzat: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1288
+#: src/plugins/vcalendar/vcal_manager.c:1294
 msgid "Tentatively Accepted: "
 msgstr "Acceptat provizoriu: "
 
@@ -14798,11 +14798,11 @@ msgstr "Exportă calendarul la ICS"
 msgid "Couldn't export calendar to '%s'\n"
 msgstr "Nu s-a putut exporta calendarul la „%s”\n"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2132
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2136
 msgid "Could not export the freebusy info."
 msgstr "Nu s-au putut exporta informațiile despre starea liber/ocupat."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2164
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2168
 #, c-format
 msgid "Couldn't export free/busy to '%s'\n"
 msgstr "Nu s-a putut exporta starea liber/ocupat la „%s”\n"
@@ -15911,12 +15911,12 @@ msgstr "În data de %d\\n%f a scris:\\n\\n%q\\n%X"
 
 #: src/prefs_common.c:327 src/prefs_quote.c:85
 msgid ""
-"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: "
-"%t\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
+"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: %t"
+"\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
 msgstr ""
 "\\n\\nÎnceputul mesajului înaintat:\\n\\n?d{Dată: %d\\n}?f{De la: %f\\n}?"
-"t{Către: %t\\n}?c{Cc: %c\\n}?n{Grupuri de știri: %n\\n}?s{Subiect: %s\\n}"
-"\\n\\n%M"
+"t{Către: %t\\n}?c{Cc: %c\\n}?n{Grupuri de știri: %n\\n}?s{Subiect: %s\\n}\\n"
+"\\n%M"
 
 #: src/prefs_common.c:462
 msgid "%x(%a) %H:%M"
@@ -19586,41 +19586,47 @@ msgstr "Salt înapoi la lista de dosare (aveți mesaje necitite)"
 msgid "Go back to the folder list"
 msgstr "Du-te înapoi la lista de dosare"
 
-#: src/textview.c:243
+#: src/textview.c:245
 msgid "_Open in web browser"
 msgstr "Deschide în br_owser web"
 
-#: src/textview.c:244
-msgid "Copy this _link"
-msgstr "Copiază acest _link"
+#: src/textview.c:246
+#, fuzzy
+msgid "Copy _link"
+msgstr "Copiază linkul"
 
-#: src/textview.c:251
+#: src/textview.c:247
+#, fuzzy
+msgid "Copy _clean link"
+msgstr "Copiază linkul"
+
+#: src/textview.c:254
 msgid "_Reply to this address"
 msgstr "_Răspunde la această adresă"
 
-#: src/textview.c:252
+#: src/textview.c:255
 msgid "Add to _Address book"
 msgstr "Adaugă adresa în a_genda de contacte"
 
-#: src/textview.c:253
+#: src/textview.c:256
 msgid "_Copy this address"
 msgstr ""
 
-#: src/textview.c:254
+#: src/textview.c:257
 msgid "Search for _PGP key"
 msgstr ""
 
-#: src/textview.c:716
+#: src/textview.c:721
 #, c-format
 msgid "[%s  %s (%ld bytes)]"
 msgstr ""
 
-#: src/textview.c:719
+#: src/textview.c:724
 #, c-format
 msgid "[%s (%ld bytes)]"
 msgstr ""
 
-#: src/textview.c:890
+#: src/textview.c:895
 msgid ""
 "\n"
 "  This message can't be displayed.\n"
@@ -19634,75 +19640,76 @@ msgstr ""
 "\n"
 "  Folosiți "
 
-#: src/textview.c:895
+#: src/textview.c:900
 msgid "'Network Log'"
 msgstr "„Jurnal de rețea”"
 
-#: src/textview.c:896
+#: src/textview.c:901
 msgid " in the Tools menu for more information."
 msgstr " în meniul Unelte pentru mai multe informații."
 
-#: src/textview.c:962
+#: src/textview.c:967
 msgid "  The following can be performed on this part\n"
 msgstr "  Asupra acestei părți de mesaj pot fi efectuate următoarele acțiuni\n"
 
-#: src/textview.c:964
+#: src/textview.c:969
 msgid "  by right-clicking the icon or list item:"
 msgstr "  prin clic dreapta pe pictogramă sau pe elementele din listă:"
 
-#: src/textview.c:968
+#: src/textview.c:973
 msgid "     - To save, select "
 msgstr "     - Pentru a salva, selectați "
 
-#: src/textview.c:969
+#: src/textview.c:974
 msgid "'Save as...'"
 msgstr "„Salvează ca...”"
 
-#: src/textview.c:971 src/textview.c:983 src/textview.c:995 src/textview.c:1005
+#: src/textview.c:976 src/textview.c:988 src/textview.c:1000
+#: src/textview.c:1010
 msgid " (Shortcut key: '"
 msgstr " (tastă pentru comandă rapidă: '"
 
-#: src/textview.c:975 src/textview.c:987 src/textview.c:1009
+#: src/textview.c:980 src/textview.c:992 src/textview.c:1014
 msgid "')"
 msgstr ""
 
-#: src/textview.c:979
+#: src/textview.c:984
 msgid "     - To display as text, select "
 msgstr "     - Pentru a afișa conținutul ca text, selectați "
 
-#: src/textview.c:980
+#: src/textview.c:985
 msgid "'Display as text'"
 msgstr "„Afișează ca text”"
 
-#: src/textview.c:991
+#: src/textview.c:996
 msgid "     - To open with an external program, select "
 msgstr "     - Pentru a deschide cu un program extern, selectați "
 
-#: src/textview.c:992
+#: src/textview.c:997
 msgid "'Open'"
 msgstr "„Deschide”"
 
-#: src/textview.c:999
+#: src/textview.c:1004
 msgid "')\n"
 msgstr ""
 
-#: src/textview.c:1000
+#: src/textview.c:1005
 msgid "       (alternately double-click, or click the middle "
 msgstr "       (alternativ, dați dublu-clic stânga sau clic mijloc din "
 
-#: src/textview.c:1001
+#: src/textview.c:1006
 msgid "mouse button)\n"
 msgstr "butonul mausului)\n"
 
-#: src/textview.c:1003
+#: src/textview.c:1008
 msgid "     - Or use "
 msgstr "     - sau folosiți "
 
-#: src/textview.c:1004
+#: src/textview.c:1009
 msgid "'Open with...'"
 msgstr "„Deschide cu...”"
 
-#: src/textview.c:1133
+#: src/textview.c:1138
 #, c-format
 msgid ""
 "The command to view attachment as text failed:\n"
@@ -19713,51 +19720,51 @@ msgstr ""
 "    %s\n"
 "Cod de ieșire %d\n"
 
-#: src/textview.c:2251
+#: src/textview.c:2256
 msgid "Tags: "
 msgstr "Etichete: "
 
-#: src/textview.c:2742
+#: src/textview.c:2747
 msgid "Zoom _In"
 msgstr "Mă_rește"
 
-#: src/textview.c:2751
+#: src/textview.c:2756
 msgid "Zoom _Out"
 msgstr "Micș_orează"
 
-#: src/textview.c:2760
+#: src/textview.c:2765
 msgid "Reset _zoom"
 msgstr "Restabilește _zoom-ul"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Copy it anyway?"
 msgstr "Copiați oricum?"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Open it anyway?"
 msgstr "Îl deschideți oricum?"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "Co_py URL"
 msgstr "Co_piază URL-ul"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "_Open URL"
 msgstr "_Deschide URL-ul"
 
-#: src/textview.c:3140
+#: src/textview.c:3145
 msgid "The real URL is different from the displayed URL."
 msgstr "URL-ul real este diferit de URL-ul afișat."
 
-#: src/textview.c:3141
+#: src/textview.c:3146
 msgid "Displayed URL:"
 msgstr "URL afișat:"
 
-#: src/textview.c:3142
+#: src/textview.c:3147
 msgid "Real URL:"
 msgstr "URL real:"
 
-#: src/textview.c:3144
+#: src/textview.c:3149
 msgid "Phishing attempt warning"
 msgstr "Avertisment de tentativă de phishing"
 
@@ -20318,11 +20325,11 @@ msgstr ""
 
 #: src/wizard.c:1109
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:25\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:25\""
 msgstr ""
-"Puteți specifica numărul portului prin adăugarea lui la sfârșit: "
-"„mail.example.com:25”"
+"Puteți specifica numărul portului prin adăugarea lui la sfârșit: „mail."
+"example.com:25”"
 
 #: src/wizard.c:1111
 msgid "SMTP server address:"
@@ -20374,11 +20381,11 @@ msgstr "POP3"
 
 #: src/wizard.c:1578
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:110\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:110\""
 msgstr ""
-"Puteți specifica numărul portului prin adăugarea lui la sfârșit: "
-"„mail.example.com:110”"
+"Puteți specifica numărul portului prin adăugarea lui la sfârșit: „mail."
+"example.com:110”"
 
 #: src/wizard.c:1617
 msgid "Use TLS to connect to receiving server"
@@ -20455,3 +20462,6 @@ msgid ""
 msgstr ""
 "Claws Mail este acum pregătit.\n"
 "Dați clic pe Salvează pentru a porni."
+
+#~ msgid "Copy this _link"
+#~ msgstr "Copiază acest _link"

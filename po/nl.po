@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Claws Mail 4.3.0\n"
 "Report-Msgid-Bugs-To: paul@claws-mail.org\n"
-"POT-Creation-Date: 2026-03-06 10:40+0000\n"
+"POT-Creation-Date: 2026-06-26 18:44+0200\n"
 "PO-Revision-Date: 2026-03-02 11:47+0100\n"
 "Last-Translator: Marcel Pol <marcel@timelord.nl>\n"
 "Language-Team: translators@lists.claws-mail.org\n"
@@ -147,11 +147,11 @@ msgstr " _Instellen als standaard account "
 #: src/addrindex.c:1804 src/alertpanel.c:139 src/alertpanel.c:203
 #: src/browseldap.c:300 src/compose.c:638 src/compose.c:11005
 #: src/edittags.c:591 src/exphtmldlg.c:193 src/exphtmldlg.c:295
-#: src/expldifdlg.c:323 src/gtk/about.c:918 src/gtk/icon_legend.c:184
+#: src/expldifdlg.c:323 src/gtk/about.c:921 src/gtk/icon_legend.c:187
 #: src/gtk/pluginwindow.c:391 src/gtk/prefswindow.c:512
 #: src/gtk/sslcertwindow.c:374 src/importldif.c:438 src/inc.c:844
 #: src/message_search.c:238 src/message_search.c:320 src/messageview.c:225
-#: src/mimeview.c:1929 src/mimeview.c:1946
+#: src/mimeview.c:1923 src/mimeview.c:1940
 #: src/plugins/managesieve/sieve_editor.c:88
 #: src/plugins/managesieve/sieve_editor.c:632
 #: src/plugins/managesieve/sieve_manager.c:786
@@ -206,10 +206,10 @@ msgstr "Verwijder account"
 #: src/gtk/prefswindow.c:507 src/gtk/progressdialog.c:93 src/imap.c:1240
 #: src/imap_gtk.c:369 src/imap_gtk.c:519 src/imap_gtk.c:579 src/import.c:177
 #: src/importldif.c:925 src/importldif.c:991 src/importmutt.c:250
-#: src/importpine.c:249 src/inc.c:893 src/main.c:2216 src/mainwindow.c:4003
+#: src/importpine.c:249 src/inc.c:893 src/main.c:2220 src/mainwindow.c:4003
 #: src/mbox.c:549 src/messageview.c:2079 src/messageview.c:2090
-#: src/messageview.c:2219 src/mh_gtk.c:207 src/mh_gtk.c:376 src/mimeview.c:1913
-#: src/mimeview.c:2354 src/news.c:406 src/news_gtk.c:252 src/password_gtk.c:215
+#: src/messageview.c:2219 src/mh_gtk.c:207 src/mh_gtk.c:376 src/mimeview.c:1907
+#: src/mimeview.c:2348 src/news.c:406 src/news_gtk.c:252 src/password_gtk.c:215
 #: src/plugins/archive/archiver_gtk.c:117
 #: src/plugins/archive/archiver_gtk.c:581
 #: src/plugins/archive/archiver_gtk.c:628
@@ -231,23 +231,23 @@ msgstr "Verwijder account"
 #: src/plugins/pgpcore/sgpgme.c:1880 src/plugins/pgpcore/sgpgme.c:1902
 #: src/plugins/pgpcore/sgpgme.c:1995 src/plugins/rssyl/rssyl_cb_menu.c:189
 #: src/plugins/rssyl/rssyl_cb_menu.c:356
-#: src/plugins/rssyl/rssyl_feed_props.c:529
-#: src/plugins/rssyl/rssyl_subscribe_gtk.c:46
+#: src/plugins/rssyl/rssyl_feed_props.c:534
+#: src/plugins/rssyl/rssyl_subscribe_gtk.c:47
 #: src/plugins/vcalendar/vcalendar.c:122 src/plugins/vcalendar/vcalendar.c:1063
-#: src/plugins/vcalendar/vcal_folder.c:2027
+#: src/plugins/vcalendar/vcal_folder.c:2066
 #: src/plugins/vcalendar/vcal_meeting_gtk.c:932 src/prefs_actions.c:219
 #: src/prefs_actions.c:724 src/prefs_actions.c:746 src/prefs_customheader.c:176
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:245
 #: src/prefs_filtering_action.c:392 src/prefs_filtering.c:351
 #: src/prefs_filtering.c:1196 src/prefs_filtering.c:1216
-#: src/prefs_folder_column.c:341 src/prefs_folder_item.c:1920
+#: src/prefs_folder_column.c:341 src/prefs_folder_item.c:1923
 #: src/prefs_matcher.c:572 src/prefs_summaries.c:321
 #: src/prefs_summary_column.c:355 src/prefs_summary_open.c:180
 #: src/prefs_template.c:398 src/prefs_template.c:898 src/prefs_template.c:911
 #: src/prefs_themes.c:577 src/send_message.c:300 src/ssl_manager.c:451
 #: src/summaryview.c:1338 src/summaryview.c:4572 src/summaryview.c:5041
-#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3145
-#: src/toolbar.c:3110 src/wizard.c:1826
+#: src/summaryview.c:5097 src/summaryview.c:5836 src/textview.c:3150
+#: src/toolbar.c:3110 src/wizard.c:1840
 msgid "_Cancel"
 msgstr "_Annuleren"
 
@@ -259,7 +259,7 @@ msgstr "_Annuleren"
 #: src/plugins/mailmbox/plugin_gtk.c:336
 #: src/plugins/managesieve/sieve_manager.c:330
 #: src/plugins/rssyl/rssyl_cb_menu.c:189
-#: src/plugins/vcalendar/vcal_folder.c:2028 src/prefs_actions.c:1105
+#: src/plugins/vcalendar/vcal_folder.c:2067 src/prefs_actions.c:1105
 #: src/prefs_customheader.c:695 src/prefs_display_header.c:327
 #: src/prefs_filtering.c:1689 src/prefs_template.c:1104 src/summaryview.c:4572
 msgid "_Delete"
@@ -348,10 +348,10 @@ msgstr ""
 #: src/compose.c:9787 src/ldaputil.c:334
 #: src/plugins/bogofilter/bogofilter.c:857
 #: src/plugins/tnef_parse/tnef_parse.c:76
-#: src/plugins/vcalendar/vcal_folder.c:1820
-#: src/plugins/vcalendar/vcal_folder.c:1824
-#: src/plugins/vcalendar/vcal_folder.c:1842
-#: src/plugins/vcalendar/vcal_folder.c:1845 src/privacy.c:64
+#: src/plugins/vcalendar/vcal_folder.c:1859
+#: src/plugins/vcalendar/vcal_folder.c:1863
+#: src/plugins/vcalendar/vcal_folder.c:1881
+#: src/plugins/vcalendar/vcal_folder.c:1884 src/privacy.c:64
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
@@ -500,7 +500,7 @@ msgstr ""
 #: src/file_checker.c:107 src/folderview.c:881 src/folderview.c:1109
 #: src/folderview.c:2545 src/folderview.c:2667 src/inc.c:1676 src/main.c:415
 #: src/mainwindow.c:2869 src/mainwindow.c:2874 src/mainwindow.c:4206
-#: src/message_search.c:335 src/mimeview.c:1882
+#: src/message_search.c:335 src/mimeview.c:1876
 #: src/plugins/libravatar/libravatar_prefs.c:179
 #: src/plugins/pgpcore/select-keys.c:716 src/plugins/pgpcore/sgpgme.c:1086
 #: src/plugins/pgpcore/sgpgme.c:1209 src/plugins/pgpcore/sgpgme.c:1940
@@ -519,7 +519,7 @@ msgstr "_Nee"
 #: src/file_checker.c:83 src/file_checker.c:107 src/folderview.c:881
 #: src/folderview.c:1109 src/folderview.c:2545 src/folderview.c:2667
 #: src/inc.c:1676 src/main.c:415 src/mainwindow.c:2869 src/mainwindow.c:2874
-#: src/message_search.c:335 src/mimeview.c:1883
+#: src/message_search.c:335 src/mimeview.c:1877
 #: src/plugins/libravatar/libravatar_prefs.c:179
 #: src/plugins/pgpcore/select-keys.c:716 src/plugins/pgpcore/sgpgme.c:1086
 #: src/plugins/pgpcore/sgpgme.c:1209 src/plugins/vcalendar/vcalendar.c:123
@@ -574,7 +574,7 @@ msgstr "Toe_voegen"
 #: src/export.c:175 src/foldersel.c:350 src/grouplistdialog.c:243
 #: src/gtk/foldersort.c:245 src/gtk/gtkaspell.c:1504 src/gtk/inputdialog.c:378
 #: src/gtk/prefswindow.c:508 src/import.c:178 src/importmutt.c:251
-#: src/importpine.c:250 src/main.c:2216 src/password_gtk.c:217
+#: src/importpine.c:250 src/main.c:2220 src/password_gtk.c:217
 #: src/plugins/archive/archiver_gtk.c:581
 #: src/plugins/archive/archiver_gtk.c:628
 #: src/plugins/archive/archiver_gtk.c:760
@@ -584,10 +584,10 @@ msgstr "Toe_voegen"
 #: src/plugins/notification/notification_foldercheck.c:586
 #: src/plugins/notification/notification_trayicon.c:550
 #: src/plugins/pgpcore/passphrase.c:123
-#: src/plugins/rssyl/rssyl_feed_props.c:535
-#: src/plugins/rssyl/rssyl_subscribe_gtk.c:47
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1802
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1926 src/prefs_actions.c:220
+#: src/plugins/rssyl/rssyl_feed_props.c:540
+#: src/plugins/rssyl/rssyl_subscribe_gtk.c:48
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1811
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1935 src/prefs_actions.c:220
 #: src/prefs_customheader.c:177 src/prefs_display_header.c:246
 #: src/prefs_filtering_action.c:393 src/prefs_filtering.c:352
 #: src/prefs_folder_column.c:342 src/prefs_matcher.c:573
@@ -732,7 +732,7 @@ msgstr "_Verwijder boek"
 #: src/editaddress.c:1556 src/editaddress_other_attributes_ldap.c:434
 #: src/plugins/managesieve/sieve_editor.c:85
 #: src/plugins/managesieve/sieve_editor.c:435
-#: src/plugins/managesieve/sieve_editor.c:634 src/wizard.c:1825
+#: src/plugins/managesieve/sieve_editor.c:634 src/wizard.c:1839
 msgid "_Save"
 msgstr "_Opslaan"
 
@@ -1191,14 +1191,14 @@ msgid "Update failed. Changes not written to Directory."
 msgstr "Update mislukt. Wijzigingen niet opgeslagen naar map."
 
 #: src/alertpanel.c:154 src/compose.c:9862 src/compose.c:11004
-#: src/mimeview.c:1929 src/plugins/pgpcore/sgpgme.c:1878
+#: src/mimeview.c:1923 src/plugins/pgpcore/sgpgme.c:1878
 #: src/plugins/pgpcore/sgpgme.c:1993
 msgid "Notice"
 msgstr "Bericht"
 
 #: src/alertpanel.c:167 src/compose.c:5867 src/compose.c:6445
 #: src/compose.c:12441 src/file_checker.c:83 src/file_checker.c:107
-#: src/messageview.c:856 src/mimeview.c:1946 src/plugins/pgpcore/sgpgme.c:998
+#: src/messageview.c:856 src/mimeview.c:1940 src/plugins/pgpcore/sgpgme.c:998
 #: src/plugins/vcalendar/vcalendar.c:122 src/summaryview.c:5097
 msgid "Warning"
 msgstr "Waarschuwing"
@@ -2842,7 +2842,7 @@ msgstr "Een e-mailadres is verplicht."
 msgid "A Name and Value must be supplied."
 msgstr "Naam en waarde verplicht."
 
-#: src/editaddress.c:820 src/prefs_folder_item.c:1920
+#: src/editaddress.c:820 src/prefs_folder_item.c:1923
 msgid "Discard"
 msgstr "Weggooien"
 
@@ -3223,11 +3223,11 @@ msgstr "Vergelijk namen met een 'bevat'-zoekterm"
 
 #: src/editldap.c:636
 msgid ""
-"Searches for names and addresses can be performed either using \"begins-"
-"with\" or \"contains\" search term. Check this option to perform a "
-"\"contains\" search; this type of search usually takes longer to complete. "
-"Note that for performance reasons, address completion uses \"begins-with\" "
-"for all searches against other address interfaces."
+"Searches for names and addresses can be performed either using \"begins-with"
+"\" or \"contains\" search term. Check this option to perform a \"contains\" "
+"search; this type of search usually takes longer to complete. Note that for "
+"performance reasons, address completion uses \"begins-with\" for all "
+"searches against other address interfaces."
 msgstr ""
 "Namen en adressen zoeken kan uitgevoerd worden door óf te kijken of de "
 "zoekterm overeenkomt met het 'begin' van een naam óf dat de naam de zoekterm "
@@ -3270,8 +3270,8 @@ msgstr "Wachtwoord"
 #: src/editldap.c:747
 msgid "The password to be used when connecting as the \"Bind DN\" user."
 msgstr ""
-"Het te gebruiken wachtwoord bij het maken van een verbinding als de \"Bind "
-"DN\" gebruiker."
+"Het te gebruiken wachtwoord bij het maken van een verbinding als de \"Bind DN"
+"\" gebruiker."
 
 #: src/editldap.c:751 src/plugins/spamassassin/spamassassin_gtk.c:389
 msgid "Timeout (secs)"
@@ -3449,15 +3449,15 @@ msgstr "Stijlblad"
 #: src/exphtmldlg.c:448 src/gtk/colorlabel.c:369 src/gtk/colorlabel.c:495
 #: src/gtk/gtkaspell.c:1558 src/gtk/gtkaspell.c:2192 src/gtk/menu.c:143
 #: src/mainwindow.c:1176 src/plugins/archive/archiver_prefs.c:326
-#: src/plugins/libravatar/libravatar_prefs.c:319 src/prefs_account.c:1142
+#: src/plugins/libravatar/libravatar_prefs.c:322 src/prefs_account.c:1142
 #: src/prefs_spelling.c:329 src/prefs_toolbar.c:770 src/prefs_toolbar.c:1421
 #: src/summaryview.c:6279
 msgid "None"
 msgstr "Geen"
 
-#: src/exphtmldlg.c:449 src/prefs_folder_item.c:558 src/prefs_folder_item.c:586
-#: src/prefs_folder_item.c:614 src/prefs_folder_item.c:1348
-#: src/prefs_folder_item.c:1379 src/prefs_other.c:323 src/prefs_other.c:436
+#: src/exphtmldlg.c:449 src/prefs_folder_item.c:561 src/prefs_folder_item.c:589
+#: src/prefs_folder_item.c:617 src/prefs_folder_item.c:1351
+#: src/prefs_folder_item.c:1382 src/prefs_other.c:323 src/prefs_other.c:436
 msgid "Default"
 msgstr "Standaard"
 
@@ -3523,12 +3523,12 @@ msgid "Export Address Book to HTML File"
 msgstr "Exporteren Adresboek naar HTML-bestand"
 
 #: src/exphtmldlg.c:606 src/expldifdlg.c:671 src/importldif.c:923
-#: src/message_search.c:228 src/summary_search.c:485 src/wizard.c:1823
+#: src/message_search.c:228 src/summary_search.c:485 src/wizard.c:1837
 msgid "_Previous"
 msgstr "Vo_rige"
 
 #: src/exphtmldlg.c:607 src/expldifdlg.c:672 src/importldif.c:924
-#: src/message_search.c:233 src/summary_search.c:490 src/wizard.c:1824
+#: src/message_search.c:233 src/summary_search.c:490 src/wizard.c:1838
 msgid "_Next"
 msgstr "Vo_lgende"
 
@@ -3888,8 +3888,8 @@ msgstr ""
 #: src/filtering.c:745
 #, c-format
 msgid ""
-"rule is account-based [id=%d, name='%s'], not matching current account "
-"[id=%d, name='%s']\n"
+"rule is account-based [id=%d, name='%s'], not matching current account [id="
+"%d, name='%s']\n"
 msgstr ""
 "regel is gebonden aan een account [id=%d, naam='%s'], niet overeenkomend met "
 "het huidige account [id=%d, naam='%s']\n"
@@ -3982,24 +3982,24 @@ msgstr ""
 "filteren van bericht (%s%s%s)\n"
 "%sberichtbestand: %s\n"
 
-#: src/folder.c:1554 src/prefs_folder_item.c:337
+#: src/folder.c:1554 src/prefs_folder_item.c:340
 msgid "Inbox"
 msgstr "Inbox"
 
-#: src/folder.c:1558 src/prefs_folder_item.c:338
+#: src/folder.c:1558 src/prefs_folder_item.c:341
 msgid "Sent"
 msgstr "Verzonden"
 
 #: src/folder.c:1562 src/plugins/attachwarner/attachwarner.c:219
-#: src/plugins/keyword_warner/keyword_warner.c:197 src/prefs_folder_item.c:340
+#: src/plugins/keyword_warner/keyword_warner.c:197 src/prefs_folder_item.c:343
 msgid "Queue"
 msgstr "Wachtrij"
 
-#: src/folder.c:1566 src/prefs_folder_item.c:341
+#: src/folder.c:1566 src/prefs_folder_item.c:344
 msgid "Trash"
 msgstr "Prullenbak"
 
-#: src/folder.c:1570 src/prefs_folder_item.c:339
+#: src/folder.c:1570 src/prefs_folder_item.c:342
 msgid "Drafts"
 msgstr "Klad"
 
@@ -4061,7 +4061,7 @@ msgstr "Neem eigenschappen en verwerkregels over van bovenliggende map"
 #: src/imap_gtk.c:275 src/mh_gtk.c:154 src/mh_gtk.c:263 src/news_gtk.c:304
 #: src/plugins/mailmbox/plugin_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:434
 #: src/plugins/rssyl/rssyl_cb_menu.c:235
-#: src/plugins/vcalendar/vcal_folder.c:2099
+#: src/plugins/vcalendar/vcal_folder.c:2138
 #, c-format
 msgid "'%c' can't be included in folder name."
 msgstr "'%c' mag niet in de naam van een map voorkomen."
@@ -4069,7 +4069,7 @@ msgstr "'%c' mag niet in de naam van een map voorkomen."
 #: src/foldersel.c:598 src/imap_gtk.c:224 src/imap_gtk.c:282 src/mh_gtk.c:167
 #: src/mh_gtk.c:273 src/news_gtk.c:311 src/plugins/mailmbox/plugin_gtk.c:270
 #: src/plugins/mailmbox/plugin_gtk.c:446 src/plugins/rssyl/rssyl_cb_menu.c:247
-#: src/plugins/vcalendar/vcal_folder.c:2106
+#: src/plugins/vcalendar/vcal_folder.c:2145
 #, c-format
 msgid "The folder '%s' already exists."
 msgstr "De map '%s' bestaat al."
@@ -4267,7 +4267,7 @@ msgid "Some errors occurred while sending queued messages."
 msgstr ""
 "Er zijn fouten opgetreden bij het verzenden van berichten in de wachtrij."
 
-#: src/folderview.c:2568 src/main.c:2865 src/toolbar.c:3131
+#: src/folderview.c:2568 src/main.c:2869 src/toolbar.c:3131
 #, c-format
 msgid ""
 "Some errors occurred while sending queued messages:\n"
@@ -4420,7 +4420,7 @@ msgstr ""
 "Claws Mail is vrije software uitgegeven onder de GPL licentie. Als je een "
 "donatie wenst te maken aan het Claws Mail project, kan dat hier:"
 
-#: src/gtk/about.c:164 src/gtk/about.c:891
+#: src/gtk/about.c:164 src/gtk/about.c:894
 msgid ""
 "Copyright (C) 1999-2026\n"
 "The Claws Mail Team\n"
@@ -4554,7 +4554,7 @@ msgctxt "OAuth2"
 msgid "adds support for OAuth2 authentication\n"
 msgstr "voegt ondersteuning toe voor OAuth2 authenticatie\n"
 
-#: src/gtk/about.c:576
+#: src/gtk/about.c:577
 msgid ""
 "This program is free software; you can redistribute it and/or modify it "
 "under the terms of the GNU General Public License as published by the Free "
@@ -4565,7 +4565,7 @@ msgstr ""
 "Je mag zelf kiezen of je versie 3 of (als je dat wenst) iedere latere versie "
 "van de GPL hanteert."
 
-#: src/gtk/about.c:583
+#: src/gtk/about.c:584
 msgid ""
 "This program is distributed in the hope that it will be useful, but WITHOUT "
 "ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
@@ -4577,7 +4577,7 @@ msgstr ""
 "of GESCHIKTHEID VOOR ENIG DOEL. Lees de GNU General Public License voor "
 "verdere details."
 
-#: src/gtk/about.c:601
+#: src/gtk/about.c:602
 msgid ""
 "You should have received a copy of the GNU General Public License along with "
 "this program. If not, see "
@@ -4585,78 +4585,78 @@ msgstr ""
 "Je zou een kopie van de GNU General Public License ontvangen moeten hebben "
 "bij dit programma. Als dit niet het geval is, zie "
 
-#: src/gtk/about.c:736 src/main.c:2680
+#: src/gtk/about.c:739 src/main.c:2684
 msgid "Session statistics\n"
 msgstr "Sessie-statistieken\n"
 
-#: src/gtk/about.c:746 src/gtk/about.c:749 src/main.c:2690 src/main.c:2693
+#: src/gtk/about.c:749 src/gtk/about.c:752 src/main.c:2694 src/main.c:2697
 #, c-format
 msgid "Started: %s\n"
 msgstr "Gestart: %s\n"
 
-#: src/gtk/about.c:756 src/main.c:2699
+#: src/gtk/about.c:759 src/main.c:2703
 msgid "Incoming traffic\n"
 msgstr "Inkomend verkeer\n"
 
-#: src/gtk/about.c:759 src/main.c:2702
+#: src/gtk/about.c:762 src/main.c:2706
 #, c-format
 msgid "Received messages: %d\n"
 msgstr "Ontvangen berichten: %d\n"
 
-#: src/gtk/about.c:764 src/main.c:2707
+#: src/gtk/about.c:767 src/main.c:2711
 #, c-format
 msgid "Spam messages: %d\n"
 msgstr "Spamberichten: %d\n"
 
-#: src/gtk/about.c:771 src/main.c:2714
+#: src/gtk/about.c:774 src/main.c:2718
 msgid "Outgoing traffic\n"
 msgstr "Uitgaand verkeer\n"
 
-#: src/gtk/about.c:774 src/main.c:2717
+#: src/gtk/about.c:777 src/main.c:2721
 #, c-format
 msgid "New/redirected messages: %d\n"
 msgstr "Nieuwe/doorverwezen berichten: %d\n"
 
-#: src/gtk/about.c:779 src/main.c:2721
+#: src/gtk/about.c:782 src/main.c:2725
 #, c-format
 msgid "Replied messages: %d\n"
 msgstr "Beantwoorde berichten: %d\n"
 
-#: src/gtk/about.c:784 src/main.c:2725
+#: src/gtk/about.c:787 src/main.c:2729
 #, c-format
 msgid "Forwarded messages: %d\n"
 msgstr "Doorgestuurde berichten: %d\n"
 
-#: src/gtk/about.c:789 src/main.c:2729
+#: src/gtk/about.c:792 src/main.c:2733
 #, c-format
 msgid "Total outgoing messages: %d\n"
 msgstr "Totaal uitgaande berichten: %d\n"
 
-#: src/gtk/about.c:831
+#: src/gtk/about.c:834
 msgid "About Claws Mail"
 msgstr "Over Claws Mail"
 
-#: src/gtk/about.c:902
+#: src/gtk/about.c:905
 msgid "_Info"
 msgstr "_Info"
 
-#: src/gtk/about.c:903
+#: src/gtk/about.c:906
 msgid "_Authors"
 msgstr "_Auteurs"
 
-#: src/gtk/about.c:904
+#: src/gtk/about.c:907
 msgid "_Features"
 msgstr "_Kenmerken"
 
-#: src/gtk/about.c:905
+#: src/gtk/about.c:908
 msgid "_License"
 msgstr "_Licentie"
 
-#: src/gtk/about.c:908
+#: src/gtk/about.c:911
 msgid "_Release Notes"
 msgstr "_Opmerkingen bij deze uitgave"
 
-#: src/gtk/about.c:911
+#: src/gtk/about.c:914
 msgid "_Statistics"
 msgstr "_Statistieken"
 
@@ -4947,7 +4947,7 @@ msgstr "Onderwerp"
 msgid "Subject:"
 msgstr "Onderwerp:"
 
-#: src/gtk/headers.h:20 src/plugins/rssyl/rssyl_feed_props.c:445
+#: src/gtk/headers.h:20 src/plugins/rssyl/rssyl_feed_props.c:448
 msgid "Comments"
 msgstr "Opmerkingen"
 
@@ -5095,7 +5095,7 @@ msgstr "Ontvangstbevestiging-Aan"
 msgid "Return-Receipt-To:"
 msgstr "Ontvangstbevestiging-Aan:"
 
-#: src/gtk/headers.h:41 src/plugins/rssyl/rssyl_feed_props.c:518
+#: src/gtk/headers.h:41 src/plugins/rssyl/rssyl_feed_props.c:523
 #: src/plugins/rssyl/rssyl_prefs.c:261
 msgid "User-Agent"
 msgstr "Applicatie"
@@ -5356,11 +5356,11 @@ msgstr "IMAP-map die alleen submappen bevat"
 msgid "IMAP mailbox showing only subscribed folders"
 msgstr "IMAP-mailbox toont alleen geabonneerde mappen"
 
-#: src/gtk/icon_legend.c:126
+#: src/gtk/icon_legend.c:127
 msgid "Icon Legend"
 msgstr "Pictogramlegenda"
 
-#: src/gtk/icon_legend.c:145
+#: src/gtk/icon_legend.c:146
 msgid ""
 "The following icons are used to show the status of messages and folders:"
 msgstr ""
@@ -5457,7 +5457,7 @@ msgstr ""
 #: src/plugins/fancy/fancy_prefs.c:105
 #: src/plugins/fetchinfo/fetchinfo_plugin_gtk.c:181
 #: src/plugins/keyword_warner/keyword_warner_prefs.c:234
-#: src/plugins/libravatar/libravatar_prefs.c:567
+#: src/plugins/libravatar/libravatar_prefs.c:570
 #: src/plugins/litehtml_viewer/lh_prefs.c:73
 #: src/plugins/managesieve/sieve_prefs.c:423
 #: src/plugins/notification/notification_prefs.c:433
@@ -5776,7 +5776,7 @@ msgid "Run on select"
 msgstr "Draai bij het selecteren"
 
 #: src/gtk/quicksearch.c:931 src/gtk/quicksearch.c:994
-#: src/gtk/quicksearch.c:1024 src/plugins/libravatar/libravatar_prefs.c:256
+#: src/gtk/quicksearch.c:1024 src/plugins/libravatar/libravatar_prefs.c:259
 #: src/prefs_actions.c:344 src/prefs_filtering.c:479 src/prefs_template.c:323
 #: src/summary_search.c:317
 msgid "C_lear"
@@ -5982,7 +5982,7 @@ msgstr "(Geen onderwerp)"
 msgid "Error:"
 msgstr "Fout:"
 
-#: src/image_viewer.c:314 src/mimeview.c:2673
+#: src/image_viewer.c:314 src/mimeview.c:2667
 #: src/plugins/pdf_viewer/poppler_viewer.c:705
 msgid "Filename:"
 msgstr "Bestandsnaam:"
@@ -6555,20 +6555,20 @@ msgstr ""
 
 #: src/imap_gtk.c:259 src/mh_gtk.c:253 src/news_gtk.c:295
 #: src/plugins/mailmbox/plugin_gtk.c:423 src/plugins/rssyl/rssyl_cb_menu.c:229
-#: src/plugins/vcalendar/vcal_folder.c:2091
+#: src/plugins/vcalendar/vcal_folder.c:2130
 #, c-format
 msgid "Input new name for '%s':"
 msgstr "Geef een nieuwe naam voor '%s':"
 
 #: src/imap_gtk.c:261 src/mh_gtk.c:255 src/plugins/mailmbox/plugin_gtk.c:424
 #: src/plugins/rssyl/rssyl_cb_menu.c:230
-#: src/plugins/vcalendar/vcal_folder.c:2092
+#: src/plugins/vcalendar/vcal_folder.c:2131
 msgid "Rename folder"
 msgstr "Hernoem map"
 
 #: src/imap_gtk.c:290 src/mh_gtk.c:281 src/news_gtk.c:317
 #: src/plugins/mailmbox/plugin_gtk.c:454 src/plugins/rssyl/rssyl_cb_menu.c:253
-#: src/plugins/vcalendar/vcal_folder.c:2112
+#: src/plugins/vcalendar/vcal_folder.c:2151
 msgid ""
 "The folder could not be renamed.\n"
 "The new folder name is not allowed."
@@ -6602,7 +6602,7 @@ msgstr ""
 
 #: src/imap_gtk.c:385 src/news_gtk.c:268 src/plugins/mailmbox/plugin_gtk.c:351
 #: src/plugins/rssyl/rssyl_cb_menu.c:205
-#: src/plugins/vcalendar/vcal_folder.c:2045
+#: src/plugins/vcalendar/vcal_folder.c:2084
 #, c-format
 msgid "Can't remove the folder '%s'."
 msgstr "Kan map '%s' niet verwijderen."
@@ -6662,8 +6662,8 @@ msgstr "abonneren"
 msgid "unsubscribe"
 msgstr "afmelden"
 
-#: src/imap_gtk.c:573 src/prefs_folder_item.c:1698 src/prefs_folder_item.c:1726
-#: src/prefs_folder_item.c:1754
+#: src/imap_gtk.c:573 src/prefs_folder_item.c:1701 src/prefs_folder_item.c:1729
+#: src/prefs_folder_item.c:1757
 msgid "Apply to subfolders"
 msgstr "Pas toe op submappen"
 
@@ -6790,8 +6790,8 @@ msgid ""
 "field for import."
 msgstr ""
 "Kies in bovenstaande lijst de LDIF-velden die zullen worden geïmporteerd en/"
-"of hernoemd. Gereserveerde velden (gemarkeerd met een vinkje in de "
-"\"R\"kolom), zullen automatisch worden geïmporteerd en kunnen niet worden "
+"of hernoemd. Gereserveerde velden (gemarkeerd met een vinkje in de \"R"
+"\"kolom), zullen automatisch worden geïmporteerd en kunnen niet worden "
 "hernoemd. Een enkele klik in de selecteer-kolom (\"S\") of een dubbele klik "
 "ergens anders in de rij, zal die rij selecteren voor importeren. Een enkele "
 "klik ergens in de rij selecteert de rij voor hernoemen en brengt je in het "
@@ -7200,11 +7200,11 @@ msgstr "Overzetten mislukt."
 msgid "Migrating configuration..."
 msgstr "Configuratiebestand overzetten..."
 
-#: src/main.c:1100 src/main.c:1104 src/main.c:1108
+#: src/main.c:1100 src/main.c:1105 src/main.c:1110
 msgid "(or older)"
 msgstr "(of ouder)"
 
-#: src/main.c:1455
+#: src/main.c:1459
 #, c-format
 msgid ""
 "The following plugin failed to load. Check the Plugins configuration for "
@@ -7223,7 +7223,7 @@ msgstr[1] ""
 "instellingen voor meer informatie:\n"
 "%s"
 
-#: src/main.c:1497
+#: src/main.c:1501
 msgid ""
 "Claws Mail has detected a configured mailbox, but it is incomplete. It is "
 "possibly due to a failing IMAP account. Use \"Rebuild folder tree\" on the "
@@ -7234,7 +7234,7 @@ msgstr ""
 "Gebruik \"Ververs mappenboom\" in het contextmenu van deze map om dit "
 "proberen te repareren."
 
-#: src/main.c:1503
+#: src/main.c:1507
 msgid ""
 "Claws Mail has detected a configured mailbox, but could not load it. It is "
 "probably provided by an out-of-date external plugin. Please reinstall the "
@@ -7244,76 +7244,76 @@ msgstr ""
 "laden. Het postvak komt waarschijnlijk van een oude en externe plugin. "
 "Herinstalleer deze plugin en probeer het nogmaals."
 
-#: src/main.c:1750
+#: src/main.c:1754
 msgid "Missing filename\n"
 msgstr "Bestandsnaam mist\n"
 
-#: src/main.c:1757
+#: src/main.c:1761
 msgid "Cannot open filename for reading\n"
 msgstr "Kan bestandsnaam niet openen om te lezen\n"
 
-#: src/main.c:1768
+#: src/main.c:1772
 msgid "Malformed header\n"
 msgstr "Vervormde header\n"
 
-#: src/main.c:1775
+#: src/main.c:1779
 msgid "Duplicated 'To:' header\n"
 msgstr "Gedupliceerde 'Aan:' header\n"
 
-#: src/main.c:1786
+#: src/main.c:1790
 msgid "Missing required 'To:' header\n"
 msgstr "Benodigde header 'Aan:' mist\n"
 
-#: src/main.c:1810
+#: src/main.c:1814
 #, c-format
 msgid "%s. Try -h or --help for usage.\n"
 msgstr "%s. Probeer -h of --help voor het gebruik.\n"
 
-#: src/main.c:1839 src/main.c:1902 src/main.c:2077
+#: src/main.c:1843 src/main.c:1906 src/main.c:2081
 #, c-format
 msgid "Missing file argument for option %s"
 msgstr "Benodigd bestand-argument ontbreekt voor optie %s"
 
-#: src/main.c:1861
+#: src/main.c:1865
 #, c-format
 msgid "Missing or empty uri argument for option %s"
 msgstr "Benodigd uri-argument ontbreekt of is leeg voor optie %s"
 
-#: src/main.c:1864
+#: src/main.c:1868
 #, c-format
 msgid "Missing uri argument for option %s"
 msgstr "Benodigd uri-argument ontbreekt voor optie %s"
 
-#: src/main.c:1897
+#: src/main.c:1901
 #, c-format
 msgid "Missing at least one non-empty file argument for option %s"
 msgstr "Minstens één niet-leeg bestand-argument ontbreekt voor optie %s"
 
-#: src/main.c:1966
+#: src/main.c:1970
 #, c-format
 msgid "Missing folder, type and request arguments for option %s"
 msgstr "Benodigde map, type en aanvraag-argumenten ontbreken voor optie %s"
 
-#: src/main.c:1969
+#: src/main.c:1973
 #, c-format
 msgid "Missing type and request arguments for option %s"
 msgstr "Benodigde type en aanvraag-argumenten ontbreken voor optie %s"
 
-#: src/main.c:1972
+#: src/main.c:1976
 #, c-format
 msgid "Missing request argument for option %s"
 msgstr "Benodigd aanvraag-argument ontbreekt voor optie %s"
 
-#: src/main.c:1988
+#: src/main.c:1992
 #, c-format
 msgid "Usage: %s [OPTION]...\n"
 msgstr "Gebruik: %s [OPTIES]...\n"
 
-#: src/main.c:1990
+#: src/main.c:1994
 msgid "  --compose [address]    open composition window"
 msgstr "  --compose [adres]      open venster \"Bericht opstellen\""
 
-#: src/main.c:1991
+#: src/main.c:1995
 msgid ""
 "  --compose-from-file file\n"
 "                         open composition window with data from given file;\n"
@@ -7333,11 +7333,11 @@ msgstr ""
 "                         lege regel, daarna de e-mail-inhoud tot het einde "
 "van het bestand."
 
-#: src/main.c:1996
+#: src/main.c:2000
 msgid "  --subscribe uri        subscribe to the given URI if possible"
 msgstr "  --subscribe uri      abonneer indien mogelijk op gegeven URI"
 
-#: src/main.c:1997
+#: src/main.c:2001
 msgid ""
 "  --attach file1 [file2]...\n"
 "                         open composition window with specified files\n"
@@ -7347,7 +7347,7 @@ msgstr ""
 "                         open venster \"Bericht opstellen\" met gegeven "
 "bestanden bijgevoegd"
 
-#: src/main.c:2000
+#: src/main.c:2004
 msgid ""
 "  --insert file1 [file2]...\n"
 "                         open composition window with specified files\n"
@@ -7357,23 +7357,23 @@ msgstr ""
 "                         open venster \"Bericht opstellen\" met gegeven "
 "bestanden ingevoegd"
 
-#: src/main.c:2003
+#: src/main.c:2007
 msgid "  --receive              receive new messages"
 msgstr "  --receive              haal nieuwe berichten op"
 
-#: src/main.c:2004
+#: src/main.c:2008
 msgid "  --receive-all          receive new messages of all accounts"
 msgstr "  --receive-all          haal nieuwe berichten op van alle accounts"
 
-#: src/main.c:2005
+#: src/main.c:2009
 msgid "  --cancel-receiving     cancel receiving of messages"
 msgstr "  --cancel-receiving     annuleer het ophalen van berichten"
 
-#: src/main.c:2006
+#: src/main.c:2010
 msgid "  --cancel-sending       cancel sending of messages"
 msgstr "  --cancel-sending       annuleer het verzenden van berichten"
 
-#: src/main.c:2007
+#: src/main.c:2011
 msgid ""
 "  --search folder type request [recursive]\n"
 "                         searches mail\n"
@@ -7391,29 +7391,29 @@ msgstr ""
 "                         aanvraag: zoekstring\n"
 "                         recursief: false als arg. start met 0, n, N, f or F"
 
-#: src/main.c:2014
+#: src/main.c:2018
 msgid "  --send                 send all queued messages"
 msgstr "  --send                 verzend alle berichten in de wachtrij"
 
-#: src/main.c:2015
+#: src/main.c:2019
 msgid "  --status [folder]...   show the total number of messages"
 msgstr "  --status [map]...      geef totaal aantal berichten weer"
 
-#: src/main.c:2016
+#: src/main.c:2020
 msgid ""
 "  --status-full [folder]...\n"
 "                         show the status of each folder"
 msgstr "  --status-full [map]... geef status van mappen weer"
 
-#: src/main.c:2018
+#: src/main.c:2022
 msgid "  --statistics           show session statistics"
 msgstr "  --statistics           geef statistieken van de sessie weer"
 
-#: src/main.c:2019
+#: src/main.c:2023
 msgid "  --reset-statistics     reset session statistics"
 msgstr "  --reset-statistics     sessie-statistieken terugzetten"
 
-#: src/main.c:2020
+#: src/main.c:2024
 msgid ""
 "  --select folder[/msg]  jump to the specified folder/message\n"
 "                         folder is a folder id like 'folder/subfolder', a "
@@ -7423,49 +7423,49 @@ msgstr ""
 "                         map is als een map-ID zoals 'folder/sub_folder', "
 "een bestands-uri als file:// of een absoluut pad"
 
-#: src/main.c:2022
+#: src/main.c:2026
 msgid "  --import-mbox file     import the specified mbox file\n"
 msgstr "  --import-mbox bestand     importeer het opgegeven mbox-bestand\n"
 
-#: src/main.c:2023
+#: src/main.c:2027
 msgid "  --online               switch to online mode"
 msgstr "  --online               schakel over naar online-modus"
 
-#: src/main.c:2024
+#: src/main.c:2028
 msgid "  --offline              switch to offline mode"
 msgstr "  --offline              schakel over naar offline-modus"
 
-#: src/main.c:2025
+#: src/main.c:2029
 msgid "  --exit --quit -q       exit Claws Mail"
 msgstr "  --exit --quit -q       sluit Claws Mail af"
 
-#: src/main.c:2026
+#: src/main.c:2030
 msgid "  --debug -d             debug mode"
 msgstr "  --debug -d             foutopsporingsmodus"
 
-#: src/main.c:2027
+#: src/main.c:2031
 msgid "  --toggle-debug         toggle debug mode"
 msgstr "  --toggle-debug         foutopsporingsmodus aan of uit zetten"
 
-#: src/main.c:2028
+#: src/main.c:2032
 msgid "  --help -h              display this help"
 msgstr "  --help -h              geef deze hulp weer"
 
-#: src/main.c:2029
+#: src/main.c:2033
 msgid "  --version -v           output version information"
 msgstr "  --version -v           geef versie-informatie"
 
-#: src/main.c:2030
+#: src/main.c:2034
 msgid ""
 "  --version-full -V      output version and built-in features information"
 msgstr ""
 "  --version-full -V      geef versie-informatie en ingebouwde mogelijkheden"
 
-#: src/main.c:2031
+#: src/main.c:2035
 msgid "  --config-dir           output configuration directory"
 msgstr "  --config-dir           print configuratiemap"
 
-#: src/main.c:2032
+#: src/main.c:2036
 msgid ""
 "  --alternate-config-dir directory\n"
 "                         use specified configuration directory"
@@ -7473,7 +7473,7 @@ msgstr ""
 "  --alternate-config-dir directory\n"
 "                         gebruik opgegeven configuratiemap"
 
-#: src/main.c:2034
+#: src/main.c:2038
 msgid ""
 "  --geometry -geometry [WxH][+X+Y]\n"
 "                         set geometry for main window"
@@ -7481,48 +7481,48 @@ msgstr ""
 "  --geometry -geometry [WxH][+X+Y]\n"
 "                         set geometry for main window"
 
-#: src/main.c:2051
+#: src/main.c:2055
 #, c-format
 msgid "Missing directory argument for option %s"
 msgstr "Benodigd map-argument ontbreekt voor optie %s"
 
-#: src/main.c:2059
+#: src/main.c:2063
 #, c-format
 msgid "Missing geometry argument for option %s"
 msgstr "Benodigd geometrie-argument ontbreekt voor optie %s"
 
-#: src/main.c:2070
+#: src/main.c:2074
 #, c-format
 msgid "Missing folder argument for option %s"
 msgstr "Benodigd map-argument ontbreekt voor optie %s"
 
-#: src/main.c:2110 src/main.c:2113
+#: src/main.c:2114 src/main.c:2117
 #, c-format
 msgid "Unknown option %s"
 msgstr "Onbekende optie %s"
 
-#: src/main.c:2129
+#: src/main.c:2133
 #, c-format
 msgid "Processing (%s)..."
 msgstr "Verwerken (%s)..."
 
-#: src/main.c:2132
+#: src/main.c:2136
 msgid "top level folder"
 msgstr "map op hoogste niveaux"
 
-#: src/main.c:2214
+#: src/main.c:2218
 msgid "Queued messages"
 msgstr "Berichten zijn in de wachtrij gezet"
 
-#: src/main.c:2215
+#: src/main.c:2219
 msgid "Some unsent messages are queued. Exit now?"
 msgstr "Er staan nog berichten in de wachtrij. Toch afsluiten?"
 
-#: src/main.c:2952
+#: src/main.c:2956
 msgid "NetworkManager: network is online.\n"
 msgstr "NetworkManager: netwerk is beschikbaar.\n"
 
-#: src/main.c:2958
+#: src/main.c:2962
 msgid "NetworkManager: network is offline.\n"
 msgstr "NetworkManager: netwerk is niet beschikbaar.\n"
 
@@ -8331,7 +8331,7 @@ msgstr "filterlog staat uit\n"
 #: src/mainwindow.c:2456 src/mainwindow.c:2463 src/mainwindow.c:2506
 #: src/mainwindow.c:2539 src/mainwindow.c:2571 src/mainwindow.c:2616
 #: src/plugins/notification/notification_trayicon.c:372
-#: src/plugins/rssyl/opml_import.c:69 src/prefs_folder_item.c:1244
+#: src/plugins/rssyl/opml_import.c:69 src/prefs_folder_item.c:1247
 msgid "Untitled"
 msgstr "Naamloos"
 
@@ -8589,7 +8589,7 @@ msgstr "Mbox-bestand overschrijven"
 msgid "This file already exists. Do you want to overwrite it?"
 msgstr "Dit bestand bestaat reeds. Wil je het overschrijven?"
 
-#: src/mbox.c:549 src/mimeview.c:1882 src/prefs_themes.c:577
+#: src/mbox.c:549 src/mimeview.c:1876 src/prefs_themes.c:577
 msgid "Overwrite"
 msgstr "Overschrijven"
 
@@ -8634,7 +8634,7 @@ msgstr "Einde van bericht bereikt, verdergaan vanaf het begin?"
 msgid "Search finished"
 msgstr "Zoeken voltooid"
 
-#: src/messageview.c:300 src/textview.c:250
+#: src/messageview.c:300 src/textview.c:253
 msgid "Write _new message"
 msgstr "Schrijf _nieuw bericht"
 
@@ -8791,7 +8791,7 @@ msgstr ""
 "gebruiken.\n"
 "Kies het account vanaf welke je de ontvangstbevestiging wilt versturen:"
 
-#: src/messageview.c:2207 src/mimeview.c:2108
+#: src/messageview.c:2207 src/mimeview.c:2102
 #: src/plugins/fancy/fancy_viewer.c:815 src/summaryview.c:5029
 msgid "Save as"
 msgstr "Opslaan als"
@@ -8989,25 +8989,25 @@ msgstr "Ondertekening wordt geverifieerd..."
 msgid "Go back to email"
 msgstr "Ga terug naar bericht"
 
-#: src/mimeview.c:1372
+#: src/mimeview.c:1366
 msgid "Claws Mail needs network access to locate the missing key."
 msgstr ""
 "Claws Mail heeft netwerktoegang nodig voor het ontvangen van de missende "
 "sleutel."
 
-#: src/mimeview.c:1800 src/mimeview.c:1893 src/mimeview.c:2155
-#: src/mimeview.c:2191 src/mimeview.c:2303 src/plugins/fancy/fancy_viewer.c:512
+#: src/mimeview.c:1794 src/mimeview.c:1887 src/mimeview.c:2149
+#: src/mimeview.c:2185 src/mimeview.c:2297 src/plugins/fancy/fancy_viewer.c:512
 #: src/plugins/fancy/fancy_viewer.c:541
 #, c-format
 msgid "Couldn't save the part of multipart message: %s"
 msgstr "Kan het deel van een meerdelig bericht niet opslaan: %s"
 
-#: src/mimeview.c:1879
+#: src/mimeview.c:1873
 #, c-format
 msgid "Overwrite existing file '%s'?"
 msgstr "Bestaand bestand '%s' overschrijven?"
 
-#: src/mimeview.c:1909
+#: src/mimeview.c:1903
 #, c-format
 msgid ""
 "An error has occurred while saving message part %d. Do you want to cancel "
@@ -9016,54 +9016,54 @@ msgstr ""
 "Er kwam een fout voor tijdens het opslaan van berichtdeel #%d. Wil je het "
 "opslaan annuleren of de fout overslaan en doorgaan?"
 
-#: src/mimeview.c:1912
+#: src/mimeview.c:1906
 msgid "Error saving message part"
 msgstr "Fout bij opslaan van berichtdeel"
 
-#: src/mimeview.c:1913
+#: src/mimeview.c:1907
 msgid "Ignore"
 msgstr "Negeren"
 
-#: src/mimeview.c:1913
+#: src/mimeview.c:1907
 msgid "Ignore all"
 msgstr "Alles negeren"
 
-#: src/mimeview.c:1925
+#: src/mimeview.c:1919
 #, c-format
 msgid "%d file saved successfully."
 msgid_plural "%d files saved successfully."
 msgstr[0] "%d bestand opgeslagen."
 msgstr[1] "%d bestanden opgeslagen."
 
-#: src/mimeview.c:1937
+#: src/mimeview.c:1931
 #, c-format
 msgid "%d file saved successfully"
 msgid_plural "%d files saved successfully"
 msgstr[0] "%d bestand opgeslagen"
 msgstr[1] "%d bestanden opgeslagen"
 
-#: src/mimeview.c:1942
+#: src/mimeview.c:1936
 #, c-format
 msgid "%s, %d file failed."
 msgid_plural "%s, %d files failed."
 msgstr[0] "%s, %d bestand mislukt."
 msgstr[1] "%s, %d bestanden mislukt."
 
-#: src/mimeview.c:1979 src/plugins/archive/archiver_prefs.c:144
+#: src/mimeview.c:1973 src/plugins/archive/archiver_prefs.c:144
 #: src/prefs_filtering_action.c:1261
 msgid "Select destination folder"
 msgstr "Selecteer doelmap"
 
-#: src/mimeview.c:1986 src/plugins/archive/archiver_prefs.c:150
+#: src/mimeview.c:1980 src/plugins/archive/archiver_prefs.c:150
 #, c-format
 msgid "'%s' is not a directory."
 msgstr "'%s' is geen map."
 
-#: src/mimeview.c:2238 src/mimeview.c:2245
+#: src/mimeview.c:2232 src/mimeview.c:2239
 msgid "Open with"
 msgstr "Open met"
 
-#: src/mimeview.c:2239 src/mimeview.c:2246
+#: src/mimeview.c:2233 src/mimeview.c:2240
 #, c-format
 msgid ""
 "Enter the command-line to open file:\n"
@@ -9072,7 +9072,7 @@ msgstr ""
 "Geef de opdracht om het bestand mee te openen:\n"
 "('%s' zal vervangen worden door de bestandsnaam)"
 
-#: src/mimeview.c:2342
+#: src/mimeview.c:2336
 #, c-format
 msgid ""
 "Could not convert attachment name to UTF-16:\n"
@@ -9083,11 +9083,11 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/mimeview.c:2350
+#: src/mimeview.c:2344
 msgid "Execute untrusted binary?"
 msgstr "Onbekend programma uitvoeren?"
 
-#: src/mimeview.c:2351
+#: src/mimeview.c:2345
 msgid ""
 "This attachment is an executable file. Executing untrusted binaries is "
 "dangerous and could compromise your computer.\n"
@@ -9100,22 +9100,22 @@ msgstr ""
 "\n"
 "Wil je dit programma uitvoeren?"
 
-#: src/mimeview.c:2355
+#: src/mimeview.c:2349
 msgid "Run binary"
 msgstr "Draai programma"
 
-#: src/mimeview.c:2658
+#: src/mimeview.c:2652
 msgid "Type:"
 msgstr "Type:"
 
-#: src/mimeview.c:2659 src/plugins/pdf_viewer/poppler_viewer.c:706
+#: src/mimeview.c:2653 src/plugins/pdf_viewer/poppler_viewer.c:706
 #: src/summaryview.c:2788
 msgid "Size:"
 msgstr "Grootte:"
 
-#: src/mimeview.c:2673 src/plugins/vcalendar/vcalendar.c:1255
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1620
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1631
+#: src/mimeview.c:2667 src/plugins/vcalendar/vcalendar.c:1255
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1629
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1640
 msgid "Description:"
 msgstr "Beschrijving:"
 
@@ -9332,17 +9332,19 @@ msgid "Acpi Notifier"
 msgstr "Acpi-meldingen"
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:69
+#, fuzzy
 msgid ""
 "Make sure that the kernel module 'acerhk' is loaded.\n"
-"You can get it from http://www.cakey.de/acerhk/"
+"You can get it from https://sourceforge.net/projects/acerhk/"
 msgstr ""
 "Controleer dat de kernel-module 'acerhk' geladen is.\n"
 "Je kunt het verkrijgen op http://www.cakey.de/acerhk/"
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:71
+#, fuzzy
 msgid ""
 "Make sure that the kernel module 'acer_acpi' is loaded.\n"
-"You can get it from http://code.google.com/p/aceracpi/"
+"You can get it from https://code.google.com/archive/p/aceracpi/"
 msgstr ""
 "Controleer dat de kernel-module 'acer_acpi' geladen is.\n"
 "Je kunt het verkrijgen op http://code.google.com/p/aceracpi/"
@@ -9360,9 +9362,10 @@ msgid "Make sure that the kernel module 'ibm_acpi' is loaded."
 msgstr "Controleer dat de kernel-module 'ibm_acpi' geladen is."
 
 #: src/plugins/acpi_notifier/acpi_notifier.c:76
+#, fuzzy
 msgid ""
 "Make sure that you have 'apanelc' installed.\n"
-"You can get it from http://apanel.sourceforge.net/"
+"You can get it from https://apanel.sourceforge.net/"
 msgstr ""
 "Controleer dat apanelc geïnstalleerd is.\n"
 "Je kunt het verkrijgen op http://apanel.sourceforge.net/"
@@ -9701,18 +9704,18 @@ msgstr "Compressieniveau"
 #: src/plugins/archive/archiver_gtk.c:848
 #: src/plugins/archive/archiver_gtk.c:856
 #: src/plugins/archive/archiver_gtk.c:864
-#: src/plugins/pdf_viewer/poppler_viewer.c:725 src/prefs_folder_item.c:560
-#: src/prefs_folder_item.c:588 src/prefs_folder_item.c:616
-#: src/prefs_folder_item.c:1350 src/prefs_folder_item.c:1381
+#: src/plugins/pdf_viewer/poppler_viewer.c:725 src/prefs_folder_item.c:563
+#: src/prefs_folder_item.c:591 src/prefs_folder_item.c:619
+#: src/prefs_folder_item.c:1353 src/prefs_folder_item.c:1384
 msgid "Yes"
 msgstr "Ja"
 
 #: src/plugins/archive/archiver_gtk.c:848
 #: src/plugins/archive/archiver_gtk.c:856
 #: src/plugins/archive/archiver_gtk.c:864
-#: src/plugins/pdf_viewer/poppler_viewer.c:728 src/prefs_folder_item.c:559
-#: src/prefs_folder_item.c:587 src/prefs_folder_item.c:615
-#: src/prefs_folder_item.c:1349 src/prefs_folder_item.c:1380
+#: src/plugins/pdf_viewer/poppler_viewer.c:728 src/prefs_folder_item.c:562
+#: src/prefs_folder_item.c:590 src/prefs_folder_item.c:618
+#: src/prefs_folder_item.c:1352 src/prefs_folder_item.c:1383
 #: src/prefs_summaries.c:447
 msgid "No"
 msgstr "Geen"
@@ -10479,12 +10482,9 @@ msgstr ""
 "Draait clamd wel?"
 
 #: src/plugins/clamd/clamav_plugin.c:120
-msgid "Detected "
+#, fuzzy, c-format
+msgid "Detected %s virus."
 msgstr "Herkend "
-
-#: src/plugins/clamd/clamav_plugin.c:120
-msgid " virus."
-msgstr " virus."
 
 #: src/plugins/clamd/clamav_plugin.c:136
 #, c-format
@@ -11069,7 +11069,7 @@ msgstr ""
 #: src/plugins/libravatar/libravatar.c:334
 #: src/plugins/libravatar/libravatar.c:399
 #: src/plugins/libravatar/libravatar.c:459
-#: src/plugins/libravatar/libravatar_prefs.c:568
+#: src/plugins/libravatar/libravatar_prefs.c:571
 msgid "Libravatar"
 msgstr "Libravatar"
 
@@ -11146,7 +11146,11 @@ msgstr "Wil je de cache van avatarpictogrammen werkelijk verwijderen?"
 msgid "Not enough memory for operation"
 msgstr "Niet genoeg geheugen om uit te voeren"
 
-#: src/plugins/libravatar/libravatar_prefs.c:196
+#: src/plugins/libravatar/libravatar_prefs.c:197
+msgid "Icon cache successfully cleared!"
+msgstr "Pictogramcache gewist."
+
+#: src/plugins/libravatar/libravatar_prefs.c:198
 #, c-format
 msgid ""
 "Icon cache successfully cleared:\n"
@@ -11157,11 +11161,11 @@ msgstr ""
 "• %u missende delen verwijderd.\n"
 "• %u bestanden verwijderd."
 
-#: src/plugins/libravatar/libravatar_prefs.c:201
-msgid "Icon cache successfully cleared!"
-msgstr "Pictogramcache gewist."
+#: src/plugins/libravatar/libravatar_prefs.c:206
+msgid "Error clearing icon cache."
+msgstr "Fout bij wissen van de pictogramcache."
 
-#: src/plugins/libravatar/libravatar_prefs.c:204
+#: src/plugins/libravatar/libravatar_prefs.c:207
 #, c-format
 msgid ""
 "Errors clearing icon cache:\n"
@@ -11176,100 +11180,96 @@ msgstr ""
 "• %u bestanden konden niet gelezen worden.\n"
 "• %u bestanden konden niet worden verwijderd."
 
-#: src/plugins/libravatar/libravatar_prefs.c:211
-msgid "Error clearing icon cache."
-msgstr "Fout bij wissen van de pictogramcache."
-
-#: src/plugins/libravatar/libravatar_prefs.c:226
+#: src/plugins/libravatar/libravatar_prefs.c:229
 msgid "_Use cached icons"
 msgstr "_Gebruik gecachte pictogrammen"
 
-#: src/plugins/libravatar/libravatar_prefs.c:227
+#: src/plugins/libravatar/libravatar_prefs.c:230
 msgid ""
 "Keep icons on disk for reusing instead of making another network request"
 msgstr ""
 "Bewaar pictogrammen op harde schijf voor hergebruik i.p.v. een nieuwe "
 "netwerkaanvraag te maken"
 
-#: src/plugins/libravatar/libravatar_prefs.c:242
+#: src/plugins/libravatar/libravatar_prefs.c:245
 msgid "Cache refresh interval"
 msgstr "Cache verversingsinterval"
 
-#: src/plugins/libravatar/libravatar_prefs.c:242
+#: src/plugins/libravatar/libravatar_prefs.c:245
 #: src/plugins/vcalendar/vcal_prefs.c:324 src/prefs_account.c:1696
 #: src/prefs_account.c:1873 src/prefs_matcher.c:339 src/prefs_receive.c:180
 msgid "hours"
 msgstr "uur"
 
-#: src/plugins/libravatar/libravatar_prefs.c:320
+#: src/plugins/libravatar/libravatar_prefs.c:323
 msgid "Mystery man"
 msgstr "Mystery man"
 
-#: src/plugins/libravatar/libravatar_prefs.c:321
+#: src/plugins/libravatar/libravatar_prefs.c:324
 msgid "Identicon"
 msgstr "Identificatie-pictogram"
 
-#: src/plugins/libravatar/libravatar_prefs.c:322
+#: src/plugins/libravatar/libravatar_prefs.c:325
 msgid "MonsterID"
 msgstr "MonsterID"
 
-#: src/plugins/libravatar/libravatar_prefs.c:323
+#: src/plugins/libravatar/libravatar_prefs.c:326
 msgid "Wavatar"
 msgstr "Wavatar"
 
-#: src/plugins/libravatar/libravatar_prefs.c:324
+#: src/plugins/libravatar/libravatar_prefs.c:327
 msgid "Retro"
 msgstr "Retro"
 
-#: src/plugins/libravatar/libravatar_prefs.c:325
+#: src/plugins/libravatar/libravatar_prefs.c:328
 msgid "Robohash"
 msgstr "Robohash"
 
-#: src/plugins/libravatar/libravatar_prefs.c:326
+#: src/plugins/libravatar/libravatar_prefs.c:329
 msgid "Pagan"
 msgstr "Pagan"
 
-#: src/plugins/libravatar/libravatar_prefs.c:327
+#: src/plugins/libravatar/libravatar_prefs.c:330
 msgid "Custom URL"
 msgstr "Aangepaste URL"
 
-#: src/plugins/libravatar/libravatar_prefs.c:330
+#: src/plugins/libravatar/libravatar_prefs.c:333
 msgid "A blank image"
 msgstr "Een standaard afbeelding"
 
-#: src/plugins/libravatar/libravatar_prefs.c:331
+#: src/plugins/libravatar/libravatar_prefs.c:334
 msgid "The unobtrusive low-contrast greyish silhouette"
 msgstr "Het niet-opdringerige grijze silhouet met laag contrast"
 
-#: src/plugins/libravatar/libravatar_prefs.c:332
+#: src/plugins/libravatar/libravatar_prefs.c:335
 msgid "A generated geometric pattern"
 msgstr "Een aangemaakt geometrisch patroon"
 
-#: src/plugins/libravatar/libravatar_prefs.c:333
+#: src/plugins/libravatar/libravatar_prefs.c:336
 msgid "A generated full-body monster"
 msgstr "Een aangemaakte full-body afdruk"
 
-#: src/plugins/libravatar/libravatar_prefs.c:334
+#: src/plugins/libravatar/libravatar_prefs.c:337
 msgid "A generated almost unique face"
 msgstr "Een aangemaakte bijna unieke gezichtsafbeelding"
 
-#: src/plugins/libravatar/libravatar_prefs.c:335
+#: src/plugins/libravatar/libravatar_prefs.c:338
 msgid "A generated 8-bit arcade-style pixelated image"
 msgstr "Een aangemaakte 8-bit arcade-stijl pixelafbeelding"
 
-#: src/plugins/libravatar/libravatar_prefs.c:336
+#: src/plugins/libravatar/libravatar_prefs.c:339
 msgid "A generated robotic character"
 msgstr "Een aangemaakt robot-karakter"
 
-#: src/plugins/libravatar/libravatar_prefs.c:337
+#: src/plugins/libravatar/libravatar_prefs.c:340
 msgid "A generated retro adventure game character"
 msgstr "Een aangemaakt karakter uit retro-games"
 
-#: src/plugins/libravatar/libravatar_prefs.c:338
+#: src/plugins/libravatar/libravatar_prefs.c:341
 msgid "Redirect to a user provided URL"
 msgstr "Herverwijs naar een door de gebruiker opgegeven URL"
 
-#: src/plugins/libravatar/libravatar_prefs.c:352
+#: src/plugins/libravatar/libravatar_prefs.c:355
 msgid ""
 "Enter the URL you want to be redirected when no user icon is available. "
 "Leave an empty URL to use the default libravatar orange icon"
@@ -11278,11 +11278,11 @@ msgstr ""
 "gebruikerspictogram beschikbaar is. Laat leeg voor het standaard oranje "
 "libravatar pictogram"
 
-#: src/plugins/libravatar/libravatar_prefs.c:402
+#: src/plugins/libravatar/libravatar_prefs.c:405
 msgid "_Allow redirects to other sites"
 msgstr "_Sta herverwijzen naar andere sites toe"
 
-#: src/plugins/libravatar/libravatar_prefs.c:403
+#: src/plugins/libravatar/libravatar_prefs.c:406
 msgid ""
 "Follow redirect responses received from libravatar server to other avatar "
 "services like gravatar.com"
@@ -11290,25 +11290,25 @@ msgstr ""
 "Volg herverwijs-antwoorden die ontvangen zijn van de libravatar-server naar "
 "andere diensten als gravatar.com"
 
-#: src/plugins/libravatar/libravatar_prefs.c:412
+#: src/plugins/libravatar/libravatar_prefs.c:415
 msgid "_Enable federated servers"
 msgstr "_Gebruik aangesloten servers"
 
-#: src/plugins/libravatar/libravatar_prefs.c:413
+#: src/plugins/libravatar/libravatar_prefs.c:416
 msgid "Try to get avatar from sender's domain libravatar server"
 msgstr ""
 "Probeer de avatar te verkrijgen van de libravatar-server van het domein van "
 "de afzender"
 
-#: src/plugins/libravatar/libravatar_prefs.c:430
+#: src/plugins/libravatar/libravatar_prefs.c:433
 msgid "Request timeout"
 msgstr "Aanvraag tijdslimiet"
 
-#: src/plugins/libravatar/libravatar_prefs.c:430
+#: src/plugins/libravatar/libravatar_prefs.c:433
 msgid "second(s)"
 msgstr "seconde(n)"
 
-#: src/plugins/libravatar/libravatar_prefs.c:431
+#: src/plugins/libravatar/libravatar_prefs.c:434
 msgid ""
 "Set to 0 to use global socket I/O timeout. Maximum value must be also less "
 "than global socket I/O timeout"
@@ -11316,15 +11316,15 @@ msgstr ""
 "Zet op 0 om globale socket-I/O tijdslimiet te gebruiken. Maximum waarde moet "
 "ook minder zijn dan de globale socket-I/O tijdslimiet"
 
-#: src/plugins/libravatar/libravatar_prefs.c:477
+#: src/plugins/libravatar/libravatar_prefs.c:480
 msgid "Icon cache"
 msgstr "Pictogramcache"
 
-#: src/plugins/libravatar/libravatar_prefs.c:481
+#: src/plugins/libravatar/libravatar_prefs.c:484
 msgid "Default missing icon mode"
 msgstr "Standaard modus voor missend pictogram"
 
-#: src/plugins/libravatar/libravatar_prefs.c:485
+#: src/plugins/libravatar/libravatar_prefs.c:488
 msgid "Network"
 msgstr "Netwerk"
 
@@ -11361,8 +11361,8 @@ msgstr "LiteHTML-weergever"
 
 #: src/plugins/litehtml_viewer/plugin.c:60
 msgid ""
-"This plugin renders HTML mail using the litehtml library (http://"
-"www.litehtml.com/).\n"
+"This plugin renders HTML mail using the litehtml library (http://www."
+"litehtml.com/).\n"
 "\n"
 "By default all remote content is blocked.\n"
 "\n"
@@ -11629,7 +11629,7 @@ msgid "Authentication"
 msgstr "Authenticatie"
 
 #: src/plugins/managesieve/sieve_prefs.c:202
-#: src/plugins/rssyl/rssyl_feed_props.c:281
+#: src/plugins/rssyl/rssyl_feed_props.c:282
 msgid "No authentication"
 msgstr "Geen authenticatie"
 
@@ -11649,7 +11649,7 @@ msgid "User ID"
 msgstr "Gebruikersnaam"
 
 #: src/plugins/managesieve/sieve_prefs.c:246
-#: src/plugins/rssyl/rssyl_feed_props.c:407
+#: src/plugins/rssyl/rssyl_feed_props.c:408
 #: src/plugins/vcalendar/vcal_prefs.c:400
 #: src/plugins/vcalendar/vcal_prefs.c:519 src/prefs_account.c:1477
 #: src/prefs_account.c:2118 src/prefs_account.c:3064 src/prefs_account.c:3097
@@ -12609,7 +12609,7 @@ msgstr ""
 "Instellen op 0 zal het wachtwoord voor de hele\n"
 "sessie opslaan"
 
-#: src/plugins/pgpcore/prefs_gpg.c:193 src/plugins/rssyl/rssyl_feed_props.c:488
+#: src/plugins/pgpcore/prefs_gpg.c:193 src/plugins/rssyl/rssyl_feed_props.c:491
 #: src/plugins/rssyl/rssyl_prefs.c:183 src/prefs_account.c:1880
 #: src/prefs_account.c:2187 src/prefs_receive.c:190
 msgid "minutes"
@@ -13367,13 +13367,13 @@ msgid "Show Python console..."
 msgstr "Geef Python-console weer..."
 
 #: src/plugins/python/python_plugin.c:531
-#: src/plugins/rssyl/rssyl_feed_props.c:495
+#: src/plugins/rssyl/rssyl_feed_props.c:500
 msgid "Refresh"
 msgstr "Verversen"
 
 #: src/plugins/python/python_plugin.c:533 src/prefs_account.c:3053
-#: src/prefs_account.c:3086 src/prefs_account.c:3521 src/wizard.c:1217
-#: src/wizard.c:1652
+#: src/prefs_account.c:3086 src/prefs_account.c:3521 src/wizard.c:1221
+#: src/wizard.c:1664
 msgid "Browse"
 msgstr "Bekijk"
 
@@ -13398,8 +13398,8 @@ msgid ""
 "put buttons for script invocation into the toolbars using Claws Mail's "
 "builtin toolbar editor.\n"
 "\n"
-"You can provide scripts working on the main window by placing files into "
-"'~/.claws-mail/python-scripts/main'.\n"
+"You can provide scripts working on the main window by placing files into '~/."
+"claws-mail/python-scripts/main'.\n"
 "\n"
 "You can also provide scripts working on an open compose window by placing "
 "files into '~/.claws-mail/python-scripts/compose'.\n"
@@ -13628,53 +13628,53 @@ msgstr "RSSyl: Kon feed niet verwerken van '%s'\n"
 msgid "RSSyl: Application is exiting, couldn't finish updating feed at '%s'\n"
 msgstr "RSSyl: Applicatie wordt beeindigd, kon feed niet verversen op '%s'\n"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:283
+#: src/plugins/rssyl/rssyl_feed_props.c:284
 msgid "HTTP Basic authentication"
 msgstr "HTTP Basale authenticatie"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:305
+#: src/plugins/rssyl/rssyl_feed_props.c:306
 msgid "Use default refresh interval"
 msgstr "Gebruik standaard verversings-interval"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:317
+#: src/plugins/rssyl/rssyl_feed_props.c:318
 msgid "Keep old items"
 msgstr "Bewaar oude items"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:323
+#: src/plugins/rssyl/rssyl_feed_props.c:324
 msgid "_Trim"
 msgstr "_Trim"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:325
+#: src/plugins/rssyl/rssyl_feed_props.c:326
 msgid "Update feed, deleting items which are no longer in the source feed"
 msgstr ""
 "Verversen feed, verwijderen van items die niet langer in de feedbron "
 "aanwezig zijn"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:328
+#: src/plugins/rssyl/rssyl_feed_props.c:329
 msgid "Fetch comments if possible"
 msgstr "Haal reacties op indien mogelijk"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:348
+#: src/plugins/rssyl/rssyl_feed_props.c:349
 msgid "Always mark it as new"
 msgstr "Altijd markeren als nieuw"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:350
+#: src/plugins/rssyl/rssyl_feed_props.c:351
 msgid "Only mark it as new if its text has changed"
 msgstr "Alleen als nieuw markeren als de tekst is gewijzigd"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:352
+#: src/plugins/rssyl/rssyl_feed_props.c:353
 msgid "Never mark it as new"
 msgstr "Nooit markeren als nieuw"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:357
+#: src/plugins/rssyl/rssyl_feed_props.c:358
 msgid "Add item title to the top of message"
 msgstr "Voeg item-titel toe aan bovenkant van bericht"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:364
+#: src/plugins/rssyl/rssyl_feed_props.c:365
 msgid "Ignore title rename"
 msgstr "Titel hernoemen negeren"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:369
+#: src/plugins/rssyl/rssyl_feed_props.c:370
 msgid ""
 "Enable this to keep current folder name, even if feed author changes title "
 "of the feed"
@@ -13682,64 +13682,64 @@ msgstr ""
 "Activeren om de huidige mapnaam te behouden, zelfs wanneer de feed-auteur de "
 "titel van de feed wijzigt"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:373
+#: src/plugins/rssyl/rssyl_feed_props.c:374
 #: src/plugins/vcalendar/vcal_prefs.c:594
 msgid "Verify TLS certificate validity"
 msgstr "Verifieer geldigheid van TLS-certificaat"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:379
+#: src/plugins/rssyl/rssyl_feed_props.c:380
 msgid "Use default User-Agent header"
 msgstr "Gebruik standaard header van gebruikers-agent"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:404
+#: src/plugins/rssyl/rssyl_feed_props.c:405
 msgid "User name"
 msgstr "Gebruikersnaam"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:417
+#: src/plugins/rssyl/rssyl_feed_props.c:418
 msgid "Source URL"
 msgstr "Bron-URL"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:430
+#: src/plugins/rssyl/rssyl_feed_props.c:431
 msgid "Fetch comments on posts aged less than"
 msgstr "Haal reacties op van berichten jonger dan"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:438
+#: src/plugins/rssyl/rssyl_feed_props.c:439
 #: src/plugins/vcalendar/day-view.c:620 src/plugins/vcalendar/month-view.c:709
-#: src/prefs_account.c:1686 src/prefs_folder_item.c:672 src/prefs_matcher.c:340
+#: src/prefs_account.c:1686 src/prefs_folder_item.c:675 src/prefs_matcher.c:340
 msgid "days"
 msgstr "dagen"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:439
+#: src/plugins/rssyl/rssyl_feed_props.c:440
 msgid "Set to -1 to fetch all comments"
 msgstr "Stel in op -1 om alle reacties op te halen"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:463
+#: src/plugins/rssyl/rssyl_feed_props.c:466
 msgid "If an item changes"
 msgstr "Alleen als de tekst is veranderd"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:468
+#: src/plugins/rssyl/rssyl_feed_props.c:471
 msgid "Items"
 msgstr "Items"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:481
+#: src/plugins/rssyl/rssyl_feed_props.c:484
 msgid "Refresh interval"
 msgstr "Verversingsinterval"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:489
+#: src/plugins/rssyl/rssyl_feed_props.c:492
 msgid "Set to 0 to disable automatic refreshing for this feed"
 msgstr "Stel in op 0 om automatische verversing uit te zetten voor deze feed"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:508
+#: src/plugins/rssyl/rssyl_feed_props.c:513
 msgid "User-Agent header"
 msgstr "Header van de gebruikers-agent"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:510
+#: src/plugins/rssyl/rssyl_feed_props.c:515
 msgid "Disable this to use a User-Agent header specific to this feed"
 msgstr ""
 "Schakel dit uit om een header voor gebruikers-agent te gebruiken die "
 "specifiek is voor deze feed"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:512
+#: src/plugins/rssyl/rssyl_feed_props.c:517
 msgid ""
 "Specific User-Agent header to use for this feed. If empty, the User-Agent "
 "header set in '/Configuration/Preferences/Plugins/RSSyl' will be used"
@@ -13748,7 +13748,7 @@ msgstr ""
 "Indien leeg, wordt de header voor gebruikers-agent gebruikt die ingesteld is "
 "in '/Instellingen/Voorkeuren/Plugins/RSSyl'"
 
-#: src/plugins/rssyl/rssyl_feed_props.c:544
+#: src/plugins/rssyl/rssyl_feed_props.c:549
 msgid "Set feed properties"
 msgstr "Stel feed-eigenschappen in"
 
@@ -13867,7 +13867,7 @@ msgstr "Beveiliging en privacy"
 msgid "Couldn't create folder for new feed '%s'."
 msgstr "Kon de map voor de nieuwe feed '%s' niet aanmaken."
 
-#: src/plugins/rssyl/rssyl_subscribe_gtk.c:43
+#: src/plugins/rssyl/rssyl_subscribe_gtk.c:44
 msgid "Subscribe new feed?"
 msgstr "Abonneer op nieuwe feed?"
 
@@ -13875,7 +13875,7 @@ msgstr "Abonneer op nieuwe feed?"
 msgid "Feed folder:"
 msgstr "Feedmap:"
 
-#: src/plugins/rssyl/rssyl_subscribe_gtk.c:70
+#: src/plugins/rssyl/rssyl_subscribe_gtk.c:72
 msgid ""
 "Instead of using official title, you can enter a different folder name for "
 "the feed"
@@ -13883,7 +13883,7 @@ msgstr ""
 "In plaats van het gebruiken van de officiële titel, kun je een andere "
 "mapnaam gebruiken voor de feed"
 
-#: src/plugins/rssyl/rssyl_subscribe_gtk.c:74
+#: src/plugins/rssyl/rssyl_subscribe_gtk.c:76
 msgid "_Edit feed properties after subscribing"
 msgstr "_Bewerk feed-eigenschappen na het abonneren"
 
@@ -13893,7 +13893,7 @@ msgid "Updating comments for '%s'..."
 msgstr "Bijwerken reacties voor '%s'..."
 
 #: src/plugins/rssyl/rssyl_update_feed.c:151
-#: src/plugins/vcalendar/vcal_folder.c:1623
+#: src/plugins/vcalendar/vcal_folder.c:1662
 msgid "401 (Authorisation required)"
 msgstr "401 (Autorisatie vereist)"
 
@@ -13902,7 +13902,7 @@ msgid "403 (Forbidden)"
 msgstr "403 (Verboden)"
 
 #: src/plugins/rssyl/rssyl_update_feed.c:157
-#: src/plugins/vcalendar/vcal_folder.c:1629
+#: src/plugins/vcalendar/vcal_folder.c:1668
 msgid "404 (Not found)"
 msgstr "404 (Niet gevonden)"
 
@@ -13975,6 +13975,7 @@ msgstr ""
 "bijgevoegd.\n"
 
 #: src/plugins/smime/plugin.c:61
+#, fuzzy
 msgid ""
 "This plugin handles S/MIME signed and/or encrypted mails. You can decrypt "
 "mails, verify signatures or sign and encrypt your own mails.\n"
@@ -13989,7 +13990,7 @@ msgid ""
 "\n"
 "Information about how to get S/MIME certificates working with GPGSM can be "
 "found at:\n"
-"http://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
+"https://www.claws-mail.org/faq/index.php/S/MIME_howto\n"
 "\n"
 "GPGME is copyright 2001 by Werner Koch <dd9jn@gnu.org>."
 msgstr ""
@@ -14080,12 +14081,12 @@ msgstr "Aangezet"
 msgid "Forward to:"
 msgstr "Doorsturen aan:"
 
-#: src/plugins/spam_report/spam_report_prefs.c:171 src/wizard.c:1573
+#: src/plugins/spam_report/spam_report_prefs.c:171 src/wizard.c:1583
 msgid "Username:"
 msgstr "Gebruikersnaam:"
 
-#: src/plugins/spam_report/spam_report_prefs.c:182 src/wizard.c:1227
-#: src/wizard.c:1588 src/wizard.c:1662
+#: src/plugins/spam_report/spam_report_prefs.c:182 src/wizard.c:1231
+#: src/wizard.c:1600 src/wizard.c:1674
 msgid "Password:"
 msgstr "Wachtwoord:"
 
@@ -14563,25 +14564,25 @@ msgid "You are already busy at this time."
 msgstr "Je bent al bezet op dit moment."
 
 #: src/plugins/vcalendar/vcalendar.c:1249
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1639
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1648
 msgid "Event:"
 msgstr "Gebeurtenis:"
 
 #: src/plugins/vcalendar/vcalendar.c:1250
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1616
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1628
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1625
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1637
 msgid "Organizer:"
 msgstr "Agenda:"
 
 #: src/plugins/vcalendar/vcalendar.c:1251
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1619
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1630
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1628
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1639
 msgid "Location:"
 msgstr "Locatie:"
 
 #: src/plugins/vcalendar/vcalendar.c:1252
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1617
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1629
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1626
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1638
 msgid "Summary:"
 msgstr "Samenvatting:"
 
@@ -14594,8 +14595,8 @@ msgid "Ending:"
 msgstr "Einde:"
 
 #: src/plugins/vcalendar/vcalendar.c:1256
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1621
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1632
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1630
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1641
 msgid "Attendees:"
 msgstr "Genodigden:"
 
@@ -14635,36 +14636,36 @@ msgstr "_Week beeld"
 msgid "_Month view"
 msgstr "_Maand beeld"
 
-#: src/plugins/vcalendar/vcal_folder.c:1100
+#: src/plugins/vcalendar/vcal_folder.c:1139
 msgid "Meetings"
 msgstr "Afspraken"
 
-#: src/plugins/vcalendar/vcal_folder.c:1477
-#: src/plugins/vcalendar/vcal_manager.c:1372
+#: src/plugins/vcalendar/vcal_folder.c:1516
+#: src/plugins/vcalendar/vcal_manager.c:1378
 msgid "[no summary]"
 msgstr "[geen samenvatting]"
 
-#: src/plugins/vcalendar/vcal_folder.c:1498
+#: src/plugins/vcalendar/vcal_folder.c:1537
 msgid "in the past"
 msgstr "in het verleden"
 
-#: src/plugins/vcalendar/vcal_folder.c:1501
+#: src/plugins/vcalendar/vcal_folder.c:1540
 msgid "today"
 msgstr "vandaag"
 
-#: src/plugins/vcalendar/vcal_folder.c:1504
+#: src/plugins/vcalendar/vcal_folder.c:1543
 msgid "tomorrow"
 msgstr "morgen"
 
-#: src/plugins/vcalendar/vcal_folder.c:1507
+#: src/plugins/vcalendar/vcal_folder.c:1546
 msgid "this week"
 msgstr "deze week"
 
-#: src/plugins/vcalendar/vcal_folder.c:1510
+#: src/plugins/vcalendar/vcal_folder.c:1549
 msgid "later"
 msgstr "later"
 
-#: src/plugins/vcalendar/vcal_folder.c:1514
+#: src/plugins/vcalendar/vcal_folder.c:1553
 #, c-format
 msgid ""
 "\n"
@@ -14673,21 +14674,21 @@ msgstr ""
 "\n"
 "Dit zijn de dingen gepland %s:\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1614
+#: src/plugins/vcalendar/vcal_folder.c:1653
 #, c-format
 msgid "Timeout (%d seconds) connecting to %s\n"
 msgstr "Tijdslimiet (%d secondes) voor verbinden met %s\n"
 
-#: src/plugins/vcalendar/vcal_folder.c:1626
+#: src/plugins/vcalendar/vcal_folder.c:1665
 msgid "403 (Unauthorised)"
 msgstr "403 (Niet geautoriseerd)"
 
-#: src/plugins/vcalendar/vcal_folder.c:1632
+#: src/plugins/vcalendar/vcal_folder.c:1671
 #, c-format
 msgid "Error %ld"
 msgstr "Fout %ld"
 
-#: src/plugins/vcalendar/vcal_folder.c:1808
+#: src/plugins/vcalendar/vcal_folder.c:1847
 #, c-format
 msgid ""
 "Could not retrieve the Webcal URL:\n"
@@ -14700,7 +14701,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1839
+#: src/plugins/vcalendar/vcal_folder.c:1878
 #, c-format
 msgid ""
 "This URL does not look like a Webcal URL:\n"
@@ -14711,46 +14712,46 @@ msgstr ""
 "%s\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_folder.c:1870
-#: src/plugins/vcalendar/vcal_folder.c:1873
+#: src/plugins/vcalendar/vcal_folder.c:1909
+#: src/plugins/vcalendar/vcal_folder.c:1912
 #, c-format
 msgid "Could not create directory %s"
 msgstr "Kon de doelmap %s niet aanmaken"
 
-#: src/plugins/vcalendar/vcal_folder.c:1913
+#: src/plugins/vcalendar/vcal_folder.c:1952
 msgid "Claws Mail needs network access in order to update the Webcal feed."
 msgstr "Claws Mail heeft netwerk toegang nodig om de Webcal-feed te verversen."
 
-#: src/plugins/vcalendar/vcal_folder.c:1924
+#: src/plugins/vcalendar/vcal_folder.c:1963
 #, c-format
 msgid "Fetching calendar for %s..."
 msgstr "Kalender voor %s wordt bijgewerkt..."
 
-#: src/plugins/vcalendar/vcal_folder.c:1925
+#: src/plugins/vcalendar/vcal_folder.c:1964
 msgid "new subscription"
 msgstr "nieuw abonnement"
 
-#: src/plugins/vcalendar/vcal_folder.c:1936
+#: src/plugins/vcalendar/vcal_folder.c:1975
 msgid "Claws Mail needs network access in order to update the subscription."
 msgstr "Claws Mail heeft netwerk toegang nodig om de abonnering te vernieuwen."
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Subscribe to Webcal"
 msgstr "Abonneren op Webcal"
 
-#: src/plugins/vcalendar/vcal_folder.c:1981
+#: src/plugins/vcalendar/vcal_folder.c:2020
 msgid "Enter the Webcal URL:"
 msgstr "Voer de Webcal-URL in:"
 
-#: src/plugins/vcalendar/vcal_folder.c:1997
+#: src/plugins/vcalendar/vcal_folder.c:2036
 msgid "Could not parse the URL."
 msgstr "Kon de URL niet verwerken."
 
-#: src/plugins/vcalendar/vcal_folder.c:2025
+#: src/plugins/vcalendar/vcal_folder.c:2064
 msgid "Do you really want to unsubscribe?"
 msgstr "Wil je echt uitschrijven?"
 
-#: src/plugins/vcalendar/vcal_folder.c:2026
+#: src/plugins/vcalendar/vcal_folder.c:2065
 msgid "Delete subscription"
 msgstr "Verwijder abonnement"
 
@@ -14786,35 +14787,35 @@ msgstr "bron"
 msgid "room"
 msgstr "kamer"
 
-#: src/plugins/vcalendar/vcal_manager.c:583
+#: src/plugins/vcalendar/vcal_manager.c:587
 msgid "Past"
 msgstr "Vorige"
 
-#: src/plugins/vcalendar/vcal_manager.c:586
+#: src/plugins/vcalendar/vcal_manager.c:590
 msgid "Today"
 msgstr "Vandaag"
 
-#: src/plugins/vcalendar/vcal_manager.c:589
+#: src/plugins/vcalendar/vcal_manager.c:593
 msgid "Tomorrow"
 msgstr "Morgen"
 
-#: src/plugins/vcalendar/vcal_manager.c:592
+#: src/plugins/vcalendar/vcal_manager.c:596
 msgid "This week"
 msgstr "Deze week"
 
-#: src/plugins/vcalendar/vcal_manager.c:595
+#: src/plugins/vcalendar/vcal_manager.c:599
 msgid "Later"
 msgstr "Later"
 
-#: src/plugins/vcalendar/vcal_manager.c:1284
+#: src/plugins/vcalendar/vcal_manager.c:1290
 msgid "Accepted: "
 msgstr "Geaccepteerd: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1286
+#: src/plugins/vcalendar/vcal_manager.c:1292
 msgid "Declined: "
 msgstr "Afgewezen: "
 
-#: src/plugins/vcalendar/vcal_manager.c:1288
+#: src/plugins/vcalendar/vcal_manager.c:1294
 msgid "Tentatively Accepted: "
 msgstr "Voorlopig Geaccepteerd: "
 
@@ -15013,61 +15014,61 @@ msgstr ""
 "Kon de uitnodiging niet versturen.\n"
 "Controleer de ontvangers."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1401
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1402
 msgid "Save & Send"
 msgstr "Opslaan en verzenden"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1402
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1403
 msgid "Check availability"
 msgstr "Controleer beschikbaarheid"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1496
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1497
 msgid "Starts at:"
 msgstr "Begint om:"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1502
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1526 src/prefs_matcher.c:770
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1505
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1533 src/prefs_matcher.c:770
 msgid "on:"
 msgstr "aan:"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1520
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1525
 msgid "Ends at:"
 msgstr "Eindigt om:"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1561
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1570
 msgid "New meeting"
 msgstr "Nieuwe afspraak"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1563
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1572
 #, c-format
 msgid "%s - Edit meeting"
 msgstr "%s - Pas afspraak aan"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1618
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1643
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1627
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1652
 msgid "Time:"
 msgstr "Tijd:"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1766
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1775
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d uur"
 msgstr[1] "%d uur"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1769
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1778
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minuut"
 msgstr[1] "%d minuten"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1780
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1789
 #, c-format
 msgid "Upcoming event: %s"
 msgstr "Eerstvolgende afspraak: %s"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1781
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1790
 #, c-format
 msgid ""
 "You have a meeting or event soon.\n"
@@ -15084,39 +15085,39 @@ msgstr ""
 "\n"
 "%s"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1798
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1807
 #, c-format
 msgid "Remind me in %d minute"
 msgid_plural "Remind me in %d minutes"
 msgstr[0] "Herinner me over %d minuut"
 msgstr[1] "Herinner me over %d minuten"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1924
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1933
 msgid "Empty calendar"
 msgstr "Lege agenda"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1925
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1934
 msgid "There is nothing to export."
 msgstr "Er is niets te exporteren."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1967
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1976
 msgid "Could not export the calendar."
 msgstr "Kon de agenda niet exporteren."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:1990
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:1999
 msgid "Export calendar to ICS"
 msgstr "Exporteer agenda nar ICS"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2007
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2016
 #, c-format
 msgid "Couldn't export calendar to '%s'\n"
 msgstr "Kon agenda niet exporteren naar '%s'\n"
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2123
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2136
 msgid "Could not export the freebusy info."
 msgstr "Kon de vrij/bezet info niet exporteren."
 
-#: src/plugins/vcalendar/vcal_meeting_gtk.c:2155
+#: src/plugins/vcalendar/vcal_meeting_gtk.c:2168
 #, c-format
 msgid "Couldn't export free/busy to '%s'\n"
 msgstr "Kon vrij/bezet niet exporteren naar '%s'\n"
@@ -15267,7 +15268,7 @@ msgid "POP"
 msgstr "POP"
 
 #: src/prefs_account.c:415 src/prefs_account.c:1772 src/prefs_account.c:2996
-#: src/wizard.c:1509
+#: src/wizard.c:1520
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -15275,7 +15276,7 @@ msgstr "IMAP"
 msgid "News (NNTP)"
 msgstr "Nieuws (NNTP)"
 
-#: src/prefs_account.c:417 src/wizard.c:1510
+#: src/prefs_account.c:417 src/wizard.c:1521
 msgid "Local mbox file"
 msgstr "Lokaal mbox-bestand"
 
@@ -15303,11 +15304,11 @@ msgstr "Volledige naam"
 msgid "Mail address"
 msgstr "E-mailadres"
 
-#: src/prefs_account.c:1324 src/wizard.c:1533
+#: src/prefs_account.c:1324 src/wizard.c:1544
 msgid "Auto-configure"
 msgstr "Automatische instellingen"
 
-#: src/prefs_account.c:1326 src/wizard.c:1534
+#: src/prefs_account.c:1326 src/wizard.c:1545
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -15579,27 +15580,27 @@ msgstr "Automatisch volgende adressen instellen"
 msgid "Spell check dictionaries"
 msgstr "Woordenlijsten voor spellingcontrole"
 
-#: src/prefs_account.c:2613 src/prefs_folder_item.c:1270
+#: src/prefs_account.c:2613 src/prefs_folder_item.c:1273
 #: src/prefs_spelling.c:149
 msgid "Default dictionary"
 msgstr "Standaard woordenlijst"
 
-#: src/prefs_account.c:2625 src/prefs_folder_item.c:1301
+#: src/prefs_account.c:2625 src/prefs_folder_item.c:1304
 #: src/prefs_spelling.c:158
 msgid "Default alternate dictionary"
 msgstr "Standaard alternatieve woordenlijst"
 
-#: src/prefs_account.c:2710 src/prefs_folder_item.c:1700 src/prefs_quote.c:119
+#: src/prefs_account.c:2710 src/prefs_folder_item.c:1703 src/prefs_quote.c:119
 msgctxt "Templates"
 msgid "New"
 msgstr "Nieuw"
 
-#: src/prefs_account.c:2725 src/prefs_folder_item.c:1728 src/prefs_quote.c:134
+#: src/prefs_account.c:2725 src/prefs_folder_item.c:1731 src/prefs_quote.c:134
 msgctxt "Templates"
 msgid "Reply"
 msgstr "Antwoord"
 
-#: src/prefs_account.c:2740 src/prefs_folder_item.c:1756 src/prefs_quote.c:149
+#: src/prefs_account.c:2740 src/prefs_folder_item.c:1759 src/prefs_quote.c:149
 msgctxt "Templates"
 msgid "Forward"
 msgstr "Volgende"
@@ -15608,11 +15609,11 @@ msgstr "Volgende"
 msgid "Default privacy system"
 msgstr "Standaard privacy-systeem"
 
-#: src/prefs_account.c:2816 src/prefs_folder_item.c:1338
+#: src/prefs_account.c:2816 src/prefs_folder_item.c:1341
 msgid "Always sign messages"
 msgstr "Berichten altijd ondertekenen"
 
-#: src/prefs_account.c:2818 src/prefs_folder_item.c:1369
+#: src/prefs_account.c:2818 src/prefs_folder_item.c:1372
 msgid "Always encrypt messages"
 msgstr "Berichten altijd versleutelen"
 
@@ -15701,7 +15702,7 @@ msgstr "Gebruik de standaard instellingen"
 msgid "Use global proxy server settings"
 msgstr "Globale proxy-instellingen gebruiken"
 
-#: src/prefs_account.c:3282 src/prefs_proxy.c:116 src/wizard.c:1115
+#: src/prefs_account.c:3282 src/prefs_proxy.c:116 src/wizard.c:1118
 msgid "Use authentication"
 msgstr "Gebruik authenticatie"
 
@@ -15868,12 +15869,12 @@ msgid "OAuth2"
 msgstr "OAuth2"
 
 #: src/prefs_account.c:4217 src/prefs_compose_writing.c:374
-#: src/prefs_folder_item.c:2050 src/prefs_quote.c:237 src/prefs_spelling.c:308
+#: src/prefs_folder_item.c:2053 src/prefs_quote.c:237 src/prefs_spelling.c:308
 #: src/prefs_wrapping.c:152
 msgid "Write"
 msgstr "Schrijven"
 
-#: src/prefs_account.c:4235 src/prefs_folder_item.c:2066 src/prefs_quote.c:238
+#: src/prefs_account.c:4235 src/prefs_folder_item.c:2069 src/prefs_quote.c:238
 msgid "Templates"
 msgstr "Sjablonen"
 
@@ -15898,7 +15899,7 @@ msgstr "Voorkeuren voor nieuw account"
 msgid "%s - Account preferences"
 msgstr "%s - Account-voorkeuren"
 
-#: src/prefs_account.c:4848 src/wizard.c:1406
+#: src/prefs_account.c:4848 src/wizard.c:1415
 msgid "Failed (wrong address)"
 msgstr "Mislukt (verkeerd adres)"
 
@@ -15906,7 +15907,7 @@ msgstr "Mislukt (verkeerd adres)"
 msgid "Select signature file"
 msgstr "Selecteer bestand met ondertekening"
 
-#: src/prefs_account.c:4949 src/prefs_account.c:4966 src/wizard.c:1063
+#: src/prefs_account.c:4949 src/prefs_account.c:4966 src/wizard.c:1065
 msgid "Select certificate file"
 msgstr "Selecteer certificaat-bestand"
 
@@ -16226,8 +16227,8 @@ msgstr "Op %d\\n%f schreef:\\n\\n%q\\n%X"
 
 #: src/prefs_common.c:327 src/prefs_quote.c:85
 msgid ""
-"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: "
-"%t\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
+"\\n\\nBegin forwarded message:\\n\\n?d{Date: %d\\n}?f{From: %f\\n}?t{To: %t"
+"\\n}?c{Cc: %c\\n}?n{Newsgroups: %n\\n}?s{Subject: %s\\n}\\n\\n%M"
 msgstr ""
 "\\n\\nBegin doorgestuurd bericht:\\n\\n?d{Datum: %d\\n}?f{Van: %f\\n}?t{Aan: "
 "%t\\n}?c{Cc: %c\\n}?n{Nieuwsgroepen: %n\\n}?s{Onderwerp: %s\\n}\\n\\n%M"
@@ -16811,7 +16812,7 @@ msgstr "Weergegeven kolommen"
 msgid " Use default "
 msgstr " Gebruik de standaard "
 
-#: src/prefs_folder_item.c:221
+#: src/prefs_folder_item.c:222
 msgid ""
 "These preferences will not be saved as this folder is a top-level folder.\n"
 "However, you can set them for the whole mailbox tree by using \"Apply to "
@@ -16822,7 +16823,7 @@ msgstr ""
 "Je kunt deze voorkeuren echter wel instellen voor de hele mappenboom door "
 "gebruik te maken van \"Pas toe op submappen\"."
 
-#: src/prefs_folder_item.c:313 src/prefs_folder_item.c:1044
+#: src/prefs_folder_item.c:316 src/prefs_folder_item.c:1047
 msgid ""
 "Apply to\n"
 "subfolders"
@@ -16830,52 +16831,52 @@ msgstr ""
 "Pas toe op\n"
 "submappen"
 
-#: src/prefs_folder_item.c:336
+#: src/prefs_folder_item.c:339
 msgid "Normal"
 msgstr "Normaal"
 
-#: src/prefs_folder_item.c:349
+#: src/prefs_folder_item.c:352
 msgid "Folder type"
 msgstr "Map-type"
 
-#: src/prefs_folder_item.c:373
+#: src/prefs_folder_item.c:376
 msgid "Simplify Subject RegExp"
 msgstr "Verkorte onderwerpweergave RegExp"
 
-#: src/prefs_folder_item.c:400
+#: src/prefs_folder_item.c:403
 msgid "Test string"
 msgstr "Test string"
 
-#: src/prefs_folder_item.c:421
+#: src/prefs_folder_item.c:424
 msgid "Result"
 msgstr "Resultaat"
 
 # TPTD: ugly
-#: src/prefs_folder_item.c:439
+#: src/prefs_folder_item.c:442
 msgid "Folder chmod"
 msgstr "Map-chmod"
 
-#: src/prefs_folder_item.c:467
+#: src/prefs_folder_item.c:470
 msgid "Folder color"
 msgstr "Mapkleur"
 
-#: src/prefs_folder_item.c:477 src/prefs_folder_item.c:481
+#: src/prefs_folder_item.c:480 src/prefs_folder_item.c:484
 msgid "Pick color for folder"
 msgstr "Selecteer kleur voor map"
 
-#: src/prefs_folder_item.c:493
+#: src/prefs_folder_item.c:496
 msgid "Run Processing rules at start-up"
 msgstr "Draai Verwerkingsregels bij opstarten"
 
-#: src/prefs_folder_item.c:506
+#: src/prefs_folder_item.c:509
 msgid "Run Processing rules when opening"
 msgstr "Draai Verwerkingsregels bij openen"
 
-#: src/prefs_folder_item.c:518
+#: src/prefs_folder_item.c:521
 msgid "Scan for new mail"
 msgstr "Controleer op nieuwe berichten"
 
-#: src/prefs_folder_item.c:520
+#: src/prefs_folder_item.c:523
 msgid ""
 "Turn this option on if mail is delivered directly to this folder by server "
 "side filtering on IMAP or by an external application"
@@ -16883,20 +16884,20 @@ msgstr ""
 "Zet deze optie aan als e-mail direct afgeleverd wordt in deze map door "
 "filteren op de IMAP-server of door een externe applicatie"
 
-#: src/prefs_folder_item.c:533
+#: src/prefs_folder_item.c:536
 msgid "Show tags"
 msgstr "Geef tags weer"
 
-#: src/prefs_folder_item.c:535
+#: src/prefs_folder_item.c:538
 msgid "Turn this option on to show message tags"
 msgstr "Schakel deze optie in om berichttags te tonen"
 
-#: src/prefs_folder_item.c:550 src/prefs_message.c:164
+#: src/prefs_folder_item.c:553 src/prefs_message.c:164
 msgid "Render HTML messages as text"
 msgstr "Geef HTML-berichten weer als tekst"
 
-#: src/prefs_folder_item.c:566 src/prefs_folder_item.c:594
-#: src/prefs_folder_item.c:622
+#: src/prefs_folder_item.c:569 src/prefs_folder_item.c:597
+#: src/prefs_folder_item.c:625
 msgid ""
 "\"Default\" will follow global preference (found in '/Configuration/"
 "Preferences/Message View/Text Options')"
@@ -16904,19 +16905,19 @@ msgstr ""
 "\"Standaard\" volgt de globale voorkeuren (gevonden in '/Voorkeuren/"
 "Berichtweergave/Tekstopties')"
 
-#: src/prefs_folder_item.c:578 src/prefs_message.c:167
+#: src/prefs_folder_item.c:581 src/prefs_message.c:167
 msgid "Render HTML-only messages with plugin if possible"
 msgstr "Geef indien mogelijk HTML-berichten weer met de plugin"
 
-#: src/prefs_folder_item.c:606
+#: src/prefs_folder_item.c:609
 msgid "Select the HTML part of multipart messages"
 msgstr "Selecteer het HTML-gedeelte van meerdelige berichten"
 
-#: src/prefs_folder_item.c:631
+#: src/prefs_folder_item.c:634
 msgid "Skip folder when searching for unread or new messages"
 msgstr "Map overslaan bij het zoeken naar ongelezen of nieuwe berichten"
 
-#: src/prefs_folder_item.c:633
+#: src/prefs_folder_item.c:636
 msgid ""
 "Turn this option on if you want this folder to be ignored when searching for "
 "unread or new messages"
@@ -16924,69 +16925,69 @@ msgstr ""
 "Schakel deze optie aan als je wilt dat deze map wordt genegeerd bij het "
 "zoeken naar ongelezen of nieuwe berichten"
 
-#: src/prefs_folder_item.c:645
+#: src/prefs_folder_item.c:648
 msgid "Synchronise for offline use"
 msgstr "Synchroniseer voor offline gebruik"
 
-#: src/prefs_folder_item.c:664
+#: src/prefs_folder_item.c:667
 msgid "Fetch message bodies from the last"
 msgstr "Haal berichttekst op van de laatste"
 
-#: src/prefs_folder_item.c:669
+#: src/prefs_folder_item.c:672
 msgid "0: all bodies"
 msgstr "0: alle berichtteksten"
 
-#: src/prefs_folder_item.c:676
+#: src/prefs_folder_item.c:679
 msgid "Remove older messages bodies"
 msgstr "Verwijder oude berichtteksten"
 
-#: src/prefs_folder_item.c:694
+#: src/prefs_folder_item.c:697
 msgid "Discard folder cache"
 msgstr "Cache van de map weggooien"
 
-#: src/prefs_folder_item.c:1051
+#: src/prefs_folder_item.c:1054
 msgid "Request Return Receipt"
 msgstr "Vraag om ontvangstbevestiging"
 
-#: src/prefs_folder_item.c:1062
+#: src/prefs_folder_item.c:1065
 msgid "Save copy of outgoing messages to this folder instead of Sent"
 msgstr "Bewaar kopie van uitgaande post in deze map inplaats van Verzonden"
 
-#: src/prefs_folder_item.c:1073 src/prefs_folder_item.c:1098
-#: src/prefs_folder_item.c:1148 src/prefs_folder_item.c:1173
-#: src/prefs_folder_item.c:1198
+#: src/prefs_folder_item.c:1076 src/prefs_folder_item.c:1101
+#: src/prefs_folder_item.c:1151 src/prefs_folder_item.c:1176
+#: src/prefs_folder_item.c:1201
 #, c-format
 msgctxt "folder properties: %s stands for a header name"
 msgid "Default %s"
 msgstr "Standaard %s"
 
-#: src/prefs_folder_item.c:1123
+#: src/prefs_folder_item.c:1126
 #, c-format
 msgctxt "folder properties: %s stands for a header name"
 msgid "Default %s for replies"
 msgstr "Standaard %s voor antwoorden"
 
-#: src/prefs_folder_item.c:1222
+#: src/prefs_folder_item.c:1225
 msgid "Default account"
 msgstr "Standaard account"
 
-#: src/prefs_folder_item.c:1355 src/prefs_folder_item.c:1386
+#: src/prefs_folder_item.c:1358 src/prefs_folder_item.c:1389
 msgid "\"Default\" will follow the applicable account preference"
 msgstr "\"Standaard\" volgt de voorkeuren van het betreffende account"
 
-#: src/prefs_folder_item.c:1917
+#: src/prefs_folder_item.c:1920
 msgid "Discard cache"
 msgstr "Cache weggooien"
 
-#: src/prefs_folder_item.c:1918
+#: src/prefs_folder_item.c:1921
 msgid "Do you really want to discard the local cached data for this folder?"
 msgstr "Wil je werkelijk de lokale cache voor deze map verwijderen?"
 
-#: src/prefs_folder_item.c:2033
+#: src/prefs_folder_item.c:2036
 msgid "General"
 msgstr "Algemeen"
 
-#: src/prefs_folder_item.c:2112
+#: src/prefs_folder_item.c:2115
 #, c-format
 msgid "Properties for folder %s"
 msgstr "Eigenschappen voor map %s"
@@ -19806,7 +19807,7 @@ msgstr "(Geen ontvanger)"
 msgid "From: %s, on %s"
 msgstr "Van: %s, op %s"
 
-#: src/summaryview.c:3586
+#: src/summaryview.c:3585
 #, c-format
 msgid "To: %s, on %s"
 msgstr "Aan: %s, op %s"
@@ -19965,41 +19966,47 @@ msgstr "Ga terug in de mappenlijst (Je heeft ongelezen berichten)"
 msgid "Go back to the folder list"
 msgstr "Ga terug naar de mappenlijst"
 
-#: src/textview.c:243
+#: src/textview.c:245
 msgid "_Open in web browser"
 msgstr "_Openen met webbrowser"
 
-#: src/textview.c:244
-msgid "Copy this _link"
-msgstr "Kopieer deze _koppeling"
+#: src/textview.c:246
+#, fuzzy
+msgid "Copy _link"
+msgstr "Kopieer koppeling"
 
-#: src/textview.c:251
+#: src/textview.c:247
+#, fuzzy
+msgid "Copy _clean link"
+msgstr "Kopieer koppeling"
+
+#: src/textview.c:254
 msgid "_Reply to this address"
 msgstr "_Antwoord aan dit adres"
 
-#: src/textview.c:252
+#: src/textview.c:255
 msgid "Add to _Address book"
 msgstr "Toevoegen aan _adresboek"
 
-#: src/textview.c:253
+#: src/textview.c:256
 msgid "_Copy this address"
 msgstr "Kopieer _dit adres"
 
-#: src/textview.c:254
+#: src/textview.c:257
 msgid "Search for _PGP key"
 msgstr "Zoeken naar _PGP-sleutel"
 
-#: src/textview.c:716
+#: src/textview.c:721
 #, c-format
 msgid "[%s  %s (%ld bytes)]"
 msgstr "[%s  %s (%ld bytes)]"
 
-#: src/textview.c:719
+#: src/textview.c:724
 #, c-format
 msgid "[%s (%ld bytes)]"
 msgstr "[%s (%ld bytes)]"
 
-#: src/textview.c:890
+#: src/textview.c:895
 msgid ""
 "\n"
 "  This message can't be displayed.\n"
@@ -20013,75 +20020,76 @@ msgstr ""
 "\n"
 "  Gebruik "
 
-#: src/textview.c:895
+#: src/textview.c:900
 msgid "'Network Log'"
 msgstr "'Netwerklog'"
 
-#: src/textview.c:896
+#: src/textview.c:901
 msgid " in the Tools menu for more information."
 msgstr " in het 'Gereedschap'-menu voor meer informatie."
 
-#: src/textview.c:962
+#: src/textview.c:967
 msgid "  The following can be performed on this part\n"
 msgstr "  Het volgende kan op dit gedeelte worden toegepast\n"
 
-#: src/textview.c:964
+#: src/textview.c:969
 msgid "  by right-clicking the icon or list item:"
 msgstr "  met de rechtermuisknop op het pictogram of lijst-item te klikken:"
 
-#: src/textview.c:968
+#: src/textview.c:973
 msgid "     - To save, select "
 msgstr "     - Om op te slaan selecteer "
 
-#: src/textview.c:969
+#: src/textview.c:974
 msgid "'Save as...'"
 msgstr "'Opslaan als...'"
 
-#: src/textview.c:971 src/textview.c:983 src/textview.c:995 src/textview.c:1005
+#: src/textview.c:976 src/textview.c:988 src/textview.c:1000
+#: src/textview.c:1010
 msgid " (Shortcut key: '"
 msgstr " (Sneltoets: '"
 
-#: src/textview.c:975 src/textview.c:987 src/textview.c:1009
+#: src/textview.c:980 src/textview.c:992 src/textview.c:1014
 msgid "')"
 msgstr "')"
 
-#: src/textview.c:979
+#: src/textview.c:984
 msgid "     - To display as text, select "
 msgstr "     - Om als tekst weer te geven selecteer "
 
-#: src/textview.c:980
+#: src/textview.c:985
 msgid "'Display as text'"
 msgstr "'Als tekst weergeven'"
 
-#: src/textview.c:991
+#: src/textview.c:996
 msgid "     - To open with an external program, select "
 msgstr "     - Om te openen met een extern programma, selecteer "
 
-#: src/textview.c:992
+#: src/textview.c:997
 msgid "'Open'"
 msgstr "'Openen'"
 
-#: src/textview.c:999
+#: src/textview.c:1004
 msgid "')\n"
 msgstr "')\n"
 
-#: src/textview.c:1000
+#: src/textview.c:1005
 msgid "       (alternately double-click, or click the middle "
 msgstr "       (of dubbelklik, of klik met de middelste "
 
-#: src/textview.c:1001
+#: src/textview.c:1006
 msgid "mouse button)\n"
 msgstr "muisknop)\n"
 
-#: src/textview.c:1003
+#: src/textview.c:1008
 msgid "     - Or use "
 msgstr "     - Of gebruik "
 
-#: src/textview.c:1004
+#: src/textview.c:1009
 msgid "'Open with...'"
 msgstr "'Open met...'"
 
-#: src/textview.c:1133
+#: src/textview.c:1138
 #, c-format
 msgid ""
 "The command to view attachment as text failed:\n"
@@ -20092,51 +20100,51 @@ msgstr ""
 "    %s\n"
 "Uitvoer-code %d\n"
 
-#: src/textview.c:2251
+#: src/textview.c:2256
 msgid "Tags: "
 msgstr "Tags: "
 
-#: src/textview.c:2742
+#: src/textview.c:2747
 msgid "Zoom _In"
 msgstr "_Inzoomen"
 
-#: src/textview.c:2751
+#: src/textview.c:2756
 msgid "Zoom _Out"
 msgstr "_Uitzoomen"
 
-#: src/textview.c:2760
+#: src/textview.c:2765
 msgid "Reset _zoom"
 msgstr "_Zoom herstellen"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Copy it anyway?"
 msgstr "Toch kopiëren?"
 
-#: src/textview.c:3133
+#: src/textview.c:3138
 msgid "Open it anyway?"
 msgstr "Toch openen?"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "Co_py URL"
 msgstr "Ko_pieer URL"
 
-#: src/textview.c:3134
+#: src/textview.c:3139
 msgid "_Open URL"
 msgstr "_Open URL"
 
-#: src/textview.c:3140
+#: src/textview.c:3145
 msgid "The real URL is different from the displayed URL."
 msgstr "De echte URL verschilt van de weergegeven URL."
 
-#: src/textview.c:3141
+#: src/textview.c:3146
 msgid "Displayed URL:"
 msgstr "Weergegeven URL:"
 
-#: src/textview.c:3142
+#: src/textview.c:3147
 msgid "Real URL:"
 msgstr "Echte URL:"
 
-#: src/textview.c:3144
+#: src/textview.c:3149
 msgid "Phishing attempt warning"
 msgstr "Phishing-waarschuwing"
 
@@ -20671,7 +20679,7 @@ msgstr "Je naam:"
 msgid "Your email address:"
 msgstr "Je e-mailadres:"
 
-#: src/wizard.c:994
+#: src/wizard.c:995
 msgid "Your organization:"
 msgstr "Je organisatie:"
 
@@ -20679,7 +20687,7 @@ msgstr "Je organisatie:"
 msgid "Mailbox name:"
 msgstr "Postvak-naam:"
 
-#: src/wizard.c:1036
+#: src/wizard.c:1038
 msgid ""
 "You can also specify an absolute path, for example: \"/home/john/Documents/"
 "Mail\""
@@ -20687,83 +20695,83 @@ msgstr ""
 "Je kunt ook een absoluut pad opgeven, bijvoorbeeld: \"/home/kees/Documenten/"
 "Mail\""
 
-#: src/wizard.c:1106
+#: src/wizard.c:1109
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:25\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:25\""
 msgstr ""
 "Je kunt het poortnummer specificeren door het aan het eind toe te voegen: "
 "\"mail.voorbeeld.com:25\""
 
-#: src/wizard.c:1109
+#: src/wizard.c:1111
 msgid "SMTP server address:"
 msgstr "SMTP-serveradres:"
 
-#: src/wizard.c:1124
+#: src/wizard.c:1126
 msgid "(empty to use the same as receive)"
 msgstr "(laat leeg om dezelfde als bij ontvangen te gebruiken)"
 
-#: src/wizard.c:1139
+#: src/wizard.c:1143
 msgid "SMTP username:"
 msgstr "SMTP-gebruikersnaam:"
 
-#: src/wizard.c:1153
+#: src/wizard.c:1157
 msgid "SMTP password:"
 msgstr "SMTP-wachtwoord:"
 
-#: src/wizard.c:1169
+#: src/wizard.c:1173
 msgid "Use TLS to connect to SMTP server"
 msgstr "Gebruik TLS voor verbinding met de SMTP-server"
 
-#: src/wizard.c:1180 src/wizard.c:1616
+#: src/wizard.c:1184 src/wizard.c:1628
 msgid "Use STARTTLS command to start encryption"
 msgstr "Gebruik STARTTLS voor starten beveiligde sessie"
 
-#: src/wizard.c:1192 src/wizard.c:1629
+#: src/wizard.c:1196 src/wizard.c:1641
 msgid "Client TLS certificate (optional)"
 msgstr "Client TLS-certificaat (optioneel)"
 
-#: src/wizard.c:1201 src/wizard.c:1639
+#: src/wizard.c:1205 src/wizard.c:1651
 msgid "File:"
 msgstr "Bestand:"
 
-#: src/wizard.c:1274 src/wizard.c:1306 src/wizard.c:1553
+#: src/wizard.c:1279 src/wizard.c:1312 src/wizard.c:1563
 msgid "Server address:"
 msgstr "Serveradres:"
 
-#: src/wizard.c:1338
+#: src/wizard.c:1346
 msgid "Local mailbox:"
 msgstr "Lokaal postvak:"
 
-#: src/wizard.c:1499
+#: src/wizard.c:1508
 msgid "Server type:"
 msgstr "Servertype:"
 
-#: src/wizard.c:1508
+#: src/wizard.c:1519
 msgid "POP3"
 msgstr "POP3"
 
-#: src/wizard.c:1566
+#: src/wizard.c:1578
 msgid ""
-"You can specify the port number by appending it at the end: "
-"\"mail.example.com:110\""
+"You can specify the port number by appending it at the end: \"mail.example."
+"com:110\""
 msgstr ""
 "Je kunt het poortnummer specificeren door het aan het eind toe te voegen: "
 "\"mail.voorbeeld.com:110\""
 
-#: src/wizard.c:1605
+#: src/wizard.c:1617
 msgid "Use TLS to connect to receiving server"
 msgstr "Gebruik TLS voor verbinding met de ontvangende server"
 
-#: src/wizard.c:1683
+#: src/wizard.c:1695
 msgid "IMAP server directory:"
 msgstr "IMAP-servermap:"
 
-#: src/wizard.c:1694
+#: src/wizard.c:1706
 msgid "Show only subscribed folders"
 msgstr "Alleen geabonneerde mappen weergeven"
 
-#: src/wizard.c:1702
+#: src/wizard.c:1714
 msgid ""
 "Warning: this version of Claws Mail\n"
 "has been built without IMAP support."
@@ -20771,15 +20779,15 @@ msgstr ""
 "Waarschuwing: deze versie van Claws Mail\n"
 "is gecompileerd zonder ondersteuning voor IMAP."
 
-#: src/wizard.c:1821
+#: src/wizard.c:1835
 msgid "Claws Mail Setup Wizard"
 msgstr "Claws Mail Setup-assistent"
 
-#: src/wizard.c:1853
+#: src/wizard.c:1867
 msgid "Welcome to Claws Mail"
 msgstr "Welkom by Claws Mail"
 
-#: src/wizard.c:1860
+#: src/wizard.c:1874
 msgid ""
 "Welcome to the Claws Mail setup wizard.\n"
 "\n"
@@ -20793,34 +20801,40 @@ msgstr ""
 "gebruikte e-mailopties zodat je binnen vijf minuten Claws Mail kunt "
 "gebruiken."
 
-#: src/wizard.c:1873
+#: src/wizard.c:1887
 msgid "About You"
 msgstr "Over u"
 
-#: src/wizard.c:1880 src/wizard.c:1894 src/wizard.c:1908 src/wizard.c:1923
+#: src/wizard.c:1894 src/wizard.c:1908 src/wizard.c:1922 src/wizard.c:1937
 msgid "Bold fields must be completed"
 msgstr "Velden in vet zijn verplicht"
 
-#: src/wizard.c:1887
+#: src/wizard.c:1901
 msgid "Receiving mail"
 msgstr "E-mail ontvangen"
 
-#: src/wizard.c:1901
+#: src/wizard.c:1915
 msgid "Sending mail"
 msgstr "E-mail verzenden"
 
-#: src/wizard.c:1916
+#: src/wizard.c:1930
 msgid "Saving mail on disk"
 msgstr "E-mail opslaan op schijf"
 
-#: src/wizard.c:1931
+#: src/wizard.c:1945
 msgid "Configuration finished"
 msgstr "Klaar met instellen"
 
-#: src/wizard.c:1938
+#: src/wizard.c:1952
 msgid ""
 "Claws Mail is now ready.\n"
 "Click Save to start."
 msgstr ""
 "Claws Mail is nu klaar.\n"
 "Klik op 'Opslaan' om te starten."
+
+#~ msgid " virus."
+#~ msgstr " virus."
+
+#~ msgid "Copy this _link"
+#~ msgstr "Kopieer deze _koppeling"
