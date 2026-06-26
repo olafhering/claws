@@ -225,6 +225,8 @@ static void open_uri_cb				(GtkAction	*action,
 						 TextView	*textview);
 static void copy_uri_cb				(GtkAction	*action,
 						 TextView	*textview);
+static void copy_clean_uri_cb			(GtkAction	*action,
+						 TextView	*textview);
 static void add_uri_to_addrbook_cb 		(GtkAction	*action,
 						 TextView	*textview);
 static void reply_to_uri_cb 			(GtkAction	*action,
@@ -241,7 +243,8 @@ static GtkActionEntry textview_link_popup_entries[] =
 {
 	{"TextviewPopupLink",			NULL, "TextviewPopupLink", NULL, NULL, NULL },
 	{"TextviewPopupLink/Open",		NULL, N_("_Open in web browser"), NULL, NULL, G_CALLBACK(open_uri_cb) },
-	{"TextviewPopupLink/Copy",		NULL, N_("Copy this _link"), NULL, NULL, G_CALLBACK(copy_uri_cb) },
+	{"TextviewPopupLink/Copy",		NULL, N_("Copy _link"), NULL, NULL, G_CALLBACK(copy_uri_cb) },
+	{"TextviewPopupLink/CleanCopy",		NULL, N_("Copy _clean link"), NULL, NULL, G_CALLBACK(copy_clean_uri_cb) },
 };
 
 static GtkActionEntry textview_mail_popup_entries[] = 
@@ -387,6 +390,8 @@ TextView *textview_create(void)
 			"/Menus/TextviewPopupLink", "Open", "TextviewPopupLink/Open", GTK_UI_MANAGER_MENUITEM)
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
 			"/Menus/TextviewPopupLink", "Copy", "TextviewPopupLink/Copy", GTK_UI_MANAGER_MENUITEM)
+	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
+			"/Menus/TextviewPopupLink", "CleanCopy", "TextviewPopupLink/CleanCopy", GTK_UI_MANAGER_MENUITEM)
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
 			"/Menus/TextviewPopupMail", "Compose", "TextviewPopupMail/Compose", GTK_UI_MANAGER_MENUITEM)
 	MENUITEM_ADDUI_MANAGER(textview->ui_manager, 
@@ -3214,6 +3219,25 @@ static void copy_uri_cb	(GtkAction *action, TextView *textview)
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY), raw_url, -1);
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), raw_url, -1);
 		g_object_set_data(G_OBJECT(textview->link_popup_menu), "raw_url", NULL);
+	}
+}
+
+static void copy_clean_uri_cb	(GtkAction *action, TextView *textview)
+{
+	ClickableText *uri = g_object_get_data(G_OBJECT(textview->link_popup_menu),
+					   "menu_button");
+
+	if (uri) {
+		gchar **uri_parts = g_strsplit(uri->uri, "?", 2);
+		const gchar *clean_uri = uri_parts[0];
+
+		if (textview_uri_security_check(textview, uri, TRUE) == TRUE) {
+			gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY), clean_uri, -1);
+			gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), clean_uri, -1);
+			g_object_set_data(G_OBJECT(textview->link_popup_menu), "menu_button", NULL);
+		}
+		if (uri_parts)
+			g_strfreev(uri_parts);
 	}
 }
 
