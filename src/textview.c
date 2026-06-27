@@ -3236,8 +3236,7 @@ static void copy_clean_uri_cb	(GtkAction *action, TextView *textview)
 			gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), clean_uri, -1);
 			g_object_set_data(G_OBJECT(textview->link_popup_menu), "menu_button", NULL);
 		}
-		if (uri_parts)
-			g_strfreev(uri_parts);
+		g_strfreev(uri_parts);
 	}
 }
 
