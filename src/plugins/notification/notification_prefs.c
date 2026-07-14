@@ -173,7 +173,6 @@ typedef struct {
 	GtkWidget *ayatana_cont_enable;
 	GtkWidget *ayatana_folder_specific;
 	GtkWidget *ayatana_cont_folder_specific;
-	GtkWidget *ayatana_display_folder_name;
 }NotifyAyatanaIndicatorPage;
 NotifyAyatanaIndicatorPage ayatana_indicator_page;
 #endif
@@ -325,9 +324,6 @@ PrefParam
 					NULL, NULL, NULL},
 				{	"ayatana_folder_specific", "FALSE",
 					&notify_config.ayatana_folder_specific,
-					P_BOOL, NULL, NULL, NULL},
-				{	"ayatana_display_folder_name", "FALSE",
-					&notify_config.ayatana_display_folder_name,
 					P_BOOL, NULL, NULL, NULL},
 #endif /* NOTIFICATION_AYATANA_INDICATOR */
 #ifdef NOTIFICATION_INDICATOR
@@ -1875,9 +1871,6 @@ static void notify_create_ayatana_indicator_page(PrefsPage *page, GtkWindow *win
 	ayatana_indicator_page.ayatana_cont_folder_specific = folder_button;
 	gtk_widget_show(folder_button);
 
-	notify_trayicon_enable_set_sensitivity
-	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled), NULL);
-
 	notify_ayatana_indicator_enable_set_sensitivity
 	(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled), NULL);
 
@@ -1897,9 +1890,6 @@ static void notify_save_ayatana_indicator(PrefsPage *page)
 	notification_ayatana_indicator_disable();
 
 	notify_config.ayatana_indicator_enabled = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_indicator_enabled));
-
-	notify_config.ayatana_display_folder_name =
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ayatana_indicator_page.ayatana_display_folder_name));
 
 	notify_config.ayatana_folder_specific =
 		gtk_toggle_button_get_active
