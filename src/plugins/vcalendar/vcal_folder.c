@@ -536,7 +536,7 @@ static gint feed_fetch(FolderItem *fitem, MsgNumberList ** list, gboolean *old_u
 	while (evt) {
 		icalproperty *prop;
 		icalproperty *rprop = icalcomponent_get_first_property(evt, ICAL_RRULE_PROPERTY);
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 		struct icalrecurrencetype* recur;
 #else
 		struct icalrecurrencetype recur;
@@ -563,7 +563,7 @@ static gint feed_fetch(FolderItem *fitem, MsgNumberList ** list, gboolean *old_u
 			gchar *orig_uid = NULL;
 			gchar *uid = g_strdup(icalproperty_get_uid(prop));
 			IcalFeedData *data = icalfeeddata_new(
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 						icalcomponent_clone(evt),
 #else
 						icalcomponent_new_clone(evt),
@@ -619,7 +619,7 @@ add_new:
 				struct icaldurationtype ical_dur;
 				struct icaltimetype dtstart = icaltime_null_time();
 				struct icaltimetype dtend = icaltime_null_time();
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				evt = icalcomponent_clone(evt);
 #else
 				evt = icalcomponent_new_clone(evt);
@@ -639,7 +639,7 @@ add_new:
 					dtend = icalproperty_get_dtend(prop);
 				else
 					debug_print("event has no DTEND!\n");
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				ical_dur = icalduration_from_times(dtend, dtstart);
 #else
 				ical_dur = icaltime_subtract(dtend, dtstart);
@@ -652,7 +652,7 @@ add_new:
 
 					prop = icalcomponent_get_first_property(evt, ICAL_DTEND_PROPERTY);
 					if (prop)
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 						icalproperty_set_dtend(prop, icalduration_extend(next, ical_dur));
 #else
 						icalproperty_set_dtend(prop, icaltime_add(next, ical_dur));
@@ -790,7 +790,7 @@ GSList *vcal_get_events_list(FolderItem *item)
 			if ((status == ICAL_PARTSTAT_ACCEPTED
 			     || status == ICAL_PARTSTAT_TENTATIVE) 
 			    && event->recur && *(event->recur)) {
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				struct icalrecurrencetype* recur;
 #else
         			struct icalrecurrencetype recur;
@@ -803,7 +803,7 @@ GSList *vcal_get_events_list(FolderItem *item)
 				int i = 0;
 
 				debug_print("dumping recurring events from main event %s\n", d);
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				recur = icalrecurrencetype_new_from_string(event->recur);
 #else
         			recur = icalrecurrencetype_from_string(event->recur);
@@ -813,7 +813,7 @@ GSList *vcal_get_events_list(FolderItem *item)
 				duration = icaltime_as_timet(icaltime_from_string(event->dtend))
 							    - icaltime_as_timet(icaltime_from_string(event->dtstart));
 
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				ical_dur = icaldurationtype_from_seconds(duration);
 #else
 				ical_dur = icaldurationtype_from_int(duration);
@@ -830,7 +830,7 @@ GSList *vcal_get_events_list(FolderItem *item)
 					gchar *uid = g_strdup_printf("%s-%d", event->uid, i);
 					new_start = icaltime_as_ical_string(next);
 					new_end = icaltime_as_ical_string(
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 							icalduration_extend(next, ical_dur)
 #else
 							icaltime_add(next, ical_dur)
@@ -861,7 +861,7 @@ GSList *vcal_get_events_list(FolderItem *item)
 					i++;
 				}
 				icalrecur_iterator_free(ritr);
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				icalrecurrencetype_unref(recur);
 #endif
 			}
@@ -2418,7 +2418,7 @@ VCalEvent *vcal_get_event_from_ical(const gchar *ical, const gchar *charset)
 			if (prop) {
 				itt = icalproperty_get_dtstart(prop);
 				icalproperty_free(prop);
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 				dtend = g_strdup(icaltime_as_ical_string(icalduration_extend(itt,duration)));
 #else
 				dtend = g_strdup(icaltime_as_ical_string(icaltime_add(itt,duration)));
@@ -2477,7 +2477,7 @@ VCalEvent *vcal_get_event_from_ical(const gchar *ical, const gchar *charset)
 	}
 	GET_PROP(comp, prop, ICAL_RRULE_PROPERTY);
 	if (prop) {
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 		struct icalrecurrencetype* rrule = icalproperty_get_rrule(prop);
 		recur = g_strdup(icalrecurrencetype_as_string(rrule));		
 #else

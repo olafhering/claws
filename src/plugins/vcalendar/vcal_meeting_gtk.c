@@ -2110,7 +2110,7 @@ gboolean vcal_meeting_export_freebusy(const gchar *path, const gchar *user,
 	
 		ipt.start = icaltime_from_string(event->dtstart);
 		ipt.end = icaltime_from_string(event->dtend);
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 		ipt.duration = icalduration_from_times(ipt.end, ipt.start);
 #else
 		ipt.duration = icaltime_subtract(ipt.end, ipt.start);

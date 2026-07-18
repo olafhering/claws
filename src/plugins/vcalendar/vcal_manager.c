@@ -402,7 +402,7 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 		icalproperty_vanew_dtend((icaltime_from_string(event->dtend)), (void*)0));
 	if (event->recur && *(event->recur)) {
         icalcomponent_add_property(ievent,
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 			icalproperty_vanew_rrule((icalrecurrencetype_new_from_string(event->recur)), (void*)0));
 #else
 			icalproperty_vanew_rrule((icalrecurrencetype_from_string(event->recur)), (void*)0));
@@ -693,7 +693,7 @@ gchar *vcal_manager_icalevent_dump(icalcomponent *event, gchar *orga, icalcompon
 	icalproperty *prop;
 	icalcomponent *ievent = NULL;
 	int i = 0;
-#ifdef HAVE_LIBICAL_V4
+#if ICAL_CHECK_VERSION(4, 0, 0)
 	ievent = icalcomponent_clone(event);
 #else
 	ievent = icalcomponent_new_clone(event);

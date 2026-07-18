@@ -338,6 +338,7 @@ static char *CONTRIBS_LIST[] = {
 "Botalov Vyacheslav",
 "Radek Vybiral",
 "Peter Wagner",
+"Funda Wang",
 "Jonathan Ware",
 "Watanabe",
 "Rafal Weglarz",
