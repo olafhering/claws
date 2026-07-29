@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1763,7 +1763,7 @@ Compose *compose_forward(PrefsAccount *account, MsgInfo *msginfo,
 		compose_destroy(compose);
 		return NULL;
 	}
-
+	compose_set_folder_prefs(compose, msginfo->folder, TRUE);
 	compose_apply_folder_privacy_settings(compose, msginfo->folder);
 
 	compose->updating = TRUE;
@@ -1787,7 +1787,6 @@ Compose *compose_forward(PrefsAccount *account, MsgInfo *msginfo,
 		g_free(buf2);
 	}
 
-	/* override from name according to folder properties */
 	if (msginfo->folder && msginfo->folder->prefs &&
 		msginfo->folder->prefs->forward_with_format &&
 		msginfo->folder->prefs->forward_override_from_format &&
@@ -1995,37 +1994,40 @@ static Compose *compose_forward_multiple(PrefsAccount *account, GSList *msginfo_
 	/* override from name according to folder properties */
 	if (msginfo_list->data) {
 		MsgInfo *msginfo = msginfo_list->data;
+		
+		if (msginfo->folder && msginfo->folder->prefs) {
+			compose_set_folder_prefs(compose, msginfo->folder, TRUE);
 
-		if (msginfo->folder && msginfo->folder->prefs &&
-			msginfo->folder->prefs->forward_with_format &&
-			msginfo->folder->prefs->forward_override_from_format &&
-			*msginfo->folder->prefs->forward_override_from_format != '\0') {
+			if (msginfo->folder->prefs->forward_with_format &&
+			    msginfo->folder->prefs->forward_override_from_format &&
+			    *msginfo->folder->prefs->forward_override_from_format != '\0') {
 
-			gchar *tmp = NULL;
-			gchar *buf = NULL;
+				gchar *tmp = NULL;
+				gchar *buf = NULL;
 
-			/* decode \-escape sequences in the internal representation of the quote format */
-			tmp = g_malloc(strlen(msginfo->folder->prefs->forward_override_from_format)+1);
-			pref_get_unescaped_pref(tmp, msginfo->folder->prefs->forward_override_from_format);
+				/* decode \-escape sequences in the internal representation of the quote format */
+				tmp = g_malloc(strlen(msginfo->folder->prefs->forward_override_from_format)+1);
+				pref_get_unescaped_pref(tmp, msginfo->folder->prefs->forward_override_from_format);
 
-#ifdef USE_ENCHANT
-			quote_fmt_init(msginfo, NULL, NULL, FALSE, compose->account, FALSE,
-					compose->gtkaspell);
-#else
-			quote_fmt_init(msginfo, NULL, NULL, FALSE, compose->account, FALSE);
-#endif
-			quote_fmt_scan_string(tmp);
-			quote_fmt_parse();
+	#ifdef USE_ENCHANT
+				quote_fmt_init(msginfo, NULL, NULL, FALSE, compose->account, FALSE,
+						compose->gtkaspell);
+	#else
+				quote_fmt_init(msginfo, NULL, NULL, FALSE, compose->account, FALSE);
+	#endif
+				quote_fmt_scan_string(tmp);
+				quote_fmt_parse();
 
-			buf = quote_fmt_get_buffer();
-			if (buf == NULL)
-				alertpanel_error(_("The \"From\" field of the \"Forward\" template contains an invalid email address."));
-			else
-				gtk_entry_set_text(GTK_ENTRY(compose->from_name), buf);
-			quote_fmt_reset_vartable();
-			quote_fmtlex_destroy();
+				buf = quote_fmt_get_buffer();
+				if (buf == NULL)
+					alertpanel_error(_("The \"From\" field of the \"Forward\" template contains an invalid email address."));
+				else
+					gtk_entry_set_text(GTK_ENTRY(compose->from_name), buf);
+				quote_fmt_reset_vartable();
+				quote_fmtlex_destroy();
 
-			g_free(tmp);
+				g_free(tmp);
+			}
 		}
 	}
 
