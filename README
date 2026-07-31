@@ -533,7 +533,7 @@ https://www.claws-mail.org/plugins.php
 ---------------------
 
 You are encouraged to send patches via the Claws Mail bugzilla at
-https://www.thewildbeast.co.uk/claws-mail/bugzilla/index.cgi
+https://www.claws-mail.org/bugzilla/index.cgi
 But please first read the patch guidelines here:
 https://www.claws-mail.org/devel.php
 
@@ -543,7 +543,7 @@ Claws Mail-users mailing list.
 https://www.claws-mail.org/MLs.php
 
 Bugs can be reported with Claws' bugzilla at:
-https://www.thewildbeast.co.uk/claws-mail/bugzilla/index.cgi
+https://www.claws-mail.org/bugzilla/index.cgi
 
 Of course, you can also post to the Claws Mail-users mailing list.
 
@@ -564,7 +564,7 @@ it, or the feature was already discussed and rejected for whatever reason.
 You might want to go ahead and hack a patch for it. (That would be very
 cool!) Another possibility is to add a request to our bugzilla, (severity:
 'enhancement'), at
-https://www.thewildbeast.co.uk/claws-mail/bugzilla/index.cgi
+https://www.claws-mail.org/bugzilla/index.cgi
 
 
 12. Installing Claws Mail from Git
@@ -765,6 +765,8 @@ User Contributed FAQ
     https://www.claws-mail.org/faq/
 Downloads
     https://www.claws-mail.org/releases.php
+Git repository
+    https://git.claws-mail.org/?p=claws.git;a=summary
 Release Announcement Feed
     https://www.claws-mail.org/releases.rss
 Latest Release Notes
@@ -782,7 +784,7 @@ Users Mailing List archive
 Commits Announcement List archive
     https://lists.claws-mail.org/pipermail/commits/index.html
 Bug/Patch/Feature Request Tracker
-    https://www.thewildbeast.co.uk/claws-mail/bugzilla/index.cgi
+    https://www.claws-mail.org/bugzilla/index.cgi
 Internationalisation Status
     https://www.claws-mail.org/i18n.php
 Donations
