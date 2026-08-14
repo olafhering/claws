@@ -596,6 +596,7 @@ static void textview_update_message_colors(TextView *textview)
 
 	CHANGE_TAG_COLOR("emphasis", &emphasis_color, NULL);
 	CHANGE_TAG_COLOR("signature", &signature_color, NULL);
+	CHANGE_TAG_COLOR("hlink", &uri_color, NULL);
 	CHANGE_TAG_COLOR("link", &uri_color, NULL);
 	CHANGE_TAG_COLOR("link-hover", &uri_color, NULL);
 	CHANGE_TAG_COLOR("diff-add", &diff_added_color, NULL);
