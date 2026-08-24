@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2022 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@ static void description_create(DescriptionWindow * dwindow)
 	GtkWidget *close_btn;
 	GtkWidget *scrolledwin;
 	int i;
-	int sz;
 	int line;
 	int j;
 	int *max_width = g_new0(int, dwindow->columns), width=0;
@@ -86,12 +85,6 @@ static void description_create(DescriptionWindow * dwindow)
 	gtk_container_set_border_width(GTK_CONTAINER(dwindow->window), 8);
 	gtk_window_set_resizable(GTK_WINDOW(dwindow->window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(dwindow->window), GDK_WINDOW_TYPE_HINT_DIALOG);
-
-	/* Check number of lines to be show */
-	sz = 0;
-	for (i = 0; dwindow->symbol_table[i] != NULL; i = i + dwindow->columns) {
-		sz++;
-	}
 	
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
