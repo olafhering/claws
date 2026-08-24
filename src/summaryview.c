@@ -1668,9 +1668,7 @@ gboolean summary_show(SummaryView *summaryview, FolderItem *item, gboolean avoid
 	}
 
 	summary_status_show(summaryview);
-	summary_set_menu_sensitive(summaryview);
-	toolbar_main_set_sensitive(summaryview->mainwin);
-	
+
 	summary_thaw(summaryview);
 	STATUSBAR_PUSH(summaryview->mainwin, _("Done."));
 	STATUSBAR_POP(summaryview->mainwin);
@@ -1741,8 +1739,6 @@ void summary_clear_all(SummaryView *summaryview)
 	mimeview_clear(summaryview->messageview->mimeview);
 	messageview_clear(summaryview->messageview);
 	summary_clear_list(summaryview);
-	summary_set_menu_sensitive(summaryview);
-	toolbar_main_set_sensitive(summaryview->mainwin);
 	summary_status_show(summaryview);
 }
 
@@ -7265,8 +7261,6 @@ static void summary_selected(GtkCMCTree *ctree, GtkCMCTreeNode *row,
 	if (GTK_CMCLIST(ctree)->selection &&
 	    GTK_CMCLIST(ctree)->selection->next) {
 		summaryview->display_msg = FALSE;
-		summary_set_menu_sensitive(summaryview);
-		toolbar_main_set_sensitive(summaryview->mainwin);
 		return;
 	}
 
