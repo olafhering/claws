@@ -345,6 +345,7 @@ static void compose_convert_header		(Compose	*compose,
 static void compose_attach_info_free		(AttachInfo	*ainfo);
 static void compose_attach_remove_selected	(GtkAction	*action,
 						 gpointer	 data);
+static void compose_attach_open_selected(GtkAction* action, gpointer data);
 
 static void compose_template_apply		(Compose	*compose,
 						 Template	*tmpl,
@@ -605,6 +606,7 @@ static GtkActionEntry compose_popup_entries[] =
 	{"Compose/Remove",     NULL, N_("_Remove"), NULL, NULL, G_CALLBACK(compose_attach_remove_selected) },
 	{"Compose/---",        NULL, "---", NULL, NULL, NULL },
 	{"Compose/Properties", NULL, N_("_Properties..."), NULL, NULL, G_CALLBACK(compose_attach_property) },
+	{"Compose/Open", NULL, N_("_Open..."), NULL, NULL, G_CALLBACK(compose_attach_open_selected) },
 };
 
 /* make sure to keep the key bindings in the tables below in sync with the default_menurc[] in prefs_other.c
@@ -2595,6 +2597,7 @@ Compose *compose_redirect(PrefsAccount *account, MsgInfo *msginfo,
 	cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Add", FALSE);
 	cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Remove", FALSE);
 	cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Properties", FALSE);
+	cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Open", FALSE);
 
 	cm_menu_set_sensitive_full(compose->ui_manager, "Menu/Message/SendLater", FALSE);
 	cm_menu_set_sensitive_full(compose->ui_manager, "Menu/Message/Save", FALSE);
@@ -9324,6 +9327,36 @@ static void compose_attach_remove_selected(GtkAction *action, gpointer data)
 	compose_attach_update_label(compose);
 }
 
+static void compose_attach_open_selected(GtkAction* action, gpointer data) {
+	Compose* compose = (Compose*)data;
+	GtkTreeModel* mdl = NULL;
+
+	// GList<GtkTreePath>
+	GList* selected = gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(compose->attach_clist)), &mdl);
+	cm_return_if_fail(selected);
+	GList* current = selected;
+
+	for (current = selected; current != NULL && current->data != NULL; current = current->next) {
+		GtkTreeIter iter;
+		GtkTreePath* path = current->data;
+		if (gtk_tree_model_get_iter(mdl, &iter, path)) {
+			AttachInfo* attachment = NULL;
+			gtk_tree_model_get(mdl, &iter, COL_DATA, &attachment, -1);
+			if (attachment && attachment->file && strlen(attachment->file) > 0) {
+				GFile* file = g_file_new_for_path(attachment->file);
+				char* uri = g_file_get_uri(file);
+				if (uri) {
+					g_app_info_launch_default_for_uri(uri, NULL, NULL);
+				}
+				g_free(uri);
+				g_object_unref(file);
+			}
+		}
+		gtk_tree_path_free(path);
+	}
+	g_list_free(selected);
+}
+
 static struct _AttachProperty
 {
 	GtkWidget *window;
@@ -10182,7 +10215,7 @@ static void account_activated(GtkComboBox *optmenu, gpointer data)
 static void attach_selected(GtkTreeView *tree_view, GtkTreePath *tree_path,
 			    GtkTreeViewColumn *column, Compose *compose)
 {
-	compose_attach_property(NULL, compose);
+	compose_attach_open_selected(NULL, compose);
 }
 
 static gboolean attach_button_pressed(GtkWidget *widget, GdkEventButton *event,
@@ -10221,6 +10254,7 @@ static gboolean attach_button_pressed(GtkWidget *widget, GdkEventButton *event,
 		/* Properties menu item makes no sense with more than one row
 		 * selected, the properties dialog can only edit one attachment. */
 		cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Properties", (attach_nr_selected == 1));
+		cm_menu_set_sensitive_full(compose->ui_manager, "Popup/Compose/Open", (attach_nr_selected > 0));
 			
 		gtk_menu_popup_at_pointer(GTK_MENU(compose->popupmenu), NULL);
 
@@ -10238,9 +10272,19 @@ static gboolean attach_key_pressed(GtkWidget *widget, GdkEventKey *event,
 	if (!event) return FALSE;
 
 	switch (event->keyval) {
-	case GDK_KEY_Delete:
-		compose_attach_remove_selected(NULL, compose);
-		break;
+		case GDK_KEY_Delete:
+			compose_attach_remove_selected(NULL, compose);
+			break;
+		case GDK_KEY_KP_Enter:
+		case GDK_KEY_Return:
+			if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK ||
+			    (event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK ||
+			    (event->state & GDK_MOD1_MASK) == GDK_MOD1_MASK) {
+				compose_attach_open_selected(NULL, compose);
+				break;
+			}
+			compose_attach_property(NULL, compose);
+			return TRUE;
 	}
 	return FALSE;
 }

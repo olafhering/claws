@@ -149,6 +149,7 @@ static char *CONTRIBS_LIST[] = {
 "Bob Forsman",
 "Matthias Förste",
 "Ivan Francolin Martinez",
+"Chris Funke",
 "Stoyan Genov",
 "Stavros Giannouris",
 "Thomas Gilgin",
