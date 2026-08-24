@@ -8233,7 +8233,8 @@ static Compose *compose_create(PrefsAccount *account,
 	MENUITEM_ADDUI_MANAGER(compose->ui_manager, "/Popup/Compose", "Remove", "Compose/Remove", GTK_UI_MANAGER_MENUITEM)
 	MENUITEM_ADDUI_MANAGER(compose->ui_manager, "/Popup/Compose", "Separator1", "Compose/---", GTK_UI_MANAGER_SEPARATOR)
 	MENUITEM_ADDUI_MANAGER(compose->ui_manager, "/Popup/Compose", "Properties", "Compose/Properties", GTK_UI_MANAGER_MENUITEM)
-	
+	MENUITEM_ADDUI_MANAGER(compose->ui_manager, "/Popup/Compose", "Open", "Compose/Open", GTK_UI_MANAGER_MENUITEM)
+
 	popupmenu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(gtk_ui_manager_get_widget(compose->ui_manager, "/Popup/Compose")));
 
 	cm_menu_set_sensitive_full(compose->ui_manager, "Menu/Edit/Undo", FALSE);
@@ -9331,7 +9332,6 @@ static void compose_attach_open_selected(GtkAction* action, gpointer data) {
 	Compose* compose = (Compose*)data;
 	GtkTreeModel* mdl = NULL;
 
-	// GList<GtkTreePath>
 	GList* selected = gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(compose->attach_clist)), &mdl);
 	cm_return_if_fail(selected);
 	GList* current = selected;
