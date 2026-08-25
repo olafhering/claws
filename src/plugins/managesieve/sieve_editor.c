@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2004-2022 the Claws Mail team
+ * Copyright (C) 2004-2026 the Claws Mail team
  * Copyright (C) 2014-2015 Charles Lehner
  *
  * This program is free software; you can redistribute it and/or modify
@@ -223,11 +223,15 @@ static void sieve_editor_paste_cb(GtkAction *action, SieveEditorPage *page)
 	GtkTextMark *start_mark = gtk_text_buffer_get_insert(buf);
 	GtkTextIter start_iter;
 
+	if (contents == NULL)
+		return;
+
 	undo_paste_clipboard(GTK_TEXT_VIEW(page->text), page->undostruct);
 	gtk_text_buffer_delete_selection(buf, FALSE, TRUE);
 
 	gtk_text_buffer_get_iter_at_mark(buf, &start_iter, start_mark);
 	gtk_text_buffer_insert(buf, &start_iter, contents, strlen(contents));
+	g_free(contents);
 }
 
 

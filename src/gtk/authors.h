@@ -211,6 +211,7 @@ static char *CONTRIBS_LIST[] = {
 "Mikhail Kurinnoi",
 "Abhay S. Kushwaha",
 "Joshua M. Kwan",
+"Mike Lay",
 "Jean-Yves Lefort",
 "Flavio Leitner",
 "Jérôme Lelong",
