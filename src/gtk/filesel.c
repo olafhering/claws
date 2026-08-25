@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2023 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,12 +105,11 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 
 	}
 
-	if (action == GTK_FILE_CHOOSER_ACTION_SAVE) {
-		gtk_dialog_set_default_response(GTK_DIALOG(chooser), GTK_RESPONSE_ACCEPT);
+	if (focus_window) {
+		gtk_native_dialog_set_transient_for(GTK_NATIVE_DIALOG(chooser),
+				GTK_WINDOW(focus_window));
 	}
-
-	manage_window_set_transient(GTK_WINDOW(chooser));
-	gtk_window_set_modal(GTK_WINDOW(chooser), TRUE);
+	gtk_native_dialog_set_modal(GTK_NATIVE_DIALOG(chooser), TRUE);
 
 	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(chooser), multiple_files);
 
