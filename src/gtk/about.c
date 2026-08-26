@@ -41,6 +41,8 @@
 #include "authors.h"
 #include "codeconv.h"
 #include "menu.h"
+#include "messageview.h"
+#include "mimeview.h"
 #include "textview.h"
 #include "main.h"
 #include "file-utils.h"
@@ -71,7 +73,6 @@ static void about_size_allocate_cb(GtkWidget *widget,
 static void about_textview_uri_update(GtkWidget *textview, gint x, gint y);
 static void about_update_stats(void);
 
-static GtkWidget *link_popupmenu;
 
 
 void about_show(void)
@@ -993,13 +994,16 @@ static gboolean about_textview_uri_clicked(GtkTextTag *tag, GObject *obj,
 
 	} else {
 		if (bevent->button == 3 && event->type == GDK_BUTTON_PRESS) {
-			link_popupmenu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(
-				gtk_ui_manager_get_widget(gtkut_ui_manager(), "/Menus/TextviewPopupLink")));
+			MainWindow *mainwin = mainwindow_get_mainwindow();
+			TextView *textview = mainwin->messageview->mimeview->textview;
+
+			if (!textview)
+				return FALSE;
 
 			g_object_set_data(
-					G_OBJECT(link_popupmenu),
+					G_OBJECT(textview->link_popup_menu),
 					"raw_url", link);
-			gtk_menu_popup_at_pointer(GTK_MENU(link_popupmenu), NULL);
+			gtk_menu_popup_at_pointer(GTK_MENU(textview->link_popup_menu), NULL);
 
 			return TRUE;
 		}
