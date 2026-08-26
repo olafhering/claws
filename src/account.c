@@ -1099,6 +1099,11 @@ static void account_clone(GtkWidget *widget, gpointer data)
 
 	account_list = g_list_append(account_list, ac_clon);
 	account_list_view_set();
+
+	/* A drag reorder changes the account order shown in the Message/Receive menu
+	 * and the toolbar receive/compose combos. Flag the list so they get rebuilt,
+	 * like the Up/Down buttons do. */
+	account_list_dirty = TRUE;
 }
 #undef ACP_FDUP
 #undef ACP_FASSIGN
