@@ -88,6 +88,9 @@ AC_USE_SYSTEM_EXTENSIONS
 dnl Checks for programs.
 dnl AC_ARG_PROGRAM
 AC_PROG_CC
+if test x"$ac_prog_cc_stdc" = x"no" -o x"$ac_prog_cc_stdc" = x"c89"; then
+	AC_MSG_ERROR([C99 compatible compiler is required])
+fi
 AC_SEARCH_LIBS([strerror],[cposix])
 AC_PROG_INSTALL
 AC_PROG_LN_S
