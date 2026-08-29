@@ -273,7 +273,8 @@ static gboolean mimeview_enter_notify(GtkWidget *widget,
 				      GdkEventCrossing *event,
 				      MimeView *mimeview)
 {
-	gdk_window_set_cursor(gtk_widget_get_window(widget), hand_cursor);
+	if (mimeview->mime_toggle != widget)
+		gdk_window_set_cursor(gtk_widget_get_window(widget), hand_cursor);
 	return FALSE;
 }
 
@@ -406,6 +407,7 @@ MimeView *mimeview_create(MainWindow *mainwin)
 	gtk_widget_show(mime_toggle);
 	mimeview->ctree_mode = FALSE;
 	arrow = gtk_image_new_from_icon_name("pan-start-symbolic", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_tooltip_text(GTK_WIDGET(arrow), _("Show MIME view"));
 	gtk_widget_show(arrow);
 	gtk_container_add(GTK_CONTAINER(mime_toggle), arrow);
 	g_signal_connect(G_OBJECT(mime_toggle), "button_release_event", 
@@ -2810,6 +2812,8 @@ static gint mime_toggle_button_cb(GtkWidget *button, GdkEventButton *event,
 	if (mimeview->ctree_mode) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(mimeview->arrow),
 					      "pan-end-symbolic", GTK_ICON_SIZE_MENU);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(mimeview->arrow),
+					      _("Hide MIME view"));
 		gtk_widget_hide(mimeview->icon_mainbox);
 		gtk_widget_show(mimeview->ctree_mainbox);
 		gtk_paned_set_position(GTK_PANED(mimeview->paned),
@@ -2822,6 +2826,8 @@ static gint mime_toggle_button_cb(GtkWidget *button, GdkEventButton *event,
 	} else {
 		gtk_image_set_from_icon_name(GTK_IMAGE(mimeview->arrow),
 					      "pan-start-symbolic", GTK_ICON_SIZE_MENU);
+		gtk_widget_set_tooltip_text(GTK_WIDGET(mimeview->arrow),
+					      _("Show MIME view"));
 		gtk_widget_hide(mimeview->ctree_mainbox);
 		gtk_widget_show(mimeview->icon_mainbox);
 		gtk_paned_set_position(GTK_PANED(mimeview->paned), 0);

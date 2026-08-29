@@ -120,6 +120,7 @@ static void main_window_separation_change	(MainWindow	*mainwin,
 #endif
 static void main_window_set_widgets		(MainWindow	*mainwin,
 						 LayoutType	 layout_mode);
+static void main_window_set_summary_arrow(MainWindow *mainwin);
 
 #ifndef GENERIC_UMPC
 static gboolean ac_label_button_pressed		(GtkWidget	*widget,
@@ -2711,6 +2712,28 @@ static void mainwin_paned_show_last(GtkPaned *paned)
 		gtk_paned_set_position(GTK_PANED(paned), min);
 }
 
+static void main_window_set_summary_arrow(MainWindow *mainwin)
+{
+	SummaryView *summaryview = mainwin->summaryview;
+	gchar *icon;
+
+	if (messageview_is_visible(mainwin->messageview)) {
+		icon = (prefs_common.layout_mode == VERTICAL_LAYOUT) ?
+				"pan-end-symbolic" : "pan-down-symbolic";
+		gtk_image_set_from_icon_name(GTK_IMAGE(summaryview->toggle_arrow),
+				icon, GTK_ICON_SIZE_MENU);
+		gtk_widget_set_tooltip_text(summaryview->toggle_arrow,
+				_("Hide Message view"));
+	} else {
+		icon = (prefs_common.layout_mode == VERTICAL_LAYOUT) ?
+				"pan-start-symbolic" : "pan-up-symbolic";
+		gtk_image_set_from_icon_name(GTK_IMAGE(summaryview->toggle_arrow),
+				icon, GTK_ICON_SIZE_MENU);
+		gtk_widget_set_tooltip_text(summaryview->toggle_arrow,
+				_("Show Message view"));
+	}
+}
+
 void main_window_toggle_message_view(MainWindow *mainwin)
 {
 	SummaryView *summaryview = mainwin->summaryview;
@@ -2756,12 +2779,7 @@ void main_window_toggle_message_view(MainWindow *mainwin)
 		break;
 	}
 
-	if (messageview_is_visible(mainwin->messageview))
-		 gtk_image_set_from_icon_name(GTK_IMAGE(mainwin->summaryview->toggle_arrow),
-					      "pan-down-symbolic", GTK_ICON_SIZE_MENU);
-	else
-		gtk_image_set_from_icon_name(GTK_IMAGE(mainwin->summaryview->toggle_arrow),
-					     "pan-up-symbolic", GTK_ICON_SIZE_MENU);
+	main_window_set_summary_arrow(mainwin);
 
 	if (mainwin->messageview->visible == FALSE)
 		messageview_clear(mainwin->messageview);
@@ -3774,13 +3792,6 @@ static void main_window_set_widgets(MainWindow *mainwin, LayoutType layout_mode)
 	headerview_set_visibility(mainwin->messageview->headerview,
 				  prefs_common.display_header_pane);
 
-	if (messageview_is_visible(mainwin->messageview))
-		gtk_image_set_from_icon_name(GTK_IMAGE(mainwin->summaryview->toggle_arrow),
-					      "pan-down-symbolic", GTK_ICON_SIZE_MENU);
-	else
-		gtk_image_set_from_icon_name(GTK_IMAGE(mainwin->summaryview->toggle_arrow),
-					      "pan-up-symbolic", GTK_ICON_SIZE_MENU);
-
 	gtk_window_move(GTK_WINDOW(mainwin->window),
 			prefs_common.mainwin_x,
 			prefs_common.mainwin_y);
@@ -3798,6 +3809,7 @@ static void main_window_set_widgets(MainWindow *mainwin, LayoutType layout_mode)
 
 	prefs_common.layout_mode = layout_mode;
 
+	main_window_set_summary_arrow(mainwin);
 	cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/ShowHide/MessageView", 
 		 messageview_is_visible(mainwin->messageview));
 
