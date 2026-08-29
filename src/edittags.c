@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 2007-2024 Colin Leroy and The Claws Mail Team
+ * Copyright (C) 2007-2026 the Claws Mail team and Colin Leroy
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -445,7 +445,7 @@ static void tags_window_add_tag(void)
 		if (id == -1) {
 			id = tags_add_tag(new_tag);
 			tags_write_tags();
-			if (mainwindow_get_mainwindow())
+			if (mainwindow_get_mainwindow() && tagswindow.msglist)
 				summary_set_tag(
 					mainwindow_get_mainwindow()->summaryview, 
 					id, NULL);
@@ -464,7 +464,7 @@ static void tags_window_add_tag(void)
 			GtkTreeModel *model = gtk_tree_view_get_model(
 				GTK_TREE_VIEW(tagswindow.taglist));
 
-			if (mainwindow_get_mainwindow())
+			if (mainwindow_get_mainwindow() && tagswindow.msglist)
 				summary_set_tag(
 					mainwindow_get_mainwindow()->summaryview, 
 					id, NULL);
