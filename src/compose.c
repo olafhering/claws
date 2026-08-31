@@ -8440,13 +8440,6 @@ static GtkWidget *compose_account_option_menu_create(Compose *compose)
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, HSPACING_NARROW);
 	from_name = gtk_entry_new();
-	
-	g_signal_connect_after(G_OBJECT(from_name), "grab_focus",
-			 G_CALLBACK(compose_grab_focus_cb), compose);
-	g_signal_connect_after(G_OBJECT(from_name), "changed",
-			 G_CALLBACK(compose_changed_cb), compose);
-	g_signal_connect_after(G_OBJECT(from_name), "activate",
-			 G_CALLBACK(from_name_activate_cb), optmenu);
 
 	for (; accounts != NULL; accounts = accounts->next, num++) {
 		PrefsAccount *ac = (PrefsAccount *)accounts->data;
@@ -8486,6 +8479,13 @@ static GtkWidget *compose_account_option_menu_create(Compose *compose)
 		g_free(name);
 		g_free(from);
 	}
+
+	g_signal_connect_after(G_OBJECT(from_name), "grab_focus",
+			 G_CALLBACK(compose_grab_focus_cb), compose);
+	g_signal_connect_after(G_OBJECT(from_name), "changed",
+			 G_CALLBACK(compose_changed_cb), compose);
+	g_signal_connect_after(G_OBJECT(from_name), "activate",
+			 G_CALLBACK(from_name_activate_cb), optmenu);
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(optmenu), def_menu);
 
