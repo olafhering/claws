@@ -1409,7 +1409,14 @@ static void account_list_set(void)
 		gtk_tree_model_get(model, &iter,
 				   ACCOUNT_DATA, &ac_prefs,
 				   -1);
-		if (ac_prefs)
+		/* A single account must map to exactly one list entry. While a
+		 * drag & drop reorder is in progress the store can transiently
+		 * hold the same account in two rows (GTK inserts the pointer copy
+		 * before deleting the source row); a copy-action drop can even
+		 * leave that duplicate row behind. Skip any account already added
+		 * so such a duplicate never reaches account_list (and hence never
+		 * gets written twice to accountrc). */
+		if (ac_prefs && !g_list_find(account_list, ac_prefs))
 			account_list = g_list_append(account_list, ac_prefs);
 	}
 }
@@ -1856,6 +1863,15 @@ static void drag_end(GtkTreeView *list_view,
 	g_signal_handlers_disconnect_by_func(G_OBJECT(model),
 					     G_CALLBACK(account_row_changed_while_drag_drop),
 					     list_view);
+
+	/* The drag is fully settled now (the row copy has been inserted AND the
+	 * source row deleted), so the store is in its final, correct state.
+	 * Rebuild account_list from it and regenerate the store from that list:
+	 * this drops any stray duplicate row a copy-action drop may have left and
+	 * discards the transient duplicate the row_changed hook captured while the
+	 * drag was mid-flight, so no duplicate account can survive to be saved. */
+	account_list_set();
+	account_list_view_set();
 }
 
 static void account_row_changed_while_drag_drop(GtkTreeModel *model, 
