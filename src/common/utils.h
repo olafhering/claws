@@ -304,10 +304,6 @@ gchar *strcasestr	(const gchar	*haystack,
 gchar *strncasestr	(const gchar	*haystack,
 			 gint		 haystack_len,
 			 const gchar	*needle);
-gpointer my_memmem	(gconstpointer	 haystack,
-			 size_t		 haystacklen,
-			 gconstpointer	 needle,
-			 size_t		 needlelen);
 gchar *strncpy2		(gchar		*dest,
 			 const gchar	*src,
 			 size_t		 n);

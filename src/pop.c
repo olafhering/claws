@@ -857,7 +857,7 @@ static gint pop3_write_msg_to_file(const gchar *file, const gchar *data,
 	 * ^data              ^prev            ^cur             data+len-1^ */
 
 	prev = data;
-	while ((cur = (gchar *)my_memmem(prev, len - (prev - data), "\r\n", 2))
+	while ((cur = (gchar *)memmem(prev, len - (prev - data), "\r\n", 2))
 	       != NULL) {
 		if ((cur > prev && claws_fwrite(prev, 1, cur - prev, fp) < 1) ||
 		    claws_fputc('\n', fp) == EOF) {
