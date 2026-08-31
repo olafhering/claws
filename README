@@ -593,7 +593,7 @@ https://www.claws-mail.org/bugzilla/index.cgi
   make install		[as root]
 
   You will need a full set of development tools installed to be able to run
-  autogen.sh. See also ac/README.
+  autogen.sh. See also m4/README.
 
 
 
