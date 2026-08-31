@@ -2120,6 +2120,7 @@ static gboolean folderview_key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 	switch (event->keyval) {
 	case GDK_KEY_Right:
+	case GDK_KEY_KP_Right:
 		if (folderview->selected) {
 			if (GTK_CMCTREE_ROW(folderview->selected)->children != NULL
 					&& !GTK_CMCTREE_ROW(folderview->selected)->expanded)
@@ -2158,6 +2159,7 @@ static gboolean folderview_key_pressed(GtkWidget *widget, GdkEventKey *event,
 		}
 		break;
 	case GDK_KEY_Left:
+	case GDK_KEY_KP_Left:
 		if (folderview->selected) {
 			/* If the folder is expanded and can be collapsed, do that... */
 			if (GTK_CMCTREE_ROW(folderview->selected)->expanded &&
@@ -2180,8 +2182,10 @@ static gboolean folderview_key_pressed(GtkWidget *widget, GdkEventKey *event,
 		}
 		break;
 	case GDK_KEY_Home:
+	case GDK_KEY_KP_Home:
 	case GDK_KEY_End:
-		if (event->keyval == GDK_KEY_Home)
+	case GDK_KEY_KP_End:
+		if (event->keyval == GDK_KEY_Home || event->keyval == GDK_KEY_KP_Home)
 			node = gtk_cmctree_node_nth(GTK_CMCTREE(folderview->ctree), 0);
 		else
 			node = gtk_cmctree_last(GTK_CMCTREE(folderview->ctree),

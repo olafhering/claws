@@ -7059,6 +7059,7 @@ static gboolean summary_key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 	switch (event->keyval) {
 	case GDK_KEY_Left:		/* Move focus */
+	case GDK_KEY_KP_Left:
 		adj = gtk_scrolled_window_get_hadjustment
 			(GTK_SCROLLED_WINDOW(summaryview->scrolledwin));
 		if (gtk_adjustment_get_lower(adj) != gtk_adjustment_get_value(adj))
@@ -7136,6 +7137,7 @@ static gboolean summary_key_pressed(GtkWidget *widget, GdkEventKey *event,
 
 	switch (event->keyval) {
 	case GDK_KEY_Delete:
+	case GDK_KEY_KP_Delete:
 		BREAK_ON_MODIFIER_KEY();
 		summary_delete_trash(summaryview);
 		break;
