@@ -686,6 +686,42 @@ void addressbook_refresh( void )
 
 static gboolean key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
+	/* Ctrl+C / Ctrl+X / Ctrl+V are clipboard keys. When a text widget has
+	 * the focus (e.g. while editing a contact embedded in this window), let
+	 * that widget do a text cut/copy/paste rather than the window's
+	 * address-object accelerators: GTK checks window accelerators before the
+	 * focused widget, so otherwise the accelerator fires first and, for
+	 * paste, rebuilds the list and closes the edit form. The object
+	 * cut/copy/paste keys keep working when the tree or list has the focus. */
+	if (event && (event->state
+			& (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SHIFT_MASK))
+			== GDK_CONTROL_MASK) {
+		GtkWidget *focus = gtk_window_get_focus(GTK_WINDOW(widget));
+
+		if (focus && (GTK_IS_EDITABLE(focus) || GTK_IS_TEXT_VIEW(focus))) {
+			const gchar *csignal = NULL;
+
+			switch (event->keyval) {
+			case GDK_KEY_c:
+			case GDK_KEY_C:
+				csignal = "copy-clipboard";
+				break;
+			case GDK_KEY_x:
+			case GDK_KEY_X:
+				csignal = "cut-clipboard";
+				break;
+			case GDK_KEY_v:
+			case GDK_KEY_V:
+				csignal = "paste-clipboard";
+				break;
+			}
+			if (csignal) {
+				g_signal_emit_by_name(G_OBJECT(focus), csignal);
+				return TRUE;
+			}
+		}
+	}
+
 	if (event && event->keyval == GDK_KEY_Escape)
 		addressbook_close();
 	else if (event && event->keyval == GDK_KEY_Delete) {
