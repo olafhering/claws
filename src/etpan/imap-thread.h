@@ -59,6 +59,8 @@ int imap_threaded_list(Folder * folder, const char * base,
 int imap_threaded_lsub(Folder * folder, const char * base,
 		       const char * wildcard,
 		       clist ** p_result);
+int imap_threaded_id(Folder * folder);
+
 int imap_threaded_login(Folder * folder,
 			const char * login, const char * password,
 			const char * type);

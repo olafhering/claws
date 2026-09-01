@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 #include "imap-thread.h"
 #include <imap.h>
+#include <libetpan/mailimap_id.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -1043,6 +1044,69 @@ int imap_threaded_login(Folder * folder,
 	
 	debug_print("imap login - end\n");
 	
+	return result.error;
+}
+
+
+struct id_param {
+	mailimap * imap;
+	struct mailimap_id_params_list * client_id;
+};
+
+struct id_result {
+	int error;
+};
+
+static void id_run(struct etpan_thread_op * op)
+{
+	struct id_param * param;
+	struct id_result * result;
+	struct mailimap_id_params_list * server_id;
+	int r;
+
+	param = op->param;
+	result = op->result;
+
+	CHECK_IMAP();
+
+	server_id = NULL;
+	r = mailimap_id(param->imap, param->client_id, &server_id);
+	if (server_id != NULL)
+		mailimap_id_params_list_free(server_id);
+
+	result->error = r;
+	if (param->imap->imap_response)
+		imap_logger_cmd(0, param->imap->imap_response, strlen(param->imap->imap_response));
+	debug_print("imap id run - end %i\n", r);
+}
+
+int imap_threaded_id(Folder * folder)
+{
+	struct id_param param;
+	struct id_result result;
+	struct mailimap_id_params_list * client_id;
+
+	debug_print("imap id - begin\n");
+
+	if (!folder)
+		return MAILIMAP_ERROR_INVAL;
+
+	/* identify ourselves (RFC 2971); required by some servers -- e.g.
+	 * outlook.com/office365 -- before they accept mailbox commands. */
+	client_id = mailimap_id_params_list_new_empty();
+	if (client_id == NULL)
+		return MAILIMAP_ERROR_MEMORY;
+	mailimap_id_params_list_add_name_value(client_id, strdup("name"), strdup("Claws Mail"));
+
+	param.imap = get_imap(folder);
+	param.client_id = client_id;
+
+	threaded_run(folder, &param, &result, id_run);
+
+	mailimap_id_params_list_free(client_id);
+
+	debug_print("imap id - end %i\n", result.error);
+
 	return result.error;
 }
 

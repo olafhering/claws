@@ -994,8 +994,19 @@ static gint imap_auth(IMAPSession *session, const gchar *user, const gchar *pass
 #endif
 	}
 
-	if (ok == MAILIMAP_NO_ERROR)
+	if (ok == MAILIMAP_NO_ERROR) {
 		session->authenticated = TRUE;
+		/* Some servers (e.g. outlook.com/office365) refuse mailbox
+		 * commands after a successful login with "User is authenticated
+		 * but not connected" until the client identifies itself via the
+		 * IMAP ID command (RFC 2971). Send it when the server advertises
+		 * the ID capability. Failure is non-fatal. Bug #4731. */
+		if (imap_has_capability(session, "ID")) {
+			r = imap_threaded_id(session->folder);
+			if (r != MAILIMAP_NO_ERROR)
+				debug_print("imap: ID command failed (%d), continuing\n", r);
+		}
+	}
 	else {
 		if (type == IMAP_AUTH_CRAM_MD5) {
 			ext_info = _("\n\nCRAM-MD5 logins only work if libetpan has been "
