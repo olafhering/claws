@@ -628,10 +628,12 @@ fi
 dnl want crash dialog
 if test $enable_crash_dialog = yes; then
 dnl check if GDB is somewhere
-	AC_CHECK_PROG(enable_crash_dialog, gdb, yes, no)
+	AC_CHECK_PROG(gdb_found, gdb, yes, no)
 	AC_MSG_CHECKING([whether to use crash dialog])
-	if test $enable_crash_dialog = yes; then
+	if test $gdb_found = yes; then
 		AC_DEFINE(CRASH_DIALOG, 1, Pop up crash dialog)
+	else
+		enable_crash_dialog=no
 	fi
 	AC_MSG_RESULT($enable_crash_dialog)
 fi
