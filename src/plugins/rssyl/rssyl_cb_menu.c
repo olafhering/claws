@@ -406,8 +406,12 @@ void rssyl_import_feed_list_cb(GtkAction *action, gpointer data)
 	ctx->current = g_slist_append(ctx->current, item);
 
 	/* Start the whole shebang - call libfeed's OPML parser with correct
-	 * user function */
+	 * user function. Importing is one user action: subscribing to each of
+	 * the feeds it contains must not ask about the offline mode again and
+	 * again. */
+	inc_offline_override_scope_begin();
 	opml_process(path, rssyl_opml_import_func, (gpointer)ctx);
+	inc_offline_override_scope_end();
 
 	g_free(ctx);
 }
