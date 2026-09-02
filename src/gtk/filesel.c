@@ -114,7 +114,7 @@ static GList *filesel_create(const gchar *title, const gchar *path,
 	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(chooser), multiple_files);
 
 	if (path && strlen(path) > 0) {
-		char *filename = NULL;
+		const char *filename = NULL;
 		char *realpath = g_strdup(path);
 		char *tmp = NULL;
 		if (path[strlen(path)-1] == G_DIR_SEPARATOR) {
