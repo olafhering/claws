@@ -63,6 +63,7 @@ struct _FancyViewer
 	MimeViewer        mimeviewer;
 	GtkWidget         *scrollwin;
 	WebKitWebView     *view;
+	gboolean          view_is_fresh;
 	GtkWidget         *vbox;
 	GtkWidget         *l_link;
 	/* Zoom Widgets  */

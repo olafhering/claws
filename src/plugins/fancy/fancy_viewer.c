@@ -72,6 +72,7 @@ static size_t download_file_curl_write_cb(void *buffer, size_t size,
 static void *download_file_curl (void *data);
 static void download_file_cb(GtkWidget *widget, FancyViewer *viewer);
 static gboolean fancy_set_contents(FancyViewer *viewer, gboolean use_defaults);
+static void fancy_reset_view(FancyViewer *viewer);
 
 /*------*/
 static GtkWidget *fancy_get_widget(MimeViewer *_viewer)
@@ -310,6 +311,8 @@ static gboolean fancy_set_contents(FancyViewer *viewer, gboolean use_defaults)
 
 		contents = file_read_to_str_no_recode(viewer->filename);
 		content_bytes = g_bytes_new(contents, strlen(contents));
+		/* Real content is now in the view, so the next clear must recreate it. */
+		viewer->view_is_fresh = FALSE;
 		webkit_web_view_load_bytes(viewer->view,
 					   content_bytes,
 					   "text/html",
@@ -426,12 +429,20 @@ static void fancy_clear_viewer(MimeViewer *_viewer)
 	FancyViewer *viewer = (FancyViewer *) _viewer;
 	GtkAdjustment *vadj;
 	viewer->cur_link = NULL;
+
+	/* Recreate the view (once per switch) so no frame from the previous
+	 * message can be shown while the next one loads. clear_viewer is called
+	 * several times per switch; the guard makes only the first call, when the
+	 * view still holds a message, recreate it. Persist the zoom level first,
+	 * as the old view (and its zoom) is about to be destroyed. */
+	if (!viewer->view_is_fresh) {
+		fancy_prefs.zoom_level = (int) webkit_web_view_get_zoom_level(viewer->view) * 100;
+		fancy_reset_view(viewer);
+	}
+
 	fancy_set_defaults(viewer);
 
-	webkit_web_view_load_uri(viewer->view, "about:blank");
-
 	debug_print("fancy_clear_viewer\n");
-	fancy_prefs.zoom_level = (int) webkit_web_view_get_zoom_level(viewer->view) * 100;
 	viewer->to_load = NULL;
 	vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(viewer->scrollwin));
 	gtk_adjustment_set_value(vadj, 0.0);
@@ -1086,6 +1097,69 @@ static void resource_load_failed_cb(WebKitWebView     *web_view,
 	debug_print("Loading error: %s\n", error->message);
 }
 
+static void fancy_reset_view(FancyViewer *viewer)
+{
+	/* Give the viewer a brand-new WebKit view. The view is cached and reused
+	 * across messages, and WebKit keeps presenting its previous message's
+	 * last rendered frame until the new content paints -- so reusing it makes
+	 * the old message flash when switching. A fresh view has no prior frame,
+	 * so nothing stale can be shown. Called at creation and, once per switch,
+	 * from fancy_clear_viewer. */
+	GtkStyleContext *sctx;
+	GdkRGBA bg;
+
+	debug_print("fancy_reset_view\n");
+
+	if (viewer->view != NULL)
+		/* Explicitly remove (not just destroy) the old view: WebKit defers
+		 * the view's teardown, so gtk_widget_destroy() does not unparent it
+		 * from the scrolled window synchronously, and adding the new view
+		 * below would then fail ('child_widget == NULL' assertion). The
+		 * remove drops the container's reference, which finalizes the old
+		 * view once WebKit releases its own references. */
+		gtk_container_remove(GTK_CONTAINER(viewer->scrollwin),
+				     GTK_WIDGET(viewer->view));
+
+	viewer->view = WEBKIT_WEB_VIEW(webkit_web_view_new());
+
+	/* Neutral GTK-theme background for the blank view shown between messages
+	 * (instead of WebKit's default white, which is jarring under dark themes). */
+	sctx = gtk_widget_get_style_context(viewer->scrollwin);
+	if (!gtk_style_context_lookup_color(sctx, "theme_bg_color", &bg)) {
+		bg.red = bg.green = bg.blue = 1.0;
+		bg.alpha = 1.0;
+	}
+	webkit_web_view_set_background_color(viewer->view, &bg);
+
+	gtk_container_add(GTK_CONTAINER(viewer->scrollwin), GTK_WIDGET(viewer->view));
+	gtk_widget_show(GTK_WIDGET(viewer->view));
+
+	g_signal_connect(G_OBJECT(viewer->view), "load-changed",
+			 G_CALLBACK(load_changed_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "mouse-target-changed",
+			G_CALLBACK(mouse_target_changed_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "notify::estimated-load-progress",
+			 G_CALLBACK(load_progress_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "decide-policy",
+			 G_CALLBACK(navigation_policy_cb), viewer);
+	/* These two are not signals of WebKitWebView in webkitgtk 4.x (resource
+	 * handling moved to the web extension); guard the connects so recreating
+	 * the view per message does not emit a warning for each one. Kept for
+	 * compatibility with WebKit versions where they do exist. */
+	if (g_signal_lookup("resource-request-starting", WEBKIT_TYPE_WEB_VIEW))
+		g_signal_connect(G_OBJECT(viewer->view), "resource-request-starting",
+				G_CALLBACK(resource_request_starting_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "context-menu",
+			G_CALLBACK(context_menu_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "key_press_event",
+			 G_CALLBACK(keypress_events_cb), viewer);
+	if (g_signal_lookup("resource-load-failed", WEBKIT_TYPE_WEB_VIEW))
+		g_signal_connect(G_OBJECT(viewer->view), "resource-load-failed",
+				 G_CALLBACK(resource_load_failed_cb), viewer);
+
+	viewer->view_is_fresh = TRUE;
+}
+
 static MimeViewer *fancy_viewer_create(void)
 {
 	FancyViewer    *viewer;
@@ -1104,7 +1178,6 @@ static MimeViewer *fancy_viewer_create(void)
 //	viewer->mimeviewer.text_search = fancy_text_search;
 	viewer->mimeviewer.scroll_page = fancy_scroll_page;
 	viewer->mimeviewer.scroll_one_line = fancy_scroll_one_line;
-	viewer->view = WEBKIT_WEB_VIEW(webkit_web_view_new());
 
 	viewer->settings = webkit_settings_new();
 	g_object_set(viewer->settings, "user-agent", "Fancy Viewer", NULL);
@@ -1113,8 +1186,9 @@ static MimeViewer *fancy_viewer_create(void)
 				       GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(viewer->scrollwin),
 					    GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(viewer->scrollwin),
-			  GTK_WIDGET(viewer->view));
+	/* Create the initial WebKit view; it is recreated per message in
+	 * fancy_clear_viewer via the same helper. */
+	fancy_reset_view(viewer);
 
 	viewer->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name(GTK_WIDGET(viewer->vbox), "fancy_viewer");
@@ -1183,27 +1257,8 @@ static MimeViewer *fancy_viewer_create(void)
 	gtk_widget_show(viewer->l_link);
 	gtk_widget_show(viewer->vbox);
 	gtk_widget_show(hbox);
-	gtk_widget_show(GTK_WIDGET(viewer->view));
 
-	g_signal_connect(G_OBJECT(viewer->view), "load-changed",
-			 G_CALLBACK(load_changed_cb), viewer);
-	g_signal_connect(G_OBJECT(viewer->view), "mouse-target-changed",
-			G_CALLBACK(mouse_target_changed_cb), viewer);
-
-	g_signal_connect(G_OBJECT(viewer->view), "notify::estimated-load-progress",
-			 G_CALLBACK(load_progress_cb), viewer);
-
-	g_signal_connect(G_OBJECT(viewer->view), "decide-policy",
-			 G_CALLBACK(navigation_policy_cb), viewer);
-
-	g_signal_connect(G_OBJECT(viewer->view), "resource-request-starting",
-			G_CALLBACK(resource_request_starting_cb), viewer);
-	g_signal_connect(G_OBJECT(viewer->view), "context-menu",
-			G_CALLBACK(context_menu_cb), viewer);
-/*	g_signal_connect(G_OBJECT(viewer->view), "button-press-event",
-			 G_CALLBACK(press_button_cb), viewer);
-	g_signal_connect(G_OBJECT(viewer->view), "button-release-event",
-			 G_CALLBACK(release_button_cb), viewer);*/
+	/* The view and its signals are set up in fancy_reset_view (above). */
 	g_signal_connect(G_OBJECT(viewer->ev_zoom_100), "button-press-event",
 			 G_CALLBACK(zoom_100_cb), (gpointer*)viewer);
 	g_signal_connect(G_OBJECT(viewer->ev_zoom_in), "button-press-event",
@@ -1214,11 +1269,6 @@ static MimeViewer *fancy_viewer_create(void)
 			 G_CALLBACK(fancy_prefs_cb), (gpointer *)viewer);
 	g_signal_connect(G_OBJECT(viewer->ev_stop_loading), "button-press-event",
 			 G_CALLBACK(stop_loading_cb), viewer);
-	g_signal_connect(G_OBJECT(viewer->view), "key_press_event",
-			 G_CALLBACK(keypress_events_cb), viewer);
-
-	g_signal_connect(G_OBJECT(viewer->view), "resource-load-failed",
-			 G_CALLBACK(resource_load_failed_cb), viewer);
 
 	webkit_web_context_register_uri_scheme(webkit_web_context_get_default(),
 			"cid", load_content_cb, viewer, NULL);
