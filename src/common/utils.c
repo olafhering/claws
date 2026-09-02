@@ -954,8 +954,8 @@ gboolean is_ascii_str(const gchar *str)
 
 static const gchar * line_has_quote_char_last(const gchar * str, const gchar *quote_chars)
 {
-	gchar * position = NULL;
-	gchar * tmp_pos = NULL;
+	const gchar * position = NULL;
+	const gchar * tmp_pos = NULL;
 	int i;
 
 	if (str == NULL || quote_chars == NULL)
@@ -1043,8 +1043,8 @@ gint check_line_length(const gchar *str, gint max_chars, gint *line)
 
 const gchar * line_has_quote_char(const gchar * str, const gchar *quote_chars)
 {
-	gchar * position = NULL;
-	gchar * tmp_pos = NULL;
+	const gchar * position = NULL;
+	const gchar * tmp_pos = NULL;
 	int i;
 
 	if (str == NULL || quote_chars == NULL)
@@ -2698,7 +2698,7 @@ gint open_uri(const gchar *uri, const gchar *cmdline)
 
 #ifndef G_OS_WIN32
 	gchar buf[BUFFSIZE];
-	gchar *p;
+	const gchar *p;
 	gchar encoded_uri[BUFFSIZE];
 	cm_return_val_if_fail(uri != NULL, -1);
 
@@ -2727,7 +2727,7 @@ gint open_uri(const gchar *uri, const gchar *cmdline)
 gint open_txt_editor(const gchar *filepath, const gchar *cmdline)
 {
 	gchar buf[BUFFSIZE];
-	gchar *p;
+	const gchar *p;
 
 	cm_return_val_if_fail(filepath != NULL, -1);
 
