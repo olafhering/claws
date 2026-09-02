@@ -27,7 +27,9 @@
 /* Claws Mail includes */
 #include <alertpanel.h>
 #include <folder.h>
+#include <inc.h>
 #include <log.h>
+#include <prefs_common.h>
 #include <common/utils.h>
 
 /* Local includes */
@@ -66,6 +68,14 @@ FolderItem *rssyl_subscribe(FolderItem *parent, const gchar *url,
 
 	g_return_val_if_fail(parent != NULL, FALSE);
 	g_return_val_if_fail(url != NULL, FALSE);
+
+	/* Offline check: subscribing fetches the feed. */
+	if( prefs_common_get_prefs()->work_offline &&
+			!inc_offline_should_override(TRUE,
+					_("Claws Mail needs network access in order "
+					"to subscribe to the feed.")) ) {
+		return NULL;
+	}
 
 	log_print(LOG_PROTOCOL, RSSYL_LOG_SUBSCRIBING, url);
 
