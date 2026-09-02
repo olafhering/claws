@@ -1745,7 +1745,18 @@ MimeInfo *messageview_get_selected_mime_part(MessageView *messageview)
 
 void messageview_copy_clipboard(MessageView *messageview)
 {
-	gchar *text = messageview_get_selection(messageview);
+	gchar *text;
+
+	/* let the active mime viewer copy its own selection when it can (e.g. the
+	   Fancy/WebKit viewer, whose selection is not reachable as plain text from
+	   this process); otherwise fall back to the text view selection */
+	if (messageview->mimeview->type == MIMEVIEW_VIEWER) {
+		MimeViewer *viewer = messageview->mimeview->mimeviewer;
+		if (viewer && viewer->copy_selection && viewer->copy_selection(viewer))
+			return;
+	}
+
+	text = messageview_get_selection(messageview);
 	if (text) {
 		gtk_clipboard_set_text(
 			gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),

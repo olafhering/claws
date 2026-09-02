@@ -424,6 +424,22 @@ static void fancy_print(MimeViewer *_viewer)
 	return sel;
 }*/
 
+static gboolean fancy_copy_selection(MimeViewer *_viewer)
+{
+	FancyViewer *viewer = (FancyViewer *) _viewer;
+
+	if (viewer->view == NULL)
+		return FALSE;
+
+	/* Have WebKit put its current selection on the clipboard itself. In
+	 * WebKit2 the selection text is not reachable synchronously from this (UI)
+	 * process, so get_selection() cannot return it as plain text; delegating
+	 * the Copy editing command is the reliable way to make Ctrl+C work. */
+	webkit_web_view_execute_editing_command(WEBKIT_WEB_VIEW(viewer->view),
+			WEBKIT_EDITING_COMMAND_COPY);
+	return TRUE;
+}
+
 static void fancy_clear_viewer(MimeViewer *_viewer)
 {
 	FancyViewer *viewer = (FancyViewer *) _viewer;
@@ -1171,6 +1187,7 @@ static MimeViewer *fancy_viewer_create(void)
 	viewer->mimeviewer.factory = &fancy_viewer_factory;
 	viewer->mimeviewer.get_widget = fancy_get_widget;
 //	viewer->mimeviewer.get_selection = fancy_get_selection;
+	viewer->mimeviewer.copy_selection = fancy_copy_selection;
 	viewer->mimeviewer.show_mimepart = fancy_show_mimepart;
 	viewer->mimeviewer.print = fancy_print;
 	viewer->mimeviewer.clear_viewer = fancy_clear_viewer;
