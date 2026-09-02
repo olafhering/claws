@@ -58,7 +58,12 @@ enum _ARCHIVE_FORMAT {
 		TAR,
 		SHAR,
 		PAX,
-		CPIO
+		CPIO,
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+		ZIP,
+		SEVEN_ZIP,
+		XAR
+#endif
 };
 
 typedef struct _MsgTrash MsgTrash;

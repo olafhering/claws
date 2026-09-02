@@ -54,7 +54,12 @@ typedef enum {
 	FORMAT_TAR,
 	FORMAT_SHAR,
 	FORMAT_CPIO,
-	FORMAT_PAX
+	FORMAT_PAX,
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	FORMAT_ZIP,
+	FORMAT_7ZIP,
+	FORMAT_XAR
+#endif
 } ArchiveFormat;
 
 struct _ArchiverPrefs

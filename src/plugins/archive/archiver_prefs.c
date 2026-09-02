@@ -139,6 +139,20 @@ static void foldersel_cb(GtkWidget *widget, gpointer data)
 	g_free(tmp);
 }
 
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+static void archiver_format_changed_cb(GtkComboBox *combo, gpointer data)
+{
+	struct ArchiverPrefsPage *page = (struct ArchiverPrefsPage *) data;
+	gint fmt = combobox_get_active_data(combo);
+	gboolean internal = (fmt == FORMAT_ZIP || fmt == FORMAT_7ZIP ||
+			     fmt == FORMAT_XAR);
+
+	/* ZIP, 7-Zip and XAR compress internally, so the compression choice
+	 * does not apply to them: grey the compression combo out. */
+	gtk_widget_set_sensitive(page->compression_combo, !internal);
+}
+#endif
+
 static void create_archiver_prefs_page(PrefsPage * _page,
 				       GtkWindow *window,
                                        gpointer data)
@@ -243,6 +257,11 @@ static void create_archiver_prefs_page(PrefsPage * _page,
 	COMBOBOX_ADD(menu, "SHAR", FORMAT_SHAR);
 	COMBOBOX_ADD(menu, "CPIO", FORMAT_CPIO);
 	COMBOBOX_ADD(menu, "PAX", FORMAT_PAX);
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	COMBOBOX_ADD(menu, "ZIP", FORMAT_ZIP);
+	COMBOBOX_ADD(menu, "7ZIP", FORMAT_7ZIP);
+	COMBOBOX_ADD(menu, "XAR", FORMAT_XAR);
+#endif
 	gtk_widget_show(format_combo);
 	gtk_box_pack_start(GTK_BOX (hbox1), format_combo, FALSE, FALSE, 0);
 	CLAWS_SET_TIP(format_combo,
@@ -289,6 +308,11 @@ static void create_archiver_prefs_page(PrefsPage * _page,
 	page->save_folder = save_folder;
 	page->compression_combo = compression_combo;
 	page->format_combo = format_combo;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	g_signal_connect(G_OBJECT(format_combo), "changed",
+			 G_CALLBACK(archiver_format_changed_cb), page);
+	archiver_format_changed_cb(GTK_COMBO_BOX(format_combo), page);
+#endif
 	page->recursive_chkbtn = recursive_chkbtn;
 	page->md5sum_chkbtn = md5sum_chkbtn;
 	page->rename_chkbtn = rename_chkbtn;

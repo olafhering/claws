@@ -462,6 +462,13 @@ const gchar* archive_create(const char* archive_name, GSList* files,
 
 	debug_print("File: %s\n", archive_name);
 	arch = archive_write_new();
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	/* ZIP, 7-Zip and XAR compress their entries internally; libarchive
+	 * does not put an external compression filter in front of them, so
+	 * ignore the chosen method and let the format use its own default. */
+	if (format == ZIP || format == SEVEN_ZIP || format == XAR)
+		method = NO_COMPRESS;
+#endif
 	switch (method) {
 		case GZIP:
 #if ARCHIVE_VERSION_NUMBER < 3000000
@@ -563,6 +570,20 @@ const gchar* archive_create(const char* archive_name, GSList* files,
 			if (archive_write_set_format_cpio(arch) != ARCHIVE_OK)
 				return archive_error_string(arch);
 			break;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+		case ZIP:
+			if (archive_write_set_format_zip(arch) != ARCHIVE_OK)
+				return archive_error_string(arch);
+			break;
+		case SEVEN_ZIP:
+			if (archive_write_set_format_7zip(arch) != ARCHIVE_OK)
+				return archive_error_string(arch);
+			break;
+		case XAR:
+			if (archive_write_set_format_xar(arch) != ARCHIVE_OK)
+				return archive_error_string(arch);
+			break;
+#endif
 		case NO_FORMAT:
 			return "Missing archive format";
 	}

@@ -302,11 +302,39 @@ static ARCHIVE_FORMAT get_archive_format(GSList* btn) {
 				debug_print("CPIO archive enabled\n");
 				return CPIO;
 			}
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+			else if (strcmp("ZIP", name) == 0) {
+				debug_print("ZIP archive enabled\n");
+				return ZIP;
+			}
+			else if (strcmp("7ZIP", name) == 0) {
+				debug_print("7ZIP archive enabled\n");
+				return SEVEN_ZIP;
+			}
+			else if (strcmp("XAR", name) == 0) {
+				debug_print("XAR archive enabled\n");
+				return XAR;
+			}
+#endif
 		}
 		btn = g_slist_next(btn);
 	}
 	return NO_FORMAT;
 }
+
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+static void cb_archive_format_toggled(GtkToggleButton* button, gpointer data) {
+	struct ArchivePage* page = (struct ArchivePage *) data;
+	ARCHIVE_FORMAT fmt = get_archive_format(page->archive_formats);
+	gboolean internal = (fmt == ZIP || fmt == SEVEN_ZIP || fmt == XAR);
+	GSList* cur;
+
+	/* ZIP, 7-Zip and XAR compress internally, so the compression choice
+	 * does not apply to them: grey the compression buttons out. */
+	for (cur = page->compress_methods; cur; cur = g_slist_next(cur))
+		gtk_widget_set_sensitive(GTK_WIDGET(cur->data), !internal);
+}
+#endif
 
 static void create_md5sum(const gchar* file, const gchar* md5_file) {
 	int fd;
@@ -745,6 +773,17 @@ static void show_result(struct ArchivePage* page) {
 		case CPIO:
 			format = g_strdup("CPIO");
 			break;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+		case ZIP:
+			format = g_strdup("ZIP");
+			break;
+		case SEVEN_ZIP:
+			format = g_strdup("7ZIP");
+			break;
+		case XAR:
+			format = g_strdup("XAR");
+			break;
+#endif
 		case NO_FORMAT:
 			format = g_strdup("NO FORMAT");
 	}
@@ -1040,6 +1079,11 @@ void archiver_gtk_show(void) {
 	GtkWidget* pax_radio_btn;
 	GtkWidget* cpio_radio_btn;
 	GtkWidget* tar_radio_btn;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	GtkWidget* zip_radio_btn;
+	GtkWidget* sevenzip_radio_btn;
+	GtkWidget* xar_radio_btn;
+#endif
 	struct ArchivePage* page;
 	MainWindow* mainwin = mainwindow_get_mainwindow();
 
@@ -1277,7 +1321,27 @@ void archiver_gtk_show(void) {
 	gtk_box_pack_start(GTK_BOX(hbox1), pax_radio_btn, FALSE, FALSE, 0);
 	archiver_set_tooltip(pax_radio_btn, g_strdup_printf(_("Choose this to use %s as format for the archive"), "PAX"));
 
-	page->archive_formats = 
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	zip_radio_btn = gtk_radio_button_new_with_mnemonic_from_widget(
+					GTK_RADIO_BUTTON(tar_radio_btn), "_ZIP");
+	gtk_widget_set_name(zip_radio_btn, "ZIP");
+	gtk_box_pack_start(GTK_BOX(hbox1), zip_radio_btn, FALSE, FALSE, 0);
+	archiver_set_tooltip(zip_radio_btn, g_strdup_printf(_("Choose this to use %s as format for the archive"), "ZIP"));
+
+	sevenzip_radio_btn = gtk_radio_button_new_with_mnemonic_from_widget(
+					GTK_RADIO_BUTTON(tar_radio_btn), "7_ZIP");
+	gtk_widget_set_name(sevenzip_radio_btn, "7ZIP");
+	gtk_box_pack_start(GTK_BOX(hbox1), sevenzip_radio_btn, FALSE, FALSE, 0);
+	archiver_set_tooltip(sevenzip_radio_btn, g_strdup_printf(_("Choose this to use %s as format for the archive"), "7ZIP"));
+
+	xar_radio_btn = gtk_radio_button_new_with_mnemonic_from_widget(
+					GTK_RADIO_BUTTON(tar_radio_btn), "XA_R");
+	gtk_widget_set_name(xar_radio_btn, "XAR");
+	gtk_box_pack_start(GTK_BOX(hbox1), xar_radio_btn, FALSE, FALSE, 0);
+	archiver_set_tooltip(xar_radio_btn, g_strdup_printf(_("Choose this to use %s as format for the archive"), "XAR"));
+#endif
+
+	page->archive_formats =
 			gtk_radio_button_get_group(GTK_RADIO_BUTTON(tar_radio_btn));
 
 	switch (archiver_prefs.format) {
@@ -1293,7 +1357,28 @@ void archiver_gtk_show(void) {
 	case FORMAT_PAX:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pax_radio_btn), TRUE);
 		break;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	case FORMAT_ZIP:
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(zip_radio_btn), TRUE);
+		break;
+	case FORMAT_7ZIP:
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sevenzip_radio_btn), TRUE);
+		break;
+	case FORMAT_XAR:
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(xar_radio_btn), TRUE);
+		break;
+#endif
 	}
+
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+	{
+		GSList* cur;
+		for (cur = page->archive_formats; cur; cur = g_slist_next(cur))
+			g_signal_connect(G_OBJECT(cur->data), "toggled",
+					 G_CALLBACK(cb_archive_format_toggled), page);
+	}
+	cb_archive_format_toggled(NULL, page);
+#endif
 
 	frame = gtk_frame_new(_("Miscellaneous options"));
 	gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_ETCHED_OUT);
