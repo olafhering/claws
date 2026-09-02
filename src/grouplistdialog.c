@@ -291,7 +291,7 @@ static void grouplist_hash_set_branch_node(const gchar *name,
 
 static gchar *grouplist_get_parent_name(const gchar *name)
 {
-	gchar *p;
+	const gchar *p;
 
 	p = strrchr(name, '.');
 	if (!p)

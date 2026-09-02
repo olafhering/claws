@@ -381,7 +381,7 @@ static void pine_parse_address( PineFile *pineFile, AddressCache *cache, Pine_Pa
 	gchar addr[ PINEBUFSIZE ];
 	const gchar *bp;
 	const gchar *ep;
-	gchar *atCh;
+	const gchar *atCh;
 	gchar *name;
 	gint len;
 

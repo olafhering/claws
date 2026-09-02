@@ -1712,7 +1712,7 @@ static int perl_load_file(void)
   gchar *perlfilter;
   gchar **cmdline;
   gchar buf[1024];
-  gchar *pp;
+  const gchar *pp;
   STRLEN n_a;
 
   call_argv("ClawsMail::Filter::Matcher::filter_init_",

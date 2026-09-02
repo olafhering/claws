@@ -2305,7 +2305,7 @@ static void mimeview_view_file(const gchar *filename, MimeInfo *partinfo,
 			       const gchar *cmd, MimeView *mimeview)
 {
 #ifndef G_OS_WIN32
-	gchar *p;
+	const gchar *p;
 	gchar buf[BUFFSIZE];
 
 	if (cmd == NULL)

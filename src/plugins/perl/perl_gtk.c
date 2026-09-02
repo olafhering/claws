@@ -79,7 +79,7 @@ void perl_gtk_done(void)
 static void perl_filter_edit(GtkAction *action, gpointer callback_data)
 {
   gchar *perlfilter;
-  gchar *pp;
+  const gchar *pp;
   gchar buf[1024];
   gchar **cmdline;
 

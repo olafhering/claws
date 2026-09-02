@@ -352,7 +352,7 @@ int partial_unmark(MsgInfo *msginfo)
 void partial_delete_old(const gchar *file) 
 {
 	gchar *id = g_strdup(file);
-	gchar *snum = strrchr(file, ':');
+	const gchar *snum = strrchr(file, ':');
 	int num = 0;
 	FolderItem *item = NULL;
 
