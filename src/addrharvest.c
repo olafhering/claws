@@ -413,9 +413,9 @@ static void addrharvest_del_email( gchar *name, gchar *str ) {
  *     "axle.rose@netscape.com" <axle.rose@netscape.com>
  * The last occurrence of the at character is detected.
  */
-static gchar *addrharvest_find_at( const gchar *buffer ) {
-	gchar *atCh;
-	gchar *p;
+static const gchar *addrharvest_find_at( const gchar *buffer ) {
+	const gchar *atCh;
+	const gchar *p;
 
 	atCh = strchr( buffer, '@' );
 	if( atCh ) {
@@ -481,7 +481,8 @@ static void addrharvest_find_address(
  */
 static gchar *addrharvest_extract_address( gchar *buffer ) {
 	gchar *addr;
-	gchar *atCh, *p, *bp, *ep;
+	const gchar *atCh;
+	gchar *p, *bp, *ep;
 	gint len;
 
 	addr = NULL;
@@ -489,7 +490,7 @@ static gchar *addrharvest_extract_address( gchar *buffer ) {
 	if( atCh ) {
 		/* Search back for start of address */
 		bp = NULL;
-		p = atCh;
+		p = (gchar *)atCh;
 		while( p >= buffer ) {
 			bp = p;
 			if( *p == '<' ) {
@@ -502,7 +503,7 @@ static gchar *addrharvest_extract_address( gchar *buffer ) {
 
 		/* Search fwd for end */
 		ep = NULL;
-		ep = p = atCh;
+		ep = p = (gchar *)atCh;
 		while( *p ) {
 			if( *p == '>' ) {
 				*p = ' ';
@@ -541,8 +542,8 @@ static void addrharvest_parse_address(
 {
 	gchar buffer[ ADDR_BUFFSIZE + 2 ];
 	const gchar *bp;
-	const gchar *ep;
-	gchar *atCh, *email, *name;
+	const gchar *ep, *atCh;
+	gchar *email, *name;
 	gint bufLen;
 
 	/* Search for an address */
