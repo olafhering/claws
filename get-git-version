@@ -2,7 +2,7 @@
 if test -d .git; then
   git=`command -v git`
   if test -x "$git"; then
-    version=`git describe --abbrev=6 --dirty --always`
+    version=`git describe --abbrev=6 --always`
     echo "echo $version" > ./version
   else
     echo "Error: *** git not found. See http://git-scm.com/"
