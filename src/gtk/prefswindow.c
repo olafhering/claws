@@ -236,6 +236,33 @@ static gint prefswindow_tree_sort_by_weight(GtkTreeModel *model,
 {
 	gfloat f1, f2;
 	gint i1, i2;
+	GtkTreeIter parent;
+
+	/* Sort the children of the "Plugins" node alphabetically by name,
+	 * regardless of their weight, so the plugin list is easy to scan.
+	 * The sort func only ever compares siblings, so a's parent equals
+	 * b's parent and checking a's parent is enough. */
+	if (gtk_tree_model_iter_parent(model, &parent, a)) {
+		gchar *pname = NULL;
+
+		gtk_tree_model_get(model, &parent, PREFS_PAGE_TITLE, &pname, -1);
+		if (pname != NULL && strcmp(pname, _("Plugins")) == 0) {
+			gchar *n1 = NULL, *n2 = NULL;
+			gint cmp;
+
+			gtk_tree_model_get(model, a, PREFS_PAGE_TITLE, &n1, -1);
+			gtk_tree_model_get(model, b, PREFS_PAGE_TITLE, &n2, -1);
+			cmp = g_utf8_collate(n1 != NULL ? n1 : "",
+					     n2 != NULL ? n2 : "");
+			g_free(n1);
+			g_free(n2);
+			g_free(pname);
+			/* the sort column is GTK_SORT_DESCENDING, so negate
+			 * to get an ascending A->Z display */
+			return -cmp;
+		}
+		g_free(pname);
+	}
 
 	/* From observation sorting should keep in account the original
 	 * order in the prefs_pages list. I.e. if equal weight, prefer 
