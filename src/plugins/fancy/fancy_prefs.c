@@ -54,6 +54,9 @@ struct _FancyPrefsPage {
 	PrefsPage page;
 	GtkWidget *enable_images;
 	GtkWidget *enable_remote_content;
+	GtkWidget *whitelist_ab;
+	GtkWidget *whitelist_ab_folder_combo;
+	GtkWidget *whitelist_ab_select_btn;
 	GtkWidget *enable_scripts;
 	GtkWidget *enable_plugins;
 	GtkWidget *enable_java;
@@ -67,6 +70,10 @@ static PrefParam param[] = {
 		{"enable_images", "TRUE", &fancy_prefs.enable_images, P_BOOL,
 		NULL, NULL, NULL},
 		{"enable_remote_content", "FALSE", &fancy_prefs.enable_remote_content, P_BOOL,
+		NULL, NULL, NULL},
+		{"whitelist_ab", "FALSE", &fancy_prefs.whitelist_ab, P_BOOL,
+		NULL, NULL, NULL},
+		{"whitelist_ab_folder", N_("Any"), &fancy_prefs.whitelist_ab_folder, P_STRING,
 		NULL, NULL, NULL},
 		{"enable_scripts", "FALSE", &fancy_prefs.enable_scripts, P_BOOL,
 		NULL, NULL, NULL},
@@ -125,6 +132,45 @@ void fancy_prefs_done(void)
 	prefs_gtk_unregister_page((PrefsPage *) &fancy_prefs_page);
 }
 
+#ifndef USE_ALT_ADDRBOOK
+static void fancy_whitelist_ab_select_cb(GtkWidget *widget, gpointer data)
+{
+	FancyPrefsPage *prefs_page = (FancyPrefsPage *) data;
+	const gchar *folderpath = NULL;
+	gchar *new_path = NULL;
+
+	folderpath = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((prefs_page->whitelist_ab_folder_combo)))));
+	new_path = addressbook_folder_selection(folderpath);
+	if (new_path) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((prefs_page->whitelist_ab_folder_combo)))), new_path);
+		g_free(new_path);
+	}
+}
+#endif
+
+static void whitelist_set_sensitivity(FancyPrefsPage *prefs_page)
+{
+	gboolean remote_enabled = gtk_toggle_button_get_active(
+					GTK_TOGGLE_BUTTON(prefs_page->enable_remote_content));
+	gboolean whitelist_enabled = gtk_toggle_button_get_active(
+					GTK_TOGGLE_BUTTON(prefs_page->whitelist_ab));
+
+	gtk_widget_set_sensitive(prefs_page->whitelist_ab, remote_enabled);
+	gtk_widget_set_sensitive(prefs_page->whitelist_ab_folder_combo,
+				 remote_enabled && whitelist_enabled);
+#ifndef USE_ALT_ADDRBOOK
+	gtk_widget_set_sensitive(prefs_page->whitelist_ab_select_btn,
+				 remote_enabled && whitelist_enabled);
+#else
+	gtk_widget_set_sensitive(prefs_page->whitelist_ab_select_btn, FALSE);
+#endif
+}
+
+static void whitelist_checkbox_toggled_cb(GtkWidget *button, FancyPrefsPage *prefs_page)
+{
+	whitelist_set_sensitivity(prefs_page);
+}
+
 static void remote_content_set_labels_cb(GtkWidget *button, FancyPrefsPage *prefs_page)
 {
 	GtkTreeModel *model;
@@ -163,6 +209,7 @@ static void remote_content_set_labels_cb(GtkWidget *button, FancyPrefsPage *pref
 					   _("Do nothing (remote content is disabled)"), -1);
 	}
 
+	whitelist_set_sensitivity(prefs_page);
 }
 static void create_fancy_prefs_page(PrefsPage *page, GtkWindow *window,
 									gpointer data)
@@ -179,6 +226,10 @@ static void create_fancy_prefs_page(PrefsPage *page, GtkWindow *window,
 	GtkWidget *vbox_remote;
 	GtkWidget *remote_label;
 	GtkWidget *enable_remote_content;
+	GtkWidget *whitelist_ab_checkbtn;
+	GtkWidget *whitelist_ab_folder_combo;
+	GtkWidget *whitelist_ab_select_btn;
+	GtkWidget *hbox_whitelist, *spacer;
 	GtkWidget *enable_images;
 	GtkWidget *enable_scripts;
 	GtkWidget *enable_plugins;
@@ -222,6 +273,37 @@ static void create_fancy_prefs_page(PrefsPage *page, GtkWindow *window,
 				     fancy_prefs.enable_remote_content);
 	gtk_box_pack_start (GTK_BOX (vbox_remote), remote_label, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox_remote), enable_remote_content, FALSE, FALSE, 0);
+
+	hbox_whitelist = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+	gtk_box_pack_start (GTK_BOX (vbox_remote), hbox_whitelist, FALSE, FALSE, 0);
+
+	spacer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_widget_set_size_request(spacer, 12, -1);
+	gtk_box_pack_start(GTK_BOX(hbox_whitelist), spacer, FALSE, FALSE, 0);
+
+	whitelist_ab_checkbtn = gtk_check_button_new_with_label(
+			_("Only for senders found in address book/folder"));
+	gtk_box_pack_start(GTK_BOX(hbox_whitelist), whitelist_ab_checkbtn, FALSE, FALSE, 0);
+
+	whitelist_ab_folder_combo = combobox_text_new(TRUE, _("Any"), NULL);
+	gtk_widget_set_size_request(whitelist_ab_folder_combo, 100, -1);
+	gtk_box_pack_start (GTK_BOX (hbox_whitelist), whitelist_ab_folder_combo, TRUE, TRUE, 0);
+
+	whitelist_ab_select_btn = gtk_button_new_with_label(_("Select ..."));
+	gtk_box_pack_start (GTK_BOX (hbox_whitelist), whitelist_ab_select_btn, FALSE, FALSE, 0);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(whitelist_ab_checkbtn),
+				     fancy_prefs.whitelist_ab);
+	if (fancy_prefs.whitelist_ab_folder != NULL) {
+		/* translate "Any" (stored UNtranslated) */
+		if (strcasecmp(fancy_prefs.whitelist_ab_folder, "Any") == 0)
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))),
+					_("Any"));
+		else
+			gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN((whitelist_ab_folder_combo)))),
+					fancy_prefs.whitelist_ab_folder);
+	}
+
 	gtk_widget_show_all(vbox_remote);
 	
 	enable_images = gtk_check_button_new_with_label(("IMAGES"));
@@ -300,6 +382,9 @@ static void create_fancy_prefs_page(PrefsPage *page, GtkWindow *window,
 /*	prefs_page->proxy_checkbox = proxy_checkbox;
 	prefs_page->proxy_str = proxy_str; */
 	prefs_page->enable_remote_content = enable_remote_content;
+	prefs_page->whitelist_ab = whitelist_ab_checkbtn;
+	prefs_page->whitelist_ab_folder_combo = whitelist_ab_folder_combo;
+	prefs_page->whitelist_ab_select_btn = whitelist_ab_select_btn;
 	prefs_page->enable_images = enable_images;
 	prefs_page->enable_scripts = enable_scripts;
 	prefs_page->enable_plugins = enable_plugins;
@@ -310,6 +395,12 @@ static void create_fancy_prefs_page(PrefsPage *page, GtkWindow *window,
 
 	g_signal_connect(G_OBJECT(prefs_page->enable_remote_content), "toggled",
 			 G_CALLBACK(remote_content_set_labels_cb), prefs_page);
+	g_signal_connect(G_OBJECT(prefs_page->whitelist_ab), "toggled",
+			 G_CALLBACK(whitelist_checkbox_toggled_cb), prefs_page);
+#ifndef USE_ALT_ADDRBOOK
+	g_signal_connect(G_OBJECT(prefs_page->whitelist_ab_select_btn), "clicked",
+			 G_CALLBACK(fancy_whitelist_ab_select_cb), prefs_page);
+#endif
 	remote_content_set_labels_cb(NULL, prefs_page);
 }
 
@@ -386,6 +477,16 @@ static void save_fancy_prefs_page(PrefsPage *page)
 				(GTK_TOGGLE_BUTTON(prefs_page->enable_images));
 		fancy_prefs.enable_remote_content = gtk_toggle_button_get_active
 				(GTK_TOGGLE_BUTTON(prefs_page->enable_remote_content));
+		fancy_prefs.whitelist_ab = gtk_toggle_button_get_active
+				(GTK_TOGGLE_BUTTON(prefs_page->whitelist_ab));
+		g_free(fancy_prefs.whitelist_ab_folder);
+		fancy_prefs.whitelist_ab_folder = gtk_editable_get_chars(
+				GTK_EDITABLE(gtk_bin_get_child(GTK_BIN((prefs_page->whitelist_ab_folder_combo)))), 0, -1);
+		/* store UNtranslated "Any" */
+		if (g_utf8_collate(fancy_prefs.whitelist_ab_folder, _("Any")) == 0) {
+			g_free(fancy_prefs.whitelist_ab_folder);
+			fancy_prefs.whitelist_ab_folder = g_strdup("Any");
+		}
 		fancy_prefs.enable_scripts = gtk_toggle_button_get_active
 				(GTK_TOGGLE_BUTTON(prefs_page->enable_scripts));
 		fancy_prefs.enable_plugins = gtk_toggle_button_get_active

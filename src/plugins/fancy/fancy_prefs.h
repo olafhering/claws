@@ -30,6 +30,8 @@ struct _FancyPrefs
 
 	gboolean enable_images;
 	gboolean enable_remote_content;
+	gboolean whitelist_ab;
+	gchar *whitelist_ab_folder;
 	gboolean enable_scripts;
 	gboolean enable_plugins;
 	gboolean enable_java;

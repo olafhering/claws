@@ -34,6 +34,7 @@
 #include <utils.h>
 
 #include <printing.h>
+#include <addr_compl.h>
 
 static void load_changed_cb(WebKitWebView *view,
 		WebKitLoadEvent event,
@@ -177,9 +178,41 @@ static void fancy_open_external_activated(GtkCheckMenuItem *item, FancyViewer *v
 	fancy_apply_prefs(viewer);
 }
 
+static gboolean fancy_may_load_remote_content(FancyViewer *viewer)
+{
+	MessageView *messageview = ((MimeViewer *)viewer)->mimeview
+					? ((MimeViewer *)viewer)->mimeview->messageview
+					: NULL;
+	MsgInfo *msginfo = messageview ? messageview->msginfo : NULL;
+	gchar *ab_folderpath = NULL;
+	gboolean found;
+
+	/* remote content globally disabled -> never load */
+	if (!fancy_prefs.enable_remote_content)
+		return FALSE;
+
+	/* no whitelist restriction -> load for everyone */
+	if (!fancy_prefs.whitelist_ab)
+		return TRUE;
+
+	if (msginfo == NULL)
+		return FALSE;
+
+	if (fancy_prefs.whitelist_ab_folder != NULL &&
+	    *fancy_prefs.whitelist_ab_folder != '\0' &&
+	    strcasecmp(fancy_prefs.whitelist_ab_folder, "Any") != 0)
+		ab_folderpath = fancy_prefs.whitelist_ab_folder;
+
+	start_address_completion(ab_folderpath);
+	found = found_in_addressbook(msginfo->from);
+	end_address_completion();
+
+	return found;
+}
+
 static void fancy_set_defaults(FancyViewer *viewer)
 {
-	viewer->override_prefs_remote_content = fancy_prefs.enable_remote_content;
+	viewer->override_prefs_remote_content = fancy_may_load_remote_content(viewer);
 	viewer->override_prefs_external = fancy_prefs.open_external;
 	viewer->override_prefs_images = fancy_prefs.enable_images;
 	viewer->override_prefs_scripts = fancy_prefs.enable_scripts;
