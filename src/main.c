@@ -205,6 +205,7 @@ static struct RemoteCmd {
 	gboolean send;
 	gboolean crash;
 	int online_mode;
+	gboolean connection_status;
 	gchar   *crash_params;
 	gboolean exit;
 	gboolean subscribe;
@@ -1026,8 +1027,9 @@ int main(int argc, char *argv[])
 	install_basic_sighandlers();
 
 	if (cmd.status || cmd.status_full || cmd.search ||
-		cmd.statistics || cmd.reset_statistics || 
+		cmd.statistics || cmd.reset_statistics ||
 		cmd.cancel_receiving || cmd.cancel_sending ||
+		cmd.connection_status ||
 		cmd.debug) {
 		puts("0 Claws Mail not running.");
 		lock_socket_remove();
@@ -1980,6 +1982,8 @@ static void parse_cmd_opt(int argc, char *argv[])
 			cmd.online_mode = ONLINE_MODE_ONLINE;
 		} else if (!strcmp(argv[i], "--offline")) {
 			cmd.online_mode = ONLINE_MODE_OFFLINE;
+		} else if (!strcmp(argv[i], "--connection-status")) {
+			cmd.connection_status = TRUE;
 		} else if (!strcmp(argv[i], "--toggle-debug")) {
 			cmd.debug = TRUE;
 		} else if (!strcmp(argv[i], "--statistics")) {
@@ -2026,6 +2030,7 @@ static void parse_cmd_opt(int argc, char *argv[])
 			g_print("%s\n", _("  --import-mbox file     import the specified mbox file\n"));
 			g_print("%s\n", _("  --online               switch to online mode"));
 			g_print("%s\n", _("  --offline              switch to offline mode"));
+			g_print("%s\n", _("  --connection-status    show whether the connection mode is online or offline"));
 			g_print("%s\n", _("  --exit --quit -q       exit Claws Mail"));
 			g_print("%s\n", _("  --debug -d             debug mode"));
 			g_print("%s\n", _("  --toggle-debug         toggle debug mode"));
@@ -2435,6 +2440,19 @@ static gint prohibit_duplicate_launch(int *argc, char ***argv)
 		CM_FD_WRITE("online\n");
 	} else if (cmd.online_mode == ONLINE_MODE_OFFLINE) {
 		CM_FD_WRITE("offline\n");
+	} else if (cmd.connection_status) {
+		gchar buf[BUFFSIZE];
+
+		CM_FD_WRITE("connection_status\n");
+		for (;;) {
+			fd_gets(sock, buf, sizeof(buf) - 1);
+			buf[sizeof(buf) - 1] = '\0';
+			if (!STRNCMP(buf, ".\n")) break;
+			if (claws_fputs(buf, stdout) == EOF) {
+				g_warning("writing to stdout failed");
+				break;
+			}
+		}
 	} else if (cmd.debug) {
 		CM_FD_WRITE("debug\n");
  	} else if (cmd.status || cmd.status_full) {
@@ -2660,6 +2678,9 @@ static void lock_socket_input_cb(gpointer data,
 		folder_subscribe(buf + strlen("subscribe") + 1);
 	} else if (!STRNCMP(buf, "send")) {
 		send_queue();
+	} else if (!STRNCMP(buf, "connection_status")) {
+		CM_FD_WRITE_ALL(prefs_common.work_offline ? "offline\n" : "online\n");
+		CM_FD_WRITE_ALL(".\n");
 	} else if (!STRNCMP(buf, "online")) {
 		main_window_toggle_work_offline(mainwin, FALSE, FALSE);
 	} else if (!STRNCMP(buf, "offline")) {
