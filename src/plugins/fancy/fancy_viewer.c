@@ -542,52 +542,6 @@ static void load_content_cb(WebKitURISchemeRequest *request, gpointer viewer)
 	g_free(image);
 }
 
-static void resource_request_starting_cb(WebKitWebView		*view,
-					 WebKitWebResource	*resource,
-					 WebKitURIRequest	*request,
-					 WebKitURIResponse	*response,
-					 FancyViewer		*viewer)
-{
-	const gchar *uri = webkit_uri_request_get_uri(request);
-	gchar *filename;
-	gchar *image;
-	gint err;
-	MimeInfo *partinfo = viewer->to_load;
-
-	filename = viewer->filename;
-	if ((!g_ascii_strncasecmp(uri, "cid:", 4)) || (!g_ascii_strncasecmp(uri, "mid:", 4))) {
-		image = g_strconcat("<", uri + 4, ">", NULL);
-		while ((partinfo = procmime_mimeinfo_next(partinfo)) != NULL) {
-			if (partinfo->id && !g_ascii_strcasecmp(image, partinfo->id)) {
-				filename = procmime_get_tmp_file_name(partinfo);
-				if (!filename) {
-					g_free(image);
-					return;
-				}
-				if ((err = procmime_get_part(filename, partinfo)) < 0)
-					alertpanel_error(_("Couldn't save the part of multipart message: %s"),
-										g_strerror(-err));
-				gchar *file_uri = g_filename_to_uri(filename, NULL, NULL);
-				webkit_uri_request_set_uri(request, file_uri);
-				g_free(file_uri);
-				g_free(filename);
-				break;
-			}
-		}
-		g_free(image);
-	}
-	
-	/* refresh URI that may have changed */
-	uri = webkit_uri_request_get_uri(request);
-	if (!viewer->override_prefs_remote_content
-	    && strncmp(uri, "file://", 7) && strncmp(uri, "data:", 5)) {
-		debug_print("Preventing load of %s\n", uri);
-		webkit_uri_request_set_uri(request, "about:blank");
-	}
-	else
-		debug_print("Starting request of %"G_GSIZE_FORMAT" %s\n", strlen(uri), uri);
-}
-
 /*static gboolean fancy_text_search(MimeViewer *_viewer, gboolean backward,
 				  const gchar *str, gboolean case_sens)
 {
@@ -1105,12 +1059,23 @@ static void zoom_out_cb(GtkWidget *widget, GdkEvent *ev, FancyViewer *viewer)
         webkit_web_view_set_zoom_level(viewer->view, zoom_level);
 }
 
-static void resource_load_failed_cb(WebKitWebView     *web_view,
-				    WebKitWebResource *web_resource,
+static void resource_load_failed_cb(WebKitWebResource *web_resource,
 				    GError            *error,
 				    FancyViewer	      *viewer)
 {
 	debug_print("Loading error: %s\n", error->message);
+}
+
+static void resource_load_started_cb(WebKitWebView     *web_view,
+				     WebKitWebResource *web_resource,
+				     WebKitURIRequest  *request,
+				     FancyViewer       *viewer)
+{
+	/* webkitgtk 4.x has no per-resource "failed" signal on WebKitWebView
+	 * (the old "resource-load-failed"); reach it through the resource that
+	 * "resource-load-started" hands us. */
+	g_signal_connect(G_OBJECT(web_resource), "failed",
+			 G_CALLBACK(resource_load_failed_cb), viewer);
 }
 
 static void fancy_reset_view(FancyViewer *viewer)
@@ -1158,20 +1123,12 @@ static void fancy_reset_view(FancyViewer *viewer)
 			 G_CALLBACK(load_progress_cb), viewer);
 	g_signal_connect(G_OBJECT(viewer->view), "decide-policy",
 			 G_CALLBACK(navigation_policy_cb), viewer);
-	/* These two are not signals of WebKitWebView in webkitgtk 4.x (resource
-	 * handling moved to the web extension); guard the connects so recreating
-	 * the view per message does not emit a warning for each one. Kept for
-	 * compatibility with WebKit versions where they do exist. */
-	if (g_signal_lookup("resource-request-starting", WEBKIT_TYPE_WEB_VIEW))
-		g_signal_connect(G_OBJECT(viewer->view), "resource-request-starting",
-				G_CALLBACK(resource_request_starting_cb), viewer);
 	g_signal_connect(G_OBJECT(viewer->view), "context-menu",
 			G_CALLBACK(context_menu_cb), viewer);
 	g_signal_connect(G_OBJECT(viewer->view), "key_press_event",
 			 G_CALLBACK(keypress_events_cb), viewer);
-	if (g_signal_lookup("resource-load-failed", WEBKIT_TYPE_WEB_VIEW))
-		g_signal_connect(G_OBJECT(viewer->view), "resource-load-failed",
-				 G_CALLBACK(resource_load_failed_cb), viewer);
+	g_signal_connect(G_OBJECT(viewer->view), "resource-load-started",
+			 G_CALLBACK(resource_load_started_cb), viewer);
 
 	viewer->view_is_fresh = TRUE;
 }
