@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -255,7 +255,6 @@ static void alertpanel_create(const gchar *title,
 	GtkWidget *image;
 	GtkWidget *label;
 	GtkWidget *hbox;
-	GtkWidget *content_area;
 	GtkWidget *vbox;
 	GtkWidget *disable_checkbtn;
 	GtkWidget *confirm_area;
@@ -287,14 +286,12 @@ static void alertpanel_create(const gchar *title,
 			 G_CALLBACK(alertpanel_close),
 			 (gpointer)G_ALERTCANCEL);
 
-	content_area = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-	gtk_widget_set_size_request(GTK_WIDGET(content_area), 450, 100);
-	gtk_container_add (GTK_CONTAINER(window), content_area);
 	/* for title icon, label and message */
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+	gtk_widget_set_size_request(GTK_WIDGET(hbox), 450, 100);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox), 12);
 
-	gtk_container_add (GTK_CONTAINER(content_area), hbox);
+	gtk_container_add (GTK_CONTAINER(window), hbox);
 	
 	/* title icon */
 	switch (alert_type) {
