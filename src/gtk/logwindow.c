@@ -106,7 +106,7 @@ LogWindow *log_window_create(LogInstance instance)
 
 	scrolledwin = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),
-				       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+				       GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin),
 					    GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(window), scrolledwin);
@@ -114,7 +114,7 @@ LogWindow *log_window_create(LogInstance instance)
 
 	text = gtk_text_view_new();
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text), FALSE);
-	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_WORD_CHAR);
 	logwin->buffer = buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
 
 	g_object_ref(G_OBJECT(logwin->buffer));
