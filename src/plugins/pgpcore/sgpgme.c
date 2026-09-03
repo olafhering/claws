@@ -507,7 +507,6 @@ gchar *sgpgme_sigstat_info_short(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 
 gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 {
-	gint i = 0;
 	GString *siginfo;
 	gpgme_signature_t sig = NULL;
 
@@ -584,7 +583,6 @@ gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 			break;
 		}
 		if (sig->status != GPG_ERR_BAD_SIGNATURE) {
-			gint j = 1;
 			if (key) {
 				tmp = key->uids ? key->uids->next : NULL;
 				while (tmp != NULL) {
@@ -592,7 +590,6 @@ gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 						_("                    uid \"%s\" (Validity: %s)\n"),
 						tmp->uid,
 						tmp->revoked==TRUE?_("Revoked"):get_validity_str(tmp->validity));
-					j++;
 					tmp = tmp->next;
 				}
 			}
@@ -631,7 +628,6 @@ gchar *sgpgme_sigstat_info_full(gpgme_ctx_t ctx, gpgme_verify_result_t status)
 		}
 
 		g_string_append(siginfo, "\n");
-		i++;
 		sig = sig->next;
 		gpgme_key_unref(key);
 	}

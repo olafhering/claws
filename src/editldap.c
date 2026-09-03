@@ -219,7 +219,6 @@ static void edit_ldap_server_check( void ) {
 	gint iPort, iTime;
 	gchar *sMsg;
 	gchar *sBaseDN = NULL;
-	gint iBaseDN = 0;
 	gboolean flg;
 	gboolean tls = FALSE, ssl = FALSE;
 	GList *baseDN = NULL;
@@ -248,7 +247,6 @@ static void edit_ldap_server_check( void ) {
 			if( baseDN ) {
 				GList *node = baseDN;
 				while( node ) {
-					++iBaseDN;
 					if( ! sBaseDN ) {
 						sBaseDN = g_strdup( node->data );
 					}

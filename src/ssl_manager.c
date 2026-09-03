@@ -332,7 +332,6 @@ static void ssl_manager_load_certs (void)
 	const gchar *d;
 	GError *error = NULL;
 	gchar *path;
-	int row = 0;
 	GtkListStore *store;
 
 	store = GTK_LIST_STORE(gtk_tree_view_get_model
@@ -375,7 +374,6 @@ static void ssl_manager_load_certs (void)
 			g_free(port);
 		if (fp)
 			g_free(fp);
-		row++;
 	}
 	g_dir_close(dir);
 	g_free(path);

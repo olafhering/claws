@@ -615,7 +615,6 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 	GList *qlist;
 	Pop3Session *pop3_session;
 	IncState inc_state;
-	gint error_num = 0;
 	gint new_msgs = 0;
 	gchar *msg;
 	gchar *fin_msg;
@@ -796,7 +795,6 @@ static gint inc_start(IncProgressDialog *inc_dialog)
 		pop3_write_uidl_list(pop3_session);
 
 		if (inc_state != INC_SUCCESS && inc_state != INC_CANCEL) {
-			error_num++;
 			if (inc_dialog->show_dialog)
 				manage_window_focus_in
 					(inc_dialog->dialog->window,
