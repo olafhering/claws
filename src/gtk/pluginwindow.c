@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2024 the Claws Mail Team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail Team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,8 +102,10 @@ static void set_plugin_list(PluginWindow *pluginwindow)
 				(pluginwindow->plugin_list_view)));
  	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(store),
                                              0, GTK_SORT_ASCENDING);
+	pluginwindow->loading = TRUE;
 	gtk_list_store_clear(store);
-	
+	pluginwindow->loading = FALSE;
+
 	textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(pluginwindow->plugin_desc));
 	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(pluginwindow->plugin_desc), FALSE);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(pluginwindow->plugin_desc), FALSE);
@@ -145,6 +147,9 @@ static void set_plugin_list(PluginWindow *pluginwindow)
 
 static void select_row_cb(Plugin *plugin, PluginWindow *pluginwindow)
 {
+	if (pluginwindow->loading)
+		return;
+
 	GtkTextView *plugin_desc = GTK_TEXT_VIEW(pluginwindow->plugin_desc);
 	GtkTextBuffer *textbuf = gtk_text_view_get_buffer(plugin_desc);
 	GtkTextIter start_iter, end_iter;
