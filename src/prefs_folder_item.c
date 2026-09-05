@@ -202,6 +202,8 @@ static gboolean templates_save_recurse_func(GNode *node, gpointer data);
 
 static void clean_cache_cb(GtkWidget *widget, gpointer data);
 static void folder_regexp_test_cb(GtkWidget *widget, gpointer data);
+static gboolean prefs_folder_item_simplify_regexp_is_valid(FolderItemGeneralPage *page);
+static gboolean prefs_folder_item_general_can_close_func(PrefsPage *page_);
 static void folder_regexp_set_subject_example_cb(GtkWidget *widget, gpointer data);
 
 #define SAFE_STRING(str) \
@@ -835,14 +837,22 @@ static void general_save_folder_prefs(FolderItem *folder, FolderItemGeneralPage 
 
 	if (all || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->simplify_subject_rec_checkbtn))) {
 		gboolean old_simplify_subject = prefs->enable_simplify_subject;
-		int regexp_diffs = g_strcmp0(prefs->simplify_subject_regexp, gtk_editable_get_chars(
-					GTK_EDITABLE(page->entry_simplify_subject), 0, -1));
-		prefs->enable_simplify_subject =
-			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_simplify_subject));
-		ASSIGN_STRING(prefs->simplify_subject_regexp,
-			      gtk_editable_get_chars(GTK_EDITABLE(page->entry_simplify_subject), 0, -1));
-		if (old_simplify_subject != prefs->enable_simplify_subject || regexp_diffs != 0)
-			summary_update_needed = TRUE;
+		gchar *new_regexp = gtk_editable_get_chars(
+				GTK_EDITABLE(page->entry_simplify_subject), 0, -1);
+		int regexp_diffs = g_strcmp0(prefs->simplify_subject_regexp, new_regexp);
+
+		/* Apply reaches this without going through can_close(), so a broken
+		   expression is refused here too: the stored one is kept rather than
+		   replaced by something that errors on every display */
+		if (prefs_folder_item_simplify_regexp_is_valid(page)) {
+			prefs->enable_simplify_subject =
+				gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->checkbtn_simplify_subject));
+			ASSIGN_STRING(prefs->simplify_subject_regexp, new_regexp);
+			if (old_simplify_subject != prefs->enable_simplify_subject || regexp_diffs != 0)
+				summary_update_needed = TRUE;
+		} else {
+			g_free(new_regexp);
+		}
 	}
 
 	if (all || gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(page->folder_chmod_rec_checkbtn))) {
@@ -1956,6 +1966,61 @@ static regex_t *summary_compile_simplify_regexp(gchar *simplify_subject_regexp)
 	return preg;
 }
 
+/* Refuse to close the folder properties while the Simplify Subject RegExp is
+   invalid. Without this the dialogue closed and stored the broken expression,
+   and the error surfaced only later -- every time the folder was displayed,
+   from summary_set_prefs_from_folderitem(). */
+/* TRUE when the Simplify Subject RegExp is usable: the option is off, the
+   expression is empty, or it compiles. Reports the regerror() text otherwise.
+   Used both by can_close (the OK button) and by the save function, because
+   prefswindow only queries can_close for OK -- Apply goes straight to
+   save_all_pages(), so the check has to happen there as well. */
+static gboolean prefs_folder_item_simplify_regexp_is_valid(FolderItemGeneralPage *page)
+{
+	gchar *regexp;
+	gchar buf[BUFFSIZE];
+	regex_t preg;
+	int err;
+
+	if (!gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(page->checkbtn_simplify_subject)))
+		return TRUE;
+
+	regexp = gtk_editable_get_chars(
+			GTK_EDITABLE(page->entry_simplify_subject), 0, -1);
+	if (regexp == NULL || *regexp == '\0') {
+		g_free(regexp);
+		return TRUE;
+	}
+
+	err = regcomp(&preg, regexp, REG_EXTENDED);
+	g_free(regexp);
+	if (err != 0) {
+		/* POSIX leaves preg undefined when regcomp() fails, so it is not
+		   passed to regfree() here */
+		regerror(err, &preg, buf, sizeof buf);
+		alertpanel_error(_("Regular expression (regexp) error:\n%s"), buf);
+		return FALSE;
+	}
+	regfree(&preg);
+
+	return TRUE;
+}
+
+/* Refuse to close the folder properties while the Simplify Subject RegExp is
+   invalid. Without this the dialogue closed and stored the broken expression,
+   and the error surfaced only later -- every time the folder was displayed,
+   from summary_set_prefs_from_folderitem(). */
+static gboolean prefs_folder_item_general_can_close_func(PrefsPage *page_)
+{
+	FolderItemGeneralPage *page = (FolderItemGeneralPage *) page_;
+
+	if (!page->page.page_open)
+		return TRUE;
+
+	return prefs_folder_item_simplify_regexp_is_valid(page);
+}
+
 static void folder_regexp_test_cb(GtkWidget *widget, gpointer data)
 {
 	GdkColor red = { (guint32)0, (guint16)0xff, (guint16)0x70, (guint16)0x70 };
@@ -1978,16 +2043,23 @@ static void folder_regexp_test_cb(GtkWidget *widget, gpointer data)
 		return;
 	}
 
+	preg = summary_compile_simplify_regexp(regexp);
+
+	/* flag an invalid expression while it is typed: this used to sit after
+	   the test-string check below, so an empty "Test string" (the usual
+	   case) left a broken regexp unmarked */
+	gtk_widget_modify_base(page->entry_simplify_subject,
+			GTK_STATE_NORMAL, preg ? NULL : &red);
+
 	if (!test_string || !test_string[0]) {
+		if (preg != NULL) {
+			regfree(preg);
+			g_free(preg);
+		}
 		g_free(test_string);
 		g_free(regexp);
 		return;
 	}
-
-	preg = summary_compile_simplify_regexp(regexp);
-
-	gtk_widget_modify_base(page->entry_simplify_subject,
-			GTK_STATE_NORMAL, preg ? NULL : &red);
 
 	if (preg != NULL) {
 		string_remove_match(buf, BUFFSIZE, test_string, preg);
@@ -2040,6 +2112,7 @@ static void register_general_page()
         folder_item_general_page.page.create_widget = prefs_folder_item_general_create_widget_func;
         folder_item_general_page.page.destroy_widget = prefs_folder_item_general_destroy_widget_func;
         folder_item_general_page.page.save_page = prefs_folder_item_general_save_func;
+        folder_item_general_page.page.can_close = prefs_folder_item_general_can_close_func;
         
 	prefs_folder_item_register_page((PrefsPage *) &folder_item_general_page, NULL);
 }
