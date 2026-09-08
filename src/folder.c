@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2025 the Claws Mail team and Hiroyuki Yamamoto
+ * Copyright (C) 1999-2026 the Claws Mail team and Hiroyuki Yamamoto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1986,7 +1986,6 @@ static void folder_item_process_open (FolderItem *item,
 				 void (*after_proc_func)(gpointer data),
 				 gpointer data)
 {
-	gchar *buf;
 	if (item == NULL)
 		return;
 	if((item->folder->klass->scan_required != NULL) &&
@@ -1998,10 +1997,6 @@ static void folder_item_process_open (FolderItem *item,
 	
 	/* Processing */
 	if (item->prefs->enable_processing_when_opening) {
-		buf = g_strdup_printf(_("Processing (%s)...\n"), 
-			      item->path ? item->path : item->name);
-		g_free(buf);
-
 		if (before_proc_func)
 			before_proc_func(data);
 
