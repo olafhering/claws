@@ -519,9 +519,9 @@ gchar *vcal_manager_event_dump(VCalEvent *event, gboolean is_reply, gboolean is_
 	if (str_write_to_file(body, tmpfile, FALSE) < 0) {
 		g_free(tmpfile);
 		tmpfile = NULL;
+	} else {
+		chmod(tmpfile, S_IRUSR|S_IWUSR);
 	}
-
-	chmod(tmpfile, S_IRUSR|S_IWUSR);
 
 	g_free(body);
 	g_free(headers);
