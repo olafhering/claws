@@ -630,6 +630,12 @@ select_btn_cb (GtkWidget *widget, gpointer data)
 	if (!uid)
 		uid = key->uids;
 
+        /* a key carrying no user id at all leaves the fallback NULL */
+        if (!uid) {
+            debug_print ("** Key has no user id, will not encrypt\n");
+            return;
+        }
+
         if ( uid->validity < GPGME_VALIDITY_FULL ) {
             use_key = use_untrusted(key, uid, sk->proto);
             if (!use_key) {
