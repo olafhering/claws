@@ -216,11 +216,16 @@ static GtkWidget *crash_dialog_show(const gchar *text, const gchar *debug_output
 	gtk_widget_show(scrolledwindow1);
 	gtk_container_add(GTK_CONTAINER(frame1), scrolledwindow1);
 	gtk_container_set_border_width(GTK_CONTAINER(scrolledwindow1), 3);
+	/* the backtrace has long lines: without horizontal scrolling and without
+	 * wrapping, the text view asks for the width of its longest line and the
+	 * window has to grant it, ending up wider than the screen and impossible
+	 * to shrink back. Same fix as the log window. */
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwindow1),
-				       GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+				       GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
 	text1 = gtk_text_view_new();
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text1), FALSE);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text1), GTK_WRAP_WORD_CHAR);
 	gtk_widget_show(text1);
 	gtk_container_add(GTK_CONTAINER(scrolledwindow1), text1);
 
