@@ -2279,6 +2279,7 @@ static void folderview_selected(GtkCMCTree *ctree, GtkCMCTreeNode *row,
 	display = gdk_display_get_default();
 	seat = gdk_display_get_default_seat(display);
 	device = gdk_seat_get_pointer(seat);
+	main_window_set_menu_sensitive(folderview->summaryview->mainwin);
 
 	debug_print("newly selected %p, opened %p\n", folderview->selected, 
 			folderview->opened);
