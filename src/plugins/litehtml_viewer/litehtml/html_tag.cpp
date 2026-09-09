@@ -1226,12 +1226,17 @@ void litehtml::html_tag::init_one_background_paint(int i, position pos, backgrou
 void litehtml::html_tag::draw_list_marker( uint_ptr hdc, const position& pos )
 {
 	list_marker lm;
+	// get_list_style_image_baseurl() returns by value and list_marker::baseurl is
+	// a plain const char*, so the string has to outlive every use of lm below --
+	// including the draw_list_marker() calls at the end of this function.
+	string list_image_baseurl;
 
 	size img_size;
 	if (css().get_list_style_image() != "")
 	{
 		lm.image   = css().get_list_style_image();
-		lm.baseurl = css().get_list_style_image_baseurl().c_str();
+		list_image_baseurl = css().get_list_style_image_baseurl();
+		lm.baseurl = list_image_baseurl.c_str();
 		get_document()->container()->get_image_size(lm.image.c_str(), lm.baseurl, img_size);
 	} else
 	{
