@@ -2909,12 +2909,34 @@ fetch_to_env_info(struct mailimap_msg_att * msg_att, GSList **tags)
 	if (!headers)
 		return NULL;
 	info = malloc(sizeof(* info));
+	if (info == NULL)
+		return NULL;
 	info->uid = uid;
 	info->headers = strdup(headers);
 	info->size = size;
 	info->flags = imap_flags_to_flags(att_dyn, tags);
 	
 	return info;
+}
+
+/* Release a partially built envelope list. The array alternates env_info and
+   its tags, and on an error path nothing downstream will consume either, so
+   both are freed here -- carray_free() would release the array alone. A final
+   env_info without its tags is possible when the second carray_add() fails. */
+static void imap_env_list_free(carray * env_list)
+{
+	unsigned int i;
+
+	for(i = 0 ; i < carray_count(env_list) ; i += 2) {
+		struct imap_fetch_env_info * env_info;
+
+		env_info = carray_get(env_list, i);
+		free(env_info->headers);
+		free(env_info);
+		if (i + 1 < carray_count(env_list))
+			slist_free_strings_full(carray_get(env_list, i + 1));
+	}
+	carray_free(env_list);
 }
 
 static int
@@ -2926,6 +2948,8 @@ imap_fetch_result_to_envelop_list(clist * fetch_result,
   	if (fetch_result) {
 		carray * env_list;
 		env_list = carray_new(16);
+		if (env_list == NULL)
+			return MAILIMAP_ERROR_MEMORY;
 
 		for(cur = clist_begin(fetch_result) ; cur != NULL ;
 		    cur = clist_next(cur)) {
@@ -2936,10 +2960,20 @@ imap_fetch_result_to_envelop_list(clist * fetch_result,
 			msg_att = clist_content(cur);
 
 			env_info = fetch_to_env_info(msg_att, &tags);
-			if (!env_info
-			 || carray_add(env_list, env_info, NULL) != 0
-			 || carray_add(env_list, tags, NULL) != 0) {
-				carray_free(env_list);
+			if (env_info == NULL) {
+				imap_env_list_free(env_list);
+				return MAILIMAP_ERROR_MEMORY;
+			}
+			if (carray_add(env_list, env_info, NULL) != 0) {
+				free(env_info->headers);
+				free(env_info);
+				slist_free_strings_full(tags);
+				imap_env_list_free(env_list);
+				return MAILIMAP_ERROR_MEMORY;
+			}
+			if (carray_add(env_list, tags, NULL) != 0) {
+				slist_free_strings_full(tags);
+				imap_env_list_free(env_list);
 				return MAILIMAP_ERROR_MEMORY;
 			}
 		}
