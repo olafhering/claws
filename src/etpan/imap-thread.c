@@ -2778,7 +2778,12 @@ static int imap_flags_to_flags(struct mailimap_msg_att_dynamic * att_dyn, GSList
 	GSList *tags = NULL;
 
 	flags = MSG_UNREAD;
-	
+
+	/* the dynamic attribute is optional: a FETCH reply can carry the headers
+	   without it, and the caller only checks the headers */
+	if (att_dyn == NULL)
+		return flags;
+
 	flag_list = att_dyn->att_list;
 	if (flag_list == NULL)
 		return flags;
