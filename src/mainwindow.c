@@ -3145,6 +3145,8 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 			(const gchar *) entry_str, \
 			((cond & state) == cond)); \
 }
+	SET_SENSITIVE("Menu/File/ExportMbox", M_MSG_EXIST);
+	SET_SENSITIVE("Menu/File/ExportSelMbox", M_MSG_EXIST);
 	SET_SENSITIVE("Menu/File/SaveAs", M_TARGET_EXIST);
 	SET_SENSITIVE("Menu/File/SavePartAs", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/File/Print", M_TARGET_EXIST);
@@ -3176,9 +3178,11 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	SET_SENSITIVE("Menu/View/Goto/ParentMessage", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/Goto/NextPart", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/Goto/PrevPart", M_SINGLE_TARGET_EXIST);
+	SET_SENSITIVE("Menu/View/Scroll", M_MSG_SELECTED);
 	SET_SENSITIVE("Menu/View/OpenNewWindow", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/MessageSource", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/Part", M_SINGLE_TARGET_EXIST);
+	SET_SENSITIVE("Menu/View/UpdateSummary", M_FOLDER_SELECTED);
 	SET_SENSITIVE("Menu/View/AllHeaders", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/Quotes", M_SINGLE_TARGET_EXIST);
 
@@ -3215,8 +3219,8 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	SET_SENSITIVE("Menu/Message/CheckSignature", M_SINGLE_TARGET_EXIST);
 
 	SET_SENSITIVE("Menu/Tools/AddSenderToAB", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/Tools/CollectAddresses", M_FOLDER_SELECTED);
-	SET_SENSITIVE("Menu/Tools/CollectAddresses/FromFolder", M_FOLDER_SELECTED);
+	SET_SENSITIVE("Menu/Tools/CollectAddresses", M_FOLDER_SELECTED, M_TARGET_EXIST);
+	SET_SENSITIVE("Menu/Tools/CollectAddresses/FromFolder", M_FOLDER_SELECTED, M_TARGET_EXIST);
 	SET_SENSITIVE("Menu/Tools/CollectAddresses/FromSelected", M_TARGET_EXIST);
 	SET_SENSITIVE("Menu/Tools/FilterFolder", M_MSG_EXIST, M_EXEC);
 	SET_SENSITIVE("Menu/Tools/FilterSelected", M_TARGET_EXIST, M_EXEC);
@@ -3319,10 +3323,19 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	&&  mainwin->messageview->mimeview->textview)
 		cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/AllHeaders",
 			      			prefs_common.show_all_headers);
-	cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/ThreadView", (state & main_window_get_mask(M_THREADED, -1)) != 0);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/ExpandThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/CollapseThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/HideReadThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0 && (state & main_window_get_mask(M_NOT_DRAFT, -1)) != 0);
+	if (mainwin->summaryview->folder_item && !mainwin->summaryview->folder_item->path) {
+		cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/ThreadView", FALSE);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/ExpandThreads", FALSE);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/CollapseThreads", FALSE);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/HideReadThreads", FALSE);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/UpdateSummary", FALSE);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Tools/CollectAddresses", FALSE);
+	} else {
+		cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/ThreadView", (state & main_window_get_mask(M_THREADED, -1)) != 0);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/ExpandThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/CollapseThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0);
+		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/HideReadThreads", (state & main_window_get_mask(M_THREADED, -1)) != 0 && (state & main_window_get_mask(M_NOT_DRAFT, -1)) != 0);
+	}
 	cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/Quotes/CollapseAll", (prefs_common.hide_quotes == 1));
 	cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/Quotes/Collapse2", (prefs_common.hide_quotes == 2));
 	cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/Quotes/Collapse3", (prefs_common.hide_quotes == 3));
@@ -3335,7 +3348,8 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	if ((mainwin->summaryview->folder_item && mainwin->summaryview->folder_item->hide_read_threads) ||
 	    quicksearch_has_sat_predicate(mainwin->summaryview->quicksearch))
 		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/HideReadMessages", FALSE);
-	if (quicksearch_has_sat_predicate(mainwin->summaryview->quicksearch))
+	if ((mainwin->summaryview->folder_item && !mainwin->summaryview->folder_item->path) ||
+	    quicksearch_has_sat_predicate(mainwin->summaryview->quicksearch))
 		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/HideDelMessages", FALSE);
 
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/PrevHistory",
@@ -3353,6 +3367,7 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Part", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Message/CheckSignature", 
 				   mimepart_selected && mainwin->messageview->mimeview->siginfo != NULL);
+	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Scroll", mimepart_selected);
 
 	sensitive = TRUE;
 	if (mimepart_selected) {
@@ -5516,7 +5531,6 @@ void mainwindow_exit_folder(MainWindow *mainwin) {
 		folderview_grab_focus(mainwin->folderview);
 	}
 	mainwin->in_folder = FALSE;
-	main_window_set_menu_sensitive(mainwin);
 }
 
 void mainwindow_enter_folder(MainWindow *mainwin) {
@@ -5524,7 +5538,6 @@ void mainwindow_enter_folder(MainWindow *mainwin) {
 		mainwin_paned_show_last(GTK_PANED(mainwin->hpaned));
 	}
 	mainwin->in_folder = TRUE;
-	main_window_set_menu_sensitive(mainwin);
 }
 
 static void save_part_as_cb(GtkAction *action, gpointer data)
