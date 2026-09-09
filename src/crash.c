@@ -80,7 +80,7 @@ static void		 crash_cleanup_exit		(void);
 
 /***/
 
-static const gchar *DEBUG_SCRIPT = "thread all apply\nbt full\nkill\nq";
+static const gchar *DEBUG_SCRIPT = "thread apply all bt full\nkill\nq";
 
 /***/
 
@@ -366,9 +366,15 @@ static void crash_debug(unsigned long crash_pid,
 		*argptr   = NULL;
 
 		/*
-		 * redirect output to write end of pipe
+		 * redirect output to write end of pipe; stderr too, otherwise a
+		 * debugger that refuses the script (bad command, no permission
+		 * to attach, ...) fails silently and the dialog shows an empty
+		 * backtrace with nothing to explain it
 		 */
 		close(1);
+		if (dup(choutput[1]) < 0)
+			perror("dup");
+		close(2);
 		if (dup(choutput[1]) < 0)
 			perror("dup");
 		close(choutput[0]);
