@@ -2965,6 +2965,8 @@ SensitiveCondMask main_window_get_current_state(MainWindow *mainwin)
 		UPDATE_STATE(M_UNLOCKED);
 	if (selection != SUMMARY_NONE && selection != SUMMARY_SELECTED_NONE)
 		UPDATE_STATE(M_MSG_SELECTED);
+	if (mainwin->summaryview->displayed)
+		UPDATE_STATE(M_MSG_DISPLAYED);
 	if (item && item->total_msgs > 0)
 		UPDATE_STATE(M_MSG_EXIST);
 	if (item && item->path && folder_item_parent(item) && !item->no_select) {
@@ -3148,10 +3150,12 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	SET_SENSITIVE("Menu/File/ExportMbox", M_MSG_EXIST);
 	SET_SENSITIVE("Menu/File/ExportSelMbox", M_MSG_EXIST);
 	SET_SENSITIVE("Menu/File/SaveAs", M_TARGET_EXIST);
-	SET_SENSITIVE("Menu/File/SavePartAs", M_SINGLE_TARGET_EXIST);
+	SET_SENSITIVE("Menu/File/SavePartAs", M_MSG_DISPLAYED);
 	SET_SENSITIVE("Menu/File/Print", M_TARGET_EXIST);
 	SET_SENSITIVE("Menu/File/Exit", M_UNLOCKED);
 
+	SET_SENSITIVE("Menu/Edit/Copy", M_MSG_DISPLAYED);
+	SET_SENSITIVE("Menu/Edit/SelectAll", M_TARGET_EXIST);
 	SET_SENSITIVE("Menu/Edit/SelectThread", M_TARGET_EXIST, M_SUMMARY_ISLIST);
 	SET_SENSITIVE("Menu/Edit/Find", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/Edit/QuickSearch", M_IN_MSGLIST);
@@ -3176,15 +3180,15 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	SET_SENSITIVE("Menu/View/Goto/PrevLabeled", M_MSG_SELECTED);
 	SET_SENSITIVE("Menu/View/Goto/NextLabeled", M_MSG_SELECTED);
 	SET_SENSITIVE("Menu/View/Goto/ParentMessage", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/View/Goto/NextPart", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/View/Goto/PrevPart", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/View/Scroll", M_MSG_SELECTED);
+	SET_SENSITIVE("Menu/View/Part", M_MSG_DISPLAYED);
+	SET_SENSITIVE("Menu/View/Goto/NextPart", M_MSG_DISPLAYED);
+	SET_SENSITIVE("Menu/View/Goto/PrevPart", M_MSG_DISPLAYED);
+	SET_SENSITIVE("Menu/View/Scroll", M_MSG_DISPLAYED);
 	SET_SENSITIVE("Menu/View/OpenNewWindow", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/MessageSource", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/View/Part", M_SINGLE_TARGET_EXIST);
 	SET_SENSITIVE("Menu/View/UpdateSummary", M_FOLDER_SELECTED);
-	SET_SENSITIVE("Menu/View/AllHeaders", M_SINGLE_TARGET_EXIST);
-	SET_SENSITIVE("Menu/View/Quotes", M_SINGLE_TARGET_EXIST);
+	SET_SENSITIVE("Menu/View/AllHeaders", M_MSG_DISPLAYED);
+	SET_SENSITIVE("Menu/View/Quotes", M_MSG_DISPLAYED);
 
 	SET_SENSITIVE("Menu/Message/Receive/CurrentAccount", M_HAVE_ACCOUNT, M_UNLOCKED, M_HAVE_RETRIEVABLE_ACCOUNT);
 	SET_SENSITIVE("Menu/Message/Receive/AllAccounts", M_HAVE_ACCOUNT, M_UNLOCKED, M_HAVE_ANY_RETRIEVABLE_ACCOUNT);
@@ -3318,9 +3322,8 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 		cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Sort/Descending", FALSE);
 	}
 
-	if (mainwin->messageview
-	&&  mainwin->messageview->mimeview
-	&&  mainwin->messageview->mimeview->textview)
+	if (mainwin->messageview && mainwin->messageview->mimeview &&
+	    mainwin->messageview->mimeview->textview)
 		cm_toggle_menu_set_active_full(mainwin->ui_manager, "Menu/View/AllHeaders",
 			      			prefs_common.show_all_headers);
 	if (mainwin->summaryview->folder_item && !mainwin->summaryview->folder_item->path) {
@@ -3357,17 +3360,11 @@ void main_window_set_menu_sensitive(MainWindow *mainwin)
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/NextHistory",
 		messageview_nav_has_next(mainwin->messageview));
 
-	if (mainwin->messageview 
-	&&  mainwin->messageview->mimeview)
+	if (mainwin->messageview && mainwin->messageview->mimeview)
 		mimepart_selected = !mimeview_tree_is_empty(mainwin->messageview->mimeview);
 
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/File/SavePartAs", mimepart_selected);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/NextPart", mimepart_selected);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Goto/PrevPart", mimepart_selected);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Part", mimepart_selected);
 	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/Message/CheckSignature", 
 				   mimepart_selected && mainwin->messageview->mimeview->siginfo != NULL);
-	cm_menu_set_sensitive_full(mainwin->ui_manager, "Menu/View/Scroll", mimepart_selected);
 
 	sensitive = TRUE;
 	if (mimepart_selected) {
