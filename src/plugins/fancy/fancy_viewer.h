@@ -1,7 +1,7 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
  * == Fancy Plugin ==
- * Copyright (C) 1999-2023 the Claws Mail Team
+ * Copyright (C) 1999-2026 the Claws Mail Team
  * This file Copyright (C) 2009-2023 Salvatore De Paolis <iwkse@claws-mail.org>
  *  and the Claws Mail Team
  *
