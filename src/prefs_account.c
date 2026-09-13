@@ -3282,6 +3282,7 @@ static void proxy_create_widget_func(PrefsPage * _page,
 	PACK_CHECK_BUTTON (vbox4, proxy_auth_checkbtn, _("Use authentication"));
 
 	table = gtk_grid_new();
+	gtk_grid_set_column_spacing(GTK_GRID(table), 8);
 	gtk_box_pack_start (GTK_BOX (vbox4), table, FALSE, FALSE, 0);
 
 	label = gtk_label_new(_("Username"));
