@@ -47,6 +47,7 @@ static char *TRANS_TEAM_LIST[] = {
 "[id_ID] MSulchan Darmawan <bleketux@gmail.com>",
 "[it] Luigi Votta <luigi.vtt@gmail.com>",
 "[ja] UTUMI Hirosi <utuhiro78@yahoo.co.jp>",
+"[ka] Ekaterine Papava <papava.e@gtu.ge>",
 "[nb] Petter Adsen <petter@synth.no>",
 "[nl] Marcel Pol <marcel@timelord.nl>",
 "[pl] Łukasz Wojniłowicz <lukasz.wojnilowicz@gmail.com>",
