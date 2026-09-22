@@ -84,6 +84,7 @@ static gboolean new_account;
 
 static PrefsAccount tmp_ac_prefs;
 
+static GtkWidget *label_sigpath;
 static GtkWidget *sigfile_radiobtn;
 static GtkWidget *sigcmd_radiobtn;
 static GtkWidget *entry_sigpath;
@@ -2460,7 +2461,7 @@ static void compose_create_widget_func(PrefsPage * _page,
 	GtkWidget *hbox2;
 	GtkWidget *frame_sig;
 	GtkWidget *vbox_sig;
-	GtkWidget *label_sigpath;
+	GtkWidget *label_sigsrc;
 	GtkWidget *checkbtn_autosig;
 	GtkWidget *label_sigsep;
 	GtkWidget *entry_sigsep;
@@ -2507,6 +2508,10 @@ static void compose_create_widget_func(PrefsPage * _page,
 	gtk_widget_show (sig_hbox);
 	gtk_box_pack_start (GTK_BOX (vbox_sig), sig_hbox, FALSE, FALSE, 0);
 
+	label_sigsrc = gtk_label_new (_("Source"));
+	gtk_widget_show (label_sigsrc);
+	gtk_box_pack_start (GTK_BOX (sig_hbox), label_sigsrc, FALSE, FALSE, 0);
+
 	sigfile_radiobtn = gtk_radio_button_new_with_label (NULL, _("File"));
 	gtk_widget_show (sigfile_radiobtn);
 	gtk_box_pack_start (GTK_BOX (sig_hbox), sigfile_radiobtn,
@@ -2531,7 +2536,8 @@ static void compose_create_widget_func(PrefsPage * _page,
 	hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
 	gtk_widget_show (hbox2);
 	gtk_box_pack_start (GTK_BOX (vbox_sig), hbox2, TRUE, TRUE, 0);
-	label_sigpath = gtk_label_new (_("Signature"));
+	label_sigpath = gtk_label_new (_("Filepath"));
+	gtk_label_set_xalign(GTK_LABEL(label_sigpath), 1.0);
 	gtk_widget_show (label_sigpath);
 	gtk_box_pack_start (GTK_BOX (hbox2), label_sigpath, FALSE, FALSE, 0);
 
@@ -3250,6 +3256,9 @@ static void proxy_create_widget_func(PrefsPage * _page,
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
 	gtk_box_pack_start (GTK_BOX (vbox3), hbox, FALSE, FALSE, 0);
+
+	label = gtk_label_new(_("Protocol"));
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
 	socks4_radiobtn = gtk_radio_button_new_with_label(NULL, "SOCKS4");
 	gtk_box_pack_start (GTK_BOX (hbox), socks4_radiobtn, FALSE, FALSE, 0);
@@ -4914,12 +4923,14 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 
 static void prefs_account_sigfile_radiobtn_cb(GtkWidget *widget, gpointer data)
 {
+	gtk_label_set_text(GTK_LABEL(label_sigpath), _("Filepath"));
 	gtk_widget_set_sensitive(GTK_WIDGET(signature_browse_button), TRUE);
 	gtk_widget_set_sensitive(GTK_WIDGET(signature_edit_button), TRUE);
 }
 
 static void prefs_account_sigcmd_radiobtn_cb(GtkWidget *widget, gpointer data)
 {
+	gtk_label_set_text(GTK_LABEL(label_sigpath), _("Command"));
 	gtk_widget_set_sensitive(GTK_WIDGET(signature_browse_button), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(signature_edit_button), FALSE);
 }
