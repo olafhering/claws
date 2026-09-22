@@ -699,7 +699,7 @@ static GtkActionEntry compose_entries[] =
 	/* {"Options/---",                NULL, "---", NULL, NULL, NULL }, */
 	{"Options/Priority",              NULL, N_("_Priority"), NULL, NULL, NULL },
 
-	{"Options/Encoding",              NULL, N_("Character _encoding"), NULL, NULL, NULL },
+	{"Options/Encoding",              NULL, N_("_Character encoding"), NULL, NULL, NULL },
 	{"Options/Encoding/---",          NULL, "---", NULL, NULL, NULL },
 #define ENC_ACTION(cs_char,c_char,string) \
 	{"Options/Encoding/" cs_char, NULL, N_(string), NULL, NULL, c_char }
