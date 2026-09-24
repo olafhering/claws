@@ -283,7 +283,7 @@ static void addressadd_create( void ) {
 	rdr = gtk_cell_renderer_text_new();
 	gtk_tree_view_column_pack_start(col, rdr, TRUE);
 	gtk_tree_view_column_set_attributes(col, rdr,
-			"markup", ADDRADD_COL_NAME, NULL);
+			"text", ADDRADD_COL_NAME, NULL);
 	gtk_tree_view_column_set_title(col, _("Select Address Book Folder"));
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_folder), col);
 
@@ -387,7 +387,7 @@ static void addressadd_load_folder( GtkTreeIter *parent_iter,
 				-1);
 		g_free( name );
 
-		addressadd_load_folder( parent_iter, folder, fi );
+		addressadd_load_folder( &iter, folder, fi );
 
 		list = g_list_next( list );
 	}
@@ -442,6 +442,8 @@ static void addressadd_load_data( AddressIndex *addrIndex ) {
 		}
 		list = g_list_next( list );
 	}
+
+	gtk_tree_view_expand_all(GTK_TREE_VIEW(view));
 
 	if (gtk_tree_model_get_iter_first(model, &iter))
 		gtk_tree_selection_select_iter(sel, &iter);
