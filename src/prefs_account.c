@@ -4865,32 +4865,29 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 		recv_data->cancel_button = GTK_BUTTON(basic_page.auto_configure_cancel_btn);
 		recv_data->info_label = GTK_LABEL(basic_page.auto_configure_lbl);
 		recv_data->cancel = recv_cancel;
+		recv_data->uid_entry = GTK_ENTRY(basic_page.uid_entry);
+		recv_data->address = g_strdup(address);
+		recv_data->hostname_entry = GTK_ENTRY(basic_page.recvserv_entry);
 		switch(protocol) {
 		case A_POP3:
 			recv_data->ssl_service = "pop3s";
 			recv_data->tls_service = "pop3";
-			recv_data->address = g_strdup(address);
-			recv_data->hostname_entry = GTK_ENTRY(basic_page.recvserv_entry);
 			recv_data->set_port = GTK_TOGGLE_BUTTON(advanced_page.popport_checkbtn);
 			recv_data->port = GTK_SPIN_BUTTON(advanced_page.popport_spinbtn);
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.pop_starttls_radiobtn);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.pop_ssltunnel_radiobtn);
 			recv_data->default_port = 110;
 			recv_data->default_ssl_port = 995;
-			recv_data->uid_entry = GTK_ENTRY(basic_page.uid_entry);
 			break;
 		case A_IMAP4:
 			recv_data->ssl_service = "imaps";
 			recv_data->tls_service = "imap";
-			recv_data->address = g_strdup(address);
-			recv_data->hostname_entry = GTK_ENTRY(basic_page.recvserv_entry);
 			recv_data->set_port = GTK_TOGGLE_BUTTON(advanced_page.imapport_checkbtn);
 			recv_data->port = GTK_SPIN_BUTTON(advanced_page.imapport_spinbtn);
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.imap_starttls_radiobtn);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.imap_ssltunnel_radiobtn);
 			recv_data->default_port = 143;
 			recv_data->default_ssl_port = 993;
-			recv_data->uid_entry = GTK_ENTRY(basic_page.uid_entry);
 			break;
 		default:
 			cm_return_if_fail(FALSE);
@@ -4904,6 +4901,7 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->info_label = GTK_LABEL(basic_page.auto_configure_lbl);
 	send_data->cancel = send_cancel;
 
+	send_data->ssl_service = "submissions";
 	send_data->tls_service = "submission";
 	send_data->address = g_strdup(address);
 	send_data->hostname_entry = GTK_ENTRY(basic_page.smtpserv_entry);
@@ -4912,7 +4910,7 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->tls_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.smtp_starttls_radiobtn);
 	send_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(ssl_page.smtp_ssltunnel_radiobtn);
 	send_data->default_port = 25;
-	send_data->default_ssl_port = -1;
+	send_data->default_ssl_port = 465;
 	send_data->auth_checkbtn = GTK_TOGGLE_BUTTON(send_page.smtp_auth_checkbtn);
 
 	auto_configure_service(send_data);

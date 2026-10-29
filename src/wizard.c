@@ -1423,12 +1423,12 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 		recv_data->info_label = GTK_LABEL(wizard->auto_configure_lbl);
 		recv_data->uid_entry = GTK_ENTRY(wizard->recv_username);
 		recv_data->cancel = recv_cancel;
+		recv_data->address = g_strdup(address);
+		recv_data->hostname_entry = GTK_ENTRY(wizard->recv_server);
 		switch(protocol) {
 		case A_POP3:
 			recv_data->ssl_service = "pop3s";
 			recv_data->tls_service = "pop3";
-			recv_data->address = g_strdup(address);
-			recv_data->hostname_entry = GTK_ENTRY(wizard->recv_server);
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_tls);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_ssl);
 			recv_data->default_port = 110;
@@ -1437,8 +1437,6 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 		case A_IMAP4:
 			recv_data->ssl_service = "imaps";
 			recv_data->tls_service = "imap";
-			recv_data->address = g_strdup(address);
-			recv_data->hostname_entry = GTK_ENTRY(wizard->recv_server);
 			recv_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_tls);
 			recv_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->recv_use_ssl);
 			recv_data->default_port = 143;
@@ -1456,13 +1454,14 @@ static void auto_configure_cb (GtkWidget *widget, gpointer data)
 	send_data->info_label = GTK_LABEL(wizard->auto_configure_lbl);
 	send_data->cancel = send_cancel;
 
+	send_data->ssl_service = "submissions";
 	send_data->tls_service = "submission";
 	send_data->address = g_strdup(address);
 	send_data->hostname_entry = GTK_ENTRY(wizard->smtp_server);
 	send_data->tls_checkbtn = GTK_TOGGLE_BUTTON(wizard->smtp_use_tls);
 	send_data->ssl_checkbtn = GTK_TOGGLE_BUTTON(wizard->smtp_use_ssl);
 	send_data->default_port = 25;
-	send_data->default_ssl_port = -1;
+	send_data->default_ssl_port = 465;
 	send_data->auth_checkbtn = GTK_TOGGLE_BUTTON(wizard->smtp_auth);
 
 	auto_configure_service(send_data);
