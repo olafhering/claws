@@ -11,36 +11,68 @@
 
 struct td {
 	gchar *input;
+	gboolean addr_field;
 	gchar *expected_output;
 };
 
 struct td td_rfc2047_space1 = {
-	"(=?ISO-8859-1?Q?a?=)",
-	"(a)"
+	input: "(=?ISO-8859-1?Q?a?=)",
+	expected_output: "(a)"
 };
 struct td td_rfc2047_space2 = {
-	"(=?ISO-8859-1?Q?a?= b)",
-	"(a b)"
+	input: "(=?ISO-8859-1?Q?a?= b)",
+	expected_output: "(a b)"
 };
 struct td td_rfc2047_space3 = {
-	"(=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=)",
-	"(ab)"
+	input: "(=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=)",
+	expected_output: "(ab)"
 };
 struct td td_rfc2047_space4 = {
-	"(=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=)",
-	"(ab)"
+	input: "(=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=)",
+	expected_output: "(ab)"
 };
 struct td td_rfc2047_space5 = {
-	"(=?ISO-8859-1?Q?a?=\r\n =?ISO-8859-1?Q?b?=)",
-	"(ab)"
+	input: "(=?ISO-8859-1?Q?a?=\r\n =?ISO-8859-1?Q?b?=)",
+	expected_output: "(ab)"
 };
 struct td td_rfc2047_space6 = {
-	"(=?ISO-8859-1?Q?a_b?=)",
-	"(a b)"
+	input: "(=?ISO-8859-1?Q?a_b?=)",
+	expected_output: "(a b)"
 };
 struct td td_rfc2047_space7 = {
-	"(=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)",
-	"(a b)"
+	input: "(=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)",
+	expected_output: "(a b)"
+};
+
+struct td td_leading_whitespace = {
+	input: " (=?ISO-8859-1?Q?a_b?=)",
+	expected_output: " (a b)"
+};
+struct td td_with_quote = {
+	input: "\"quote\" (=?ISO-8859-1?Q?a_b?=)",
+	expected_output: "\"quote\" (a b)"
+};
+struct td td_in_quote = {
+	input: "\"(=?ISO-8859-1?Q?a_b?=)\"",
+	expected_output: "\"(=?ISO-8859-1?Q?a_b?=)\""
+};
+struct td td_nonconf_bad_quote = {
+	input: "\"quote\r (=?ISO-8859-1?Q?a_b?=)\"",
+	expected_output: "\"quote\r (a b)\""
+};
+struct td td_nonconf_bad_quote_2 = {
+	input: "\"quote\r\n (=?ISO-8859-1?Q?a_b?=)\"",
+	expected_output: "\"quote\r\n (a b)\""
+};
+struct td td_nonconf_split_utf8_encoding = {
+	input: "=?utf-8?B?ICDD?="
+	"\r\n"
+	" =?utf-8?B?vH==?=",
+	expected_output: "  ü"
+};
+struct td td_8859_1_word = {
+	input: "Cache: =?iso-8859-1?q?M=FChlgassenh=FCtte?= (GCA0XJR)",
+	expected_output: "Cache: Mühlgassenhütte (GCA0XJR)"
 };
 
 static void
@@ -54,6 +86,7 @@ test_unmime_header_null()
 
 		out = unmime_header(NULL, FALSE);
 		g_assert_null(out);
+		g_free(out);
 		return;
 	}
 
@@ -66,10 +99,11 @@ static void
 test_unmime_header(gconstpointer user_data)
 {
 	struct td *data = (struct td *)user_data;
-	gchar *out = unmime_header(data->input, FALSE);
+	gchar *out = unmime_header(data->input, data->addr_field);
 
 	g_assert_nonnull(out);
 	g_assert_cmpstr(out, ==, data->expected_output);
+	g_free(out);
 }
 
 int
@@ -102,5 +136,21 @@ main(int argc, char *argv[])
 			&td_rfc2047_space7,
 			test_unmime_header);
 
+	g_test_add_data_func("/common/unmime/leading_whitespace",
+			&td_leading_whitespace,
+			test_unmime_header);
+	g_test_add_data_func("/common/unmime/with_quote",
+			&td_with_quote,
+			test_unmime_header);
+	g_test_add_data_func("/common/unmime/in_quote",
+			&td_in_quote,
+			test_unmime_header);
+	g_test_add_data_func("/common/unmime/nonconf_bad_quote",
+			&td_nonconf_bad_quote,
+			test_unmime_header);
+	g_test_add_data_func("/common/unmime/nonconf_split_utf8_encoding",
+			&td_nonconf_split_utf8_encoding,
+			test_unmime_header);
+	g_test_add_data_func("/common/unmime/4652_iso_8859_1_word", &td_8859_1_word, test_unmime_header);
 	return g_test_run();
 }
