@@ -1346,7 +1346,6 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 	gchar *str;
 #ifdef GENERIC_UMPC
 	GtkWidget *notebook;
-	GtkWidget *maemo_vbox0;
 #endif
 
 	meet->visible = visible;
@@ -1651,15 +1650,8 @@ static VCalMeeting *vcal_meeting_create_real(VCalEvent *event, gboolean visible)
 			meet->table2,
 			gtk_label_new_with_mnemonic(_("Time:")));
 	gtk_widget_show (notebook);
-	
-	maemo_vbox0 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
-	gtk_box_pack_start(GTK_BOX(maemo_vbox0), notebook, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(maemo_vbox0), save_hbox, FALSE, FALSE, 0);
-	
+
 	gtk_widget_set_size_request(meet->window, -1, -1);
-	gtk_container_add (GTK_CONTAINER (meet->window), maemo_vbox0);
-	
-	maemo_connect_key_press_to_mainwindow(GTK_WINDOW(meet->window));
 #endif
 	if (visible) {
 		GSList *cur;
