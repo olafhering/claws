@@ -485,7 +485,7 @@ static IncProgressDialog *inc_progress_dialog_create(gboolean autocheck)
 			 G_CALLBACK(inc_dialog_delete_cb), dialog);
 	g_signal_connect(G_OBJECT(progress->window), "size_allocate",
 			 G_CALLBACK(inc_progress_dialog_size_allocate_cb), NULL);
- 	/* manage_window_set_transient(GTK_WINDOW(progress->window)); */
+ 	manage_window_set_transient(GTK_WINDOW(progress->window));
 
 	progress_dialog_get_fraction(progress);
 
