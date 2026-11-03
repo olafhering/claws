@@ -3932,7 +3932,21 @@ static gboolean compose_attach_append(Compose *compose, const gchar *file,
 
 	store = GTK_LIST_STORE(gtk_tree_view_get_model
 			(GTK_TREE_VIEW(compose->attach_clist)));
-		
+
+	if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter)) {
+		do {
+			AttachInfo *att;
+
+			gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, COL_DATA, &att, -1);
+
+			if (!g_strcmp0(ainfo->file, att->file)) {
+				alertpanel_notice("File '%s' is already attached.", ainfo->name);
+				g_auto_pointer_free(auto_ainfo);
+				return FALSE;
+			}
+		} while (gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter));
+	}
+
 	gtk_list_store_append(store, &iter);
 	gtk_list_store_set(store, &iter, 
 			   COL_MIMETYPE, ainfo->content_type,
