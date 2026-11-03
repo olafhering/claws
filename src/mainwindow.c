@@ -2756,8 +2756,12 @@ void main_window_toggle_message_view(MainWindow *mainwin)
 			mainwin->messageview->visible = TRUE;
 			gtk_widget_reparent(GTK_WIDGET_PTR(summaryview), ppaned);
 			gtk_container_add(GTK_CONTAINER(container), ppaned);
-			gtk_paned_set_position(GTK_PANED(ppaned),
-					       prefs_common.summaryview_height);
+			if (prefs_common.layout_mode != VERTICAL_LAYOUT)
+				gtk_paned_set_position(GTK_PANED(ppaned),
+									 prefs_common.summaryview_height);
+			else
+				gtk_paned_set_position(GTK_PANED(ppaned),
+									 prefs_common.summaryview_width);
 			g_object_unref(ppaned);
 		}
 		break;
@@ -2810,10 +2814,15 @@ void main_window_get_size(MainWindow *mainwin)
 
 	gtk_widget_get_allocation(GTK_WIDGET_PTR(mainwin->summaryview), &allocation);
 	if (allocation.width > 1 && allocation.height > 1) {
-		prefs_common.summaryview_width = allocation.width;
+		if (prefs_common.layout_mode != VERTICAL_LAYOUT)
+			prefs_common.summaryview_width = allocation.width;
 
-		if (messageview_is_visible(mainwin->messageview))
+		if (messageview_is_visible(mainwin->messageview)) {
 			prefs_common.summaryview_height = allocation.height;
+
+			if (prefs_common.layout_mode == VERTICAL_LAYOUT)
+				prefs_common.summaryview_width = allocation.width;
+		}
 
 		prefs_common.mainview_width = allocation.width;
 	}
