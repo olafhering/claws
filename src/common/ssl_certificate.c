@@ -1,6 +1,6 @@
 /*
  * Claws Mail -- a GTK based, lightweight, and fast e-mail client
- * Copyright (C) 1999-2016 Colin Leroy and the Claws Mail team
+ * Copyright (C) 1999-2026 Colin Leroy and the Claws Mail team
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -649,7 +649,18 @@ char *ssl_certificate_check_signer (SSLCertificate *cert, guint status)
 		return g_strdup(_("No certificate issuer found"));
 	if (status & GNUTLS_CERT_SIGNER_NOT_CA)
 		return g_strdup(_("Certificate issuer is not a CA"));
-
+	if (status & GNUTLS_CERT_SIGNATURE_FAILURE)
+		return g_strdup(_("Certificate signature is invalid"));
+	if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
+		return g_strdup(_("Certificate uses an insecure algorithm"));
+	if (status & GNUTLS_CERT_EXPIRED)
+		return g_strdup(_("Certificate has expired"));
+	if (status & GNUTLS_CERT_NOT_ACTIVATED)
+		return g_strdup(_("Certificate is not yet valid"));
+	/* any other verification failure: GnuTLS sets GNUTLS_CERT_INVALID
+	 * whenever the chain is not trusted */
+	if (status & GNUTLS_CERT_INVALID)
+		return g_strdup(_("Certificate is not trusted"));
 
 	return NULL;
 }
