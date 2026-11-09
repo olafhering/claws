@@ -317,6 +317,19 @@ static void prefs_filtering_action_check_widget_width(GtkWidget *widget)
 		gtk_widget_set_size_request(widget, SECOND_ROW_WIDTH, -1);
 }
 
+static gint prefs_filtering_action_tag_cmp_list(gconstpointer a, gconstpointer b)
+{
+	const gchar *tag_a = tags_get_tag(GPOINTER_TO_INT(a));
+	const gchar *tag_b = tags_get_tag(GPOINTER_TO_INT(b));
+
+	if (tag_a == NULL)
+		return tag_b == NULL ? 0 : 1;
+	if (tag_b == NULL)
+		return -1;
+
+	return g_utf8_collate(tag_a, tag_b);
+}
+
 /*!
  *\brief	Create the matcher dialog
  */
@@ -524,7 +537,8 @@ static void prefs_filtering_action_create(void)
 	tags_combo = gtk_combo_box_text_new ();
 	gtk_size_group_add_widget(size_action, tags_combo);
 
-	for (tmp = tags = tags_get_list() ; tmp != NULL;
+	tags = g_slist_sort(tags_get_list(), prefs_filtering_action_tag_cmp_list);
+	for (tmp = tags; tmp != NULL;
 	     tmp = tmp->next) {
 		gchar *name = g_strdup(tags_get_tag(GPOINTER_TO_INT(tmp->data)));
 
